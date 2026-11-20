@@ -33,6 +33,7 @@ data class LiqEvent(
     val side: LiqSide,
     val timeMs: Long,
     val source: String,
+    val recvMs: Long = System.currentTimeMillis(),
 )
 
 /** Dados de derivativos por corretora (campos nulos = ainda não recebidos). */
