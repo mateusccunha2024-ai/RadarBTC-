@@ -19,7 +19,11 @@ data class BookView(
 ) {
     val bestBid: Double? get() = bids.firstOrNull()?.price
     val bestAsk: Double? get() = asks.firstOrNull()?.price
-    val mid: Double? get() = if (bestBid != null && bestAsk != null) (bestBid!! + bestAsk!!) / 2 else null
+    val mid: Double? get() {
+        val b = bestBid ?: return null
+        val a = bestAsk ?: return null
+        return (a + b) / 2
+    }
 }
 
 /**
@@ -55,9 +59,9 @@ class LocalBook(val venue: Venue) {
         b.forEach { if (it.qtyBtc <= 0) bids.remove(it.price) else bids[it.price] = it.qtyBtc }
         a.forEach { if (it.qtyBtc <= 0) asks.remove(it.price) else asks[it.price] = it.qtyBtc }
         lastSeq = seq
-        // Livro cruzado = estado inconsistente
-        val bb = bids.firstKey(); val ba = asks.firstKey()
-        if (bids.isNotEmpty() && asks.isNotEmpty() && bb != null && ba != null && bb >= ba) {
+        val bb = bids.firstEntry()?.key
+        val ba = asks.firstEntry()?.key
+        if (bb != null && ba != null && bb >= ba) {
             invalidate("livro cruzado (bid $bb >= ask $ba)")
             return
         }
