@@ -52,9 +52,9 @@ class FlowEngine(private val keepMs: Long = 3_600_000L, private val maxTrades: I
     fun allWindows(venue: Venue?, now: Long = System.currentTimeMillis()): List<FlowStats> = synchronized(lock) {
         val acc = FLOW_WINDOWS.map { MutableStats(it.second) }
         val maxWin = FLOW_WINDOWS.last().second
-        val it = trades.reversed().iterator()
-        while (it.hasNext()) {
-            val t = it.next()
+        var i = trades.size - 1
+        while (i >= 0) {
+            val t = trades[i--]
             val age = now - t.recvMs
             if (age > maxWin) break
             if (venue != null && t.venue != venue) continue
@@ -67,9 +67,9 @@ class FlowEngine(private val keepMs: Long = 3_600_000L, private val maxTrades: I
     fun volumeNear(venue: Venue, price: Double, tolPct: Double, sinceMs: Long): Double = synchronized(lock) {
         var sum = 0.0
         val tol = price * tolPct / 100
-        val it = trades.reversed().iterator()
-        while (it.hasNext()) {
-            val t = it.next()
+        var i = trades.size - 1
+        while (i >= 0) {
+            val t = trades[i--]
             if (t.recvMs < sinceMs) break
             if (t.venue == venue && abs(t.price - price) <= tol) sum += t.qtyBtc
         }
@@ -116,7 +116,12 @@ class LargeTrades(@Volatile var minBtc: Double = 2.0, private val keepMs: Long =
         true
     }
 
-    fun recent(n: Int = 200): List<TradeEvent> = synchronized(lock) { list.reversed().take(n) }
+    fun recent(n: Int = 200): List<TradeEvent> = synchronized(lock) {
+        val out = ArrayList<TradeEvent>(n)
+        var i = list.size - 1
+        while (i >= 0 && out.size < n) out += list[i--]
+        out
+    }
 
     fun top(periodMs: Long, aggressor: Aggressor?, venue: Venue?, n: Int = 50, now: Long = System.currentTimeMillis()): List<TradeEvent> =
         synchronized(lock) {
