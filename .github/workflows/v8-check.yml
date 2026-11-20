@@ -19,10 +19,18 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: "8.9" }
 
-      - name: Compilar Windows e Android + testes unitários
+      - name: Compilar Windows e Android + testes unitários e de carga
         run: |
           set -o pipefail
           gradle :desktop:test :app:compileDebugKotlin --no-daemon --continue 2>&1 | tee build.log
+
+      - name: Guardar resultado dos testes unitários
+        if: always()
+        run: |
+          for f in desktop/build/test-results/test/*.xml; do
+            [ -f "$f" ] && grep -o 'testsuite name="[^"]*" tests="[0-9]*" skipped="[0-9]*" failures="[0-9]*" errors="[0-9]*"' "$f"
+          done > units.txt || true
+          grep -h -A3 "<failure" desktop/build/test-results/test/*.xml | head -n 60 >> units.txt || true
 
       - name: Teste ao vivo (dados reais, 45 s)
         if: success()
@@ -38,13 +46,15 @@ jobs:
           {
             echo "Commit ${{ github.sha }} — resultado: ${{ job.status }}"
             echo
-            echo "### Compilação e testes unitários"
+            echo "### Compilação"
             echo '```'
-            grep -E "^e: |error:|FAILED|tests completed|BUILD (SUCCESSFUL|FAILED)|What went wrong" -A2 build.log | head -n 150 || true
+            grep -E "^e: |error:|FAILED|BUILD (SUCCESSFUL|FAILED)|What went wrong" -A2 build.log | head -n 150 || true
             echo '```'
-            for f in desktop/build/test-results/test/*.xml; do
-              [ -f "$f" ] && grep -o 'testsuite name="[^"]*" tests="[0-9]*" skipped="[0-9]*" failures="[0-9]*" errors="[0-9]*"' "$f"
-            done
+            echo "### Testes unitários"
+            echo '```'
+            cat units.txt 2>/dev/null
+            echo '```'
+            cat desktop/build/load-report.md 2>/dev/null
             echo
             cat desktop/build/live-report.md 2>/dev/null || echo "(teste ao vivo não gerou relatório)"
           } > report.md
