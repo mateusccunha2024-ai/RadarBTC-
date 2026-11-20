@@ -33,9 +33,9 @@ class AppContext(val hub: Hub, val db: SqliteHistory, val map: MapModel)
 val TABS = listOf("ORDERFLOW", "LIQUIDITY WALLS", "MAGNET ZONES", "LONG & SHORT FLOW", "LARGE TRADES", "LIQUIDATION RADAR", "STATUS")
 
 @Composable
-fun Terminal(ctx: AppContext) {
+fun Terminal(ctx: AppContext, initialTab: Int? = null) {
     val s by ctx.hub.stateFlow.collectAsState()
-    var tab by remember { mutableIntStateOf(SettingsStore.i("tab", 0).coerceIn(0, TABS.size - 1)) }
+    var tab by remember { mutableIntStateOf(initialTab ?: SettingsStore.i("tab", 0).coerceIn(0, TABS.size - 1)) }
     Column(Modifier.fillMaxSize().background(Q.Bg)) {
         TopBar(s)
         Row(Modifier.fillMaxWidth().background(Q.Panel).padding(horizontal = 8.dp)) {
