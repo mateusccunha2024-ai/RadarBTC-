@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -14,6 +15,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -24,12 +26,15 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.roundToInt
 
 /** Paleta Quant Orderflow. */
 object Q {
@@ -38,19 +43,35 @@ object Q {
     val Panel2 = Color(0xFF171B21)
     val Line = Color(0xFF262B33)
     val Text = Color(0xFFE6E8EA)
-    val Muted = Color(0xFF7A8291)
+    val Muted = Color(0xFF8A919E)
     val Buy = Color(0xFF16C784)
     val Sell = Color(0xFFEA3943)
     val LiqLong = Color(0xFFFF9F1C)
     val LiqShort = Color(0xFF3A86FF)
     val Accent = Color(0xFFF7931A)
     val Warn = Color(0xFFE0B341)
+    /** Escala de calor (Magnet Zones): do vermelho escuro ao vermelho vivo. */
+    val HeatLow = Color(0xFF3A0C12)
+    val HeatHigh = Color(0xFFFF3B4E)
+}
+
+/** Tamanho da interface (Ctrl + / Ctrl - / Ctrl 0), salvo entre sessões. */
+object UiScale {
+    var scale by mutableFloatStateOf(SettingsStore.d("ui.scale", 1.0).toFloat().coerceIn(0.7f, 1.8f))
+        private set
+    private fun set(v: Float) { scale = (v * 10).roundToInt() / 10f; SettingsStore.put("ui.scale", scale.toDouble()) }
+    fun inc() = set((scale + 0.1f).coerceAtMost(1.8f))
+    fun dec() = set((scale - 0.1f).coerceAtLeast(0.7f))
+    fun reset() = set(1.0f)
 }
 
 val BR: Locale = Locale.forLanguageTag("pt-BR")
 val mono = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 12.sp, color = Q.Text)
 fun btc(v: Double, d: Int = 2) = String.format(BR, "%,.${d}f BTC", v)
 fun num(v: Double, d: Int = 2) = String.format(BR, "%,.${d}f", v)
+/** Quantidade de livro: valores menores que 0,001 BTC aparecem como <0,001 em vez de 0,000. */
+fun qty(v: Double) = if (v > 0 && v < 0.001) "<0,001" else num(v, 3)
+fun signed(v: Double, d: Int = 2) = String.format(BR, "%+.${d}f", v)
 fun px(v: Double?) = if (v == null) "—" else String.format(BR, "%,.1f", v)
 fun pct(v: Double?, d: Int = 2) = if (v == null) "—" else String.format(BR, "%+.${d}f%%", v)
 fun usdM(v: Double) = String.format(BR, "US$ %,.2f mi", v / 1e6)
@@ -58,10 +79,22 @@ private val hms = SimpleDateFormat("HH:mm:ss")
 fun hhmmss(ms: Long) = hms.format(Date(ms))
 fun ago(ms: Long) = when { ms < 0 -> "nunca"; ms < 1000 -> "${ms} ms"; ms < 60_000 -> "${ms / 1000} s"; else -> "${ms / 60_000} min" }
 
+/** Motivo curto para cartões; o detalhe completo fica na aba STATUS. */
+fun shortReason(note: String) = when {
+    note.contains("451") -> "BLOQUEADO NA REGIÃO (HTTP 451)"
+    note.contains("snapshot", true) && note.contains("indispon") -> "SNAPSHOT INDISPONÍVEL"
+    note.contains("sequência") -> "RECONSTRUINDO (quebra de sequência)"
+    note.contains("aguardando") -> "AGUARDANDO SNAPSHOT"
+    else -> note.take(42).uppercase()
+}
+
 @Composable
-fun T(text: String, color: Color = Q.Text, size: Int = 12, bold: Boolean = false, monoFont: Boolean = false, modifier: Modifier = Modifier) =
-    Text(text, color = color, fontSize = size.sp, fontWeight = if (bold) FontWeight.SemiBold else FontWeight.Normal,
-        fontFamily = if (monoFont) FontFamily.Monospace else FontFamily.Default, modifier = modifier, maxLines = 1)
+fun T(text: String, color: Color = Q.Text, size: Int = 12, bold: Boolean = false, monoFont: Boolean = false,
+      modifier: Modifier = Modifier, wrap: Boolean = false, align: TextAlign? = null) =
+    Text(text, color = color, fontSize = size.sp, lineHeight = (size + 4).sp,
+        fontWeight = if (bold) FontWeight.SemiBold else FontWeight.Normal,
+        fontFamily = if (monoFont) FontFamily.Monospace else FontFamily.Default, modifier = modifier,
+        maxLines = if (wrap) Int.MAX_VALUE else 1, overflow = TextOverflow.Ellipsis, softWrap = wrap, textAlign = align)
 
 @Composable
 fun Section(title: String, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
@@ -71,28 +104,44 @@ fun Section(title: String, modifier: Modifier = Modifier, content: @Composable (
     }
 }
 
+/** Estado vazio: diz o que está acontecendo e o que esperar. */
 @Composable
-fun Chips(label: String?, options: List<String>, selected: Int, onSelect: (Int) -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        if (label != null) T(label, Q.Muted, 11, modifier = Modifier.padding(end = 2.dp))
-        options.forEachIndexed { i, s ->
-            val on = i == selected
-            Text(s, color = if (on) Q.Bg else Q.Muted, fontSize = 11.sp,
-                modifier = Modifier.background(if (on) Q.Text else Q.Panel2).clickable { onSelect(i) }.padding(horizontal = 8.dp, vertical = 4.dp))
-        }
+fun Empty(title: String, hint: String? = null) {
+    Column(Modifier.fillMaxWidth().padding(vertical = 28.dp, horizontal = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        T(title, Q.Text, 13, wrap = true, align = TextAlign.Center)
+        if (hint != null) T(hint, Q.Muted, 11, wrap = true, align = TextAlign.Center, modifier = Modifier.padding(top = 4.dp))
     }
 }
 
 @Composable
-fun Toggle(label: String, on: Boolean, onChange: (Boolean) -> Unit) {
-    Text((if (on) "■ " else "□ ") + label, color = if (on) Q.Text else Q.Muted, fontSize = 11.sp,
-        modifier = Modifier.background(Q.Panel2).clickable { onChange(!on) }.padding(horizontal = 8.dp, vertical = 4.dp))
+fun Badge(text: String, color: Color) =
+    Text(text, color = color, fontSize = 10.sp, lineHeight = 13.sp, maxLines = 1,
+        modifier = Modifier.border(1.dp, color.copy(alpha = 0.55f)).padding(horizontal = 5.dp, vertical = 1.dp))
+
+@Composable
+fun Footnote(text: String, modifier: Modifier = Modifier) = T(text, Q.Muted, 11, wrap = true, modifier = modifier)
+
+@Composable
+private fun ChipItem(s: String, on: Boolean, onClick: () -> Unit) =
+    Text(s, color = if (on) Q.Accent else Q.Muted, fontSize = 11.sp, lineHeight = 14.sp, maxLines = 1,
+        modifier = Modifier.background(if (on) Q.Panel2 else Q.Panel).border(1.dp, if (on) Q.Accent else Q.Line)
+            .clickable(onClick = onClick).padding(horizontal = 8.dp, vertical = 4.dp))
+
+@Composable
+fun Chips(label: String?, options: List<String>, selected: Int, onSelect: (Int) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        if (label != null) T(label, Q.Muted, 11, modifier = Modifier.padding(end = 2.dp))
+        options.forEachIndexed { i, s -> ChipItem(s, i == selected) { onSelect(i) } }
+    }
 }
+
+@Composable
+fun Toggle(label: String, on: Boolean, onChange: (Boolean) -> Unit) = ChipItem((if (on) "■ " else "□ ") + label, on) { onChange(!on) }
 
 /** Campo numérico; aplica o valor quando o texto vira um número válido (aceita vírgula). */
 @Composable
 fun NumField(label: String, value: Double?, width: Dp = 90.dp, onValue: (Double?) -> Unit) {
-    var text by remember(value) { mutableStateOf(value?.let { if (it % 1.0 == 0.0) it.toLong().toString() else it.toString() } ?: "") }
+    var text by remember(value) { mutableStateOf(value?.let { if (it % 1.0 == 0.0) it.toLong().toString() else it.toString().replace(".", ",") } ?: "") }
     Row(verticalAlignment = Alignment.CenterVertically) {
         T(label, Q.Muted, 11, modifier = Modifier.padding(end = 4.dp))
         BasicTextField(
@@ -110,9 +159,12 @@ fun NumField(label: String, value: Double?, width: Dp = 90.dp, onValue: (Double?
     }
 }
 
+/** Linha rótulo/valor; o valor nunca vaza do painel (corta com reticências). */
 @Composable
 fun KV(k: String, v: String, color: Color = Q.Text) {
-    Row(Modifier.fillMaxWidth().padding(vertical = 1.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-        T(k, Q.Muted, 11); T(v, color, 12, monoFont = true)
+    Row(Modifier.fillMaxWidth().padding(vertical = 1.dp), verticalAlignment = Alignment.CenterVertically) {
+        T(k, Q.Muted, 11)
+        Spacer(Modifier.width(12.dp))
+        T(v, color, 12, monoFont = true, modifier = Modifier.weight(1f), align = TextAlign.End)
     }
 }

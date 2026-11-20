@@ -83,7 +83,7 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
                     NumField("Faixa mín", rMin) { rMin = it; SettingsStore.put("of.rmin", it ?: 0.0) }
                     NumField("Faixa máx", rMax) { rMax = it; SettingsStore.put("of.rmax", it ?: 0.0) }
                 }
-                if (book.missing.isNotEmpty()) T("Fora da consolidação (livro inválido): " + book.missing.joinToString { it.label }, Q.Sell, 11)
+                if (book.missing.isNotEmpty()) T("Fora da consolidação: " + book.missing.joinToString { it.label } + " (livro inválido, ver STATUS)", Q.Sell, 11)
             }
             Spacer(Modifier.height(8.dp))
             Ladder(book.asks, book.bids, rpi, INTS[intIdx], s.tick)
@@ -97,7 +97,7 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
                     KV("Profundidade ASK", btc(book.askSum))
                     KV("Desequilíbrio", pct(book.imbalance * 100, 1), if (book.imbalance >= 0) Q.Buy else Q.Sell)
                     val bb = book.bids.firstOrNull()?.price; val ba = book.asks.firstOrNull()?.price
-                    KV("Spread", if (bb != null && ba != null) num(ba - bb, 1) + " USDT" else "—")
+                    KV("Spread consolidado", when { bb == null || ba == null -> "—"; ba < bb -> "cruzado entre corretoras"; else -> num(ba - bb, 1) + " USDT" })
                 }
             }
             Venue.entries.forEach { v -> s.books[v]?.let { BookCard(it, s) } }
@@ -113,7 +113,8 @@ private fun BookCard(b: BookView, s: TerminalState, title: String = "${b.venue.l
     Section(title) {
         Column {
             KV("Conexão", if (connOk) "LIVE" else conn.joinToString { it.state.name }.ifEmpty { "—" }, if (connOk) Q.Buy else Q.Sell)
-            KV("Sequência", if (b.valid) "OK" else "INVÁLIDO: ${b.note}", if (b.valid) Q.Buy else Q.Sell)
+            KV("Sequência", if (b.valid) "OK" else shortReason(b.note), if (b.valid) Q.Buy else Q.Sell)
+            KV("Spread próprio", if (b.valid && b.bestBid != null && b.bestAsk != null) num(b.bestAsk!! - b.bestBid!!, 1) + " USDT" else "—")
             KV("Níveis válidos (bid/ask)", if (b.valid) "${b.bidLevels} / ${b.askLevels}" else "—")
             KV("Última atualização", if (b.lastUpdateMs > 0) ago(s.now - b.lastUpdateMs) + " atrás" else "—")
             KV("Latência (evento → recebido)", "${b.latencyMs} ms")
@@ -144,7 +145,11 @@ private fun Ladder(asks: List<ConsRow>, bids: List<ConsRow>, showRpi: Boolean, i
         item {
             val bb = bids.firstOrNull()?.price; val ba = asks.firstOrNull()?.price
             Row(Modifier.fillMaxWidth().background(Q.Panel2).padding(vertical = 3.dp), horizontalArrangement = Arrangement.Center) {
-                T(if (bb != null && ba != null) "spread ${num(ba - bb, 1)}  ·  mid ${px((ba + bb) / 2)}" else "sem livro válido", Q.Accent, 11)
+                T(when {
+                    bb == null || ba == null -> "sem livro válido"
+                    ba < bb -> "livros cruzados entre corretoras: melhor compra ${px(bb)} acima da melhor venda ${px(ba)} (cada corretora tem preço próprio)"
+                    else -> "spread ${num(ba - bb, 1)}  ·  mid ${px((ba + bb) / 2)}"
+                }, Q.Accent, 11)
             }
         }
         items(bids) { LadderRow(it, max, showRpi, intensity) }
@@ -156,14 +161,14 @@ private fun LadderRow(r: ConsRow, max: Double, showRpi: Boolean, intensity: Floa
     val buy = r.side == BookSide.BID
     val base = if (buy) Q.Buy else Q.Sell
     val frac = ((r.total / max).toFloat() * intensity).coerceIn(0f, 1f)
-    Row(Modifier.fillMaxWidth().height(17.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth().height(20.dp), verticalAlignment = Alignment.CenterVertically) {
         T(px(r.price), base, 11, monoFont = true, modifier = Modifier.width(92.dp))
         Box(Modifier.weight(1f).fillMaxHeight().padding(vertical = 2.dp)) {
             if (frac > 0.003f) Box(Modifier.fillMaxHeight().fillMaxWidth(frac).background(base.copy(alpha = 0.25f + 0.6f * frac)))
         }
-        for (i in 0..2) T(if (r.byVenue[i] > 0) num(r.byVenue[i], 3) else "·", if (r.byVenue[i] > 0) Q.Text else Q.Line, 11, monoFont = true, modifier = Modifier.width(62.dp))
-        if (showRpi) T(if (r.byVenue[3] > 0) num(r.byVenue[3], 3) else "·", Q.Muted, 11, monoFont = true, modifier = Modifier.width(56.dp))
-        T(num(r.total, 3), Q.Text, 11, bold = frac > 0.5f, monoFont = true, modifier = Modifier.width(76.dp))
+        for (i in 0..2) T(if (r.byVenue[i] > 0) qty(r.byVenue[i]) else "·", if (r.byVenue[i] > 0) Q.Text else Q.Line, 11, monoFont = true, modifier = Modifier.width(62.dp))
+        if (showRpi) T(if (r.byVenue[3] > 0) qty(r.byVenue[3]) else "·", Q.Muted, 11, monoFont = true, modifier = Modifier.width(56.dp))
+        T(qty(r.total), Q.Text, 11, bold = frac > 0.5f, monoFont = true, modifier = Modifier.width(76.dp))
         T(num(r.cumulative, 2), Q.Muted, 11, monoFont = true, modifier = Modifier.width(84.dp))
     }
 }

@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   issues: write
 
 jobs:
@@ -37,6 +37,17 @@ jobs:
         continue-on-error: true
         env: { LIVE: "1" }
         run: gradle :desktop:test --tests '*LiveSmokeTest*' --rerun-tasks --no-daemon -q 2>&1 | tail -n 5 || true
+
+      - name: Capturas de tela (dados reais)
+        if: success()
+        continue-on-error: true
+        env: { SHOTS: "1" }
+        run: |
+          gradle :desktop:test --tests '*ScreenshotTest*' --rerun-tasks --no-daemon -q 2>&1 | tail -n 20 || true
+          cd desktop/build/screens
+          git init -q && git checkout -q -b screens
+          git add . && git -c user.name=ci -c user.email=ci@local commit -qm "capturas ${{ github.run_number }}"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" screens
 
       - name: Relatório
         if: always()

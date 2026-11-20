@@ -3,6 +3,7 @@ package com.cunhac.btcradar.desktop
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.cunhac.btcradar.engine.Aggressor
@@ -36,6 +38,7 @@ import com.cunhac.btcradar.engine.TerminalState
 import com.cunhac.btcradar.engine.TradeEvent
 import com.cunhac.btcradar.engine.Venue
 import com.cunhac.btcradar.engine.Wall
+import com.cunhac.btcradar.engine.WallClass
 import com.cunhac.btcradar.engine.WallStatus
 
 val VENUE_COLORS = listOf(Color(0xFFF3BA2F), Color(0xFF9B7BFF), Color(0xFF5BC0EB))
@@ -82,6 +85,7 @@ fun WallsTab(ctx: AppContext, s: TerminalState) {
         Section("Histórico de concentrações (eventos de saída do livro)", Modifier.fillMaxWidth().height(230.dp)) {
             Column {
                 Th("HORA" to 70, "CORRETORA" to 80, "LADO" to 44, "PREÇO" to 90, "STATUS" to 190, "PICO" to 90, "FINAL" to 90, "NEGOCIADO NO NÍVEL" to 130, "PERMANÊNCIA" to 0)
+                if (hist.isEmpty()) Empty("Nenhuma concentração saiu do livro ainda", "Quando uma parede some, aqui aparece se houve execução corroborada por trades ou só retirada")
                 LazyColumn {
                     items(hist) { w ->
                         val c = when (w.status) { WallStatus.EXECUTION_CORROBORATED -> Q.Accent; WallStatus.POSSIBLY_EXECUTED -> Q.Warn; else -> Q.Muted }
@@ -93,26 +97,52 @@ fun WallsTab(ctx: AppContext, s: TerminalState) {
             }
         }
         T("Identidade = corretora + instrumento + lado + preço. O livro público é agregado por preço: não identificamos ordens individuais nem quem as colocou. " +
-            "Sumir do livro não prova execução: EXECUTION_CORROBORATED exige trades no nível ≥ 50% da quantidade.", Q.Muted, 10, modifier = Modifier.padding(top = 4.dp))
+            "Sumir do livro não prova execução: EXECUTION_CORROBORATED exige trades no nível ≥ 50% da quantidade.", Q.Muted, 11, wrap = true, modifier = Modifier.padding(top = 4.dp))
     }
 }
 
 @Composable
 private fun WallTable(title: String, walls: List<Wall>, mid: Double, color: Color, modifier: Modifier) {
-    Section(title, modifier.fillMaxHeight()) {
+    val maxQ = (walls.maxOfOrNull { it.currentQty } ?: 0.0).coerceAtLeast(1e-9)
+    Section("$title · ${walls.size}", modifier.fillMaxHeight()) {
         Column {
-            Th("PREÇO" to 86, "CORR." to 64, "ATUAL" to 76, "INICIAL" to 70, "Δ BTC" to 70, "Δ%" to 56, "DIST." to 62, "TEMPO" to 56, "STATUS" to 0)
+            Th("PREÇO" to 84, "CORR." to 58, "ATUAL (BTC)" to 0, "Δ BTC" to 64, "DIST." to 62, "TEMPO" to 50, "STATUS" to 92, "CLASSE" to 68)
+            if (walls.isEmpty()) Empty("Nenhuma parede acima do limite SMALL nesta faixa", "Ajuste os limites ou a faixa ±% acima")
             LazyColumn {
                 items(walls) { w ->
-                    val stc = when (w.status) { WallStatus.NEW -> Q.Accent; WallStatus.INCREASED -> Q.Buy; WallStatus.REDUCED -> Q.Sell; else -> Q.Muted }
-                    Td(Triple(px(w.price), 86, color), Triple(w.venue.label, 64, Q.Muted), Triple(num(w.currentQty), 76, Q.Text), Triple(num(w.initialQty), 70, Q.Muted),
-                        Triple(String.format(BR, "%+.2f", w.changeBtc), 70, if (w.changeBtc >= 0) Q.Buy else Q.Sell), Triple(pct(w.changePct, 0), 56, Q.Muted),
-                        Triple(pct(if (mid > 0) w.distancePct(mid) else null), 62, Q.Muted), Triple(ago(w.permanenceMs), 56, Q.Muted),
-                        Triple("${w.status.name} · ${w.cls.name}", 0, stc))
+                    Row(Modifier.fillMaxWidth().height(22.dp), verticalAlignment = Alignment.CenterVertically) {
+                        T(px(w.price), color, 11, monoFont = true, modifier = Modifier.width(84.dp))
+                        T(w.venue.label, Q.Muted, 11, modifier = Modifier.width(58.dp))
+                        Box(Modifier.weight(1f).fillMaxHeight().padding(vertical = 3.dp, horizontal = 2.dp), contentAlignment = Alignment.CenterStart) {
+                            Box(Modifier.fillMaxHeight().fillMaxWidth((w.currentQty / maxQ).toFloat().coerceIn(0.02f, 1f)).background(color.copy(alpha = 0.22f)))
+                            T(num(w.currentQty), Q.Text, 11, bold = true, monoFont = true, modifier = Modifier.padding(start = 4.dp))
+                        }
+                        T(signed(w.changeBtc), if (w.changeBtc >= 0) Q.Buy else Q.Sell, 11, monoFont = true, modifier = Modifier.width(64.dp))
+                        T(pct(if (mid > 0) w.distancePct(mid) else null), Q.Muted, 11, monoFont = true, modifier = Modifier.width(62.dp))
+                        T(ago(w.permanenceMs), Q.Muted, 11, modifier = Modifier.width(50.dp))
+                        Box(Modifier.width(92.dp)) { Badge(w.status.name, statusColor(w.status)) }
+                        Box(Modifier.width(68.dp)) { Badge(w.cls.name, classColor(w.cls)) }
+                    }
                 }
             }
         }
     }
+}
+
+fun statusColor(s: WallStatus): Color = when (s) {
+    WallStatus.NEW -> Q.Accent
+    WallStatus.INCREASED -> Q.Buy
+    WallStatus.REDUCED -> Q.Sell
+    WallStatus.EXECUTION_CORROBORATED -> Q.Accent
+    WallStatus.POSSIBLY_EXECUTED -> Q.Warn
+    else -> Q.Muted
+}
+
+fun classColor(c: WallClass): Color = when (c) {
+    WallClass.EXTREME -> Q.Accent
+    WallClass.LARGE -> Q.Warn
+    WallClass.MEDIUM -> Q.Text
+    WallClass.SMALL -> Q.Muted
 }
 
 // =====================================================================
@@ -183,10 +213,36 @@ fun FlowTab(ctx: AppContext, s: TerminalState) {
                     KV("OI somado (3 corretoras)", ctx.hub.totalOiBtc()?.let { btc(it, 0) } ?: "aguardando as 3 fontes")
                     KV("Variação do OI (${w.first})", pct(ctx.hub.oiChangePct(w.second), 3))
                     KV("Variação do preço (${w.first})", pct(ctx.hub.priceChangePct(w.second), 3))
-                    T("OI Binance via REST a cada 15 s (não há WebSocket de OI); Bybit e OKX por WebSocket.", Q.Muted, 10)
+                    Footnote("OI Binance via REST a cada 15 s (não há WebSocket de OI); Bybit e OKX por WebSocket.")
+                }
+            }
+            Section("Delta por janela · consolidado") {
+                Column {
+                    FLOW_WINDOWS.forEachIndexed { i, (lbl, _) ->
+                        val f = s.flowAll.getOrNull(i)
+                        Row(Modifier.fillMaxWidth().height(22.dp), verticalAlignment = Alignment.CenterVertically) {
+                            T(lbl, if (i == winIdx) Q.Accent else Q.Muted, 11, modifier = Modifier.width(36.dp))
+                            ImbalanceBar(f?.imbalance ?: 0.0, Modifier.weight(1f))
+                            T(f?.let { String.format(BR, "%+.2f BTC", it.deltaBtc) } ?: "—", if ((f?.deltaBtc ?: 0.0) >= 0) Q.Buy else Q.Sell, 11,
+                                monoFont = true, modifier = Modifier.width(104.dp).padding(start = 8.dp))
+                            T(f?.let { String.format(BR, "%+.0f%%", it.imbalance * 100) } ?: "", Q.Muted, 11, monoFont = true, modifier = Modifier.width(48.dp))
+                        }
+                    }
+                    Footnote("Barra = desequilíbrio entre compra e venda agressora (verde para a direita = compradores).", Modifier.padding(top = 4.dp))
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ImbalanceBar(imb: Double, modifier: Modifier) {
+    Canvas(modifier.height(12.dp)) {
+        val mid = size.width / 2
+        drawRect(Q.Panel2, Offset(0f, 2f), Size(size.width, size.height - 4f))
+        val w = (imb.coerceIn(-1.0, 1.0) * mid).toFloat()
+        if (w >= 0) drawRect(Q.Buy, Offset(mid, 2f), Size(w, size.height - 4f)) else drawRect(Q.Sell, Offset(mid + w, 2f), Size(-w, size.height - 4f))
+        drawLine(Q.Muted, Offset(mid, 0f), Offset(mid, size.height), 1f)
     }
 }
 
@@ -229,28 +285,38 @@ fun LargeTradesTab(ctx: AppContext, s: TerminalState) {
     val period = LT_PERIODS[pIdx].second
     val buys = remember(s.tick, pIdx, venueIdx, ver) { ctx.hub.large.top(period, Aggressor.BUY, venue, 40) }
     val sells = remember(s.tick, pIdx, venueIdx, ver) { ctx.hub.large.top(period, Aggressor.SELL, venue, 40) }
-    val recent = remember(s.tick, ver) { ctx.hub.large.recent(80) }
+    val recent = remember(s.tick, ver) { ctx.hub.large.recent(150) }
     val clusters = remember(s.tick, pIdx) { ctx.hub.large.clusters(period) }
+    val minBtc = ctx.hub.large.minBtc
+    val pl = LT_PERIODS[pIdx].first
     Column(Modifier.fillMaxSize()) {
         Row(Modifier.background(Q.Panel).padding(8.dp).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
             Chips("Período", LT_PERIODS.map { it.first }, pIdx) { pIdx = it }
             Chips("Corretora", listOf("TODAS") + Venue.entries.map { it.label.uppercase() }, venueIdx) { venueIdx = it }
-            NumField("Mínimo (BTC)", ctx.hub.large.minBtc, 60.dp) { it?.let { v -> ctx.hub.large.minBtc = v; SettingsStore.put("lt.min", v); ver++ } }
-            T("Novos limites valem para execuções a partir de agora.", Q.Muted, 11)
+            NumField("Mínimo (BTC)", minBtc, 60.dp) { it?.let { v -> ctx.hub.large.minBtc = v; SettingsStore.put("lt.min", v); ver++ } }
+            Spacer(Modifier.weight(1f))
+            T("Compras $pl: ${buys.size} · ${btc(buys.sumOf { it.qtyBtc })}", Q.Buy, 12, bold = true)
+            T("Vendas $pl: ${sells.size} · ${btc(sells.sumOf { it.qtyBtc })}", Q.Sell, 12, bold = true)
         }
         Spacer(Modifier.height(8.dp))
         Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            TradeTable("Maiores compras agressoras", buys, Modifier.weight(1f))
-            TradeTable("Maiores vendas agressoras", sells, Modifier.weight(1f))
-            TradeTable("Mais recentes", recent, Modifier.weight(1f))
-        }
-        Spacer(Modifier.height(8.dp))
-        Section("Sequências (3+ grandes execuções do mesmo lado em até 10 s)", Modifier.fillMaxWidth().height(150.dp)) {
-            LazyColumn {
-                items(clusters) { c ->
-                    val buy = c.first().aggressor == Aggressor.BUY
-                    T("${hhmmss(c.first().recvMs)}–${hhmmss(c.last().recvMs)}  ${if (buy) "COMPRA" else "VENDA"}  ${c.size} execuções  ${btc(c.sumOf { it.qtyBtc })}  " +
-                        "${px(c.minOf { it.price })}–${px(c.maxOf { it.price })}  " + c.map { it.venue.label }.distinct().joinToString(), if (buy) Q.Buy else Q.Sell, 11, monoFont = true)
+            Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                TradeTable("Maiores compras agressoras · $pl", buys, Modifier.weight(1f), "Nenhuma compra ≥ ${num(minBtc, 1)} BTC em $pl")
+                TradeTable("Maiores vendas agressoras · $pl", sells, Modifier.weight(1f), "Nenhuma venda ≥ ${num(minBtc, 1)} BTC em $pl")
+            }
+            Column(Modifier.weight(1.2f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                TradeTable("Fita de grandes execuções (mais recentes primeiro)", recent, Modifier.weight(1f), "Aguardando execuções ≥ ${num(minBtc, 1)} BTC")
+                Section("Sequências · 3+ grandes execuções do mesmo lado em até 10 s", Modifier.fillMaxWidth().height(170.dp)) {
+                    Column {
+                        if (clusters.isEmpty()) Empty("Nenhuma sequência em $pl", "Indica agressão concentrada: várias ordens grandes seguidas do mesmo lado")
+                        LazyColumn {
+                            items(clusters) { c ->
+                                val buy = c.first().aggressor == Aggressor.BUY
+                                T("${hhmmss(c.first().recvMs)}–${hhmmss(c.last().recvMs)}  ${if (buy) "COMPRA" else "VENDA"}  ${c.size} execuções  ${btc(c.sumOf { it.qtyBtc })}  " +
+                                    "${px(c.minOf { it.price })}–${px(c.maxOf { it.price })}  " + c.map { it.venue.label }.distinct().joinToString(), if (buy) Q.Buy else Q.Sell, 11, monoFont = true)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -258,15 +324,25 @@ fun LargeTradesTab(ctx: AppContext, s: TerminalState) {
 }
 
 @Composable
-private fun TradeTable(title: String, list: List<TradeEvent>, modifier: Modifier) {
-    Section(title, modifier.fillMaxHeight()) {
+private fun TradeTable(title: String, list: List<TradeEvent>, modifier: Modifier, empty: String) {
+    val maxQ = (list.maxOfOrNull { it.qtyBtc } ?: 0.0).coerceAtLeast(1e-9)
+    Section(title, modifier.fillMaxWidth()) {
         Column {
-            Th("HORA" to 66, "CORR." to 62, "LADO" to 56, "PREÇO" to 86, "BTC" to 0)
+            Th("HORA" to 70, "CORRETORA" to 78, "LADO" to 62, "PREÇO" to 90, "BTC" to 0)
+            if (list.isEmpty()) Empty(empty, "Os eventos aparecem aqui assim que acontecem")
             LazyColumn {
                 items(list) { t ->
                     val c = if (t.aggressor == Aggressor.BUY) Q.Buy else Q.Sell
-                    Td(Triple(hhmmss(t.recvMs), 66, Q.Muted), Triple(t.venue.label, 62, Q.Text), Triple(if (t.aggressor == Aggressor.BUY) "COMPRA" else "VENDA", 56, c),
-                        Triple(px(t.price), 86, Q.Text), Triple(num(t.qtyBtc, 3), 0, c))
+                    Row(Modifier.fillMaxWidth().height(20.dp), verticalAlignment = Alignment.CenterVertically) {
+                        T(hhmmss(t.recvMs), Q.Muted, 11, monoFont = true, modifier = Modifier.width(70.dp))
+                        T(t.venue.label, Q.Text, 11, modifier = Modifier.width(78.dp))
+                        T(if (t.aggressor == Aggressor.BUY) "COMPRA" else "VENDA", c, 11, modifier = Modifier.width(62.dp))
+                        T(px(t.price), Q.Text, 11, monoFont = true, modifier = Modifier.width(90.dp))
+                        Box(Modifier.weight(1f).fillMaxHeight().padding(vertical = 3.dp), contentAlignment = Alignment.CenterStart) {
+                            Box(Modifier.fillMaxHeight().fillMaxWidth((t.qtyBtc / maxQ).toFloat().coerceIn(0.03f, 1f)).background(c.copy(alpha = 0.22f)))
+                            T(num(t.qtyBtc, 3), c, 11, bold = true, monoFont = true, modifier = Modifier.padding(start = 4.dp))
+                        }
+                    }
                 }
             }
         }

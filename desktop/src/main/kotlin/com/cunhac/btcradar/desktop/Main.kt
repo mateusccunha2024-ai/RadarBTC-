@@ -2,6 +2,11 @@ package com.cunhac.btcradar.desktop
 
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
@@ -52,6 +57,14 @@ fun main() {
             onCloseRequest = { hub.stop(); exitApplication() },
             title = "BTC Orderflow Terminal V8 — Radar BTC",
             state = rememberWindowState(width = 1500.dp, height = 920.dp, placement = WindowPlacement.Maximized),
+            onPreviewKeyEvent = { e ->
+                if (e.type == KeyEventType.KeyDown && e.isCtrlPressed) when (e.key) {
+                    Key.Equals, Key.Plus, Key.NumPadAdd -> { UiScale.inc(); true }
+                    Key.Minus, Key.NumPadSubtract -> { UiScale.dec(); true }
+                    Key.Zero, Key.NumPad0 -> { UiScale.reset(); true }
+                    else -> false
+                } else false
+            },
         ) {
             RadarTheme {
                 val scope = rememberCoroutineScope()

@@ -3,6 +3,7 @@ package com.cunhac.btcradar.desktop
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -64,9 +65,9 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
         }
         Spacer(Modifier.height(8.dp))
         Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            LiqTable("TOP LONG LIQUIDATIONS", topL, r.thresholds::classify, Modifier.weight(1f))
-            LiqTable("TOP SHORT LIQUIDATIONS", topS, r.thresholds::classify, Modifier.weight(1f))
-            LiqTable("TOP LIQUIDATIONS OVERALL", topAll, r.thresholds::classify, Modifier.weight(1f))
+            LiqTable("TOP LONG LIQUIDATIONS", topL, r.thresholds::classify, Modifier.weight(1f), "Nenhuma liquidação LONG de BTC em ${LIQ_PERIODS[pIdx].first} · ${r.received} eventos desde a abertura")
+            LiqTable("TOP SHORT LIQUIDATIONS", topS, r.thresholds::classify, Modifier.weight(1f), "Nenhuma liquidação SHORT de BTC em ${LIQ_PERIODS[pIdx].first} · ${r.received} eventos desde a abertura")
+            LiqTable("TOP LIQUIDATIONS OVERALL", topAll, r.thresholds::classify, Modifier.weight(1f), "Nenhuma liquidação de BTC em ${LIQ_PERIODS[pIdx].first} · mercado calmo ou feeds sem eventos")
         }
         Spacer(Modifier.height(8.dp))
         Row(Modifier.height(300.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -77,7 +78,9 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
                         T("■ LONG", Q.LiqLong, 11); T("■ SHORT", Q.LiqShort, 11)
                         grid?.let { T("${px(it.pMin)} → ${px(it.pMin + it.pStep * it.rows)} · máx/célula ${num(it.max, 3)} BTC", Q.Muted, 10) }
                     }
-                    Canvas(Modifier.fillMaxSize().padding(top = 6.dp).background(Q.Bg)) {
+                    Box(Modifier.fillMaxSize().padding(top = 6.dp).background(Q.Bg)) {
+                    if ((grid?.max ?: 0.0) <= 0.0) Empty("Sem liquidações de BTC para desenhar em ${LIQ_PERIODS[pIdx].first}", "Laranja = LONG liquidado · Azul = SHORT liquidado · linha laranja = preço atual")
+                    Canvas(Modifier.fillMaxSize()) {
                         val g = grid ?: return@Canvas
                         if (g.max <= 0) return@Canvas
                         val cw = size.width / g.cols; val rh = size.height / g.rows
@@ -92,22 +95,25 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
                             drawLine(Q.Accent, Offset(0f, y), Offset(size.width, y), 1f)
                         }
                     }
+                    }
                 }
             }
             Section("Alertas", Modifier.weight(1f).fillMaxHeight()) {
+                if (s.alerts.isEmpty()) Empty("Sem alertas por enquanto", "Liquidações ≥ LARGE e execuções muito grandes aparecem aqui")
                 LazyColumn { items(s.alerts) { T(it, if (it.contains("EXTREME")) Q.Accent else Q.Text, 11, monoFont = true) } }
             }
         }
         T("Cobertura: os feeds públicos não garantem todos os eventos. Binance envia no máximo 1 liquidação/s por símbolo; OKX pode entregar eventos com atraso. " +
-            "Rankings ordenados por BTC equivalente; a OKX é convertida de contratos via metadados (${s.okxCtVal}).", Q.Muted, 10, modifier = Modifier.padding(top = 4.dp))
+            "Rankings ordenados por BTC equivalente; a OKX é convertida de contratos via metadados (${s.okxCtVal}).", Q.Muted, 11, wrap = true, modifier = Modifier.padding(top = 4.dp))
     }
 }
 
 @Composable
-private fun LiqTable(title: String, list: List<LiqEvent>, cls: (Double) -> LiqClass, modifier: Modifier) {
+private fun LiqTable(title: String, list: List<LiqEvent>, cls: (Double) -> LiqClass, modifier: Modifier, empty: String) {
     Section(title, modifier.fillMaxHeight()) {
         Column {
             Th("HORA" to 64, "CORR." to 58, "POSIÇÃO" to 58, "PREÇO" to 84, "BTC" to 70, "ORIGINAL" to 0)
+            if (list.isEmpty()) Empty(empty, "Aparecem aqui assim que Binance, Bybit ou OKX reportarem")
             LazyColumn {
                 items(list) { e ->
                     val c = if (e.side == LiqSide.LONG) Q.LiqLong else Q.LiqShort
