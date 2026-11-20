@@ -1,0 +1,69 @@
+name: Gerar app Windows
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Empacotar (.msi e portátil)
+        shell: bash
+        run: |
+          set -o pipefail
+          gradle :desktop:packageMsi :desktop:createDistributable --no-daemon 2>&1 | tee build.log
+
+      - name: Preparar arquivos
+        shell: pwsh
+        run: |
+          $n = "${{ github.run_number }}"
+          $msi = Get-ChildItem desktop/build/compose/binaries/main/msi/*.msi | Select-Object -First 1
+          Copy-Item $msi.FullName "RadarBTC-Windows-instalador-$n.msi"
+          Compress-Archive -Path desktop/build/compose/binaries/main/app/RadarBTC -DestinationPath "RadarBTC-Windows-portatil-$n.zip"
+
+      - name: Publicar em Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: windows-${{ github.run_number }}
+          name: Radar BTC Windows (build ${{ github.run_number }})
+          body: |
+            Instalador (.msi) e versão portátil (.zip, é só extrair e abrir RadarBTC.exe).
+            Commit ${{ github.sha }}.
+          files: |
+            RadarBTC-Windows-instalador-${{ github.run_number }}.msi
+            RadarBTC-Windows-portatil-${{ github.run_number }}.zip
+          make_latest: false
+
+      - name: Reportar erro
+        if: failure()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "Build Windows ${{ github.run_number }} falhou no commit ${{ github.sha }}."
+            echo
+            echo '```'
+            grep -E "^e: |error:|FAILURE|What went wrong" -A3 build.log | head -n 120 || true
+            echo '---- fim do log ----'
+            tail -n 60 build.log || true
+            echo '```'
+          } > report.md
+          gh issue create --title "Falha no build Windows ${{ github.run_number }}" --body-file report.md
