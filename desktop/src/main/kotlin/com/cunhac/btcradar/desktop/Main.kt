@@ -68,8 +68,9 @@ fun main() {
         ) {
             RadarTheme {
                 val scope = rememberCoroutineScope()
-                val map = remember { MapModel(scope) }
-                Terminal(AppContext(hub, db, map))
+                // O contexto (e o carregador do heatmap) é criado uma vez só, não a cada redesenho.
+                val ctx = remember { AppContext(hub, db, MapModel(scope)) }
+                Terminal(ctx)
             }
         }
     }

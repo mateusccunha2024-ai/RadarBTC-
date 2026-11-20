@@ -21,12 +21,12 @@ class ScreenshotTest {
         val db = SqliteHistory()
         hub.history = db
         hub.start()
-        val map = MapModel(CoroutineScope(Dispatchers.Default))
-        Thread.sleep(45_000)
+        val ctx = AppContext(hub, db, MapModel(CoroutineScope(Dispatchers.Default)))
+        Thread.sleep(60_000)
         val out = File("build/screens").apply { mkdirs() }
         TABS.indices.forEach { i ->
             val scene = ImageComposeScene(1600, 900, Density(1f)) {
-                RadarTheme { Terminal(AppContext(hub, db, map), initialTab = i) }
+                RadarTheme { Terminal(ctx, initialTab = i) }
             }
             var t = 0L
             repeat(6) { scene.render(t); t += 400_000_000L; Thread.sleep(250) }

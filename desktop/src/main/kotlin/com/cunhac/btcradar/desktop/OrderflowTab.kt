@@ -34,6 +34,7 @@ import com.cunhac.btcradar.engine.ConsRow
 import com.cunhac.btcradar.engine.Consolidate
 import com.cunhac.btcradar.engine.TerminalState
 import com.cunhac.btcradar.engine.Venue
+import kotlin.math.floor
 
 private val GRANS = listOf(0.0, 1.0, 5.0, 10.0, 50.0, 100.0)
 private val LEVS = listOf(25, 50, 100, 200, 500)
@@ -47,6 +48,7 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
     var levIdx by remember { mutableIntStateOf(SettingsStore.i("of.lev", 1)) }
     var minIdx by remember { mutableIntStateOf(SettingsStore.i("of.min", 0)) }
     var intIdx by remember { mutableIntStateOf(SettingsStore.i("of.int", 1)) }
+    var exIdx by remember { mutableIntStateOf(SettingsStore.i("of.ex", 0)) }
     var rpi by remember { mutableStateOf(SettingsStore.b("of.rpi", false)) }
     var manual by remember { mutableStateOf(SettingsStore.b("of.manual", false)) }
     var rMin by remember { mutableStateOf(SettingsStore.d("of.rmin", 0.0).takeIf { it > 0 }) }
@@ -61,6 +63,12 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
             fun ok(r: ConsRow) = (rMin == null || r.price >= rMin!!) && (rMax == null || r.price <= rMax!!)
             raw.copy(asks = raw.asks.filter(::ok).take(levels), bids = raw.bids.filter(::ok).take(levels))
         }
+    }
+
+    val g = GRANS[granIdx]
+    val exWin = listOf(300_000L, 900_000L, 3_600_000L)[exIdx]
+    val exec = remember(s.tick, exIdx, granIdx, venueIdx) {
+        ctx.hub.flow.volumeByPrice(exWin, venues, { p -> if (g <= 0) Math.round(p * 100) / 100.0 else floor(p / g) * g })
     }
 
     Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -78,6 +86,7 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
             }
             Spacer(Modifier.height(6.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                Chips("Executado", listOf("5m", "15m", "1h"), exIdx) { exIdx = it; SettingsStore.put("of.ex", it) }
                 Chips("Centro", listOf("AUTO (mid ${px(s.price)})", "MANUAL"), if (manual) 1 else 0) { manual = it == 1; SettingsStore.put("of.manual", manual) }
                 if (manual) {
                     NumField("Faixa mín", rMin) { rMin = it; SettingsStore.put("of.rmin", it ?: 0.0) }
@@ -86,7 +95,7 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
                 if (book.missing.isNotEmpty()) T("Fora da consolidação: " + book.missing.joinToString { it.label } + " (livro inválido, ver STATUS)", Q.Sell, 11)
             }
             Spacer(Modifier.height(8.dp))
-            Ladder(book.asks, book.bids, rpi, INTS[intIdx], s.tick)
+            Ladder(book.asks, book.bids, rpi, INTS[intIdx], s.tick, exec, g, listOf("5m", "15m", "1h")[exIdx])
         }
         Column(Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section("Resumo do livro exibido") {
@@ -125,23 +134,30 @@ private fun BookCard(b: BookView, s: TerminalState, title: String = "${b.venue.l
 }
 
 @Composable
-private fun Ladder(asks: List<ConsRow>, bids: List<ConsRow>, showRpi: Boolean, intensity: Float, tick: Long) {
+private fun Ladder(asks: List<ConsRow>, bids: List<ConsRow>, showRpi: Boolean, intensity: Float, tick: Long,
+                   exec: Map<Double, DoubleArray>, g: Double, exLabel: String) {
     val max = ((asks + bids).maxOfOrNull { it.total } ?: 0.0).coerceAtLeast(1e-9)
-    Row(Modifier.fillMaxWidth().padding(bottom = 4.dp)) {
-        T("PREÇO", Q.Muted, 10, modifier = Modifier.width(92.dp))
+    fun ex(r: ConsRow): DoubleArray? = exec[if (g > 0 && r.side == BookSide.ASK) r.price - g else r.price]
+    Row(Modifier.fillMaxWidth().padding(bottom = 2.dp)) {
+        T("PREÇO", Q.Muted, 10, modifier = Modifier.width(88.dp))
         T("QUANTIDADE (BTC)", Q.Muted, 10, modifier = Modifier.weight(1f))
-        listOf("BIN", "BYB", "OKX").forEach { T(it, Q.Muted, 10, modifier = Modifier.width(62.dp)) }
-        if (showRpi) T("RPI", Q.Muted, 10, modifier = Modifier.width(56.dp))
-        T("TOTAL", Q.Muted, 10, modifier = Modifier.width(76.dp))
-        T("ACUMULADO", Q.Muted, 10, modifier = Modifier.width(84.dp))
+        listOf("BIN", "BYB", "OKX").forEach { T(it, Q.Muted, 10, modifier = Modifier.width(60.dp)) }
+        if (showRpi) T("RPI", Q.Muted, 10, modifier = Modifier.width(52.dp))
+        T("ORDENS", Q.Muted, 10, modifier = Modifier.width(52.dp))
+        T("TOTAL", Q.Muted, 10, modifier = Modifier.width(70.dp).padding(start = 4.dp))
+        T("ACUMULADO", Q.Muted, 10, modifier = Modifier.width(78.dp))
+        T("EX.COMPRA", Q.Muted, 10, modifier = Modifier.width(74.dp))
+        T("EX.VENDA", Q.Muted, 10, modifier = Modifier.width(70.dp))
     }
+    T("ACUMULADO = BTC somado do preço atual até a linha · ORDENS = nº de ordens no nível (só a OKX publica) · EX. = BTC executado no nível nos últimos $exLabel",
+        Q.Muted, 10, modifier = Modifier.padding(bottom = 4.dp))
     val list = rememberLazyListState()
     var centered by remember { mutableStateOf(false) }
     LaunchedEffect(asks.size, bids.size) {
         if (!centered && asks.isNotEmpty()) { list.scrollToItem((asks.size - 12).coerceAtLeast(0)); centered = true }
     }
     LazyColumn(state = list, modifier = Modifier.fillMaxSize()) {
-        items(asks.reversed()) { LadderRow(it, max, showRpi, intensity) }
+        items(asks.reversed()) { LadderRow(it, max, showRpi, intensity, ex(it)) }
         item {
             val bb = bids.firstOrNull()?.price; val ba = asks.firstOrNull()?.price
             Row(Modifier.fillMaxWidth().background(Q.Panel2).padding(vertical = 3.dp), horizontalArrangement = Arrangement.Center) {
@@ -152,23 +168,27 @@ private fun Ladder(asks: List<ConsRow>, bids: List<ConsRow>, showRpi: Boolean, i
                 }, Q.Accent, 11)
             }
         }
-        items(bids) { LadderRow(it, max, showRpi, intensity) }
+        items(bids) { LadderRow(it, max, showRpi, intensity, ex(it)) }
     }
 }
 
 @Composable
-private fun LadderRow(r: ConsRow, max: Double, showRpi: Boolean, intensity: Float) {
+private fun LadderRow(r: ConsRow, max: Double, showRpi: Boolean, intensity: Float, ex: DoubleArray?) {
     val buy = r.side == BookSide.BID
     val base = if (buy) Q.Buy else Q.Sell
     val frac = ((r.total / max).toFloat() * intensity).coerceIn(0f, 1f)
     Row(Modifier.fillMaxWidth().height(20.dp), verticalAlignment = Alignment.CenterVertically) {
-        T(px(r.price), base, 11, monoFont = true, modifier = Modifier.width(92.dp))
+        T(px(r.price), base, 11, monoFont = true, modifier = Modifier.width(88.dp))
         Box(Modifier.weight(1f).fillMaxHeight().padding(vertical = 2.dp)) {
             if (frac > 0.003f) Box(Modifier.fillMaxHeight().fillMaxWidth(frac).background(base.copy(alpha = 0.25f + 0.6f * frac)))
         }
-        for (i in 0..2) T(if (r.byVenue[i] > 0) qty(r.byVenue[i]) else "·", if (r.byVenue[i] > 0) Q.Text else Q.Line, 11, monoFont = true, modifier = Modifier.width(62.dp))
-        if (showRpi) T(if (r.byVenue[3] > 0) qty(r.byVenue[3]) else "·", Q.Muted, 11, monoFont = true, modifier = Modifier.width(56.dp))
-        T(qty(r.total), Q.Text, 11, bold = frac > 0.5f, monoFont = true, modifier = Modifier.width(76.dp))
-        T(num(r.cumulative, 2), Q.Muted, 11, monoFont = true, modifier = Modifier.width(84.dp))
+        for (i in 0..2) T(if (r.byVenue[i] > 0) qty(r.byVenue[i]) else "·", if (r.byVenue[i] > 0) Q.Text else Q.Line, 11, monoFont = true, modifier = Modifier.width(60.dp))
+        if (showRpi) T(if (r.byVenue[3] > 0) qty(r.byVenue[3]) else "·", Q.Muted, 11, monoFont = true, modifier = Modifier.width(52.dp))
+        T(if (r.okxOrders > 0) r.okxOrders.toString() else "·", if (r.okxOrders > 0) Q.Muted else Q.Line, 11, monoFont = true, modifier = Modifier.width(52.dp))
+        T(qty(r.total), Q.Text, 11, bold = frac > 0.5f, monoFont = true, modifier = Modifier.width(70.dp).padding(start = 4.dp))
+        T(num(r.cumulative, 2), Q.Muted, 11, monoFont = true, modifier = Modifier.width(78.dp))
+        val eb = ex?.get(0) ?: 0.0; val es = ex?.get(1) ?: 0.0
+        T(if (eb > 0) qty(eb) else "·", if (eb > 0) Q.Buy else Q.Line, 11, monoFont = true, modifier = Modifier.width(74.dp))
+        T(if (es > 0) qty(es) else "·", if (es > 0) Q.Sell else Q.Line, 11, monoFont = true, modifier = Modifier.width(70.dp))
     }
 }

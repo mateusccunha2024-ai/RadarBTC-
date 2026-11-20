@@ -45,10 +45,14 @@ data class Wall(
     val statusMs: Long,
     val cls: WallClass,
     val tradedNearBtc: Double = 0.0,
+    /** BTC negociado exatamente neste preço desde que a parede apareceu. */
+    val executedBtc: Double = 0.0,
 ) {
     val changeBtc get() = currentQty - initialQty
     val changePct get() = if (initialQty > 0) changeBtc / initialQty * 100 else 0.0
     val permanenceMs get() = lastSeenMs - firstSeenMs
+    /** Parte da liquidez vista no nível que já foi executada. */
+    val consumedPct get() = if (executedBtc + currentQty > 0) executedBtc / (executedBtc + currentQty) * 100 else 0.0
     fun distancePct(mid: Double) = (price / mid - 1) * 100
 }
 
@@ -61,10 +65,16 @@ class WallTracker(val thresholds: WallThresholds) {
     @Volatile var onEvent: ((Wall) -> Unit)? = null
 
     private fun key(v: Venue, s: BookSide, p: Double) = "${v.name}|${s.name}|$p"
+    private fun execKey(v: Venue, p: Double) = "${v.name}|${Math.round(p * 10)}"
+    private var lastScanMs = 0L
 
     fun scan(views: List<BookView>, mid: Double?, flow: FlowEngine, now: Long = System.currentTimeMillis()) {
         if (mid == null || mid <= 0) return
         val events = mutableListOf<Wall>()
+        // Volume executado por (corretora, preço) desde a varredura anterior
+        val exec = HashMap<String, Double>()
+        if (lastScanMs > 0) flow.tradesSince(lastScanMs).forEach { t -> exec.merge(execKey(t.venue, t.price), t.qtyBtc, Double::plus) }
+        lastScanMs = now
         synchronized(lock) {
             for (v in views) {
                 if (!v.valid) continue // livro inválido: não conclui nada sobre desaparecimentos
@@ -89,7 +99,8 @@ class WallTracker(val thresholds: WallThresholds) {
                             else -> w.status
                         }
                         val nw = w.copy(currentQty = lv.qtyBtc, peakQty = max(w.peakQty, lv.qtyBtc), lastSeenMs = now,
-                            status = st, statusMs = if (st != w.status) now else w.statusMs, cls = cls)
+                            status = st, statusMs = if (st != w.status) now else w.statusMs, cls = cls,
+                            executedBtc = w.executedBtc + (exec[execKey(w.venue, w.price)] ?: 0.0))
                         active[k] = nw
                         if (st != w.status && (st == WallStatus.INCREASED || st == WallStatus.REDUCED)) events += nw
                     }

@@ -41,70 +41,38 @@ private val ZOOMS = listOf("±1%" to 0.01, "±2%" to 0.02, "±5%" to 0.05, "±10
 fun LiqTab(ctx: AppContext, s: TerminalState) {
     val r = ctx.hub.liqs
     var pIdx by remember { mutableIntStateOf(SettingsStore.i("lq.period", 3)) }
-    var zIdx by remember { mutableIntStateOf(SettingsStore.i("lq.zoom", 1)) }
     var ver by remember { mutableIntStateOf(0) }
     val period = LIQ_PERIODS[pIdx].second
+    val pl = LIQ_PERIODS[pIdx].first
     val tot = remember(s.tick, pIdx) { r.totals(period) }
     val topL = remember(s.tick, pIdx, ver) { r.top(period, LiqSide.LONG, 30) }
     val topS = remember(s.tick, pIdx, ver) { r.top(period, LiqSide.SHORT, 30) }
     val topAll = remember(s.tick, pIdx, ver) { r.top(period, null, 30) }
-    val price = s.price
-    val grid = remember(s.tick, pIdx, zIdx) {
-        if (price == null) null else r.heatmap(period, 60, 60, price * (1 - ZOOMS[zIdx].second), price * (1 + ZOOMS[zIdx].second))
-    }
-    Column(Modifier.fillMaxSize()) {
+    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        LiqHeatmapPanel(ctx, s, Modifier.fillMaxWidth().weight(1.6f))
         Row(Modifier.background(Q.Panel).padding(8.dp).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
+            T("LIQUIDAÇÕES REAIS", Q.Text, 12, bold = true)
             Chips("Período", LIQ_PERIODS.map { it.first }, pIdx) { pIdx = it; SettingsStore.put("lq.period", it) }
             NumField("LARGE ≥", r.thresholds.large, 56.dp) { it?.let { v -> r.thresholds.large = v; SettingsStore.put("lq.large", v); ver++ } }
             NumField("EXTREME ≥", r.thresholds.extreme, 56.dp) { it?.let { v -> r.thresholds.extreme = v; SettingsStore.put("lq.extreme", v); ver++ } }
-            T("BTC", Q.Muted, 11)
-            Spacer(Modifier.width(10.dp))
+            Spacer(Modifier.weight(1f))
             T("LONG ${btc(tot.longBtc, 3)} (${tot.longCount})", Q.LiqLong, 12, bold = true)
             T("SHORT ${btc(tot.shortBtc, 3)} (${tot.shortCount})", Q.LiqShort, 12, bold = true)
-            T(tot.byVenue.entries.joinToString("  ") { "${it.key.label} ${num(it.value, 3)}" }, Q.Muted, 11)
+            Venue.entries.forEach { v -> T("${v.label} ${num(tot.byVenue[v] ?: 0.0, 3)}", Q.Muted, 11) }
         }
-        Spacer(Modifier.height(8.dp))
         Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            LiqTable("TOP LONG LIQUIDATIONS", topL, r.thresholds::classify, Modifier.weight(1f), "Nenhuma liquidação LONG de BTC em ${LIQ_PERIODS[pIdx].first} · ${r.received} eventos desde a abertura")
-            LiqTable("TOP SHORT LIQUIDATIONS", topS, r.thresholds::classify, Modifier.weight(1f), "Nenhuma liquidação SHORT de BTC em ${LIQ_PERIODS[pIdx].first} · ${r.received} eventos desde a abertura")
-            LiqTable("TOP LIQUIDATIONS OVERALL", topAll, r.thresholds::classify, Modifier.weight(1f), "Nenhuma liquidação de BTC em ${LIQ_PERIODS[pIdx].first} · mercado calmo ou feeds sem eventos")
-        }
-        Spacer(Modifier.height(8.dp))
-        Row(Modifier.height(300.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Section("Liquidation heatmap · somente eventos REPORTADOS (estimativas ficam em MAGNET ZONES)", Modifier.weight(2f).fillMaxHeight()) {
+            LiqTable("Top LONG liquidadas · $pl", topL, r.thresholds::classify, Modifier.weight(1f), "Nenhuma liquidação LONG de BTC em $pl · ${r.received} eventos desde a abertura")
+            LiqTable("Top SHORT liquidadas · $pl", topS, r.thresholds::classify, Modifier.weight(1f), "Nenhuma liquidação SHORT de BTC em $pl · ${r.received} eventos desde a abertura")
+            LiqTable("Top geral · $pl", topAll, r.thresholds::classify, Modifier.weight(1f), "Nenhuma liquidação de BTC em $pl")
+            Section("Alertas", Modifier.weight(0.8f).fillMaxHeight()) {
                 Column {
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Chips("Zoom de preço", ZOOMS.map { it.first }, zIdx) { zIdx = it; SettingsStore.put("lq.zoom", it) }
-                        T("■ LONG", Q.LiqLong, 11); T("■ SHORT", Q.LiqShort, 11)
-                        grid?.let { T("${px(it.pMin)} → ${px(it.pMin + it.pStep * it.rows)} · máx/célula ${num(it.max, 3)} BTC", Q.Muted, 10) }
-                    }
-                    Box(Modifier.fillMaxSize().padding(top = 6.dp).background(Q.Bg)) {
-                    if ((grid?.max ?: 0.0) <= 0.0) Empty("Sem liquidações de BTC para desenhar em ${LIQ_PERIODS[pIdx].first}", "Laranja = LONG liquidado · Azul = SHORT liquidado · linha laranja = preço atual")
-                    Canvas(Modifier.fillMaxSize()) {
-                        val g = grid ?: return@Canvas
-                        if (g.max <= 0) return@Canvas
-                        val cw = size.width / g.cols; val rh = size.height / g.rows
-                        for (row in 0 until g.rows) for (col in 0 until g.cols) {
-                            val y = size.height - (row + 1) * rh
-                            val l = g.longBtc[row][col]; val sh = g.shortBtc[row][col]
-                            if (l > 0) drawRect(Q.LiqLong.copy(alpha = (0.25 + 0.75 * l / g.max).toFloat().coerceAtMost(1f)), Offset(col * cw, y), Size(cw, rh))
-                            if (sh > 0) drawRect(Q.LiqShort.copy(alpha = (0.25 + 0.75 * sh / g.max).toFloat().coerceAtMost(1f)), Offset(col * cw, y), Size(cw, rh))
-                        }
-                        price?.let { p ->
-                            val y = size.height - ((p - g.pMin) / (g.pStep * g.rows) * size.height).toFloat()
-                            drawLine(Q.Accent, Offset(0f, y), Offset(size.width, y), 1f)
-                        }
-                    }
-                    }
+                    if (s.alerts.isEmpty()) Empty("Sem alertas por enquanto", "Liquidações ≥ LARGE e execuções muito grandes aparecem aqui")
+                    LazyColumn { items(s.alerts) { T(it, if (it.contains("EXTREME")) Q.Accent else Q.Text, 11, monoFont = true) } }
                 }
             }
-            Section("Alertas", Modifier.weight(1f).fillMaxHeight()) {
-                if (s.alerts.isEmpty()) Empty("Sem alertas por enquanto", "Liquidações ≥ LARGE e execuções muito grandes aparecem aqui")
-                LazyColumn { items(s.alerts) { T(it, if (it.contains("EXTREME")) Q.Accent else Q.Text, 11, monoFont = true) } }
-            }
         }
-        T("Cobertura: os feeds públicos não garantem todos os eventos. Binance envia no máximo 1 liquidação/s por símbolo; OKX pode entregar eventos com atraso. " +
-            "Rankings ordenados por BTC equivalente; a OKX é convertida de contratos via metadados (${s.okxCtVal}).", Q.Muted, 11, wrap = true, modifier = Modifier.padding(top = 4.dp))
+        Footnote("Liquidações reais = Binance, Bybit e OKX (feeds públicos, não garantem todos os eventos; Binance envia no máximo 1/s). " +
+            "Heatmap = estimativa a partir do open interest histórico das três corretoras. OKX convertida via metadados (${s.okxCtVal}).")
     }
 }
 

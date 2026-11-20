@@ -97,7 +97,8 @@ fun WallsTab(ctx: AppContext, s: TerminalState) {
             }
         }
         T("Identidade = corretora + instrumento + lado + preço. O livro público é agregado por preço: não identificamos ordens individuais nem quem as colocou. " +
-            "Sumir do livro não prova execução: EXECUTION_CORROBORATED exige trades no nível ≥ 50% da quantidade.", Q.Muted, 11, wrap = true, modifier = Modifier.padding(top = 4.dp))
+            "Sumir do livro não prova execução: EXECUTION_CORROBORATED exige trades no nível ≥ 50% da quantidade. " +
+            "EXECUTADO = BTC negociado exatamente no preço da parede desde que ela apareceu; % CONS. = executado ÷ (executado + restante).", Q.Muted, 11, wrap = true, modifier = Modifier.padding(top = 4.dp))
     }
 }
 
@@ -106,22 +107,24 @@ private fun WallTable(title: String, walls: List<Wall>, mid: Double, color: Colo
     val maxQ = (walls.maxOfOrNull { it.currentQty } ?: 0.0).coerceAtLeast(1e-9)
     Section("$title · ${walls.size}", modifier.fillMaxHeight()) {
         Column {
-            Th("PREÇO" to 84, "CORR." to 58, "ATUAL (BTC)" to 0, "Δ BTC" to 64, "DIST." to 62, "TEMPO" to 50, "STATUS" to 92, "CLASSE" to 68)
+            Th("PREÇO" to 80, "CORR." to 54, "ATUAL (BTC)" to 0, "Δ BTC" to 60, "EXECUTADO" to 66, "% CONS." to 52, "DIST." to 58, "TEMPO" to 46, "STATUS" to 88, "CLASSE" to 64)
             if (walls.isEmpty()) Empty("Nenhuma parede acima do limite SMALL nesta faixa", "Ajuste os limites ou a faixa ±% acima")
             LazyColumn {
                 items(walls) { w ->
                     Row(Modifier.fillMaxWidth().height(22.dp), verticalAlignment = Alignment.CenterVertically) {
-                        T(px(w.price), color, 11, monoFont = true, modifier = Modifier.width(84.dp))
-                        T(w.venue.label, Q.Muted, 11, modifier = Modifier.width(58.dp))
+                        T(px(w.price), color, 11, monoFont = true, modifier = Modifier.width(80.dp))
+                        T(w.venue.label, Q.Muted, 11, modifier = Modifier.width(54.dp))
                         Box(Modifier.weight(1f).fillMaxHeight().padding(vertical = 3.dp, horizontal = 2.dp), contentAlignment = Alignment.CenterStart) {
                             Box(Modifier.fillMaxHeight().fillMaxWidth((w.currentQty / maxQ).toFloat().coerceIn(0.02f, 1f)).background(color.copy(alpha = 0.22f)))
                             T(num(w.currentQty), Q.Text, 11, bold = true, monoFont = true, modifier = Modifier.padding(start = 4.dp))
                         }
-                        T(signed(w.changeBtc), if (w.changeBtc >= 0) Q.Buy else Q.Sell, 11, monoFont = true, modifier = Modifier.width(64.dp))
-                        T(pct(if (mid > 0) w.distancePct(mid) else null), Q.Muted, 11, monoFont = true, modifier = Modifier.width(62.dp))
-                        T(ago(w.permanenceMs), Q.Muted, 11, modifier = Modifier.width(50.dp))
-                        Box(Modifier.width(92.dp)) { Badge(w.status.name, statusColor(w.status)) }
-                        Box(Modifier.width(68.dp)) { Badge(w.cls.name, classColor(w.cls)) }
+                        T(signed(w.changeBtc), if (w.changeBtc >= 0) Q.Buy else Q.Sell, 11, monoFont = true, modifier = Modifier.width(60.dp))
+                        T(if (w.executedBtc > 0) num(w.executedBtc, 2) else "·", if (w.executedBtc > 0) Q.Accent else Q.Muted, 11, monoFont = true, modifier = Modifier.width(66.dp))
+                        T(num(w.consumedPct, 0) + "%", if (w.consumedPct >= 50) Q.Accent else Q.Muted, 11, monoFont = true, modifier = Modifier.width(52.dp))
+                        T(pct(if (mid > 0) w.distancePct(mid) else null), Q.Muted, 11, monoFont = true, modifier = Modifier.width(58.dp))
+                        T(ago(w.permanenceMs), Q.Muted, 11, modifier = Modifier.width(46.dp))
+                        Box(Modifier.width(88.dp)) { Badge(w.status.name, statusColor(w.status)) }
+                        Box(Modifier.width(64.dp)) { Badge(w.cls.name, classColor(w.cls)) }
                     }
                 }
             }

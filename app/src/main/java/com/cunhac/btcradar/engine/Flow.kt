@@ -88,6 +88,28 @@ class FlowEngine(private val keepMs: Long = 3_600_000L, private val maxTrades: I
 
     fun cumulativeDelta(): DoubleArray = synchronized(lock) { totalDelta.copyOf() }
 
+    /** Trades recebidos depois de [sinceMs] (mais novos primeiro). */
+    fun tradesSince(sinceMs: Long): List<TradeEvent> = synchronized(lock) {
+        val out = ArrayList<TradeEvent>()
+        var i = trades.size - 1
+        while (i >= 0 && trades[i].recvMs > sinceMs) out += trades[i--]
+        out
+    }
+
+    /** BTC executado por faixa de preço na janela: [compra agressora, venda agressora]. */
+    fun volumeByPrice(windowMs: Long, venues: Set<Venue>, key: (Double) -> Double, now: Long = System.currentTimeMillis()): Map<Double, DoubleArray> =
+        synchronized(lock) {
+            val out = HashMap<Double, DoubleArray>()
+            var i = trades.size - 1
+            while (i >= 0) {
+                val t = trades[i--]
+                if (now - t.recvMs > windowMs) break
+                if (t.venue !in venues) continue
+                out.getOrPut(key(t.price)) { DoubleArray(2) }[if (t.aggressor == Aggressor.BUY) 0 else 1] += t.qtyBtc
+            }
+            out
+        }
+
     private class MutableStats(val windowMs: Long) {
         var buy = 0.0; var sell = 0.0; var nb = 0; var ns = 0
         var maxB: TradeEvent? = null; var maxS: TradeEvent? = null

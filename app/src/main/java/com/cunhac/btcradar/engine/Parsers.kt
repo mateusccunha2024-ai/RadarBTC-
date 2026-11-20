@@ -21,7 +21,9 @@ object Parse {
 
     fun levels(a: JsonArray, mult: Double = 1.0): List<Level> = a.map {
         val x = it.jsonArray
-        Level(x[0].jsonPrimitive.content.toDouble(), x[1].jsonPrimitive.content.toDouble() * mult)
+        // OKX manda [preço, tamanho, "0", nº de ordens]; Binance e Bybit só [preço, tamanho].
+        Level(x[0].jsonPrimitive.content.toDouble(), x[1].jsonPrimitive.content.toDouble() * mult,
+            x.getOrNull(3)?.jsonPrimitive?.content?.toIntOrNull() ?: 0)
     }
 
     // ---------------- Binance USD-M ----------------
