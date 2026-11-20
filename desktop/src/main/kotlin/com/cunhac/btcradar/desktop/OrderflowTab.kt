@@ -83,10 +83,10 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
                 Chips("Mín.", MINS.map { num(it, 1) }, minIdx) { minIdx = it; SettingsStore.put("of.min", it) }
                 Chips("Intensidade", listOf("0,5x", "1x", "2x", "4x"), intIdx) { intIdx = it; SettingsStore.put("of.int", it) }
                 Toggle("Bybit RPI", rpi) { rpi = it; SettingsStore.put("of.rpi", it) }
-                Chips("Executado", listOf("5m", "15m", "1h"), exIdx) { exIdx = it; SettingsStore.put("of.ex", it) }
             }
             Spacer(Modifier.height(6.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                Chips("Executado", listOf("5m", "15m", "1h"), exIdx) { exIdx = it; SettingsStore.put("of.ex", it) }
                 Chips("Centro", listOf("AUTO (mid ${px(s.price)})", "MANUAL"), if (manual) 1 else 0) { manual = it == 1; SettingsStore.put("of.manual", manual) }
                 if (manual) {
                     NumField("Faixa mín", rMin) { rMin = it; SettingsStore.put("of.rmin", it ?: 0.0) }
@@ -143,13 +143,13 @@ private fun Ladder(asks: List<ConsRow>, bids: List<ConsRow>, showRpi: Boolean, i
         T("QUANTIDADE (BTC)", Q.Muted, 10, modifier = Modifier.weight(1f))
         listOf("BIN", "BYB", "OKX").forEach { T(it, Q.Muted, 10, modifier = Modifier.width(60.dp)) }
         if (showRpi) T("RPI", Q.Muted, 10, modifier = Modifier.width(52.dp))
-        T("ORD.OKX", Q.Muted, 10, modifier = Modifier.width(52.dp))
-        T("TOTAL", Q.Muted, 10, modifier = Modifier.width(70.dp))
+        T("ORDENS", Q.Muted, 10, modifier = Modifier.width(52.dp))
+        T("TOTAL", Q.Muted, 10, modifier = Modifier.width(70.dp).padding(start = 4.dp))
         T("ACUMULADO", Q.Muted, 10, modifier = Modifier.width(78.dp))
-        T("EXEC. COMPRA", Q.Muted, 10, modifier = Modifier.width(74.dp))
-        T("EXEC. VENDA", Q.Muted, 10, modifier = Modifier.width(70.dp))
+        T("EX.COMPRA", Q.Muted, 10, modifier = Modifier.width(74.dp))
+        T("EX.VENDA", Q.Muted, 10, modifier = Modifier.width(70.dp))
     }
-    T("ACUMULADO = BTC somado do preço atual até a linha (quanto precisa ser consumido para chegar ali) · EXEC. = BTC executado no nível nos últimos $exLabel por agressão",
+    T("ACUMULADO = BTC somado do preço atual até a linha · ORDENS = nº de ordens no nível (só a OKX publica) · EX. = BTC executado no nível nos últimos $exLabel",
         Q.Muted, 10, modifier = Modifier.padding(bottom = 4.dp))
     val list = rememberLazyListState()
     var centered by remember { mutableStateOf(false) }
@@ -185,7 +185,7 @@ private fun LadderRow(r: ConsRow, max: Double, showRpi: Boolean, intensity: Floa
         for (i in 0..2) T(if (r.byVenue[i] > 0) qty(r.byVenue[i]) else "·", if (r.byVenue[i] > 0) Q.Text else Q.Line, 11, monoFont = true, modifier = Modifier.width(60.dp))
         if (showRpi) T(if (r.byVenue[3] > 0) qty(r.byVenue[3]) else "·", Q.Muted, 11, monoFont = true, modifier = Modifier.width(52.dp))
         T(if (r.okxOrders > 0) r.okxOrders.toString() else "·", if (r.okxOrders > 0) Q.Muted else Q.Line, 11, monoFont = true, modifier = Modifier.width(52.dp))
-        T(qty(r.total), Q.Text, 11, bold = frac > 0.5f, monoFont = true, modifier = Modifier.width(70.dp))
+        T(qty(r.total), Q.Text, 11, bold = frac > 0.5f, monoFont = true, modifier = Modifier.width(70.dp).padding(start = 4.dp))
         T(num(r.cumulative, 2), Q.Muted, 11, monoFont = true, modifier = Modifier.width(78.dp))
         val eb = ex?.get(0) ?: 0.0; val es = ex?.get(1) ?: 0.0
         T(if (eb > 0) qty(eb) else "·", if (eb > 0) Q.Buy else Q.Line, 11, monoFont = true, modifier = Modifier.width(74.dp))
