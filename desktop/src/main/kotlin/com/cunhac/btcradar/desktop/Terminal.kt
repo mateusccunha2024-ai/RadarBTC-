@@ -34,8 +34,12 @@ import com.cunhac.btcradar.engine.Hub
 import com.cunhac.btcradar.engine.TerminalState
 import com.cunhac.btcradar.engine.Venue
 import kotlin.math.roundToInt
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 
-class AppContext(val hub: Hub, val db: SqliteHistory, val map: MapModel)
+class AppContext(val hub: Hub, val db: SqliteHistory, val map: MapModel,
+                 val heat: HeatLoader = HeatLoader(CoroutineScope(SupervisorJob() + Dispatchers.Default)))
 
 val TABS = listOf("ORDERFLOW", "LIQUIDITY WALLS", "MAGNET ZONES", "LONG & SHORT FLOW", "LARGE TRADES", "LIQUIDATION RADAR", "STATUS")
 

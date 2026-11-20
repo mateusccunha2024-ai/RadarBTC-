@@ -132,6 +132,25 @@ class SqliteHistory : HistorySink {
     } catch (e: Exception) { emptyMap() }
 
     val pending: Int get() = queue.size
+
+    /** Liquidações reais gravadas num intervalo (para marcar no heatmap). */
+    fun liquidations(fromMs: Long, toMs: Long, venues: Set<com.cunhac.btcradar.engine.Venue>): List<LiqEvent> = try {
+        DriverManager.getConnection("jdbc:sqlite:${AppDirs.db.path}").use { c ->
+            c.prepareStatement("SELECT recv_ms, exch_ms, venue, symbol, side, price, qty_btc, orig_qty, orig_unit, source FROM liquidations WHERE recv_ms BETWEEN ? AND ? ORDER BY qty_btc DESC LIMIT 20000").use { p ->
+                p.setLong(1, fromMs); p.setLong(2, toMs)
+                p.executeQuery().use { r ->
+                    val out = ArrayList<LiqEvent>()
+                    while (r.next()) {
+                        val v = runCatching { com.cunhac.btcradar.engine.Venue.valueOf(r.getString(3)) }.getOrNull() ?: continue
+                        if (v !in venues) continue
+                        out += LiqEvent(v, r.getString(4), r.getDouble(6), r.getDouble(7), r.getDouble(8), r.getString(9),
+                            com.cunhac.btcradar.engine.LiqSide.valueOf(r.getString(5)), r.getLong(2), r.getString(10), r.getLong(1))
+                    }
+                    out
+                }
+            }
+        }
+    } catch (e: Exception) { emptyList() }
 }
 
 /** Configurações salvas entre sessões (registro do usuário no Windows). */

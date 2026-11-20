@@ -2,7 +2,8 @@ package com.cunhac.btcradar.engine
 
 import java.util.TreeMap
 
-data class Level(val price: Double, val qtyBtc: Double)
+/** orders = nº de ordens no nível (só a OKX publica; 0 = não informado). */
+data class Level(val price: Double, val qtyBtc: Double, val orders: Int = 0)
 
 data class BookView(
     val venue: Venue,
@@ -33,6 +34,7 @@ data class BookView(
 class LocalBook(val venue: Venue) {
     private val bids = TreeMap<Double, Double>(Comparator.reverseOrder())
     private val asks = TreeMap<Double, Double>()
+    private val orders = HashMap<Double, Int>()
 
     @Volatile var valid = false; private set
     @Volatile var lastUpdateMs = 0L; private set
@@ -43,9 +45,9 @@ class LocalBook(val venue: Venue) {
 
     @Synchronized
     fun reset(b: List<Level>, a: List<Level>, seq: Long, eventMs: Long) {
-        bids.clear(); asks.clear()
-        b.forEach { if (it.qtyBtc > 0) bids[it.price] = it.qtyBtc }
-        a.forEach { if (it.qtyBtc > 0) asks[it.price] = it.qtyBtc }
+        bids.clear(); asks.clear(); orders.clear()
+        b.forEach { if (it.qtyBtc > 0) { bids[it.price] = it.qtyBtc; if (it.orders > 0) orders[it.price] = it.orders } }
+        a.forEach { if (it.qtyBtc > 0) { asks[it.price] = it.qtyBtc; if (it.orders > 0) orders[it.price] = it.orders } }
         lastSeq = seq
         valid = true
         note = "ok"
@@ -56,8 +58,8 @@ class LocalBook(val venue: Venue) {
     @Synchronized
     fun apply(b: List<Level>, a: List<Level>, seq: Long, eventMs: Long) {
         if (!valid) return
-        b.forEach { if (it.qtyBtc <= 0) bids.remove(it.price) else bids[it.price] = it.qtyBtc }
-        a.forEach { if (it.qtyBtc <= 0) asks.remove(it.price) else asks[it.price] = it.qtyBtc }
+        b.forEach { if (it.qtyBtc <= 0) { bids.remove(it.price); orders.remove(it.price) } else { bids[it.price] = it.qtyBtc; if (it.orders > 0) orders[it.price] = it.orders } }
+        a.forEach { if (it.qtyBtc <= 0) { asks.remove(it.price); orders.remove(it.price) } else { asks[it.price] = it.qtyBtc; if (it.orders > 0) orders[it.price] = it.orders } }
         lastSeq = seq
         val bb = bids.firstEntry()?.key
         val ba = asks.firstEntry()?.key
@@ -85,8 +87,8 @@ class LocalBook(val venue: Venue) {
     fun view(maxLevels: Int = Int.MAX_VALUE): BookView = BookView(
         venue = venue,
         valid = valid,
-        bids = bids.entries.asSequence().take(maxLevels).map { Level(it.key, it.value) }.toList(),
-        asks = asks.entries.asSequence().take(maxLevels).map { Level(it.key, it.value) }.toList(),
+        bids = bids.entries.asSequence().take(maxLevels).map { Level(it.key, it.value, orders[it.key] ?: 0) }.toList(),
+        asks = asks.entries.asSequence().take(maxLevels).map { Level(it.key, it.value, orders[it.key] ?: 0) }.toList(),
         bidLevels = bids.size,
         askLevels = asks.size,
         lastUpdateMs = lastUpdateMs,
