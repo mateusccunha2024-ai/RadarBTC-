@@ -1,0 +1,61 @@
+name: Verificar V8
+
+on:
+  push:
+    branches: [v8]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: "8.9" }
+
+      - name: Compilar Windows e Android + testes unitários e de carga
+        run: |
+          set -o pipefail
+          gradle :desktop:test :app:compileDebugKotlin --no-daemon --continue 2>&1 | tee build.log
+
+      - name: Guardar resultado dos testes unitários
+        if: always()
+        run: |
+          for f in desktop/build/test-results/test/*.xml; do
+            [ -f "$f" ] && grep -o 'testsuite name="[^"]*" tests="[0-9]*" skipped="[0-9]*" failures="[0-9]*" errors="[0-9]*"' "$f"
+          done > units.txt || true
+          grep -h -A3 "<failure" desktop/build/test-results/test/*.xml | head -n 60 >> units.txt || true
+
+      - name: Teste ao vivo (dados reais, 45 s)
+        if: success()
+        continue-on-error: true
+        env: { LIVE: "1" }
+        run: gradle :desktop:test --tests '*LiveSmokeTest*' --rerun-tasks --no-daemon -q 2>&1 | tail -n 5 || true
+
+      - name: Relatório
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "Commit ${{ github.sha }} — resultado: ${{ job.status }}"
+            echo
+            echo "### Compilação"
+            echo '```'
+            grep -E "^e: |error:|FAILED|BUILD (SUCCESSFUL|FAILED)|What went wrong" -A2 build.log | head -n 150 || true
+            echo '```'
+            echo "### Testes unitários"
+            echo '```'
+            cat units.txt 2>/dev/null
+            echo '```'
+            cat desktop/build/load-report.md 2>/dev/null
+            echo
+            cat desktop/build/live-report.md 2>/dev/null || echo "(teste ao vivo não gerou relatório)"
+          } > report.md
+          gh issue create --title "Verificação V8 #${{ github.run_number }}" --body-file report.md
