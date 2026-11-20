@@ -37,7 +37,7 @@ object LiquidationStream {
     fun all(): Flow<Liquidation> = merge(binance(), bybit(), okx())
 
     private fun binance() = socket(
-        url = "wss://fstream.binance.com/ws/btcusdt@forceOrder",
+        url = "wss://fstream.binance.com/market/ws/btcusdt@forceOrder",
     ) { text ->
         val o = Net.parse(text).o.obj("o") ?: return@socket emptyList()
         if (o.str("s") != "BTCUSDT") return@socket emptyList()
@@ -73,7 +73,7 @@ object LiquidationStream {
     }
 
     private fun okx() = socket(
-        url = "wss://ws.okx.com:8443/ws/v5/public",
+        url = "wss://ws.okx.com:443/ws/v5/public",
         subscribe = """{"op":"subscribe","args":[{"channel":"liquidation-orders","instType":"SWAP"}]}""",
         keepAlive = "ping",
     ) { text ->
