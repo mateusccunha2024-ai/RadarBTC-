@@ -14,6 +14,7 @@ kotlin {
         kotlin.srcDir("$shared/domain")
         kotlin.srcDir("$shared/ui/theme")
         kotlin.srcDir("$shared/ui/components")
+        kotlin.srcDir("$shared/engine")
     }
 }
 
@@ -24,6 +25,13 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.jsoup:jsoup:1.18.3")
+    implementation("org.xerial:sqlite-jdbc:3.46.1.3")
+
+    testImplementation("junit:junit:4.13.2")
+}
+
+tasks.withType<Test> {
+    testLogging { events("passed", "skipped", "failed"); showStandardStreams = true }
 }
 
 val runNumber = System.getenv("GITHUB_RUN_NUMBER") ?: "0"
