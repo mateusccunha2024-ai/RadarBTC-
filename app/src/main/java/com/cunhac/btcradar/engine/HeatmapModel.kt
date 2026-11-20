@@ -120,7 +120,8 @@ object HeatmapModel {
             if (!l.isLong && l.price > price) { above[k] = (above[k] ?: 0.0) + l.btc; sa += l.btc }
             if (l.isLong && l.price < price) { below[k] = (below[k] ?: 0.0) + l.btc; lb += l.btc }
         }
-        fun top(m: Map<Double, Double>) = m.entries.sortedByDescending { it.value }.take(n)
+        val biggest = (above.values + below.values).maxOrNull() ?: 0.0
+        fun top(m: Map<Double, Double>) = m.entries.filter { it.value >= biggest * 0.05 }.sortedByDescending { it.value }.take(n)
             .map { KeyLevel(it.key, it.value, (it.key / price - 1) * 100) }.sortedByDescending { it.price }
         return HeatSummary(top(above), top(below), sa, lb)
     }

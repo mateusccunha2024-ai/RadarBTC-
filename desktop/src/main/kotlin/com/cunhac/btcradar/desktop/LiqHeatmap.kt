@@ -252,7 +252,7 @@ private fun KeyRow(k: KeyLevel, mx: Double, c: Color) {
         Box(Modifier.weight(1f).fillMaxHeight().padding(vertical = 6.dp)) {
             Box(Modifier.fillMaxHeight().fillMaxWidth((k.btc / mx).toFloat().coerceIn(0.03f, 1f)).background(c.copy(alpha = 0.7f)))
         }
-        T(num(k.btc, 0), Q.Text, 11, monoFont = true, modifier = Modifier.width(54.dp).padding(start = 6.dp))
+        T(num(k.btc, if (k.btc < 10) 1 else 0), Q.Text, 11, monoFont = true, modifier = Modifier.width(54.dp).padding(start = 6.dp))
         T(pct(k.distancePct), Q.Muted, 10, monoFont = true, modifier = Modifier.width(52.dp))
     }
 }
