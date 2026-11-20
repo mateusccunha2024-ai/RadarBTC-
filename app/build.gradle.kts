@@ -4,6 +4,11 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+// Cada build do GitHub ganha um número maior, para o Android aceitar como atualização
+val runNumber = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
+// Assinatura permanente (vem dos secrets do repositório; sem ela, usa a de debug)
+val keystorePath: String? = System.getenv("ANDROID_KEYSTORE_FILE")
+
 android {
     namespace = "com.cunhac.btcradar"
     compileSdk = 35
@@ -12,13 +17,25 @@ android {
         applicationId = "com.cunhac.btcradar"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = runNumber
+        versionName = "0.1.$runNumber"
+    }
+    signingConfigs {
+        create("radar") {
+            if (keystorePath != null) {
+                storeFile = file(keystorePath)
+                storeType = "pkcs12"
+                storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("ANDROID_KEY_ALIAS")
+                keyPassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+            }
+        }
     }
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = if (keystorePath != null) signingConfigs.getByName("radar") else signingConfigs.getByName("debug")
         }
     }
     compileOptions {

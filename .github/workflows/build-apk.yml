@@ -24,20 +24,30 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Compilar APK
+      - name: Preparar assinatura
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+        run: |
+          echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/radarbtc.p12"
+          echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/radarbtc.p12" >> "$GITHUB_ENV"
+
+      - name: Compilar APK assinado
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
           set -o pipefail
-          gradle :app:assembleDebug --no-daemon 2>&1 | tee build.log
+          gradle :app:assembleRelease --no-daemon 2>&1 | tee build.log
 
       - name: Renomear APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk RadarBTC-v0.1.${{ github.run_number }}.apk
+        run: cp app/build/outputs/apk/release/app-release.apk RadarBTC-v0.1.${{ github.run_number }}.apk
 
       - name: Publicar em Releases
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
-          name: Radar BTC (build ${{ github.run_number }})
-          body: APK de teste gerado automaticamente a partir do commit ${{ github.sha }}.
+          name: Radar BTC Android (build ${{ github.run_number }})
+          body: APK assinado (atualiza o app instalado). Commit ${{ github.sha }}.
           files: RadarBTC-v0.1.${{ github.run_number }}.apk
           make_latest: true
 
