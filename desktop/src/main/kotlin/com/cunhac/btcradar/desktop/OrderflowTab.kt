@@ -33,6 +33,7 @@ import com.cunhac.btcradar.engine.ConnState
 import com.cunhac.btcradar.engine.ConsRow
 import com.cunhac.btcradar.engine.Consolidate
 import com.cunhac.btcradar.engine.TerminalState
+import com.cunhac.btcradar.engine.CORE_VENUES
 import com.cunhac.btcradar.engine.Venue
 import kotlin.math.floor
 
@@ -54,7 +55,7 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
     var rMin by remember { mutableStateOf(SettingsStore.d("of.rmin", 0.0).takeIf { it > 0 }) }
     var rMax by remember { mutableStateOf(SettingsStore.d("of.rmax", 0.0).takeIf { it > 0 }) }
 
-    val venues = if (venueIdx == 0) Venue.entries.toSet() else setOf(Venue.entries[venueIdx - 1])
+    val venues = if (venueIdx == 0) CORE_VENUES.toSet() else setOf(CORE_VENUES[venueIdx - 1])
     val levels = LEVS[levIdx]
     val book = remember(s.tick, venueIdx, granIdx, levIdx, minIdx, rpi, manual, rMin, rMax) {
         val ranged = manual && (rMin != null || rMax != null)
@@ -74,7 +75,7 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
     Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Column(Modifier.weight(1.7f).fillMaxHeight().background(Q.Panel).padding(10.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                Chips("Livro", listOf("CONSOLIDADO") + Venue.entries.map { it.label.uppercase() }, venueIdx) { venueIdx = it; SettingsStore.put("of.venue", it) }
+                Chips("Livro", listOf("CONSOLIDADO") + CORE_VENUES.map { it.label.uppercase() }, venueIdx) { venueIdx = it; SettingsStore.put("of.venue", it) }
                 Chips("Agrupar", listOf("Exato", "1", "5", "10", "50", "100"), granIdx) { granIdx = it; SettingsStore.put("of.gran", it) }
             }
             Spacer(Modifier.height(6.dp))
@@ -109,7 +110,7 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
                     KV("Spread consolidado", when { bb == null || ba == null -> "—"; ba < bb -> "cruzado entre corretoras"; else -> num(ba - bb, 1) + " USDT" })
                 }
             }
-            Venue.entries.forEach { v -> s.books[v]?.let { BookCard(it, s) } }
+            CORE_VENUES.forEach { v -> s.books[v]?.let { BookCard(it, s) } }
             s.rpi?.let { BookCard(it, s, "BYBIT RPI (só parte RPI, 50 níveis)") }
         }
     }

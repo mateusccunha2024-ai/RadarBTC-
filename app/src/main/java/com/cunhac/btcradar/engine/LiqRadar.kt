@@ -42,6 +42,9 @@ class LiqRadar(val thresholds: LiqThresholds) {
 
     private fun inPeriod(periodMs: Long, now: Long) = events.asSequence().filter { now - it.recvMs <= periodMs }
 
+    /** Eventos recebidos desde [fromMs] (ordem de chegada). */
+    fun since(fromMs: Long): List<LiqEvent> = synchronized(lock) { events.filter { it.recvMs >= fromMs } }
+
     fun recent(n: Int = 200): List<LiqEvent> = synchronized(lock) {
         val out = ArrayList<LiqEvent>(n)
         var i = events.size - 1

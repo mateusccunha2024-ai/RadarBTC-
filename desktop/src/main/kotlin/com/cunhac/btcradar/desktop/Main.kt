@@ -34,6 +34,7 @@ private fun loadSettings(hub: Hub) {
     hub.liqThresholds.large = SettingsStore.d("lq.large", 1.0)
     hub.liqThresholds.extreme = SettingsStore.d("lq.extreme", 5.0)
     hub.large.minBtc = SettingsStore.d("lt.min", 2.0)
+    hub.refreshMs = SettingsStore.i("ui.refresh", 1_500).toLong().coerceIn(500L, 3_000L)
 }
 
 fun main() {
@@ -69,7 +70,7 @@ fun main() {
             RadarTheme {
                 val scope = rememberCoroutineScope()
                 // O contexto (e o carregador do heatmap) é criado uma vez só, não a cada redesenho.
-                val ctx = remember { AppContext(hub, db, MapModel(scope)) }
+                val ctx = remember { AppContext(hub, db, MapModel(scope)).also { it.alerts.start() } }
                 Terminal(ctx)
             }
         }

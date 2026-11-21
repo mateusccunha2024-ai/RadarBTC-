@@ -5,6 +5,7 @@ import com.cunhac.btcradar.engine.HeatRange
 import com.cunhac.btcradar.engine.HeatmapModel
 import com.cunhac.btcradar.engine.HistoryApi
 import com.cunhac.btcradar.engine.OiBtc
+import com.cunhac.btcradar.engine.CORE_VENUES
 import com.cunhac.btcradar.engine.Venue
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -46,13 +47,14 @@ class HeatLoader(private val scope: CoroutineScope) {
                 val candles = HistoryApi.candles(r.stepMs, from)
                 val oi = HashMap<Venue, List<OiBtc>>()
                 val cov = HashMap<Venue, String>()
-                for (v in Venue.entries) {
+                for (v in CORE_VENUES) {
                     state.update { it.copy(progress = "open interest ${v.label}") }
                     val res = runCatching {
                         when (v) {
                             Venue.BINANCE -> HistoryApi.oiBinance(r.stepMs, from)
                             Venue.BYBIT -> HistoryApi.oiBybit(r.stepMs, from)
                             Venue.OKX -> HistoryApi.oiOkx(r.stepMs, from)
+                            else -> emptyList()
                         }
                     }
                     res.exceptionOrNull()?.let { if (it is CancellationException) throw it }

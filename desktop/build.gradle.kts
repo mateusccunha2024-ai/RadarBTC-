@@ -26,6 +26,10 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.jsoup:jsoup:1.18.3")
     implementation("org.xerial:sqlite-jdbc:3.46.1.3")
+    // Alertas por e-mail (SMTP)
+    implementation("jakarta.mail:jakarta.mail-api:2.1.3")
+    implementation("org.eclipse.angus:angus-mail:2.0.3")
+    implementation("org.eclipse.angus:angus-activation:2.0.2")
 
     testImplementation("junit:junit:4.13.2")
 }

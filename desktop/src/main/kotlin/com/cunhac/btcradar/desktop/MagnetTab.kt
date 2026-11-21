@@ -138,7 +138,7 @@ private fun MagnetLadder(bins: List<PriceBin>, price: Double) {
                     modifier = Modifier.width(78.dp).padding(start = 6.dp))
                 Box(Modifier.weight(1f).fillMaxHeight().padding(vertical = 5.dp)) {
                     val fb = (b.bookUsd / maxBook).toFloat()
-                    if (fb > 0.004f) Box(Modifier.fillMaxHeight().fillMaxWidth(fb).background(Color(0xFF5A2A30)))
+                    if (fb > 0.004f) Box(Modifier.fillMaxHeight().fillMaxWidth(fb).background(Q.Sell.copy(alpha = 0.35f)))
                 }
                 T(if (b.bookUsd > 0) num(b.bookUsd / price, 1) else "·", Q.Muted, 11, monoFont = true, modifier = Modifier.width(70.dp).padding(start = 6.dp))
             }

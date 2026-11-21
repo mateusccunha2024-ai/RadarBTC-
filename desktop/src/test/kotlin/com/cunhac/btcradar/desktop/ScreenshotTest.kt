@@ -12,7 +12,7 @@ import org.junit.Assume.assumeTrue
 import org.junit.Test
 import java.io.File
 
-/** Renderiza cada aba com dados REAIS (só com SHOTS=1) para revisão visual. */
+/** Renderiza cada aba com dados REAIS (só com SHOTS=1) para revisão visual: tema escuro, tema claro, zoom e menu. */
 @OptIn(ExperimentalComposeUiApi::class)
 class ScreenshotTest {
     @Test fun renderTabs() {
@@ -22,18 +22,29 @@ class ScreenshotTest {
         hub.history = db
         hub.start()
         val ctx = AppContext(hub, db, MapModel(CoroutineScope(Dispatchers.Default)))
-        Thread.sleep(60_000)
+        Thread.sleep(90_000)
         val out = File("build/screens").apply { mkdirs() }
-        TABS.indices.forEach { i ->
-            val scene = ImageComposeScene(1600, 900, Density(1f)) {
-                RadarTheme { Terminal(ctx, initialTab = i) }
+
+        fun shot(name: String, tab: Int, settings: Boolean = false, w: Int = 1600, h: Int = 900) {
+            val scene = ImageComposeScene(w, h, Density(1f)) {
+                RadarTheme { Terminal(ctx, initialTab = tab, showSettings = settings) }
             }
             var t = 0L
             repeat(6) { scene.render(t); t += 400_000_000L; Thread.sleep(250) }
             val img = scene.render(t)
-            File(out, "tab-$i.png").writeBytes(img.encodeToData(EncodedImageFormat.PNG)!!.bytes)
+            File(out, "$name.png").writeBytes(img.encodeToData(EncodedImageFormat.PNG)!!.bytes)
             scene.close()
         }
+
+        Look.useDark(true); UiScale.set(1.0f)
+        TABS.indices.forEach { i -> shot("dark-%02d".format(i), i) }
+        shot("dark-menu", 0, settings = true)
+        Look.useDark(false)
+        listOf(0, 1, 2, 6, 8, 9).forEach { i -> shot("light-%02d".format(i), i) }
+        shot("light-menu", 0, settings = true)
+        UiScale.set(1.25f)
+        shot("light-zoom125-00", 0)
+        Look.useDark(true); UiScale.set(1.0f)
         hub.stop()
     }
 }

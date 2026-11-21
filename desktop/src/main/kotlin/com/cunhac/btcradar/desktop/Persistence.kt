@@ -153,6 +153,28 @@ class SqliteHistory : HistorySink {
     } catch (e: Exception) { emptyList() }
 }
 
+/** Evento de parede gravado (aba LIQUIDITY HISTORY). */
+data class WallRecord(val tsMs: Long, val venue: com.cunhac.btcradar.engine.Venue, val bid: Boolean, val price: Double, val status: String,
+                      val cls: String, val peak: Double, val current: Double, val firstSeenMs: Long, val lastSeenMs: Long, val tradedNear: Double)
+
+/** Eventos de paredes num intervalo (mais recentes primeiro). */
+fun SqliteHistory.wallEvents(fromMs: Long, toMs: Long, limit: Int = 20_000): List<WallRecord> = try {
+    DriverManager.getConnection("jdbc:sqlite:${AppDirs.db.path}").use { c ->
+        c.prepareStatement("SELECT ts_ms, venue, side, price, status, class, qty_peak, qty_current, first_seen_ms, last_seen_ms, traded_near_btc FROM wall_events WHERE ts_ms BETWEEN ? AND ? ORDER BY ts_ms DESC LIMIT ?").use { p ->
+            p.setLong(1, fromMs); p.setLong(2, toMs); p.setInt(3, limit)
+            p.executeQuery().use { r ->
+                val out = ArrayList<WallRecord>()
+                while (r.next()) {
+                    val v = runCatching { com.cunhac.btcradar.engine.Venue.valueOf(r.getString(2)) }.getOrNull() ?: continue
+                    out += WallRecord(r.getLong(1), v, r.getString(3) == "BID", r.getDouble(4), r.getString(5), r.getString(6),
+                        r.getDouble(7), r.getDouble(8), r.getLong(9), r.getLong(10), r.getDouble(11))
+                }
+                out
+            }
+        }
+    }
+} catch (e: Exception) { emptyList() }
+
 /** Configurações salvas entre sessões (registro do usuário no Windows). */
 object SettingsStore {
     private val p: Preferences = Preferences.userRoot().node("radarbtc-v8")

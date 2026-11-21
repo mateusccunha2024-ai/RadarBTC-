@@ -36,20 +36,26 @@ import com.cunhac.btcradar.engine.FlowClass
 import com.cunhac.btcradar.engine.FlowStats
 import com.cunhac.btcradar.engine.TerminalState
 import com.cunhac.btcradar.engine.TradeEvent
+import com.cunhac.btcradar.engine.CORE_VENUES
 import com.cunhac.btcradar.engine.Venue
 import com.cunhac.btcradar.engine.Wall
 import com.cunhac.btcradar.engine.WallClass
+import com.cunhac.btcradar.engine.WallSignal
+import com.cunhac.btcradar.engine.Analytics
 import com.cunhac.btcradar.engine.WallStatus
 
-val VENUE_COLORS = listOf(Color(0xFFF3BA2F), Color(0xFF9B7BFF), Color(0xFF5BC0EB))
+/** Cor de cada corretora (índice = Venue.ordinal), com variante legível no tema claro. */
+val VENUE_COLORS: List<Color> get() = if (Look.dark)
+    listOf(Color(0xFFF3BA2F), Color(0xFF9B7BFF), Color(0xFF5BC0EB), Color(0xFF6E8BFF), Color(0xFF1DD3C0), Color(0xFF7FD69B))
+else listOf(Color(0xFF9A7200), Color(0xFF6A4BD6), Color(0xFF15799F), Color(0xFF2950D8), Color(0xFF00857A), Color(0xFF2E8A55))
 
 @Composable
-fun Th(vararg cols: Pair<String, Int>) = Row(Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
+fun Th(vararg cols: Pair<String, Int>) = Row(Modifier.fillMaxWidth().padding(vertical = if (Look.compact) 1.dp else 3.dp)) {
     cols.forEach { (t, w) -> T(t, Q.Muted, 10, modifier = if (w > 0) Modifier.width(w.dp) else Modifier.weight(1f)) }
 }
 
 @Composable
-fun Td(vararg cols: Triple<String, Int, Color>) = Row(Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
+fun Td(vararg cols: Triple<String, Int, Color>) = Row(Modifier.fillMaxWidth().padding(vertical = if (Look.compact) 0.dp else 2.dp)) {
     cols.forEach { (t, w, c) -> T(t, c, 11, monoFont = true, modifier = if (w > 0) Modifier.width(w.dp) else Modifier.weight(1f)) }
 }
 
@@ -61,14 +67,14 @@ fun WallsTab(ctx: AppContext, s: TerminalState) {
     val th = ctx.hub.wallThresholds
     var venueIdx by remember { mutableIntStateOf(0) }
     var ver by remember { mutableIntStateOf(0) }
-    val venue = if (venueIdx == 0) null else Venue.entries[venueIdx - 1]
+    val venue = if (venueIdx == 0) null else CORE_VENUES[venueIdx - 1]
     val bids = remember(s.tick, venueIdx, ver) { ctx.hub.walls.top(BookSide.BID, venue) }
     val asks = remember(s.tick, venueIdx, ver) { ctx.hub.walls.top(BookSide.ASK, venue) }
     val hist = remember(s.tick) { ctx.hub.walls.history(300) }
     val mid = s.price ?: 0.0
     Column(Modifier.fillMaxSize()) {
         Row(Modifier.background(Q.Panel).padding(8.dp).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
-            Chips("Corretora", listOf("TODAS") + Venue.entries.map { it.label.uppercase() }, venueIdx) { venueIdx = it }
+            Chips("Corretora", listOf("TODAS") + CORE_VENUES.map { it.label.uppercase() }, venueIdx) { venueIdx = it }
             NumField("SMALL ≥", th.small, 60.dp) { it?.let { v -> th.small = v; SettingsStore.put("w.small", v); ver++ } }
             NumField("MEDIUM ≥", th.medium, 60.dp) { it?.let { v -> th.medium = v; SettingsStore.put("w.medium", v) } }
             NumField("LARGE ≥", th.large, 60.dp) { it?.let { v -> th.large = v; SettingsStore.put("w.large", v) } }
@@ -82,7 +88,8 @@ fun WallsTab(ctx: AppContext, s: TerminalState) {
             WallTable("TOP 50 ASK WALLS", asks, mid, Q.Sell, Modifier.weight(1f))
         }
         Spacer(Modifier.height(8.dp))
-        Section("Histórico de concentrações (eventos de saída do livro)", Modifier.fillMaxWidth().height(230.dp)) {
+        Row(Modifier.fillMaxWidth().height(230.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Section("Histórico de concentrações (eventos de saída do livro)", Modifier.weight(1.7f).fillMaxHeight()) {
             Column {
                 Th("HORA" to 70, "CORRETORA" to 80, "LADO" to 44, "PREÇO" to 90, "STATUS" to 190, "PICO" to 90, "FINAL" to 90, "NEGOCIADO NO NÍVEL" to 130, "PERMANÊNCIA" to 0)
                 if (hist.isEmpty()) Empty("Nenhuma concentração saiu do livro ainda", "Quando uma parede some, aqui aparece se houve execução corroborada por trades ou só retirada")
@@ -96,9 +103,26 @@ fun WallsTab(ctx: AppContext, s: TerminalState) {
                 }
             }
         }
+        val sigs = remember(s.tick) { ctx.hub.walls.signals() }
+        Section("Absorção e iceberg · ${sigs.size}", Modifier.weight(1f).fillMaxHeight()) {
+            Column {
+                Th("PREÇO" to 80, "CORR." to 58, "SINAL" to 76, "EXECUTADO" to 72, "REPOSTO" to 66, "RESTANTE" to 0)
+                if (sigs.isEmpty()) Empty("Nenhuma parede absorvendo agora", "Aparece quando um nível recebe execução e não diminui (ou volta a crescer)")
+                LazyColumn {
+                    items(sigs) { w ->
+                        val sc = if (w.side == BookSide.BID) Q.Buy else Q.Sell
+                        Td(Triple(px(w.price), 80, sc), Triple(w.venue.label, 58, Q.Text), Triple(w.signal?.label ?: "", 76, if (w.signal == WallSignal.ICEBERG) Q.Accent else Q.Warn),
+                            Triple(num(w.executedBtc, 2), 72, Q.Text), Triple(num(w.replenishedBtc, 2), 66, Q.Text), Triple(num(w.currentQty, 2), 0, Q.Muted))
+                    }
+                }
+            }
+        }
+        }
         T("Identidade = corretora + instrumento + lado + preço. O livro público é agregado por preço: não identificamos ordens individuais nem quem as colocou. " +
             "Sumir do livro não prova execução: EXECUTION_CORROBORATED exige trades no nível ≥ 50% da quantidade. " +
-            "EXECUTADO = BTC negociado exatamente no preço da parede desde que ela apareceu; % CONS. = executado ÷ (executado + restante).", Q.Muted, 11, wrap = true, modifier = Modifier.padding(top = 4.dp))
+            "EXECUTADO = BTC negociado exatamente no preço da parede desde que ela apareceu; % CONS. = executado ÷ (executado + restante). " +
+            "ABSORÇÃO = recebeu execução ≥ 50% do tamanho inicial e manteve ≥ 80% dele. ICEBERG = executou mais do que mostrava e foi reposta 2+ vezes " +
+            "(REPOSTO = execução que não reduziu o livro). Ambos são inferências.", Q.Muted, 11, wrap = true, modifier = Modifier.padding(top = 4.dp))
     }
 }
 
@@ -107,7 +131,7 @@ private fun WallTable(title: String, walls: List<Wall>, mid: Double, color: Colo
     val maxQ = (walls.maxOfOrNull { it.currentQty } ?: 0.0).coerceAtLeast(1e-9)
     Section("$title · ${walls.size}", modifier.fillMaxHeight()) {
         Column {
-            Th("PREÇO" to 80, "CORR." to 54, "ATUAL (BTC)" to 0, "Δ BTC" to 60, "EXECUTADO" to 66, "% CONS." to 52, "DIST." to 58, "TEMPO" to 46, "STATUS" to 88, "CLASSE" to 64)
+            Th("PREÇO" to 80, "CORR." to 54, "ATUAL (BTC)" to 0, "Δ BTC" to 60, "EXECUTADO" to 66, "% CONS." to 52, "DIST." to 58, "TEMPO" to 46, "STATUS" to 88, "CLASSE" to 64, "SINAL" to 72)
             if (walls.isEmpty()) Empty("Nenhuma parede acima do limite SMALL nesta faixa", "Ajuste os limites ou a faixa ±% acima")
             LazyColumn {
                 items(walls) { w ->
@@ -125,6 +149,7 @@ private fun WallTable(title: String, walls: List<Wall>, mid: Double, color: Colo
                         T(ago(w.permanenceMs), Q.Muted, 11, modifier = Modifier.width(46.dp))
                         Box(Modifier.width(88.dp)) { Badge(w.status.name, statusColor(w.status)) }
                         Box(Modifier.width(64.dp)) { Badge(w.cls.name, classColor(w.cls)) }
+                        Box(Modifier.width(72.dp)) { w.signal?.let { Badge(it.label, if (it == WallSignal.ICEBERG) Q.Accent else Q.Warn) } }
                     }
                 }
             }
@@ -166,7 +191,7 @@ fun FlowTab(ctx: AppContext, s: TerminalState) {
                 Column {
                     Th("FONTE" to 90, "COMPRADO" to 100, "VENDIDO" to 100, "DELTA" to 100, "TRADES" to 70, "MÉDIO" to 80, "MAIOR COMPRA" to 110, "MAIOR VENDA" to 110, "TRADES/S" to 0)
                     fun row(name: String, f: FlowStats?) {}
-                    val rows = listOf<Pair<String, FlowStats?>>("CONSOLIDADO" to s.flowAll.getOrNull(winIdx)) + Venue.entries.map { it.label to s.flowByVenue[it]?.getOrNull(winIdx) }
+                    val rows = listOf<Pair<String, FlowStats?>>("CONSOLIDADO" to s.flowAll.getOrNull(winIdx)) + CORE_VENUES.map { it.label to s.flowByVenue[it]?.getOrNull(winIdx) }
                     rows.forEach { (n, f) ->
                         if (f == null) Td(Triple(n, 90, Q.Text), Triple("sem dados", 0, Q.Muted))
                         else Td(Triple(n, 90, Q.Text), Triple(num(f.buyBtc, 3), 100, Q.Buy), Triple(num(f.sellBtc, 3), 100, Q.Sell),
@@ -180,8 +205,14 @@ fun FlowTab(ctx: AppContext, s: TerminalState) {
                 val series = remember(s.tick) { ctx.hub.flow.cvdSeries(900_000) }
                 Column {
                     Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                        T("— Total", Q.Text, 11); Venue.entries.forEach { T("— ${it.label}", VENUE_COLORS[it.ordinal], 11) }
-                        series.lastOrNull()?.let { T("Total: " + String.format(BR, "%+.2f BTC", it.second.sum()), if (it.second.sum() >= 0) Q.Buy else Q.Sell, 11) }
+                        T("— Total", Q.Text, 11); CORE_VENUES.forEach { T("— ${it.label}", VENUE_COLORS[it.ordinal], 11) }
+                        series.lastOrNull()?.let {
+                            val tot = it.second.sum()
+                            T("Total: " + String.format(BR, "%+.2f BTC", tot), if (tot >= 0) Q.Buy else Q.Sell, 11)
+                            Analytics.normalizedCvd(tot, ctx.hub.totalOiBtc())?.let { n ->
+                                T("Normalizado: " + String.format(BR, "%+.3f%% do OI", n), if (n >= 0) Q.Buy else Q.Sell, 11)
+                            }
+                        }
                     }
                     CvdChart(series)
                 }
@@ -204,10 +235,27 @@ fun FlowTab(ctx: AppContext, s: TerminalState) {
                     }
                 }
             }
+            Section("Divergências preço × CVD") {
+                Column {
+                    val divs = s.divergences
+                    if (divs.isEmpty()) Empty("Nenhuma divergência detectada", "Checa 5 min, 15 min e 1 h a cada ~15 s: preço faz novo fundo/topo e o CVD não confirma")
+                    divs.take(8).forEach { d ->
+                        Column(Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
+                            Row {
+                                T(hhmmss(d.detectedMs), Q.Muted, 11, monoFont = true)
+                                Spacer(Modifier.width(8.dp))
+                                T("${d.kind.label} · ${d.windowMs / 60_000} min", if (d.kind.bullish) Q.Buy else Q.Sell, 11, bold = true)
+                            }
+                            T(d.text, Q.Text, 11, wrap = true)
+                        }
+                    }
+                    Footnote("Divergência = o preço faz um fundo mais baixo (ou topo mais alto) na 2ª metade da janela e o CVD não acompanha. Sinal de enfraquecimento, não de reversão garantida.")
+                }
+            }
             Section("Derivativos por corretora") {
                 Column {
                     Th("FONTE" to 70, "MARK" to 90, "INDEX" to 90, "FUNDING" to 80, "OI (BTC)" to 0)
-                    Venue.entries.forEach { v ->
+                    CORE_VENUES.forEach { v ->
                         val t = s.tickers[v]
                         Td(Triple(v.label, 70, Q.Text), Triple(px(t?.markPrice), 90, Q.Text), Triple(px(t?.indexPrice), 90, Q.Muted),
                             Triple(t?.fundingRate?.let { pct(it * 100, 4) } ?: "—", 80, Q.Text), Triple(t?.oiBtc?.let { num(it, 0) } ?: "—", 0, Q.Text))
@@ -216,7 +264,8 @@ fun FlowTab(ctx: AppContext, s: TerminalState) {
                     KV("OI somado (3 corretoras)", ctx.hub.totalOiBtc()?.let { btc(it, 0) } ?: "aguardando as 3 fontes")
                     KV("Variação do OI (${w.first})", pct(ctx.hub.oiChangePct(w.second), 3))
                     KV("Variação do preço (${w.first})", pct(ctx.hub.priceChangePct(w.second), 3))
-                    Footnote("OI Binance via REST a cada 15 s (não há WebSocket de OI); Bybit e OKX por WebSocket.")
+                    Footnote("OI Binance via REST a cada 15 s (não há WebSocket de OI); Bybit e OKX por WebSocket. " +
+                        "CVD normalizado = CVD ÷ OI somado, em %: permite comparar dias com open interest diferente.")
                 }
             }
             Section("Delta por janela · consolidado") {
@@ -284,7 +333,7 @@ fun LargeTradesTab(ctx: AppContext, s: TerminalState) {
     var pIdx by remember { mutableIntStateOf(1) }
     var venueIdx by remember { mutableIntStateOf(0) }
     var ver by remember { mutableIntStateOf(0) }
-    val venue = if (venueIdx == 0) null else Venue.entries[venueIdx - 1]
+    val venue = if (venueIdx == 0) null else CORE_VENUES[venueIdx - 1]
     val period = LT_PERIODS[pIdx].second
     val buys = remember(s.tick, pIdx, venueIdx, ver) { ctx.hub.large.top(period, Aggressor.BUY, venue, 40) }
     val sells = remember(s.tick, pIdx, venueIdx, ver) { ctx.hub.large.top(period, Aggressor.SELL, venue, 40) }
@@ -295,7 +344,7 @@ fun LargeTradesTab(ctx: AppContext, s: TerminalState) {
     Column(Modifier.fillMaxSize()) {
         Row(Modifier.background(Q.Panel).padding(8.dp).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
             Chips("Período", LT_PERIODS.map { it.first }, pIdx) { pIdx = it }
-            Chips("Corretora", listOf("TODAS") + Venue.entries.map { it.label.uppercase() }, venueIdx) { venueIdx = it }
+            Chips("Corretora", listOf("TODAS") + CORE_VENUES.map { it.label.uppercase() }, venueIdx) { venueIdx = it }
             NumField("Mínimo (BTC)", minBtc, 60.dp) { it?.let { v -> ctx.hub.large.minBtc = v; SettingsStore.put("lt.min", v); ver++ } }
             Spacer(Modifier.weight(1f))
             T("Compras $pl: ${buys.size} · ${btc(buys.sumOf { it.qtyBtc })}", Q.Buy, 12, bold = true)
