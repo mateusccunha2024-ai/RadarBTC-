@@ -19,10 +19,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: "8.9" }
 
-      - name: Compilar Windows e Android + testes unitários e de carga
+      - name: Compilar Windows e Android (APK) + testes unitários e de carga
         run: |
           set -o pipefail
-          gradle :desktop:test :app:compileDebugKotlin --no-daemon --continue 2>&1 | tee build.log
+          gradle :desktop:test :app:assembleDebug --no-daemon --continue 2>&1 | tee build.log
 
       - name: Guardar resultado dos testes unitários
         if: always()

@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -31,7 +33,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -41,9 +42,9 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.graphics.toComposeImageBitmap
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontFamily
@@ -62,9 +63,6 @@ import com.cunhac.btcradar.engine.LiqSide
 import com.cunhac.btcradar.engine.TerminalState
 import com.cunhac.btcradar.engine.CORE_VENUES
 import com.cunhac.btcradar.engine.Venue
-import org.jetbrains.skia.ColorAlphaType
-import org.jetbrains.skia.Image
-import org.jetbrains.skia.ImageInfo
 import java.text.SimpleDateFormat
 import java.util.Date
 import kotlin.math.roundToInt
@@ -87,14 +85,9 @@ fun diverging(t: Float): Color = if (t >= 0) lerp(VIRIDIS[0], DIV_LONG, t.coerce
 
 /** Converte a grade numa imagem (1 pixel por célula) para desenhar rápido mesmo com 730 colunas. */
 private fun heatImage(rows: Int, cols: Int, color: (Int, Int) -> Color): ImageBitmap {
-    val bytes = ByteArray(rows * cols * 4)
-    for (r in 0 until rows) for (c in 0 until cols) {
-        val col = color(r, c)
-        val i = ((rows - 1 - r) * cols + c) * 4
-        bytes[i] = (col.blue * 255).roundToInt().toByte(); bytes[i + 1] = (col.green * 255).roundToInt().toByte()
-        bytes[i + 2] = (col.red * 255).roundToInt().toByte(); bytes[i + 3] = 255.toByte()
-    }
-    return Image.makeRaster(ImageInfo.makeN32(cols, rows, ColorAlphaType.PREMUL), bytes, cols * 4).toComposeImageBitmap()
+    val px = IntArray(rows * cols)
+    for (r in 0 until rows) for (c in 0 until cols) px[(rows - 1 - r) * cols + c] = color(r, c).toArgb()
+    return argbImage(cols, rows, px)
 }
 
 private fun q99(rows: Int, cols: Int, v: (Int, Int) -> Float): Float {
@@ -104,7 +97,7 @@ private fun q99(rows: Int, cols: Int, v: (Int, Int) -> Float): Float {
     vals.sort(); return vals[(vals.size * 0.99).toInt().coerceAtMost(vals.size - 1)]
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
     val hs by ctx.heat.state.collectAsState()
@@ -144,15 +137,15 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
     val tm = rememberTextMeasurer()
     val axis = TextStyle(color = Q.Muted, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
 
-    Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    Panes(modifier, Pane(1f, 640.dp) { hm ->
         Section(HEAT_MODES[mode] + " · estimado (modelo V8) · " + if (venueIdx == 0) "Binance + Bybit + OKX" else CORE_VENUES[venueIdx - 1].label,
-            Modifier.weight(1f).fillMaxHeight()) {
+            hm) {
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                     Chips("Período", HeatRange.entries.map { it.label }, hs.range.ordinal) { ctx.heat.load(HeatRange.entries[it]) }
                 }
                 Spacer(Modifier.height(6.dp))
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Chips("Mapa", listOf("LIQUIDAÇÕES", "OI POR ENTRADA", "LONGS × SHORTS"), mode) { mode = it; SettingsStore.put("hm.mode", it) }
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         T("Alavancagem", Q.Muted, 11)
@@ -165,13 +158,12 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                     }
                 }
                 Spacer(Modifier.height(6.dp))
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Chips("Corretoras", listOf("TODAS") + CORE_VENUES.map { it.label.uppercase() }, venueIdx) { venueIdx = it; SettingsStore.put("hm.venue", it) }
                     T("Intensidade", Q.Muted, 11)
                     Slider(intensity, { intensity = it; SettingsStore.put("hm.int", it.toDouble()) }, Modifier.width(150.dp).height(20.dp),
                         colors = SliderDefaults.colors(thumbColor = Q.Accent, activeTrackColor = Q.Accent, inactiveTrackColor = Q.Line))
                     Toggle("Liquidações reais", showReal) { showReal = it; SettingsStore.put("hm.real", it) }
-                    Spacer(Modifier.weight(1f))
                     T(when {
                         hs.loading -> "Carregando: ${hs.progress}…"
                         hs.error != null -> "Erro: ${hs.error}"
@@ -187,9 +179,15 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                         return@BoxWithConstraints
                     }
                     val axisW = 70f; val axisH = 18f
-                    Canvas(Modifier.fillMaxSize()
-                        .onPointerEvent(PointerEventType.Move) { hover = it.changes.first().position }
-                        .onPointerEvent(PointerEventType.Exit) { hover = null }) {
+                    // Mouse (PC) ou toque (celular): mostra a cruz e o detalhe do ponto.
+                    Canvas(Modifier.fillMaxSize().pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                val e = awaitPointerEvent()
+                                if (e.type == PointerEventType.Exit) hover = null else e.changes.firstOrNull()?.let { hover = it.position }
+                            }
+                        }
+                    }) {
                         val w = size.width - axisW; val h = size.height - axisH
                         val pMax = d.pMin + d.pStep * d.rows
                         fun y(p: Double) = (h - (p - d.pMin) / (pMax - d.pMin) * h).toFloat()
@@ -244,7 +242,8 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                 }
             }
         }
-        Column(Modifier.width(320.dp).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    }, Pane(0.25f) { pm ->
+        Column(if (compact) pm else Modifier.width(320.dp).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section("Níveis-chave de liquidação", Modifier.fillMaxWidth()) {
                 Column {
                     if (summary == null) Empty("Aguardando o heatmap")
@@ -284,7 +283,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                 }
             }
         }
-    }
+    })
 }
 
 private val HEAT_MODES = listOf("Liquidation heatmap", "Open interest por preço de entrada", "Longs × shorts a liquidar")

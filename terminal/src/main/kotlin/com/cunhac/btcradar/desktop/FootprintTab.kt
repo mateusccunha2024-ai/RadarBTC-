@@ -72,21 +72,22 @@ fun FootprintTab(ctx: AppContext, s: TerminalState) {
     val oldest = ctx.hub.footprint.oldestMs()
 
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(Modifier.background(Q.Panel).padding(8.dp).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
+        Controls {
             Chips("Vela", FP_CANDLES.map { it.first }, cIdx) { cIdx = it; SettingsStore.put("fp.c", it) }
             Chips("Faixa US$", FP_STEPS.map { num(it, 0) }, stIdx) { stIdx = it; SettingsStore.put("fp.s", it) }
             Chips("Velas", FP_COUNTS.map { it.toString() }, nIdx) { nIdx = it; SettingsStore.put("fp.n", it) }
             Chips("Corretoras", listOf("TODAS") + CORE_VENUES.map { it.label.uppercase() }, vIdx) { vIdx = it; SettingsStore.put("fp.v", it) }
-            Spacer(Modifier.weight(1f))
             T(oldest?.let { "Dados desde ${hhmmss(it)}" } ?: "Aguardando trades", Q.Muted, 11)
         }
-        Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Section("Footprint · venda × compra agressora por faixa (BTC)", Modifier.weight(1f).fillMaxHeight()) {
+        // No celular o footprint rola para o lado (cada vela precisa de largura para os números).
+        Panes(grow(1f), Pane(3f, 560.dp) { m ->
+            Section("Footprint · venda × compra agressora por faixa (BTC)", m, minWidth = if (compact) (110 * candles.size.coerceAtLeast(3) + 80).dp else null) {
                 if (candles.isEmpty()) Empty("Montando o footprint", "Precisa de trades das corretoras principais; cada vela aparece assim que recebe execuções")
                 else FootprintChart(candles, step, s.price, Modifier.fillMaxSize())
             }
-            Column(Modifier.width(330.dp).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Section("Perfil de volume", Modifier.fillMaxWidth().weight(1f)) {
+        }, Pane(1f) { pm ->
+            Column((if (compact) pm else Modifier.width(330.dp).fillMaxHeight()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Section("Perfil de volume", Modifier.fillMaxWidth().then(grow(1f, 420.dp))) {
                     Column {
                         Chips(null, FP_PROFILE.map { it.first }, pIdx) { pIdx = it; SettingsStore.put("fp.p", it) }
                         Spacer(Modifier.height(6.dp))
@@ -106,7 +107,7 @@ fun FootprintTab(ctx: AppContext, s: TerminalState) {
                     }
                 }
             }
-        }
+        })
         Footnote("Cada célula mostra venda agressora × compra agressora naquela faixa de preço. Fundo verde = compradores dominaram a faixa; vermelho = vendedores. " +
             "Número em destaque = desequilíbrio diagonal (um lado ≥ 3× o outro). Contorno laranja = POC da vela. " +
             "Área de valor = faixas com 70% do volume. Trades de Binance, Bybit e OKX, guardados por 24 h em faixas de US$ 5.")

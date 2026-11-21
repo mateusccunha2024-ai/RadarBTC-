@@ -25,8 +25,8 @@ class ScreenshotTest {
         Thread.sleep(90_000)
         val out = File("build/screens").apply { mkdirs() }
 
-        fun shot(name: String, tab: Int, settings: Boolean = false, w: Int = 1600, h: Int = 900) {
-            val scene = ImageComposeScene(w, h, Density(1f)) {
+        fun shot(name: String, tab: Int, settings: Boolean = false, w: Int = 1600, h: Int = 900, density: Float = 1f) {
+            val scene = ImageComposeScene(w, h, Density(density)) {
                 RadarTheme { Terminal(ctx, initialTab = tab, showSettings = settings) }
             }
             var t = 0L
@@ -44,6 +44,11 @@ class ScreenshotTest {
         shot("light-menu", 0, settings = true)
         UiScale.set(1.25f)
         shot("light-zoom125-00", 0)
+        // Celular em pé: 412 dp de largura; altura grande para mostrar a página inteira que rola.
+        TABS.indices.forEach { i -> shot("phone-%02d".format(i), i, w = 618, h = 3600, density = 1.5f) }
+        shot("phone-menu", 0, settings = true, w = 618, h = 1372, density = 1.5f)
+        Look.useDark(false)
+        shot("phone-light-00", 0, w = 618, h = 3600, density = 1.5f)
         Look.useDark(true); UiScale.set(1.0f)
         hub.stop()
     }

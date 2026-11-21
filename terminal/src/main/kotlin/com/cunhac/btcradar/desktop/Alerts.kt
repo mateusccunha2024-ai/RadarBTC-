@@ -42,12 +42,15 @@ data class AlertConfig(
     val cooldownMin: Double = 5.0,
     val zonePct: Double = 0.3,
     val zoneMinBtc: Double = 200.0,
+    /** Notificação no próprio aparelho (celular ou bandeja do Windows). */
+    val deviceOn: Boolean = Platform.isMobile,
 ) {
     fun save() {
         SettingsStore.put("al.kinds", kinds.joinToString("|") { it.name })
         SettingsStore.put("al.tg.on", telegramOn); SettingsStore.put("al.tg.token", telegramToken); SettingsStore.put("al.tg.chat", telegramChat)
         SettingsStore.put("al.mail.on", mailOn); SettingsStore.put("al.smtp.host", smtpHost); SettingsStore.put("al.smtp.port", smtpPort)
         SettingsStore.put("al.smtp.user", smtpUser); SettingsStore.put("al.smtp.pass", smtpPass); SettingsStore.put("al.mail.to", mailTo)
+        SettingsStore.put("al.device", deviceOn)
         SettingsStore.put("al.cool", cooldownMin); SettingsStore.put("al.zone.pct", zonePct); SettingsStore.put("al.zone.min", zoneMinBtc)
     }
 
@@ -59,7 +62,8 @@ data class AlertConfig(
             return AlertConfig(k, SettingsStore.b("al.tg.on", false), SettingsStore.s("al.tg.token", ""), SettingsStore.s("al.tg.chat", ""),
                 SettingsStore.b("al.mail.on", false), SettingsStore.s("al.smtp.host", d.smtpHost), SettingsStore.i("al.smtp.port", d.smtpPort),
                 SettingsStore.s("al.smtp.user", ""), SettingsStore.s("al.smtp.pass", ""), SettingsStore.s("al.mail.to", ""),
-                SettingsStore.d("al.cool", d.cooldownMin), SettingsStore.d("al.zone.pct", d.zonePct), SettingsStore.d("al.zone.min", d.zoneMinBtc))
+                SettingsStore.d("al.cool", d.cooldownMin), SettingsStore.d("al.zone.pct", d.zonePct), SettingsStore.d("al.zone.min", d.zoneMinBtc),
+                SettingsStore.b("al.device", d.deviceOn))
         }
     }
 }
@@ -103,7 +107,7 @@ class AlertEngine(private val hub: Hub, private val heat: HeatLoader) {
 
     private fun onAlert(a: MarketAlert) {
         val c = config.value
-        if (a.kind !in c.kinds || (!c.telegramOn && !c.mailOn)) return
+        if (a.kind !in c.kinds || (!c.telegramOn && !c.mailOn && !c.deviceOn)) return
         val now = System.currentTimeMillis()
         val last = lastByKey[a.key]
         if (last != null && now - last < c.cooldownMin * 60_000) return
@@ -128,6 +132,10 @@ class AlertEngine(private val hub: Hub, private val heat: HeatLoader) {
         val text = "Radar BTC · ${a.kind.label}\n${a.text}\n${hhmmss(a.timeMs)}"
         val results = ArrayList<String>()
         var ok = true
+        if (c.deviceOn || force) {
+            val ok = runCatching { Platform.notify("Radar BTC · ${a.kind.label}", a.text) }.getOrDefault(false)
+            results += (if (Platform.isMobile) "Celular: " else "Windows: ") + if (ok) "notificado" else "notificações bloqueadas ou indisponíveis"
+        }
         if (c.telegramOn || (force && c.telegramToken.isNotBlank())) {
             val r = runCatching { telegram(c, text) }
             results += "Telegram: " + (r.exceptionOrNull()?.message?.take(80) ?: "enviado")

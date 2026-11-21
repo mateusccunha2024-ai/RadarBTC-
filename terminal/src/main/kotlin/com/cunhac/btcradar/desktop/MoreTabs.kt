@@ -85,18 +85,19 @@ fun CorrelationTab(ctx: AppContext, s: TerminalState) {
         Triple("CVD × open interest", Analytics.pearson(cvd, oi), "Positiva = compra agressora abrindo posições."),
         Triple("CVD × liquidações", Analytics.pearson(cvd, liq), "Positiva = compras forçadas de shorts liquidados entrando no CVD."),
     )
-    Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Column(Modifier.weight(1.6f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(Modifier.background(Q.Panel).padding(8.dp).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
+    Panes(Modifier.fillMaxSize(), Pane(1.6f) { pm ->
+        Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Controls {
                 Chips("Janela", CORR_WINDOWS.map { it.first }, wIdx) { wIdx = it; SettingsStore.put("co.w", it) }
-                T("Baldes de 1 minuto · preço, CVD, open interest e liquidações lado a lado", Q.Muted, 11)
+                T("Baldes de 1 minuto · preço, CVD, open interest e liquidações lado a lado", Q.Muted, 11, wrap = compact)
             }
-            Section("Preço, fluxo, posições e liquidações por minuto", Modifier.fillMaxWidth().weight(1f)) {
+            Section("Preço, fluxo, posições e liquidações por minuto", Modifier.fillMaxWidth().then(grow(1f, 520.dp))) {
                 if (buckets.count { it.priceClose != null } < 3) Empty("Juntando dados", "Precisa de alguns minutos de dados desde a abertura do app (guarda até 1 h)")
                 else CorrelationChart(buckets, Modifier.fillMaxSize())
             }
         }
-        Column(Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    }, Pane(1f) { pm ->
+        Column(pm.then(if (compact) Modifier else Modifier.verticalScroll(rememberScrollState())), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section("Correlação (Pearson) na janela", Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     pairs.forEach { (name, r, hint) -> CorrRow(name, r, hint) }
@@ -121,7 +122,7 @@ fun CorrelationTab(ctx: AppContext, s: TerminalState) {
             Footnote("Correlação com menos de 8 minutos de dados aparece como \"sem dados\". |r| ≥ 0,7 forte, ≥ 0,4 moderada, ≥ 0,2 fraca. " +
                 "OI somado só conta quando Binance, Bybit e OKX reportaram. Liquidações = 6 corretoras (positivo = mais shorts liquidados).")
         }
-    }
+    })
 }
 
 private fun regime(dp: Double, dc: Double, doi: Double?, ll: Double, ls: Double): String {
@@ -241,21 +242,21 @@ fun LiquidityHistoryTab(ctx: AppContext, s: TerminalState) {
         }.sortedByDescending { it.count * 1000 + it.peakSum }.take(40)
     }
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(Modifier.background(Q.Panel).padding(8.dp).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
+        Controls {
             Chips("Período", LH_PERIODS.map { it.first }, pIdx) { pIdx = it; SettingsStore.put("lh.p", it) }
             Chips("Corretora", listOf("TODAS") + CORE_VENUES.map { it.label.uppercase() }, vIdx) { vIdx = it }
             Chips("Lado", listOf("AMBOS", "COMPRA", "VENDA"), sideIdx) { sideIdx = it }
             NumField("Pico ≥ (BTC)", minPeak, 56.dp) { it?.let { v -> minPeak = v; SettingsStore.put("lh.min", v) } }
-            Spacer(Modifier.weight(1f))
             T("${ev.size} paredes encerradas · ${all.size} eventos gravados no período", Q.Muted, 11)
         }
-        Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Section("Onde as paredes estiveram e como terminaram", Modifier.weight(1.5f).fillMaxHeight()) {
+        Panes(grow(1f), Pane(1.5f, 420.dp) { m ->
+            Section("Onde as paredes estiveram e como terminaram", m) {
                 if (ev.isEmpty()) Empty("Nenhuma parede encerrada no período com esses filtros",
                     "O histórico vem do banco local: paredes que saíram do livro desde que o app foi instalado. Reduza o pico mínimo ou aumente o período.")
                 else WallScatter(ev, period, price, Modifier.fillMaxSize())
             }
-            Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        }, Pane(1f) { pm ->
+            Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Section("Como terminaram", Modifier.fillMaxWidth()) {
                     Column {
                         val tot = ev.size.coerceAtLeast(1)
@@ -273,7 +274,7 @@ fun LiquidityHistoryTab(ctx: AppContext, s: TerminalState) {
                         }
                     }
                 }
-                Section("Níveis onde a liquidez mais aparece (faixas de ${px(bin)} US$)", Modifier.fillMaxWidth().weight(1f)) {
+                Section("Níveis onde a liquidez mais aparece (faixas de ${px(bin)} US$)", Modifier.fillMaxWidth().then(grow(1f, 420.dp)), minWidth = 470.dp) {
                     Column {
                         Th("FAIXA" to 80, "LADO" to 52, "VEZES" to 50, "PICO SOMADO" to 90, "EXECUT." to 56, "RETIR." to 52, "ÚLTIMA" to 0)
                         if (levels.isEmpty()) Empty("Sem níveis no período")
@@ -287,7 +288,7 @@ fun LiquidityHistoryTab(ctx: AppContext, s: TerminalState) {
                     }
                 }
             }
-        }
+        })
         Footnote("Cada ponto é uma parede que saiu do livro: posição = hora e preço; tamanho = pico em BTC; cor = lado (verde compra, vermelho venda); " +
             "anel laranja = execução confirmada, anel amarelo = preço atravessou, sem anel = retirada. Níveis que se repetem costumam ser suporte/resistência defendidos.")
     }
@@ -338,17 +339,31 @@ fun AlertsTab(ctx: AppContext, s: TerminalState) {
     val sent by ctx.alerts.sent.collectAsState()
     var c by remember { mutableStateOf(cfg) }
     val dirty = c != cfg
-    Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Column(Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Panes(Modifier.fillMaxSize(), Pane(1f) { pm ->
+        Column(pm.then(if (compact) Modifier else Modifier.verticalScroll(rememberScrollState())), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Section("Notificações ${if (Platform.isMobile) "neste celular" else "do Windows"}", Modifier.fillMaxWidth()) {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Toggle(if (Platform.isMobile) "Mostrar notificação no celular" else "Mostrar notificação na bandeja do Windows", c.deviceOn) { c = c.copy(deviceOn = it) }
+                    if (Platform.backgroundSupported) {
+                        var bg by remember { mutableStateOf(Platform.backgroundOn) }
+                        Toggle("Continuar monitorando com o app fechado", bg) { bg = it; Platform.setBackground(it) }
+                        Footnote("Mantém as conexões e os alertas ativos em segundo plano, com uma notificação fixa. Usa mais bateria e dados; desligue quando não precisar.")
+                    }
+                    if (Platform.isMobile && !Platform.notifySupported) Footnote("Permita notificações do Radar BTC nas configurações do Android.")
+                }
+            }
             Section("O que avisar", Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     AlertKind.entries.forEach { k ->
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (compact) Column {
+                            Toggle(k.label, k in c.kinds) { on -> c = c.copy(kinds = if (on) c.kinds + k else c.kinds - k) }
+                            T(kindHint(k, c), Q.Muted, 11, wrap = true, modifier = Modifier.padding(start = 4.dp, top = 2.dp))
+                        } else Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(Modifier.width(260.dp)) { Toggle(k.label, k in c.kinds) { on -> c = c.copy(kinds = if (on) c.kinds + k else c.kinds - k) } }
                             T(kindHint(k, c), Q.Muted, 11, modifier = Modifier.weight(1f))
                         }
                     }
-                    Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Controls {
                         NumField("Zona: distância ≤ %", c.zonePct, 50.dp) { it?.let { v -> c = c.copy(zonePct = v) } }
                         NumField("Zona: tamanho ≥ BTC", c.zoneMinBtc, 64.dp) { it?.let { v -> c = c.copy(zoneMinBtc = v) } }
                         NumField("Repetir o mesmo aviso após (min)", c.cooldownMin, 44.dp) { it?.let { v -> c = c.copy(cooldownMin = v) } }
@@ -360,7 +375,7 @@ fun AlertsTab(ctx: AppContext, s: TerminalState) {
             Section("Telegram", Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Toggle("Enviar pelo Telegram", c.telegramOn) { c = c.copy(telegramOn = it) }
-                    TextSetting("Token do bot", c.telegramToken, 420.dp, secret = true) { c = c.copy(telegramToken = it) }
+                    TextSetting("Token do bot", c.telegramToken, if (compact) 250.dp else 420.dp, secret = true) { c = c.copy(telegramToken = it) }
                     TextSetting("Chat ID", c.telegramChat, 200.dp) { c = c.copy(telegramChat = it) }
                     Footnote("Crie um bot com o @BotFather, mande uma mensagem para ele e pegue o chat ID em api.telegram.org/bot<token>/getUpdates.")
                 }
@@ -369,24 +384,26 @@ fun AlertsTab(ctx: AppContext, s: TerminalState) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Toggle("Enviar por e-mail", c.mailOn) { c = c.copy(mailOn = it) }
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        TextSetting("Servidor", c.smtpHost, 180.dp) { c = c.copy(smtpHost = it) }
+                        TextSetting("Servidor", c.smtpHost, if (compact) 170.dp else 180.dp) { c = c.copy(smtpHost = it) }
                         TextSetting("Porta", c.smtpPort.toString(), 60.dp) { t -> t.toIntOrNull()?.let { c = c.copy(smtpPort = it) } }
                     }
-                    TextSetting("Usuário (e-mail de envio)", c.smtpUser, 280.dp) { c = c.copy(smtpUser = it) }
+                    TextSetting("Usuário (e-mail de envio)", c.smtpUser, if (compact) 250.dp else 280.dp) { c = c.copy(smtpUser = it) }
                     TextSetting("Senha de app", c.smtpPass, 220.dp, secret = true) { c = c.copy(smtpPass = it) }
-                    TextSetting("Enviar para", c.mailTo, 280.dp) { c = c.copy(mailTo = it) }
+                    TextSetting("Enviar para", c.mailTo, if (compact) 250.dp else 280.dp) { c = c.copy(mailTo = it) }
                     Footnote("Gmail: smtp.gmail.com, porta 465, com uma senha de app (Conta Google → Segurança → Senhas de app). Porta 587 usa STARTTLS.")
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 ActionButton(if (dirty) "Salvar alterações" else "Salvo", dirty) { ctx.alerts.update(c) }
                 ActionButton("Enviar teste", true) { ctx.alerts.update(c); ctx.alerts.test() }
-                T("Token e senha ficam guardados só neste computador (registro do usuário do Windows), sem criptografia própria.", Q.Muted, 11, wrap = true, modifier = Modifier.weight(1f))
             }
+            T(if (Platform.isMobile) "Token e senha ficam guardados só neste celular (preferências do app), sem criptografia própria."
+              else "Token e senha ficam guardados só neste computador (registro do usuário do Windows), sem criptografia própria.", Q.Muted, 11, wrap = true)
         }
-        Section("Avisos enviados", Modifier.weight(0.9f).fillMaxHeight()) {
+    }, Pane(0.9f, 420.dp) { m ->
+        Section("Avisos enviados", m) {
             Column {
-                if (sent.isEmpty()) Empty("Nenhum aviso enviado nesta sessão", if (!cfg.telegramOn && !cfg.mailOn) "Ligue o Telegram ou o e-mail ao lado e salve" else "Os avisos aparecem aqui com o resultado de cada envio")
+                if (sent.isEmpty()) Empty("Nenhum aviso enviado nesta sessão", if (!cfg.telegramOn && !cfg.mailOn && !cfg.deviceOn) "Ligue um canal de aviso e salve" else "Os avisos aparecem aqui com o resultado de cada envio")
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     items(sent) { a ->
                         Column(Modifier.fillMaxWidth().background(Q.Panel2).padding(8.dp)) {
@@ -398,7 +415,7 @@ fun AlertsTab(ctx: AppContext, s: TerminalState) {
                 }
             }
         }
-    }
+    })
 }
 
 private fun kindHint(k: AlertKind, c: AlertConfig) = when (k) {

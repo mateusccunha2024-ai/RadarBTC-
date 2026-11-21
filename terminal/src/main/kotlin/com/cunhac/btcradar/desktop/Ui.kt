@@ -4,7 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +27,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -115,12 +124,55 @@ fun T(text: String, color: Color = Q.Text, size: Int = 12, bold: Boolean = false
         fontFamily = if (monoFont) FontFamily.Monospace else FontFamily.Default, modifier = modifier,
         maxLines = if (wrap) Int.MAX_VALUE else 1, overflow = TextOverflow.Ellipsis, softWrap = wrap, textAlign = align)
 
+// ---------------------------------------------------------------------
+// Layout adaptável: o mesmo código serve ao PC (painéis lado a lado) e ao celular
+// (painéis empilhados numa coluna com rolagem; tabelas largas rolam para o lado).
+// ---------------------------------------------------------------------
+
+/** true em telas estreitas (celular em pé). */
+val LocalCompact = staticCompositionLocalOf { false }
+val compact: Boolean @Composable get() = LocalCompact.current
+
+/** Um painel de [Panes]: peso no PC e altura fixa no celular (null = altura do conteúdo). */
+class Pane(val weight: Float, val mobileHeight: Dp? = null, val content: @Composable (Modifier) -> Unit)
+
+/** Painéis lado a lado no PC; empilhados no celular. */
 @Composable
-fun Section(title: String, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    Column(modifier.background(Q.Panel).border(1.dp, Q.Line).padding(if (Look.compact) 6.dp else 10.dp)) {
-        T(title.uppercase(), Q.Muted, 11, bold = true)
-        Box(Modifier.padding(top = 6.dp)) { content() }
+fun Panes(modifier: Modifier = Modifier, vararg panes: Pane) {
+    if (compact) Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        panes.forEach { p -> p.content(if (p.mobileHeight != null) Modifier.fillMaxWidth().height(p.mobileHeight) else Modifier.fillMaxWidth()) }
+    } else Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        panes.forEach { p -> p.content(Modifier.weight(p.weight).fillMaxHeight()) }
     }
+}
+
+/** Ocupa o resto da coluna no PC; no celular usa altura fixa (a tela inteira rola). */
+@Composable
+fun ColumnScope.grow(weight: Float = 1f, mobile: Dp? = null): Modifier =
+    if (compact) (if (mobile != null) Modifier.height(mobile) else Modifier) else Modifier.weight(weight)
+
+/**
+ * Painel com título. [minWidth]: largura mínima do conteúdo (tabelas); em telas menores
+ * o conteúdo rola para o lado em vez de espremer as colunas.
+ */
+@Composable
+fun Section(title: String, modifier: Modifier = Modifier, minWidth: Dp? = null, content: @Composable () -> Unit) {
+    Column(modifier.background(Q.Panel).border(1.dp, Q.Line).padding(if (Look.compact) 6.dp else 10.dp)) {
+        T(title.uppercase(), Q.Muted, 11, bold = true, wrap = compact)
+        if (minWidth == null) Box(Modifier.padding(top = 6.dp)) { content() }
+        else BoxWithConstraints(Modifier.padding(top = 6.dp)) {
+            if (maxWidth >= minWidth) content()
+            else Box(Modifier.horizontalScroll(rememberScrollState())) { Box(Modifier.width(minWidth)) { content() } }
+        }
+    }
+}
+
+/** Linha de controles que quebra linha quando não cabe (zoom alto ou celular). */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun Controls(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    FlowRow(modifier.background(Q.Panel).padding(8.dp).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)) { content() }
 }
 
 /** Estado vazio: diz o que está acontecendo e o que esperar. */
@@ -146,10 +198,12 @@ private fun ChipItem(s: String, on: Boolean, onClick: () -> Unit) =
         modifier = Modifier.background(if (on) Q.Panel2 else Q.Panel).border(1.dp, if (on) Q.Accent else Q.Line)
             .clickable(onClick = onClick).padding(horizontal = 8.dp, vertical = 4.dp))
 
+/** Grupo de opções; quebra linha sozinho quando não cabe (celular). */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Chips(label: String?, options: List<String>, selected: Int, onSelect: (Int) -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        if (label != null) T(label, Q.Muted, 11, modifier = Modifier.padding(end = 2.dp))
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        if (label != null) T(label, Q.Muted, 11, modifier = Modifier.padding(end = 2.dp, top = 4.dp))
         options.forEachIndexed { i, s -> ChipItem(s, i == selected) { onSelect(i) } }
     }
 }
