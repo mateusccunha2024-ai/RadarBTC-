@@ -75,8 +75,9 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
         ctx.hub.flow.volumeByPrice(exWin, venues, { p -> if (g <= 0) Math.round(p * 100) / 100.0 else floor(p / g) * g })
     }
 
-    Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Column(Modifier.weight(1.7f).fillMaxHeight().background(Q.Panel).padding(10.dp)) {
+    val full = !compact
+    Panes(Modifier.fillMaxSize(), Pane(1.7f, 640.dp) { pm ->
+        Column(pm.background(Q.Panel).padding(10.dp)) {
             // Controles quebram linha sozinhos quando a interface está ampliada.
             FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Chips("Livro", listOf("CONSOLIDADO") + CORE_VENUES.map { it.label.uppercase() }, venueIdx) { venueIdx = it; SettingsStore.put("of.venue", it) }
@@ -94,9 +95,10 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
                 if (book.missing.isNotEmpty()) T("Fora da consolidação: " + book.missing.joinToString { it.label } + " (livro inválido, ver STATUS)", Q.Sell, 11)
             }
             Spacer(Modifier.height(8.dp))
-            Ladder(book.asks, book.bids, rpi, INTS[intIdx], s.tick, exec, g, listOf("5m", "15m", "1h")[exIdx])
+            Ladder(book.asks, book.bids, rpi, INTS[intIdx], s.tick, exec, g, listOf("5m", "15m", "1h")[exIdx], full)
         }
-        Column(Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    }, Pane(1f) { pm ->
+        Column(pm.then(if (compact) Modifier else Modifier.verticalScroll(rememberScrollState())), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section("Resumo do livro exibido") {
                 Column {
                     KV("Maior BID", book.biggestBid?.let { "${px(it.price)} · ${btc(it.total)}" } ?: "—", Q.Buy)
@@ -111,7 +113,7 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
             CORE_VENUES.forEach { v -> s.books[v]?.let { BookCard(it, s) } }
             s.rpi?.let { BookCard(it, s, "BYBIT RPI (só parte RPI, 50 níveis)") }
         }
-    }
+    })
 }
 
 @Composable
@@ -134,29 +136,32 @@ private fun BookCard(b: BookView, s: TerminalState, title: String = "${b.venue.l
 
 @Composable
 private fun Ladder(asks: List<ConsRow>, bids: List<ConsRow>, showRpi: Boolean, intensity: Float, tick: Long,
-                   exec: Map<Double, DoubleArray>, g: Double, exLabel: String) {
+                   exec: Map<Double, DoubleArray>, g: Double, exLabel: String, full: Boolean = true) {
     val max = ((asks + bids).maxOfOrNull { it.total } ?: 0.0).coerceAtLeast(1e-9)
     fun ex(r: ConsRow): DoubleArray? = exec[if (g > 0 && r.side == BookSide.ASK) r.price - g else r.price]
     Row(Modifier.fillMaxWidth().padding(bottom = 2.dp)) {
         T("PREÇO", Q.Muted, 10, modifier = Modifier.width(88.dp))
         T("QUANTIDADE (BTC)", Q.Muted, 10, modifier = Modifier.weight(1f))
-        listOf("BIN", "BYB", "OKX").forEach { T(it, Q.Muted, 10, modifier = Modifier.width(60.dp)) }
-        if (showRpi) T("RPI", Q.Muted, 10, modifier = Modifier.width(52.dp))
-        T("ORDENS", Q.Muted, 10, modifier = Modifier.width(52.dp))
+        if (full) {
+            listOf("BIN", "BYB", "OKX").forEach { T(it, Q.Muted, 10, modifier = Modifier.width(60.dp)) }
+            if (showRpi) T("RPI", Q.Muted, 10, modifier = Modifier.width(52.dp))
+            T("ORDENS", Q.Muted, 10, modifier = Modifier.width(52.dp))
+        }
         T("TOTAL", Q.Muted, 10, modifier = Modifier.width(70.dp).padding(start = 4.dp))
-        T("ACUMULADO", Q.Muted, 10, modifier = Modifier.width(78.dp))
-        T("EX.COMPRA", Q.Muted, 10, modifier = Modifier.width(74.dp))
-        T("EX.VENDA", Q.Muted, 10, modifier = Modifier.width(70.dp))
+        if (full) T("ACUMULADO", Q.Muted, 10, modifier = Modifier.width(78.dp))
+        T(if (full) "EX.COMPRA" else "EX.C", Q.Muted, 10, modifier = Modifier.width(if (full) 74.dp else 56.dp))
+        T(if (full) "EX.VENDA" else "EX.V", Q.Muted, 10, modifier = Modifier.width(if (full) 70.dp else 56.dp))
     }
-    T("ACUMULADO = BTC somado do preço atual até a linha · ORDENS = nº de ordens no nível (só a OKX publica) · EX. = BTC executado no nível nos últimos $exLabel",
-        Q.Muted, 10, modifier = Modifier.padding(bottom = 4.dp))
+    T(if (full) "ACUMULADO = BTC somado do preço atual até a linha · ORDENS = nº de ordens no nível (só a OKX publica) · EX. = BTC executado no nível nos últimos $exLabel"
+        else "Celular: colunas por corretora ocultas (veja no PC ou na aba de cada livro) · EX. = executado nos últimos $exLabel",
+        Q.Muted, 10, wrap = !full, modifier = Modifier.padding(bottom = 4.dp))
     val list = rememberLazyListState()
     var centered by remember { mutableStateOf(false) }
     LaunchedEffect(asks.size, bids.size) {
         if (!centered && asks.isNotEmpty()) { list.scrollToItem((asks.size - 12).coerceAtLeast(0)); centered = true }
     }
     LazyColumn(state = list, modifier = Modifier.fillMaxSize()) {
-        items(asks.reversed()) { LadderRow(it, max, showRpi, intensity, ex(it)) }
+        items(asks.reversed()) { LadderRow(it, max, showRpi, intensity, ex(it), full) }
         item {
             val bb = bids.firstOrNull()?.price; val ba = asks.firstOrNull()?.price
             Row(Modifier.fillMaxWidth().background(Q.Panel2).padding(vertical = 3.dp), horizontalArrangement = Arrangement.Center) {
@@ -167,12 +172,12 @@ private fun Ladder(asks: List<ConsRow>, bids: List<ConsRow>, showRpi: Boolean, i
                 }, Q.Accent, 11)
             }
         }
-        items(bids) { LadderRow(it, max, showRpi, intensity, ex(it)) }
+        items(bids) { LadderRow(it, max, showRpi, intensity, ex(it), full) }
     }
 }
 
 @Composable
-private fun LadderRow(r: ConsRow, max: Double, showRpi: Boolean, intensity: Float, ex: DoubleArray?) {
+private fun LadderRow(r: ConsRow, max: Double, showRpi: Boolean, intensity: Float, ex: DoubleArray?, full: Boolean = true) {
     val buy = r.side == BookSide.BID
     val base = if (buy) Q.Buy else Q.Sell
     val frac = ((r.total / max).toFloat() * intensity).coerceIn(0f, 1f)
@@ -181,13 +186,15 @@ private fun LadderRow(r: ConsRow, max: Double, showRpi: Boolean, intensity: Floa
         Box(Modifier.weight(1f).fillMaxHeight().padding(vertical = 2.dp)) {
             if (frac > 0.003f) Box(Modifier.fillMaxHeight().fillMaxWidth(frac).background(base.copy(alpha = 0.25f + 0.6f * frac)))
         }
-        for (i in 0..2) T(if (r.byVenue[i] > 0) qty(r.byVenue[i]) else "·", if (r.byVenue[i] > 0) Q.Text else Q.Line, 11, monoFont = true, modifier = Modifier.width(60.dp))
-        if (showRpi) T(if (r.byVenue[3] > 0) qty(r.byVenue[3]) else "·", Q.Muted, 11, monoFont = true, modifier = Modifier.width(52.dp))
-        T(if (r.okxOrders > 0) r.okxOrders.toString() else "·", if (r.okxOrders > 0) Q.Muted else Q.Line, 11, monoFont = true, modifier = Modifier.width(52.dp))
+        if (full) {
+            for (i in 0..2) T(if (r.byVenue[i] > 0) qty(r.byVenue[i]) else "·", if (r.byVenue[i] > 0) Q.Text else Q.Line, 11, monoFont = true, modifier = Modifier.width(60.dp))
+            if (showRpi) T(if (r.byVenue[3] > 0) qty(r.byVenue[3]) else "·", Q.Muted, 11, monoFont = true, modifier = Modifier.width(52.dp))
+            T(if (r.okxOrders > 0) r.okxOrders.toString() else "·", if (r.okxOrders > 0) Q.Muted else Q.Line, 11, monoFont = true, modifier = Modifier.width(52.dp))
+        }
         T(qty(r.total), Q.Text, 11, bold = frac > 0.5f, monoFont = true, modifier = Modifier.width(70.dp).padding(start = 4.dp))
-        T(num(r.cumulative, 2), Q.Muted, 11, monoFont = true, modifier = Modifier.width(78.dp))
+        if (full) T(num(r.cumulative, 2), Q.Muted, 11, monoFont = true, modifier = Modifier.width(78.dp))
         val eb = ex?.get(0) ?: 0.0; val es = ex?.get(1) ?: 0.0
-        T(if (eb > 0) qty(eb) else "·", if (eb > 0) Q.Buy else Q.Line, 11, monoFont = true, modifier = Modifier.width(74.dp))
-        T(if (es > 0) qty(es) else "·", if (es > 0) Q.Sell else Q.Line, 11, monoFont = true, modifier = Modifier.width(70.dp))
+        T(if (eb > 0) qty(eb) else "·", if (eb > 0) Q.Buy else Q.Line, 11, monoFont = true, modifier = Modifier.width(if (full) 74.dp else 56.dp))
+        T(if (es > 0) qty(es) else "·", if (es > 0) Q.Sell else Q.Line, 11, monoFont = true, modifier = Modifier.width(if (full) 70.dp else 56.dp))
     }
 }

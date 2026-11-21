@@ -73,7 +73,7 @@ fun WallsTab(ctx: AppContext, s: TerminalState) {
     val hist = remember(s.tick) { ctx.hub.walls.history(300) }
     val mid = s.price ?: 0.0
     Column(Modifier.fillMaxSize()) {
-        Row(Modifier.background(Q.Panel).padding(8.dp).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
+        Controls {
             Chips("Corretora", listOf("TODAS") + CORE_VENUES.map { it.label.uppercase() }, venueIdx) { venueIdx = it }
             NumField("SMALL ≥", th.small, 60.dp) { it?.let { v -> th.small = v; SettingsStore.put("w.small", v); ver++ } }
             NumField("MEDIUM ≥", th.medium, 60.dp) { it?.let { v -> th.medium = v; SettingsStore.put("w.medium", v) } }
@@ -83,13 +83,12 @@ fun WallsTab(ctx: AppContext, s: TerminalState) {
             T("BTC · ativas: ${ctx.hub.walls.activeCount()}", Q.Muted, 11)
         }
         Spacer(Modifier.height(8.dp))
-        Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            WallTable("TOP 50 BID WALLS", bids, mid, Q.Buy, Modifier.weight(1f))
-            WallTable("TOP 50 ASK WALLS", asks, mid, Q.Sell, Modifier.weight(1f))
-        }
+        Panes(grow(1f), Pane(1f, 440.dp) { m -> WallTable("TOP 50 BID WALLS", bids, mid, Q.Buy, m) },
+            Pane(1f, 440.dp) { m -> WallTable("TOP 50 ASK WALLS", asks, mid, Q.Sell, m) })
         Spacer(Modifier.height(8.dp))
-        Row(Modifier.fillMaxWidth().height(230.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Section("Histórico de concentrações (eventos de saída do livro)", Modifier.weight(1.7f).fillMaxHeight()) {
+        val sigs = remember(s.tick) { ctx.hub.walls.signals() }
+        Panes(if (compact) Modifier else Modifier.fillMaxWidth().height(230.dp), Pane(1.7f, 300.dp) { m ->
+        Section("Histórico de concentrações (eventos de saída do livro)", m, minWidth = 920.dp) {
             Column {
                 Th("HORA" to 70, "CORRETORA" to 80, "LADO" to 44, "PREÇO" to 90, "STATUS" to 190, "PICO" to 90, "FINAL" to 90, "NEGOCIADO NO NÍVEL" to 130, "PERMANÊNCIA" to 0)
                 if (hist.isEmpty()) Empty("Nenhuma concentração saiu do livro ainda", "Quando uma parede some, aqui aparece se houve execução corroborada por trades ou só retirada")
@@ -103,8 +102,8 @@ fun WallsTab(ctx: AppContext, s: TerminalState) {
                 }
             }
         }
-        val sigs = remember(s.tick) { ctx.hub.walls.signals() }
-        Section("Absorção e iceberg · ${sigs.size}", Modifier.weight(1f).fillMaxHeight()) {
+        }, Pane(1f, 260.dp) { m ->
+        Section("Absorção e iceberg · ${sigs.size}", m, minWidth = 440.dp) {
             Column {
                 Th("PREÇO" to 80, "CORR." to 58, "SINAL" to 76, "EXECUTADO" to 72, "REPOSTO" to 66, "RESTANTE" to 0)
                 if (sigs.isEmpty()) Empty("Nenhuma parede absorvendo agora", "Aparece quando um nível recebe execução e não diminui (ou volta a crescer)")
@@ -117,19 +116,19 @@ fun WallsTab(ctx: AppContext, s: TerminalState) {
                 }
             }
         }
-        }
-        T("Identidade = corretora + instrumento + lado + preço. O livro público é agregado por preço: não identificamos ordens individuais nem quem as colocou. " +
+        })
+        Footnote("Identidade = corretora + instrumento + lado + preço. O livro público é agregado por preço: não identificamos ordens individuais nem quem as colocou. " +
             "Sumir do livro não prova execução: EXECUTION_CORROBORATED exige trades no nível ≥ 50% da quantidade. " +
             "EXECUTADO = BTC negociado exatamente no preço da parede desde que ela apareceu; % CONS. = executado ÷ (executado + restante). " +
             "ABSORÇÃO = recebeu execução ≥ 50% do tamanho inicial e manteve ≥ 80% dele. ICEBERG = executou mais do que mostrava e foi reposta 2+ vezes " +
-            "(REPOSTO = execução que não reduziu o livro). Ambos são inferências.", Q.Muted, 11, wrap = true, modifier = Modifier.padding(top = 4.dp))
+            "(REPOSTO = execução que não reduziu o livro). Ambos são inferências.", Modifier.padding(top = 4.dp))
     }
 }
 
 @Composable
 private fun WallTable(title: String, walls: List<Wall>, mid: Double, color: Color, modifier: Modifier) {
     val maxQ = (walls.maxOfOrNull { it.currentQty } ?: 0.0).coerceAtLeast(1e-9)
-    Section("$title · ${walls.size}", modifier.fillMaxHeight()) {
+    Section("$title · ${walls.size}", modifier.fillMaxHeight(), minWidth = 700.dp) {
         Column {
             Th("PREÇO" to 80, "CORR." to 54, "ATUAL (BTC)" to 0, "Δ BTC" to 60, "EXEC." to 66, "% CONS." to 52, "DIST." to 58, "TEMPO" to 46, "STATUS" to 88, "CLASSE" to 64, "SINAL" to 72)
             if (walls.isEmpty()) Empty("Nenhuma parede acima do limite SMALL nesta faixa", "Ajuste os limites ou a faixa ±% acima")
@@ -180,14 +179,13 @@ fun classColor(c: WallClass): Color = when (c) {
 fun FlowTab(ctx: AppContext, s: TerminalState) {
     var winIdx by remember { mutableIntStateOf(SettingsStore.i("fl.win", 5)) }
     val w = FLOW_WINDOWS[winIdx]
-    Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Column(Modifier.weight(1.5f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(Modifier.background(Q.Panel).padding(8.dp).fillMaxWidth()) {
+    Panes(Modifier.fillMaxSize(), Pane(1.5f) { pm ->
+        Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Controls {
                 Chips("Janela", FLOW_WINDOWS.map { it.first }, winIdx) { winIdx = it; SettingsStore.put("fl.win", it) }
-                Spacer(Modifier.width(12.dp))
-                T("Eventos processados na chegada; a tela agrupa a cada 1,5 s.", Q.Muted, 11)
+                T("Eventos processados na chegada; a tela agrupa a cada 1,5 s.", Q.Muted, 11, wrap = compact)
             }
-            Section("Fluxo agressor (${w.first})", Modifier.fillMaxWidth()) {
+            Section("Fluxo agressor (${w.first})", Modifier.fillMaxWidth(), minWidth = 900.dp) {
                 Column {
                     Th("FONTE" to 90, "COMPRADO" to 100, "VENDIDO" to 100, "DELTA" to 100, "TRADES" to 70, "MÉDIO" to 80, "MAIOR COMPRA" to 110, "MAIOR VENDA" to 110, "TRADES/S" to 0)
                     fun row(name: String, f: FlowStats?) {}
@@ -201,7 +199,7 @@ fun FlowTab(ctx: AppContext, s: TerminalState) {
                     }
                 }
             }
-            Section("CVD · últimos 15 min (BTC, desde o início da janela)", Modifier.fillMaxWidth().weight(1f)) {
+            Section("CVD · últimos 15 min (BTC, desde o início da janela)", Modifier.fillMaxWidth().then(grow(1f, 340.dp))) {
                 val series = remember(s.tick) { ctx.hub.flow.cvdSeries(900_000) }
                 Column {
                     Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -218,7 +216,8 @@ fun FlowTab(ctx: AppContext, s: TerminalState) {
                 }
             }
         }
-        Column(Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    }, Pane(1f) { pm ->
+        Column(pm.then(if (compact) Modifier else Modifier.verticalScroll(rememberScrollState())), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             val sig = s.signals.getOrNull(winIdx)
             if (sig != null) {
                 val c = when (sig.cls.side) { "LONG FLOW" -> Q.Buy; "SHORT FLOW" -> Q.Sell; else -> Q.Muted }
@@ -284,7 +283,7 @@ fun FlowTab(ctx: AppContext, s: TerminalState) {
                 }
             }
         }
-    }
+    })
 }
 
 @Composable
@@ -342,22 +341,22 @@ fun LargeTradesTab(ctx: AppContext, s: TerminalState) {
     val minBtc = ctx.hub.large.minBtc
     val pl = LT_PERIODS[pIdx].first
     Column(Modifier.fillMaxSize()) {
-        Row(Modifier.background(Q.Panel).padding(8.dp).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
+        Controls {
             Chips("Período", LT_PERIODS.map { it.first }, pIdx) { pIdx = it }
             Chips("Corretora", listOf("TODAS") + CORE_VENUES.map { it.label.uppercase() }, venueIdx) { venueIdx = it }
             NumField("Mínimo (BTC)", minBtc, 60.dp) { it?.let { v -> ctx.hub.large.minBtc = v; SettingsStore.put("lt.min", v); ver++ } }
-            Spacer(Modifier.weight(1f))
             T("Compras $pl: ${buys.size} · ${btc(buys.sumOf { it.qtyBtc })}", Q.Buy, 12, bold = true)
             T("Vendas $pl: ${sells.size} · ${btc(sells.sumOf { it.qtyBtc })}", Q.Sell, 12, bold = true)
         }
         Spacer(Modifier.height(8.dp))
-        Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                TradeTable("Maiores compras agressoras · $pl", buys, Modifier.weight(1f), "Nenhuma compra ≥ ${num(minBtc, 1)} BTC em $pl")
-                TradeTable("Maiores vendas agressoras · $pl", sells, Modifier.weight(1f), "Nenhuma venda ≥ ${num(minBtc, 1)} BTC em $pl")
+        Panes(grow(1f), Pane(1f) { pm ->
+            Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                TradeTable("Maiores compras agressoras · $pl", buys, grow(1f, 320.dp), "Nenhuma compra ≥ ${num(minBtc, 1)} BTC em $pl")
+                TradeTable("Maiores vendas agressoras · $pl", sells, grow(1f, 320.dp), "Nenhuma venda ≥ ${num(minBtc, 1)} BTC em $pl")
             }
-            Column(Modifier.weight(1.2f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                TradeTable("Fita de grandes execuções (mais recentes primeiro)", recent, Modifier.weight(1f), "Aguardando execuções ≥ ${num(minBtc, 1)} BTC")
+        }, Pane(1.2f) { pm ->
+            Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                TradeTable("Fita de grandes execuções (mais recentes primeiro)", recent, grow(1f, 380.dp), "Aguardando execuções ≥ ${num(minBtc, 1)} BTC")
                 Section("Sequências · 3+ grandes execuções do mesmo lado em até 10 s", Modifier.fillMaxWidth().height(170.dp)) {
                     Column {
                         if (clusters.isEmpty()) Empty("Nenhuma sequência em $pl", "Indica agressão concentrada: várias ordens grandes seguidas do mesmo lado")
@@ -371,7 +370,7 @@ fun LargeTradesTab(ctx: AppContext, s: TerminalState) {
                     }
                 }
             }
-        }
+        })
     }
 }
 

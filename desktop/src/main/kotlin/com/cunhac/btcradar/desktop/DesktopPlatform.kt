@@ -1,0 +1,57 @@
+package com.cunhac.btcradar.desktop
+
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.toComposeImageBitmap
+import org.jetbrains.skia.ColorAlphaType
+import org.jetbrains.skia.Image
+import org.jetbrains.skia.ImageInfo
+import java.awt.SystemTray
+import java.awt.TrayIcon
+import java.awt.image.BufferedImage
+import java.lang.management.ManagementFactory
+
+/** Imagem a partir de pixels ARGB (heatmap). */
+fun argbImage(width: Int, height: Int, argb: IntArray): ImageBitmap {
+    val bytes = ByteArray(width * height * 4)
+    for (i in argb.indices) {
+        val c = argb[i]
+        bytes[i * 4] = (c and 0xFF).toByte(); bytes[i * 4 + 1] = (c shr 8 and 0xFF).toByte()
+        bytes[i * 4 + 2] = (c shr 16 and 0xFF).toByte(); bytes[i * 4 + 3] = (c ushr 24).toByte()
+    }
+    return Image.makeRaster(ImageInfo.makeN32(width, height, ColorAlphaType.PREMUL), bytes, width * 4).toComposeImageBitmap()
+}
+
+/** Uso de recursos do processo (aba STATUS). */
+fun processStats(): List<Pair<String, String>> {
+    val rt = Runtime.getRuntime()
+    val cpu = (ManagementFactory.getOperatingSystemMXBean() as? com.sun.management.OperatingSystemMXBean)?.processCpuLoad?.let { it * 100 }
+    return listOf(
+        "CPU do processo" to (cpu?.let { num(it, 1) + " %" } ?: "—"),
+        "Memória (usada / máx.)" to "${(rt.totalMemory() - rt.freeMemory()) / 1_048_576} / ${rt.maxMemory() / 1_048_576} MB",
+        "Threads" to Thread.activeCount().toString(),
+    )
+}
+
+object Platform {
+    const val isMobile = false
+    /** Notificação do Windows pela bandeja do sistema. */
+    val notifySupported: Boolean get() = runCatching { SystemTray.isSupported() }.getOrDefault(false)
+    private val tray: TrayIcon? by lazy {
+        runCatching {
+            val img = BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB).apply {
+                createGraphics().apply { color = java.awt.Color(0xF7, 0x93, 0x1A); fillOval(1, 1, 14, 14); dispose() }
+            }
+            TrayIcon(img, "Radar BTC").also { it.isImageAutoSize = true; SystemTray.getSystemTray().add(it) }
+        }.getOrNull()
+    }
+    fun notify(title: String, text: String): Boolean {
+        val t = tray ?: return false
+        t.displayMessage(title, text, TrayIcon.MessageType.INFO)
+        return true
+    }
+    /** No Windows o app já roda enquanto a janela estiver aberta. */
+    const val backgroundSupported = false
+    val backgroundOn: Boolean get() = false
+    fun setBackground(on: Boolean) {}
+    val deviceLabel = "Windows"
+}

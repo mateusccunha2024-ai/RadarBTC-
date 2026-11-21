@@ -153,10 +153,6 @@ class SqliteHistory : HistorySink {
     } catch (e: Exception) { emptyList() }
 }
 
-/** Evento de parede gravado (aba LIQUIDITY HISTORY). */
-data class WallRecord(val tsMs: Long, val venue: com.cunhac.btcradar.engine.Venue, val bid: Boolean, val price: Double, val status: String,
-                      val cls: String, val peak: Double, val current: Double, val firstSeenMs: Long, val lastSeenMs: Long, val tradedNear: Double)
-
 /** Eventos de paredes num intervalo (mais recentes primeiro). */
 fun SqliteHistory.wallEvents(fromMs: Long, toMs: Long, limit: Int = 20_000): List<WallRecord> = try {
     DriverManager.getConnection("jdbc:sqlite:${AppDirs.db.path}").use { c ->

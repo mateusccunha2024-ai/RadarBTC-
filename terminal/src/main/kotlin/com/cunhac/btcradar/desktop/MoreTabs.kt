@@ -85,18 +85,19 @@ fun CorrelationTab(ctx: AppContext, s: TerminalState) {
         Triple("CVD × open interest", Analytics.pearson(cvd, oi), "Positiva = compra agressora abrindo posições."),
         Triple("CVD × liquidações", Analytics.pearson(cvd, liq), "Positiva = compras forçadas de shorts liquidados entrando no CVD."),
     )
-    Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Column(Modifier.weight(1.6f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(Modifier.background(Q.Panel).padding(8.dp).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
+    Panes(Modifier.fillMaxSize(), Pane(1.6f) { pm ->
+        Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Controls {
                 Chips("Janela", CORR_WINDOWS.map { it.first }, wIdx) { wIdx = it; SettingsStore.put("co.w", it) }
-                T("Baldes de 1 minuto · preço, CVD, open interest e liquidações lado a lado", Q.Muted, 11)
+                T("Baldes de 1 minuto · preço, CVD, open interest e liquidações lado a lado", Q.Muted, 11, wrap = compact)
             }
-            Section("Preço, fluxo, posições e liquidações por minuto", Modifier.fillMaxWidth().weight(1f)) {
+            Section("Preço, fluxo, posições e liquidações por minuto", Modifier.fillMaxWidth().then(grow(1f, 520.dp))) {
                 if (buckets.count { it.priceClose != null } < 3) Empty("Juntando dados", "Precisa de alguns minutos de dados desde a abertura do app (guarda até 1 h)")
                 else CorrelationChart(buckets, Modifier.fillMaxSize())
             }
         }
-        Column(Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    }, Pane(1f) { pm ->
+        Column(pm.then(if (compact) Modifier else Modifier.verticalScroll(rememberScrollState())), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section("Correlação (Pearson) na janela", Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     pairs.forEach { (name, r, hint) -> CorrRow(name, r, hint) }
@@ -121,7 +122,7 @@ fun CorrelationTab(ctx: AppContext, s: TerminalState) {
             Footnote("Correlação com menos de 8 minutos de dados aparece como \"sem dados\". |r| ≥ 0,7 forte, ≥ 0,4 moderada, ≥ 0,2 fraca. " +
                 "OI somado só conta quando Binance, Bybit e OKX reportaram. Liquidações = 6 corretoras (positivo = mais shorts liquidados).")
         }
-    }
+    })
 }
 
 private fun regime(dp: Double, dc: Double, doi: Double?, ll: Double, ls: Double): String {
@@ -162,10 +163,11 @@ private fun CorrelationChart(b: List<FlowBucket>, modifier: Modifier) {
     val tm = rememberTextMeasurer()
     val buy = Q.Buy; val sell = Q.Sell; val text = Q.Text; val muted = Q.Muted; val line = Q.Line; val liqL = Q.LiqLong; val liqS = Q.LiqShort; val accent = Q.Accent
     Canvas(modifier) {
-        val labelW = 120f
+        val u = density
+        val labelW = 110f * u
         val w = size.width - labelW
-        val gap = 10f
-        val bandH = (size.height - gap * 3 - 16f) / 4
+        val gap = 10f * u
+        val bandH = (size.height - gap * 3 - 16f * u) / 4
         val cw = w / b.size
         val st = TextStyle(color = muted, fontSize = 10.sp)
         val vst = TextStyle(color = text, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
@@ -189,7 +191,7 @@ private fun CorrelationChart(b: List<FlowBucket>, modifier: Modifier) {
                 if (k == 0) path.moveTo(x, y) else path.lineTo(x, y)
             }
             drawPath(path, accent, style = Stroke(1.8f))
-            drawText(tm, px(hi), Offset(2f, band(0) + 16f), st); drawText(tm, px(lo), Offset(2f, band(0) + bandH - 14f), st)
+            drawText(tm, px(hi), Offset(2f, band(0) + 16f * u), st); drawText(tm, px(lo), Offset(2f, band(0) + bandH - 14f * u), st)
         }
         drawText(tm, "PREÇO", Offset(2f, band(0)), vst)
         // 2. CVD
@@ -200,7 +202,7 @@ private fun CorrelationChart(b: List<FlowBucket>, modifier: Modifier) {
         bars(band(2), b.map { it.oiChgBtc }, text.copy(alpha = 0.7f), muted)
         // 4. liquidações: shorts para cima (azul), longs para baixo (laranja)
         drawText(tm, "LIQUIDAÇÕES", Offset(2f, band(3)), vst)
-        drawText(tm, "▲ short  ▼ long", Offset(2f, band(3) + 16f), st)
+        drawText(tm, "▲ short  ▼ long", Offset(2f, band(3) + 16f * u), st)
         val mxL = b.maxOfOrNull { max(it.liqLongBtc, it.liqShortBtc) }?.takeIf { it > 0 } ?: 1.0
         val mid = band(3) + bandH / 2
         drawLine(line, Offset(labelW, mid), Offset(size.width, mid), 1f)
@@ -210,8 +212,13 @@ private fun CorrelationChart(b: List<FlowBucket>, modifier: Modifier) {
             drawRect(liqL, Offset(labelW + i * cw + 1f, mid), Size((cw - 2f).coerceAtLeast(1f), hl))
         }
         val tf = SimpleDateFormat("HH:mm")
-        val every = max(1, b.size / 8)
-        for (i in b.indices step every) drawText(tm, tf.format(Date(b[i].startMs)), Offset(labelW + i * cw, size.height - 14f), st)
+        val slots = max(2, (w / (56f * u)).toInt())
+        val every = max(1, (b.size + slots - 1) / slots)
+        for (i in b.indices step every) {
+            val x = labelW + i * cw
+            if (x + 40f * u > size.width) break
+            drawText(tm, tf.format(Date(b[i].startMs)), Offset(x, size.height - 14f * u), st)
+        }
     }
 }
 
@@ -241,21 +248,21 @@ fun LiquidityHistoryTab(ctx: AppContext, s: TerminalState) {
         }.sortedByDescending { it.count * 1000 + it.peakSum }.take(40)
     }
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(Modifier.background(Q.Panel).padding(8.dp).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
+        Controls {
             Chips("Período", LH_PERIODS.map { it.first }, pIdx) { pIdx = it; SettingsStore.put("lh.p", it) }
             Chips("Corretora", listOf("TODAS") + CORE_VENUES.map { it.label.uppercase() }, vIdx) { vIdx = it }
             Chips("Lado", listOf("AMBOS", "COMPRA", "VENDA"), sideIdx) { sideIdx = it }
             NumField("Pico ≥ (BTC)", minPeak, 56.dp) { it?.let { v -> minPeak = v; SettingsStore.put("lh.min", v) } }
-            Spacer(Modifier.weight(1f))
             T("${ev.size} paredes encerradas · ${all.size} eventos gravados no período", Q.Muted, 11)
         }
-        Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Section("Onde as paredes estiveram e como terminaram", Modifier.weight(1.5f).fillMaxHeight()) {
+        Panes(grow(1f), Pane(1.5f, 420.dp) { m ->
+            Section("Onde as paredes estiveram e como terminaram", m) {
                 if (ev.isEmpty()) Empty("Nenhuma parede encerrada no período com esses filtros",
                     "O histórico vem do banco local: paredes que saíram do livro desde que o app foi instalado. Reduza o pico mínimo ou aumente o período.")
                 else WallScatter(ev, period, price, Modifier.fillMaxSize())
             }
-            Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        }, Pane(1f) { pm ->
+            Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Section("Como terminaram", Modifier.fillMaxWidth()) {
                     Column {
                         val tot = ev.size.coerceAtLeast(1)
@@ -273,7 +280,7 @@ fun LiquidityHistoryTab(ctx: AppContext, s: TerminalState) {
                         }
                     }
                 }
-                Section("Níveis onde a liquidez mais aparece (faixas de ${px(bin)} US$)", Modifier.fillMaxWidth().weight(1f)) {
+                Section("Níveis onde a liquidez mais aparece (faixas de ${px(bin)} US$)", Modifier.fillMaxWidth().then(grow(1f, 420.dp)), minWidth = 470.dp) {
                     Column {
                         Th("FAIXA" to 80, "LADO" to 52, "VEZES" to 50, "PICO SOMADO" to 90, "EXECUT." to 56, "RETIR." to 52, "ÚLTIMA" to 0)
                         if (levels.isEmpty()) Empty("Sem níveis no período")
@@ -287,7 +294,7 @@ fun LiquidityHistoryTab(ctx: AppContext, s: TerminalState) {
                     }
                 }
             }
-        }
+        })
         Footnote("Cada ponto é uma parede que saiu do livro: posição = hora e preço; tamanho = pico em BTC; cor = lado (verde compra, vermelho venda); " +
             "anel laranja = execução confirmada, anel amarelo = preço atravessou, sem anel = retirada. Níveis que se repetem costumam ser suporte/resistência defendidos.")
     }
@@ -300,7 +307,8 @@ private fun WallScatter(ev: List<WallRecord>, period: Long, price: Double?, modi
     val tm = rememberTextMeasurer()
     val buy = Q.Buy; val sell = Q.Sell; val muted = Q.Muted; val accent = Q.Accent; val warn = Q.Warn; val line = Q.Line; val panel2 = Q.Panel2
     Canvas(modifier) {
-        val axisW = 72f; val axisH = 18f
+        val u = density
+        val axisW = 66f * u; val axisH = 18f * u
         val w = size.width - axisW; val h = size.height - axisH
         val now = System.currentTimeMillis(); val t0 = now - period
         val lo = (ev.minOf { it.price } * 0.999).let { p -> price?.let { minOf(p, it) } ?: p }
@@ -311,7 +319,7 @@ private fun WallScatter(ev: List<WallRecord>, period: Long, price: Double?, modi
         for (k in 0..5) { val p = lo + (hi - lo) * k / 5; drawLine(line, Offset(0f, y(p)), Offset(w, y(p)), 0.6f) }
         val mx = ev.maxOf { it.peak }
         ev.asReversed().forEach { e ->
-            val r = (2.5f + sqrt(e.peak / mx).toFloat() * 11f)
+            val r = (2.5f + sqrt(e.peak / mx).toFloat() * 11f) * u
             val c = (if (e.bid) buy else sell).copy(alpha = 0.55f)
             val o = Offset(x(e.tsMs).coerceIn(r, w - r), y(e.price))
             drawCircle(c, r, o)
@@ -322,10 +330,10 @@ private fun WallScatter(ev: List<WallRecord>, period: Long, price: Double?, modi
         }
         price?.let { p -> drawLine(accent.copy(alpha = 0.6f), Offset(0f, y(p)), Offset(w, y(p)), 1f) }
         drawRect(panel2, Offset(w, 0f), Size(axisW, h))
-        for (k in 0..5) { val p = lo + (hi - lo) * k / 5; drawText(tm, px(p), Offset(w + 4f, (y(p) - 7f).coerceIn(0f, h - 14f)), st) }
+        for (k in 0..5) { val p = lo + (hi - lo) * k / 5; drawText(tm, px(p), Offset(w + 4f * u, (y(p) - 7f * u).coerceIn(0f, h - 14f * u)), st) }
         drawRect(panel2, Offset(0f, h), Size(size.width, axisH))
         val fmt = SimpleDateFormat(if (period <= 86_400_000L) "HH:mm" else "dd/MM HH:mm")
-        for (k in 0..5) { val t = t0 + period * k / 6; drawText(tm, fmt.format(Date(t)), Offset(x(t) + 2f, h + 2f), st) }
+        for (k in 0..5) { val t = t0 + period * k / 6; drawText(tm, fmt.format(Date(t)), Offset(x(t) + 2f * u, h + 2f * u), st) }
     }
 }
 
@@ -338,17 +346,31 @@ fun AlertsTab(ctx: AppContext, s: TerminalState) {
     val sent by ctx.alerts.sent.collectAsState()
     var c by remember { mutableStateOf(cfg) }
     val dirty = c != cfg
-    Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Column(Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Panes(Modifier.fillMaxSize(), Pane(1f) { pm ->
+        Column(pm.then(if (compact) Modifier else Modifier.verticalScroll(rememberScrollState())), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Section("Notificações ${if (Platform.isMobile) "neste celular" else "do Windows"}", Modifier.fillMaxWidth()) {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Toggle(if (Platform.isMobile) "Mostrar notificação no celular" else "Mostrar notificação na bandeja do Windows", c.deviceOn) { c = c.copy(deviceOn = it) }
+                    if (Platform.backgroundSupported) {
+                        var bg by remember { mutableStateOf(Platform.backgroundOn) }
+                        Toggle("Continuar monitorando com o app fechado", bg) { bg = it; Platform.setBackground(it) }
+                        Footnote("Mantém as conexões e os alertas ativos em segundo plano, com uma notificação fixa. Usa mais bateria e dados; desligue quando não precisar.")
+                    }
+                    if (Platform.isMobile && !Platform.notifySupported) Footnote("Permita notificações do Radar BTC nas configurações do Android.")
+                }
+            }
             Section("O que avisar", Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     AlertKind.entries.forEach { k ->
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (compact) Column {
+                            Toggle(k.label, k in c.kinds) { on -> c = c.copy(kinds = if (on) c.kinds + k else c.kinds - k) }
+                            T(kindHint(k, c), Q.Muted, 11, wrap = true, modifier = Modifier.padding(start = 4.dp, top = 2.dp))
+                        } else Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(Modifier.width(260.dp)) { Toggle(k.label, k in c.kinds) { on -> c = c.copy(kinds = if (on) c.kinds + k else c.kinds - k) } }
                             T(kindHint(k, c), Q.Muted, 11, modifier = Modifier.weight(1f))
                         }
                     }
-                    Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Controls {
                         NumField("Zona: distância ≤ %", c.zonePct, 50.dp) { it?.let { v -> c = c.copy(zonePct = v) } }
                         NumField("Zona: tamanho ≥ BTC", c.zoneMinBtc, 64.dp) { it?.let { v -> c = c.copy(zoneMinBtc = v) } }
                         NumField("Repetir o mesmo aviso após (min)", c.cooldownMin, 44.dp) { it?.let { v -> c = c.copy(cooldownMin = v) } }
@@ -360,7 +382,7 @@ fun AlertsTab(ctx: AppContext, s: TerminalState) {
             Section("Telegram", Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Toggle("Enviar pelo Telegram", c.telegramOn) { c = c.copy(telegramOn = it) }
-                    TextSetting("Token do bot", c.telegramToken, 420.dp, secret = true) { c = c.copy(telegramToken = it) }
+                    TextSetting("Token do bot", c.telegramToken, if (compact) 210.dp else 420.dp, secret = true) { c = c.copy(telegramToken = it) }
                     TextSetting("Chat ID", c.telegramChat, 200.dp) { c = c.copy(telegramChat = it) }
                     Footnote("Crie um bot com o @BotFather, mande uma mensagem para ele e pegue o chat ID em api.telegram.org/bot<token>/getUpdates.")
                 }
@@ -369,24 +391,26 @@ fun AlertsTab(ctx: AppContext, s: TerminalState) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Toggle("Enviar por e-mail", c.mailOn) { c = c.copy(mailOn = it) }
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        TextSetting("Servidor", c.smtpHost, 180.dp) { c = c.copy(smtpHost = it) }
+                        TextSetting("Servidor", c.smtpHost, if (compact) 170.dp else 180.dp) { c = c.copy(smtpHost = it) }
                         TextSetting("Porta", c.smtpPort.toString(), 60.dp) { t -> t.toIntOrNull()?.let { c = c.copy(smtpPort = it) } }
                     }
-                    TextSetting("Usuário (e-mail de envio)", c.smtpUser, 280.dp) { c = c.copy(smtpUser = it) }
+                    TextSetting("Usuário (e-mail de envio)", c.smtpUser, if (compact) 250.dp else 280.dp) { c = c.copy(smtpUser = it) }
                     TextSetting("Senha de app", c.smtpPass, 220.dp, secret = true) { c = c.copy(smtpPass = it) }
-                    TextSetting("Enviar para", c.mailTo, 280.dp) { c = c.copy(mailTo = it) }
+                    TextSetting("Enviar para", c.mailTo, if (compact) 250.dp else 280.dp) { c = c.copy(mailTo = it) }
                     Footnote("Gmail: smtp.gmail.com, porta 465, com uma senha de app (Conta Google → Segurança → Senhas de app). Porta 587 usa STARTTLS.")
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 ActionButton(if (dirty) "Salvar alterações" else "Salvo", dirty) { ctx.alerts.update(c) }
                 ActionButton("Enviar teste", true) { ctx.alerts.update(c); ctx.alerts.test() }
-                T("Token e senha ficam guardados só neste computador (registro do usuário do Windows), sem criptografia própria.", Q.Muted, 11, wrap = true, modifier = Modifier.weight(1f))
             }
+            T(if (Platform.isMobile) "Token e senha ficam guardados só neste celular (preferências do app), sem criptografia própria."
+              else "Token e senha ficam guardados só neste computador (registro do usuário do Windows), sem criptografia própria.", Q.Muted, 11, wrap = true)
         }
-        Section("Avisos enviados", Modifier.weight(0.9f).fillMaxHeight()) {
+    }, Pane(0.9f, 420.dp) { m ->
+        Section("Avisos enviados", m) {
             Column {
-                if (sent.isEmpty()) Empty("Nenhum aviso enviado nesta sessão", if (!cfg.telegramOn && !cfg.mailOn) "Ligue o Telegram ou o e-mail ao lado e salve" else "Os avisos aparecem aqui com o resultado de cada envio")
+                if (sent.isEmpty()) Empty("Nenhum aviso enviado nesta sessão", if (!cfg.telegramOn && !cfg.mailOn && !cfg.deviceOn) "Ligue um canal de aviso e salve" else "Os avisos aparecem aqui com o resultado de cada envio")
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     items(sent) { a ->
                         Column(Modifier.fillMaxWidth().background(Q.Panel2).padding(8.dp)) {
@@ -398,7 +422,7 @@ fun AlertsTab(ctx: AppContext, s: TerminalState) {
                 }
             }
         }
-    }
+    })
 }
 
 private fun kindHint(k: AlertKind, c: AlertConfig) = when (k) {

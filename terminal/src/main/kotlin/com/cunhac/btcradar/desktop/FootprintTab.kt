@@ -72,21 +72,22 @@ fun FootprintTab(ctx: AppContext, s: TerminalState) {
     val oldest = ctx.hub.footprint.oldestMs()
 
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(Modifier.background(Q.Panel).padding(8.dp).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
+        Controls {
             Chips("Vela", FP_CANDLES.map { it.first }, cIdx) { cIdx = it; SettingsStore.put("fp.c", it) }
             Chips("Faixa US$", FP_STEPS.map { num(it, 0) }, stIdx) { stIdx = it; SettingsStore.put("fp.s", it) }
             Chips("Velas", FP_COUNTS.map { it.toString() }, nIdx) { nIdx = it; SettingsStore.put("fp.n", it) }
             Chips("Corretoras", listOf("TODAS") + CORE_VENUES.map { it.label.uppercase() }, vIdx) { vIdx = it; SettingsStore.put("fp.v", it) }
-            Spacer(Modifier.weight(1f))
             T(oldest?.let { "Dados desde ${hhmmss(it)}" } ?: "Aguardando trades", Q.Muted, 11)
         }
-        Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Section("Footprint · venda × compra agressora por faixa (BTC)", Modifier.weight(1f).fillMaxHeight()) {
+        // No celular o footprint rola para o lado (cada vela precisa de largura para os números).
+        Panes(grow(1f), Pane(3f, 560.dp) { m ->
+            Section("Footprint · venda × compra agressora por faixa (BTC)", m, minWidth = if (compact) (110 * candles.size.coerceAtLeast(3) + 80).dp else null) {
                 if (candles.isEmpty()) Empty("Montando o footprint", "Precisa de trades das corretoras principais; cada vela aparece assim que recebe execuções")
                 else FootprintChart(candles, step, s.price, Modifier.fillMaxSize())
             }
-            Column(Modifier.width(330.dp).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Section("Perfil de volume", Modifier.fillMaxWidth().weight(1f)) {
+        }, Pane(1f) { pm ->
+            Column((if (compact) pm else Modifier.width(330.dp).fillMaxHeight()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Section("Perfil de volume", Modifier.fillMaxWidth().then(grow(1f, 420.dp))) {
                     Column {
                         Chips(null, FP_PROFILE.map { it.first }, pIdx) { pIdx = it; SettingsStore.put("fp.p", it) }
                         Spacer(Modifier.height(6.dp))
@@ -106,7 +107,7 @@ fun FootprintTab(ctx: AppContext, s: TerminalState) {
                     }
                 }
             }
-        }
+        })
         Footnote("Cada célula mostra venda agressora × compra agressora naquela faixa de preço. Fundo verde = compradores dominaram a faixa; vermelho = vendedores. " +
             "Número em destaque = desequilíbrio diagonal (um lado ≥ 3× o outro). Contorno laranja = POC da vela. " +
             "Área de valor = faixas com 70% do volume. Trades de Binance, Bybit e OKX, guardados por 24 h em faixas de US$ 5.")
@@ -118,7 +119,8 @@ private fun FootprintChart(candles: List<FootCandle>, step: Double, price: Doubl
     val tm = rememberTextMeasurer()
     val buyC = Q.Buy; val sellC = Q.Sell; val text = Q.Text; val muted = Q.Muted; val line = Q.Line; val accent = Q.Accent; val panel2 = Q.Panel2
     Canvas(modifier) {
-        val axisW = 72f; val footH = 34f; val headH = 16f
+        val u = density
+        val axisW = 66f * u; val footH = 34f * u; val headH = 16f * u
         val w = size.width - axisW; val h = size.height - footH - headH
         val lo = candles.minOf { it.low }.let { kotlin.math.floor(it / step) * step }
         val hi = candles.maxOf { it.high }.let { kotlin.math.floor(it / step) * step + step }
@@ -137,7 +139,7 @@ private fun FootprintChart(candles: List<FootCandle>, step: Double, price: Doubl
 
         candles.forEachIndexed { i, c ->
             val x0 = i * colW
-            drawText(tm, tf.format(Date(c.startMs)), Offset(x0 + 4f, 1f), axis)
+            drawText(tm, tf.format(Date(c.startMs)), Offset(x0 + 4f * u, 1f), axis)
             val poc = c.poc
             for ((p, v) in c.cells) {
                 val top = y(p + step); val vol = v[0] + v[1]
@@ -162,19 +164,19 @@ private fun FootprintChart(candles: List<FootCandle>, step: Double, price: Doubl
             drawRect(if (up) buyC else sellC, Offset(x0 + 2f, y(max(c.open, c.close))), Size(4f, abs(y(c.open) - y(c.close)).coerceAtLeast(1f)))
             // rodapé: delta e volume
             drawRect(panel2, Offset(x0 + 1f, headH + h + 2f), Size(colW - 2f, footH - 2f))
-            drawText(tm, "Δ " + String.format(BR, "%+.1f", c.delta), Offset(x0 + 6f, headH + h + 3f), axis.copy(color = if (c.delta >= 0) buyC else sellC))
-            drawText(tm, "V " + String.format(BR, "%.1f", c.volume), Offset(x0 + 6f, headH + h + 17f), axis)
+            drawText(tm, "Δ " + String.format(BR, "%+.1f", c.delta), Offset(x0 + 6f * u, headH + h + 2f * u), axis.copy(color = if (c.delta >= 0) buyC else sellC))
+            drawText(tm, "V " + String.format(BR, "%.1f", c.volume), Offset(x0 + 6f * u, headH + h + 17f * u), axis)
             drawLine(line, Offset(x0 + colW, headH), Offset(x0 + colW, headH + h), 1f)
         }
         // eixo de preço
         drawRect(panel2, Offset(w, headH), Size(axisW, h))
-        val every = max(1, (rows / (h / 18f)).toInt() + 1)
+        val every = max(1, (rows / (h / (18f * u))).toInt() + 1)
         for (r in 0..rows step every) {
             val p = lo + r * step
-            drawText(tm, px(p), Offset(w + 4f, y(p) - 7f), axis)
+            drawText(tm, px(p), Offset(w + 4f * u, y(p) - 7f * u), axis)
         }
-        price?.let { p -> if (p in lo..hi) { val yy = y(p); drawLine(accent, Offset(0f, yy), Offset(w, yy), 1f); drawText(tm, px(p), Offset(w + 4f, yy - 7f), axis.copy(color = accent)) } }
-        if (!showText) drawText(tm, "Aumente a faixa US$ ou reduza o nº de velas para ver os números", Offset(10f, headH + h - 16f), axis)
+        price?.let { p -> if (p in lo..hi) { val yy = y(p); drawLine(accent, Offset(0f, yy), Offset(w, yy), 1f); drawText(tm, px(p), Offset(w + 4f * u, yy - 7f * u), axis.copy(color = accent)) } }
+        if (!showText) drawText(tm, "Aumente a faixa US$ ou reduza o nº de velas para ver os números", Offset(10f * u, headH + h - 16f * u), axis)
     }
 }
 
@@ -186,7 +188,7 @@ private fun ProfileChart(p: VolumeProfile, price: Double?, modifier: Modifier) {
         val rows = p.rows
         val lo = rows.first().price; val hi = rows.last().price
         val step = if (rows.size > 1) (hi - lo) / (rows.size - 1) else 1.0
-        val axisW = 70f
+        val axisW = 70.dp.toPx()
         val w = size.width - axisW
         val rh = size.height / (rows.size).coerceAtLeast(1)
         val mx = rows.maxOf { it.total }.coerceAtLeast(1e-9)
@@ -207,7 +209,7 @@ private fun ProfileChart(p: VolumeProfile, price: Double?, modifier: Modifier) {
             v ?: return
             val yy = y(v + step / 2)
             drawLine(c, Offset(0f, yy), Offset(w, yy), 1f)
-            drawText(tm, "$label ${px(v)}", Offset(w + 2f, yy - 7f), axis.copy(color = c))
+            drawText(tm, "$label ${px(v)}", Offset(w + 2f, yy - 7.dp.toPx()), axis.copy(color = c))
         }
         // Rótulos que caem no mesmo preço do POC não são repetidos (evita texto sobreposto).
         if (p.vah != p.poc) mark("VAH", p.vah, muted)

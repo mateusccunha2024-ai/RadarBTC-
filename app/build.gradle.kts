@@ -44,6 +44,15 @@ android {
     }
     kotlinOptions { jvmTarget = "17" }
     buildFeatures { compose = true }
+    // Telas do terminal compartilhadas com o app do Windows
+    sourceSets["main"].java.srcDir("../terminal/src/main/kotlin")
+    // O lint de release não deve impedir a geração do APK (avisos ficam no relatório)
+    lint { checkReleaseBuilds = false; abortOnError = false }
+    packaging {
+        resources {
+            pickFirsts += setOf("META-INF/LICENSE.md", "META-INF/NOTICE.md", "META-INF/LICENSE.txt", "META-INF/NOTICE.txt")
+        }
+    }
 }
 
 dependencies {
@@ -62,6 +71,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.jsoup:jsoup:1.18.3")
+    // Alertas por e-mail (SMTP), os mesmos do Windows
+    implementation("jakarta.mail:jakarta.mail-api:2.1.3")
+    implementation("org.eclipse.angus:angus-mail:2.0.3")
+    implementation("org.eclipse.angus:angus-activation:2.0.2")
 
     testImplementation("junit:junit:4.13.2")
 }

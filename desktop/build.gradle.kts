@@ -15,6 +15,7 @@ kotlin {
         kotlin.srcDir("$shared/ui/theme")
         kotlin.srcDir("$shared/ui/components")
         kotlin.srcDir("$shared/engine")
+        kotlin.srcDir("../terminal/src/main/kotlin")
     }
 }
 

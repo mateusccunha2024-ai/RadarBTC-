@@ -6,6 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -41,15 +43,16 @@ private fun magnetReason(err: String?): String = when {
     else -> err
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MagnetTab(m: MapModel) {
     val s by m.state.collectAsState()
     val stats = s.stats
     if (stats == null) {
-        Section("Magnet Zones · mapa estimado de liquidações", Modifier.fillMaxSize()) {
-            Column(Modifier.fillMaxWidth().padding(top = 80.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Section("Magnet Zones · mapa estimado de liquidações", if (compact) Modifier.fillMaxWidth() else Modifier.fillMaxSize()) {
+            Column(Modifier.fillMaxWidth().padding(top = if (compact) 24.dp else 80.dp, bottom = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 if (s.loading) {
-                    T("Calculando o mapa a partir do histórico de posições…", Q.Text, 14)
+                    T("Calculando o mapa a partir do histórico de posições…", Q.Text, 14, wrap = true, align = TextAlign.Center)
                     T("Leva alguns segundos: velas de 15 min + open interest dos últimos 5 dias.", Q.Muted, 12, modifier = Modifier.padding(top = 6.dp))
                 } else {
                     T("Mapa indisponível no momento", Q.HeatHigh, 16, bold = true)
@@ -64,8 +67,8 @@ fun MagnetTab(m: MapModel) {
         return
     }
     val price = stats.price
-    Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Column(Modifier.width(380.dp).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Panes(Modifier.fillMaxSize(), Pane(0.4f) { pm ->
+        Column(if (compact) pm else Modifier.width(380.dp).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section("Mercado (Binance perp)", Modifier.fillMaxWidth()) {
                 Column {
                     KV("Preço", px(price))
@@ -94,14 +97,14 @@ fun MagnetTab(m: MapModel) {
                     "níveis que o preço já atravessou saem do mapa. Quanto mais vivo o vermelho, mais BTC estimado no nível. Liquidações reais ficam no LIQUIDATION RADAR.")
             }
         }
-        Section("Mapa de liquidações estimadas", Modifier.weight(1f).fillMaxHeight()) {
+    }, Pane(1f, 620.dp) { m2 ->
+        Section("Mapa de liquidações estimadas", m2) {
             Column {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Chips("Faixa", listOf("±2%", "±5%", "±10%"), s.rangeIndex) { m.setRange(it) }
                     T("menos", Q.Muted, 11)
                     Row { (0..5).forEach { Box(Modifier.width(18.dp).height(10.dp).background(heat(it / 5f))) } }
                     T("mais BTC estimado", Q.Muted, 11)
-                    Spacer(Modifier.weight(1f))
                     T("Book: " + s.booksOk.joinToString { it.label }, Q.Muted, 11)
                 }
                 Spacer(Modifier.height(8.dp))
@@ -115,7 +118,7 @@ fun MagnetTab(m: MapModel) {
                 MagnetLadder(s.bins, price)
             }
         }
-    }
+    })
 }
 
 @Composable

@@ -1,5 +1,16 @@
 # Changelog
 
+## V8 — atualização 3 (2026-11-21) · terminal completo no Android
+- O Android passa a rodar o mesmo terminal do Windows: todas as 12 abas (ORDERFLOW, FOOTPRINT, LIQUIDITY WALLS, LIQUIDITY HISTORY,
+  MAGNET ZONES, LONG & SHORT FLOW, MARKET FLOW CORRELATION, LARGE TRADES, LIQUIDATION RADAR, ETFs, ALERTAS, STATUS),
+  menu de visualização, tema claro/escuro e zoom. Código de tela único em `terminal/`, usado pelos dois apps.
+- Layout de celular: painéis empilhados com rolagem, barra superior compacta, filtros que quebram linha, tabelas largas com rolagem lateral,
+  medidas dos gráficos em dp; heatmap com toque (mesma leitura do mouse no PC).
+- Aba ETFs (fluxo diário Farside, 5/20/60 pregões, por fundo) também no Windows.
+- Android: histórico de paredes em SQLite, configurações salvas, notificações dos alertas no celular e opção
+  "Continuar monitorando com o app fechado" (serviço em primeiro plano com notificação fixa; usa mais bateria).
+- Telegram e e-mail funcionam também no celular.
+
 ## V8 — atualização 2 (2026-11-21)
 - Liquidações reais de 6 corretoras: Binance, Bybit, OKX + Gate (`futures.public_liquidates`, size<0 = LONG, 1 contrato = 0,0001 BTC),
   Bitget (UTA v3 `liquidation`, valor em USDT, side = lado da posição) e Deribit (trades com campo `liquidation`, valor em USD).

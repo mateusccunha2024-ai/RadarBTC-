@@ -7,6 +7,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -49,11 +50,14 @@ import kotlinx.coroutines.SupervisorJob
 
 class AppContext(val hub: Hub, val db: SqliteHistory, val map: MapModel,
                  val heat: HeatLoader = HeatLoader(CoroutineScope(SupervisorJob() + Dispatchers.Default)),
-                 val alerts: AlertEngine = AlertEngine(hub, heat))
+                 val alerts: AlertEngine = AlertEngine(hub, heat)) {
+    /** Fluxos dos ETFs spot de BTC: só carrega quando a aba é aberta. */
+    val etf: EtfModel by lazy { EtfModel(CoroutineScope(SupervisorJob() + Dispatchers.IO)) }
+}
 
 val TABS = listOf(
     "ORDERFLOW", "FOOTPRINT", "LIQUIDITY WALLS", "LIQUIDITY HISTORY", "MAGNET ZONES", "LONG & SHORT FLOW",
-    "MARKET FLOW CORRELATION", "LARGE TRADES", "LIQUIDATION RADAR", "ALERTAS", "STATUS",
+    "MARKET FLOW CORRELATION", "LARGE TRADES", "LIQUIDATION RADAR", "ETFs", "ALERTAS", "STATUS",
 )
 
 /** Abas que o usuário escondeu no menu de visualização (STATUS nunca some). */
@@ -72,7 +76,10 @@ fun Terminal(ctx: AppContext, initialTab: Int? = null, showSettings: Boolean = f
     val base = LocalDensity.current
     // Zoom da interface: multiplica a densidade (tudo cresce junto, sem quebrar o layout).
     CompositionLocalProvider(LocalDensity provides Density(base.density * UiScale.scale, base.fontScale)) {
-        TerminalBody(ctx, initialTab, showSettings)
+        // Abaixo de 760 dp (celular em pé, já contando o zoom) o layout vira coluna única.
+        BoxWithConstraints(Modifier.fillMaxSize()) {
+            CompositionLocalProvider(LocalCompact provides (maxWidth < 760.dp)) { TerminalBody(ctx, initialTab, showSettings) }
+        }
     }
 }
 
@@ -85,7 +92,7 @@ private fun TerminalBody(ctx: AppContext, initialTab: Int?, showSettings: Boolea
     val current = if (tabName in tabs) tabName else tabs.first()
     Box(Modifier.fillMaxSize().background(Q.Bg)) {
         Column(Modifier.fillMaxSize()) {
-            TopBar(s, onSettings = { settingsOpen = !settingsOpen })
+            if (compact) CompactTopBar(s, onSettings = { settingsOpen = !settingsOpen }) else TopBar(s, onSettings = { settingsOpen = !settingsOpen })
             Row(Modifier.fillMaxWidth().background(Q.Panel).horizontalScroll(rememberScrollState()).padding(horizontal = 8.dp)) {
                 tabs.forEach { t ->
                     val on = t == current
@@ -98,7 +105,8 @@ private fun TerminalBody(ctx: AppContext, initialTab: Int?, showSettings: Boolea
                 }
             }
             Box(Modifier.fillMaxWidth().height(1.dp).background(Q.Line))
-            Box(Modifier.weight(1f).fillMaxWidth().padding(if (Look.compact) 4.dp else 8.dp)) {
+            val scroll = rememberScrollState()
+            Box(Modifier.weight(1f).fillMaxWidth().then(if (compact) Modifier.verticalScroll(scroll) else Modifier).padding(if (Look.compact) 4.dp else 8.dp)) {
                 // As abas só leem o hub: trocar de aba não reinicia nenhuma conexão.
                 when (current) {
                     "ORDERFLOW" -> OrderflowTab(ctx, s)
@@ -110,6 +118,7 @@ private fun TerminalBody(ctx: AppContext, initialTab: Int?, showSettings: Boolea
                     "MARKET FLOW CORRELATION" -> CorrelationTab(ctx, s)
                     "LARGE TRADES" -> LargeTradesTab(ctx, s)
                     "LIQUIDATION RADAR" -> LiqTab(ctx, s)
+                    "ETFs" -> EtfTab(ctx)
                     "ALERTAS" -> AlertsTab(ctx, s)
                     else -> StatusTab(ctx, s)
                 }
@@ -119,7 +128,7 @@ private fun TerminalBody(ctx: AppContext, initialTab: Int?, showSettings: Boolea
             // Véu: clicar fora fecha o menu.
             Box(Modifier.fillMaxSize().background(Q.Bg.copy(alpha = 0.35f))
                 .clickable(remember { MutableInteractionSource() }, null) { settingsOpen = false })
-            Box(Modifier.fillMaxSize().padding(top = 44.dp, end = 10.dp), contentAlignment = Alignment.TopEnd) {
+            Box(Modifier.fillMaxSize().padding(top = 44.dp, end = if (compact) 0.dp else 10.dp), contentAlignment = Alignment.TopEnd) {
                 ViewSettingsPanel(ctx) { settingsOpen = false }
             }
         }
@@ -165,6 +174,34 @@ private fun TopBar(s: TerminalState, onSettings: () -> Unit) {
     Box(Modifier.fillMaxWidth().height(1.dp).background(Q.Line))
 }
 
+/** Barra do celular: nome, preço, fontes e o menu; detalhes numa segunda linha que rola para o lado. */
+@Composable
+private fun CompactTopBar(s: TerminalState, onSettings: () -> Unit) {
+    Column(Modifier.fillMaxWidth().background(Q.Bg).padding(horizontal = 10.dp, vertical = 6.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            T("RADAR BTC", Q.Text, 13, bold = true)
+            Spacer(Modifier.width(10.dp))
+            T(px(s.price), Q.Text, 17, bold = true, monoFont = true)
+            Spacer(Modifier.weight(1f))
+            val live = s.liveCount()
+            T("$live/3", if (live == 3) Q.Buy else if (live > 0) Q.Warn else Q.Sell, 12, bold = true, modifier = Modifier.padding(end = 8.dp))
+            SmallButton(if (Look.dark) "☾" else "☀") { Look.useDark(!Look.dark) }
+            Spacer(Modifier.width(6.dp))
+            SmallButton("⚙", onClick = onSettings)
+        }
+        Row(Modifier.horizontalScroll(rememberScrollState()).padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+            CORE_VENUES.forEach { v ->
+                val ok = s.books[v]?.valid == true && s.statuses.any { it.venue == v && it.state == ConnState.LIVE }
+                T("● ${v.label}", if (ok) Q.Buy else Q.Warn, 11, modifier = Modifier.padding(end = 8.dp))
+            }
+            T("Liq.:", Q.Muted, 11, modifier = Modifier.padding(end = 4.dp))
+            Venue.entries.filter { !it.core }.forEach { v -> T("● ${v.label}", venueDot(s, v), 11, modifier = Modifier.padding(end = 6.dp)) }
+            T(String.format(BR, "· %,.0f msg/s · %,d liquidações", s.msgsPerSec, s.liqTotal), Q.Muted, 11)
+        }
+    }
+    Box(Modifier.fillMaxWidth().height(1.dp).background(Q.Line))
+}
+
 private fun venueDot(s: TerminalState, v: Venue) = s.statuses.filter { it.venue == v }.let { l ->
     when { l.any { it.state == ConnState.LIVE } -> Q.Buy; l.isNotEmpty() && l.all { it.state == ConnState.DOWN } -> Q.Sell; else -> Q.Warn }
 }
@@ -176,11 +213,11 @@ private val SCALES = listOf(0.8f, 0.9f, 1.0f, 1.1f, 1.25f, 1.5f)
 @Composable
 private fun ViewSettingsPanel(ctx: AppContext, onClose: () -> Unit) {
     var refresh by remember { mutableStateOf(ctx.hub.refreshMs) }
-    Column(Modifier.width(440.dp).fillMaxHeight(0.92f).background(Q.Panel).border(1.dp, Q.Line)
+    Column((if (compact) Modifier.fillMaxWidth() else Modifier.width(440.dp)).fillMaxHeight(0.92f).background(Q.Panel).border(1.dp, Q.Line)
         .clickable(remember { MutableInteractionSource() }, null) {}  // não fecha ao clicar dentro
         .verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            T("Configurações de visualização", Q.Text, 15, bold = true, modifier = Modifier.weight(1f))
+            T(if (compact) "Visualização" else "Configurações de visualização", Q.Text, 15, bold = true, modifier = Modifier.weight(1f))
             SmallButton("Fechar ✕", onClick = onClose)
         }
         SettingGroup("Tema") {
@@ -198,7 +235,7 @@ private fun ViewSettingsPanel(ctx: AppContext, onClose: () -> Unit) {
             }
             Spacer(Modifier.height(6.dp))
             Chips(null, SCALES.map { "${(it * 100).roundToInt()}%" }, SCALES.indexOfFirst { kotlin.math.abs(it - UiScale.scale) < 0.01f }) { UiScale.set(SCALES[it]) }
-            Footnote("Atalhos: Ctrl + e Ctrl − ajustam, Ctrl 0 volta a 100%.")
+            if (!Platform.isMobile) Footnote("Atalhos: Ctrl + e Ctrl − ajustam, Ctrl 0 volta a 100%.")
         }
         SettingGroup("Densidade") {
             Chips(null, listOf("Confortável", "Compacta"), if (Look.compact) 1 else 0) { Look.useCompact(it == 1) }
@@ -217,7 +254,7 @@ private fun ViewSettingsPanel(ctx: AppContext, onClose: () -> Unit) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 TABS.chunked(2).forEach { pair ->
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        pair.forEach { t -> Box(Modifier.width(196.dp)) { Toggle(t, t !in TabPrefs.hidden) { TabPrefs.toggle(t) } } }
+                        pair.forEach { t -> Box(Modifier.width(if (compact) 168.dp else 196.dp)) { Toggle(t, t !in TabPrefs.hidden) { TabPrefs.toggle(t) } } }
                     }
                 }
             }
