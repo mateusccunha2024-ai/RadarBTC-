@@ -71,8 +71,9 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
                 }
             }
         }
-        Footnote("Liquidações reais = Binance, Bybit e OKX (feeds públicos, não garantem todos os eventos; Binance envia no máximo 1/s). " +
-            "Heatmap = estimativa a partir do open interest histórico das três corretoras. OKX convertida via metadados (${s.okxCtVal}).")
+        Footnote("Liquidações reais = Binance, Bybit, OKX, Gate, Bitget e Deribit (feeds públicos, não garantem todos os eventos; Binance envia no máximo 1/s e a Bitget agrupa por segundo). " +
+            "Conversões para BTC: OKX ${s.okxCtVal}; Gate 1 contrato = 0,0001 BTC; Bitget USDT ÷ preço; Deribit USD ÷ preço. " +
+            "Heatmap = estimativa a partir do open interest histórico de Binance, Bybit e OKX.")
     }
 }
 
@@ -81,7 +82,7 @@ private fun LiqTable(title: String, list: List<LiqEvent>, cls: (Double) -> LiqCl
     Section(title, modifier.fillMaxHeight()) {
         Column {
             Th("HORA" to 64, "CORR." to 58, "POSIÇÃO" to 58, "PREÇO" to 84, "BTC" to 70, "ORIGINAL" to 0)
-            if (list.isEmpty()) Empty(empty, "Aparecem aqui assim que Binance, Bybit ou OKX reportarem")
+            if (list.isEmpty()) Empty(empty, "Aparecem aqui assim que alguma das 6 corretoras reportar")
             LazyColumn {
                 items(list) { e ->
                     val c = if (e.side == LiqSide.LONG) Q.LiqLong else Q.LiqShort

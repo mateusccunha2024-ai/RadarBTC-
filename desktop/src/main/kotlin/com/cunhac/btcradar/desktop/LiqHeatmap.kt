@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cunhac.btcradar.engine.HEAT_TIERS
 import com.cunhac.btcradar.engine.HeatData
 import com.cunhac.btcradar.engine.HeatRange
 import com.cunhac.btcradar.engine.HeatmapModel
@@ -59,6 +60,7 @@ import com.cunhac.btcradar.engine.KeyLevel
 import com.cunhac.btcradar.engine.LiqEvent
 import com.cunhac.btcradar.engine.LiqSide
 import com.cunhac.btcradar.engine.TerminalState
+import com.cunhac.btcradar.engine.CORE_VENUES
 import com.cunhac.btcradar.engine.Venue
 import org.jetbrains.skia.ColorAlphaType
 import org.jetbrains.skia.Image
@@ -77,13 +79,17 @@ fun viridis(t: Float): Color {
     return lerp(VIRIDIS[i], VIRIDIS[i + 1], x - i)
 }
 
+private val DIV_LONG = Color(0xFF16C784)
+private val DIV_SHORT = Color(0xFFEA3943)
+
+/** Escala divergente para LONGS × SHORTS: verde = mais longs a liquidar, vermelho = mais shorts. */
+fun diverging(t: Float): Color = if (t >= 0) lerp(VIRIDIS[0], DIV_LONG, t.coerceIn(0f, 1f)) else lerp(VIRIDIS[0], DIV_SHORT, (-t).coerceIn(0f, 1f))
+
 /** Converte a grade numa imagem (1 pixel por célula) para desenhar rápido mesmo com 730 colunas. */
-private fun heatImage(l: Array<FloatArray>, s: Array<FloatArray>, ref: Float): ImageBitmap {
-    val rows = l.size; val cols = l[0].size
+private fun heatImage(rows: Int, cols: Int, color: (Int, Int) -> Color): ImageBitmap {
     val bytes = ByteArray(rows * cols * 4)
     for (r in 0 until rows) for (c in 0 until cols) {
-        val v = l[r][c] + s[r][c]
-        val col = viridis(if (ref > 0) v / ref else 0f)
+        val col = color(r, c)
         val i = ((rows - 1 - r) * cols + c) * 4
         bytes[i] = (col.blue * 255).roundToInt().toByte(); bytes[i + 1] = (col.green * 255).roundToInt().toByte()
         bytes[i + 2] = (col.red * 255).roundToInt().toByte(); bytes[i + 3] = 255.toByte()
@@ -91,9 +97,9 @@ private fun heatImage(l: Array<FloatArray>, s: Array<FloatArray>, ref: Float): I
     return Image.makeRaster(ImageInfo.makeN32(cols, rows, ColorAlphaType.PREMUL), bytes, cols * 4).toComposeImageBitmap()
 }
 
-private fun q99(l: Array<FloatArray>, s: Array<FloatArray>): Float {
+private fun q99(rows: Int, cols: Int, v: (Int, Int) -> Float): Float {
     val vals = ArrayList<Float>()
-    for (r in l.indices) for (c in l[r].indices) { val v = l[r][c] + s[r][c]; if (v > 0) vals += v }
+    for (r in 0 until rows) for (c in 0 until cols) { val x = kotlin.math.abs(v(r, c)); if (x > 0) vals += x }
     if (vals.isEmpty()) return 0f
     vals.sort(); return vals[(vals.size * 0.99).toInt().coerceAtMost(vals.size - 1)]
 }
@@ -106,31 +112,61 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
     var intensity by remember { mutableFloatStateOf(SettingsStore.d("hm.int", 0.5).toFloat()) }
     var showReal by remember { mutableStateOf(SettingsStore.b("hm.real", true)) }
     var hover by remember { mutableStateOf<Offset?>(null) }
-    val venues = if (venueIdx == 0) Venue.entries.toSet() else setOf(Venue.entries[venueIdx - 1])
+    var mode by remember { mutableIntStateOf(SettingsStore.i("hm.mode", 0)) }
+    var tierMask by remember { mutableIntStateOf(SettingsStore.i("hm.tiers", 0b1111).takeIf { it in 1..15 } ?: 0b1111) }
+    val tiers = HEAT_TIERS.indices.filter { tierMask and (1 shl it) != 0 }.toSet()
+    val venues = if (venueIdx == 0) CORE_VENUES.toSet() else setOf(CORE_VENUES[venueIdx - 1])
     val d = hs.data
-    val grids = remember(d, venueIdx) { d?.let { HeatmapModel.combine(it, venues) } }
-    val ref = remember(grids) { grids?.let { q99(it.first, it.second) } ?: 0f }
-    val img = remember(grids, intensity) { grids?.let { heatImage(it.first, it.second, ref / (0.25f + 1.5f * intensity)) } }
+    val grids = remember(d, venueIdx, tierMask) { d?.let { HeatmapModel.combine(it, venues, tiers) } }
+    val entries = remember(d, venueIdx, mode) { if (d != null && mode == 1) HeatmapModel.entries(d, venues) else null }
+    val delta = remember(grids) { grids?.let { HeatmapModel.levelDelta(it) } }
+    val value: (Int, Int) -> Float = { r, c ->
+        when (mode) {
+            1 -> entries?.get(r)?.get(c) ?: 0f
+            2 -> grids?.let { it.first[r][c] - it.second[r][c] } ?: 0f
+            else -> grids?.let { it.first[r][c] + it.second[r][c] } ?: 0f
+        }
+    }
+    val ref = remember(grids, entries, mode) { d?.let { q99(it.rows, it.cols, value) } ?: 0f }
+    val img = remember(grids, entries, mode, intensity) {
+        if (d == null || grids == null) null else {
+            val k = ref / (0.25f + 1.5f * intensity)
+            heatImage(d.rows, d.cols) { r, c -> val v = value(r, c); if (mode == 2) diverging(if (k > 0) v / k else 0f) else viridis(if (k > 0) v / k else 0f) }
+        }
+    }
     val price = s.price ?: d?.candles?.lastOrNull()?.close
-    val summary = remember(d, venueIdx, price?.let { (it / 50).toLong() }) {
-        if (d != null && price != null) HeatmapModel.summary(d, venues, price, d.pStep * 2) else null
+    val summary = remember(d, venueIdx, tierMask, price?.let { (it / 50).toLong() }) {
+        if (d != null && price != null) HeatmapModel.summary(d, venues, price, d.pStep * 2, tiers = tiers) else null
     }
     val real = remember(d, showReal, venueIdx, s.tick / 20) {
-        if (d != null && showReal) ctx.db.liquidations(d.t0, System.currentTimeMillis(), venues) else emptyList()
+        if (d != null && showReal) ctx.db.liquidations(d.t0, System.currentTimeMillis(), if (venueIdx == 0) Venue.entries.toSet() else venues) else emptyList()
     }
     val tm = rememberTextMeasurer()
     val axis = TextStyle(color = Q.Muted, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
 
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Section("Liquidation heatmap · estimado (modelo V8) · " + if (venueIdx == 0) "todas as corretoras" else Venue.entries[venueIdx - 1].label,
+        Section(HEAT_MODES[mode] + " · estimado (modelo V8) · " + if (venueIdx == 0) "Binance + Bybit + OKX" else CORE_VENUES[venueIdx - 1].label,
             Modifier.weight(1f).fillMaxHeight()) {
             Column {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                     Chips("Período", HeatRange.entries.map { it.label }, hs.range.ordinal) { ctx.heat.load(HeatRange.entries[it]) }
                 }
                 Spacer(Modifier.height(6.dp))
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    Chips("Mapa", listOf("LIQUIDAÇÕES", "OI POR ENTRADA", "LONGS × SHORTS"), mode) { mode = it; SettingsStore.put("hm.mode", it) }
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        T("Alavancagem", Q.Muted, 11)
+                        HEAT_TIERS.forEachIndexed { i, t ->
+                            Toggle(t, tierMask and (1 shl i) != 0) { on ->
+                                val m = if (on) tierMask or (1 shl i) else tierMask and (1 shl i).inv()
+                                if (m != 0) { tierMask = m; SettingsStore.put("hm.tiers", m) }
+                            }
+                        }
+                    }
+                }
+                Spacer(Modifier.height(6.dp))
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Chips("Corretoras", listOf("TODAS") + Venue.entries.map { it.label.uppercase() }, venueIdx) { venueIdx = it; SettingsStore.put("hm.venue", it) }
+                    Chips("Corretoras", listOf("TODAS") + CORE_VENUES.map { it.label.uppercase() }, venueIdx) { venueIdx = it; SettingsStore.put("hm.venue", it) }
                     T("Intensidade", Q.Muted, 11)
                     Slider(intensity, { intensity = it; SettingsStore.put("hm.int", it.toDouble()) }, Modifier.width(150.dp).height(20.dp),
                         colors = SliderDefaults.colors(thumbColor = Q.Accent, activeTrackColor = Q.Accent, inactiveTrackColor = Q.Line))
@@ -145,7 +181,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                     Text("Atualizar", color = Q.Accent, fontSize = 11.sp, modifier = Modifier.border(1.dp, Q.Line).clickable { ctx.heat.load(hs.range, force = true) }.padding(horizontal = 8.dp, vertical = 3.dp))
                 }
                 Spacer(Modifier.height(6.dp))
-                BoxWithConstraints(Modifier.fillMaxSize().background(VIRIDIS[0])) {
+                BoxWithConstraints(Modifier.fillMaxWidth().weight(1f).background(if (d == null) Q.Panel2 else VIRIDIS[0])) {
                     if (d == null || img == null) {
                         Empty(if (hs.loading) "Montando o heatmap (${hs.progress})…" else "Heatmap indisponível", hs.error ?: "Usa velas e open interest históricos públicos das corretoras")
                         return@BoxWithConstraints
@@ -187,7 +223,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                             val yy = y(p)
                             drawLine(Q.Accent.copy(alpha = 0.6f), Offset(0f, yy), Offset(w, yy), 1f)
                             drawRect(Q.Accent, Offset(w, yy - 8f), Size(axisW, 16f))
-                            drawText(tm, px(p), Offset(w + 6f, yy - 7f), axis.copy(color = Color.Black))
+                            drawText(tm, px(p), Offset(w + 6f, yy - 7f), axis.copy(color = if (Look.dark) Color.Black else Color.White))
                         }
                         hover?.let { hp -> if (hp.x < w && hp.y < h) { drawLine(Color.White.copy(alpha = 0.35f), Offset(hp.x, 0f), Offset(hp.x, h), 1f); drawLine(Color.White.copy(alpha = 0.35f), Offset(0f, hp.y), Offset(w, hp.y), 1f) } }
                     }
@@ -196,11 +232,15 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                         if (hp.x < w && hp.y < h && grids != null) {
                             val col = (hp.x / w * d.cols).toInt().coerceIn(0, d.cols - 1)
                             val row = ((h - hp.y) / h * d.rows).toInt().coerceIn(0, d.rows - 1)
-                            HeatTooltip(d, grids, venues, col, row, price, Modifier.offset {
+                            HeatTooltip(d, grids, entries, mode, venues, col, row, price, Modifier.offset {
                                 IntOffset((hp.x + 16).toInt().coerceAtMost((w - 300).toInt().coerceAtLeast(0)), (hp.y + 12).toInt().coerceAtMost((h - 190).toInt().coerceAtLeast(0)))
                             })
                         }
                     }
+                }
+                if (d != null && delta != null && delta.isNotEmpty()) {
+                    Spacer(Modifier.height(4.dp))
+                    DeltaStrip(delta, Modifier.fillMaxWidth().height(54.dp))
                 }
             }
         }
@@ -236,12 +276,38 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                     }
                     Spacer(Modifier.height(6.dp))
                     T("COBERTURA DO HISTÓRICO", Q.Muted, 10)
-                    Venue.entries.forEach { v -> KV(v.label, d?.coverage?.get(v) ?: "—", if (d?.coverage?.get(v)?.startsWith("completo") == true) Q.Text else Q.Warn) }
+                    CORE_VENUES.forEach { v -> KV(v.label, d?.coverage?.get(v) ?: "—", if (d?.coverage?.get(v)?.startsWith("completo") == true) Q.Text else Q.Warn) }
                     Footnote("Estimativa: 10x/25x/50x/100x sobre o aumento de open interest de cada corretora; níveis atravessados pelo preço somem. " +
-                        "Pontos laranja/azuis = liquidações REAIS reportadas (gravadas desde a instalação).", Modifier.padding(top = 6.dp))
+                        "OI POR ENTRADA = onde o modelo estima que as posições ainda abertas entraram. LONGS × SHORTS: verde = mais longs a liquidar naquele preço, vermelho = mais shorts. " +
+                        "Faixa inferior = total de níveis LONG em aberto menos SHORT. O filtro de alavancagem vale para o mapa e os níveis-chave. " +
+                        "Pontos laranja/azuis = liquidações REAIS reportadas pelas 6 corretoras (gravadas desde a instalação).", Modifier.padding(top = 6.dp))
                 }
             }
         }
+    }
+}
+
+private val HEAT_MODES = listOf("Liquidation heatmap", "Open interest por preço de entrada", "Longs × shorts a liquidar")
+
+/** Faixa inferior: níveis LONG em aberto − níveis SHORT em aberto ao longo do tempo (mesmo eixo X do mapa). */
+@Composable
+private fun DeltaStrip(delta: FloatArray, modifier: Modifier) {
+    val tm = rememberTextMeasurer()
+    val st = TextStyle(color = Q.Muted, fontSize = 10.sp)
+    Canvas(modifier.background(Q.Panel2)) {
+        val axisW = 70f
+        val w = size.width - axisW
+        val mx = (delta.maxOfOrNull { kotlin.math.abs(it) } ?: 0f).takeIf { it > 0 } ?: 1f
+        val mid = size.height / 2
+        val bw = w / delta.size
+        delta.forEachIndexed { i, v ->
+            val hh = v / mx * (mid - 4)
+            drawRect(if (v >= 0) Q.Buy.copy(alpha = 0.75f) else Q.Sell.copy(alpha = 0.75f),
+                Offset(i * bw, if (hh >= 0) mid - hh else mid), Size(bw.coerceAtLeast(1f), kotlin.math.abs(hh)))
+        }
+        drawLine(Q.Line, Offset(0f, mid), Offset(w, mid), 1f)
+        drawText(tm, "Delta dos níveis", Offset(w + 4f, 2f), st)
+        drawText(tm, String.format(BR, "%+,.0f BTC", delta.last()), Offset(w + 4f, mid + 4f), st.copy(color = if (delta.last() >= 0) Q.Buy else Q.Sell))
     }
 }
 
@@ -258,12 +324,13 @@ private fun KeyRow(k: KeyLevel, mx: Double, c: Color) {
 }
 
 @Composable
-private fun HeatTooltip(d: HeatData, g: Pair<Array<FloatArray>, Array<FloatArray>>, venues: Set<Venue>, col: Int, row: Int, price: Double?, modifier: Modifier) {
+private fun HeatTooltip(d: HeatData, g: Pair<Array<FloatArray>, Array<FloatArray>>, entries: Array<FloatArray>?, mode: Int, venues: Set<Venue>,
+                        col: Int, row: Int, price: Double?, modifier: Modifier) {
     val t = d.t0 + d.stepMs * col
     val lo = d.pMin + d.pStep * row
     val longs = g.first[row][col]; val shorts = g.second[row][col]
     val close = d.candles.getOrNull(col)?.close
-    Column(modifier.width(290.dp).background(Color(0xF0101317)).border(1.dp, Q.Line).padding(10.dp)) {
+    Column(modifier.width(290.dp).background(Q.Tip).border(1.dp, Q.Line).padding(10.dp)) {
         T(SimpleDateFormat("dd/MM HH:mm").format(Date(t)) + "  ·  fechamento " + px(close), Q.Text, 11, bold = true)
         T("Faixa ${px(lo)} – ${px(lo + d.pStep)}", Q.Muted, 11)
         price?.let { T("Distância do preço atual: " + pct((lo + d.pStep / 2) / it * 100 - 100), Q.Muted, 11) }
@@ -271,6 +338,8 @@ private fun HeatTooltip(d: HeatData, g: Pair<Array<FloatArray>, Array<FloatArray
         KV("Longs a liquidar", btc(longs.toDouble(), 2), Q.Buy)
         KV("Shorts a liquidar", btc(shorts.toDouble(), 2), Q.Sell)
         KV("Total", btc((longs + shorts).toDouble(), 2))
+        KV("Longs − shorts", String.format(BR, "%+.2f BTC", (longs - shorts).toDouble()), if (longs >= shorts) Q.Buy else Q.Sell)
+        if (mode == 1 && entries != null) KV("OI aberto neste preço", btc(entries[row][col].toDouble(), 2), Q.Accent)
         Spacer(Modifier.height(4.dp))
         venues.forEach { v ->
             val l = d.longGrid[v]?.get(row)?.get(col) ?: 0f; val s = d.shortGrid[v]?.get(row)?.get(col) ?: 0f

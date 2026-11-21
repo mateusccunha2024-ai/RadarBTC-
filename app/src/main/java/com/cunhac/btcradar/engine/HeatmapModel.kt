@@ -4,7 +4,10 @@ import com.cunhac.btcradar.data.model.Candle
 import kotlin.math.floor
 import kotlin.math.max
 
-class LiqLevel(val price: Double, val isLong: Boolean, var btc: Double)
+class LiqLevel(val price: Double, val isLong: Boolean, var btc: Double, val tier: Int = 0, val entry: Double = price)
+
+/** Alavancagens simuladas pelo modelo (índice usado nos filtros). */
+val HEAT_TIERS = listOf("10x", "25x", "50x", "100x")
 
 /** Grade tempo × preço de liquidações ESTIMADAS por corretora (BTC por célula). */
 class HeatData(
@@ -18,6 +21,11 @@ class HeatData(
     val rows: Int,
     val longGrid: Map<Venue, Array<FloatArray>>,
     val shortGrid: Map<Venue, Array<FloatArray>>,
+    /** Mesmas grades separadas por alavancagem: [tier][linha][coluna]. */
+    val longTier: Map<Venue, Array<Array<FloatArray>>>,
+    val shortTier: Map<Venue, Array<Array<FloatArray>>>,
+    /** Open interest estimado por PREÇO DE ENTRADA (posições ainda abertas no modelo). */
+    val entryGrid: Map<Venue, Array<FloatArray>>,
     val finalLevels: Map<Venue, List<LiqLevel>>,
     val coverage: Map<Venue, String>,
     val builtAt: Long,
@@ -54,6 +62,9 @@ object HeatmapModel {
         val cols = win.size
         val longG = HashMap<Venue, Array<FloatArray>>()
         val shortG = HashMap<Venue, Array<FloatArray>>()
+        val longT = HashMap<Venue, Array<Array<FloatArray>>>()
+        val shortT = HashMap<Venue, Array<Array<FloatArray>>>()
+        val entryG = HashMap<Venue, Array<FloatArray>>()
         val finals = HashMap<Venue, List<LiqLevel>>()
 
         for ((v, ptsRaw) in oi) {
@@ -61,6 +72,9 @@ object HeatmapModel {
             val pts = ptsRaw.sortedBy { it.timeMs }
             val lg = Array(rows) { FloatArray(cols) }
             val sg = Array(rows) { FloatArray(cols) }
+            val lt = Array(TIERS.size) { Array(rows) { FloatArray(cols) } }
+            val st = Array(TIERS.size) { Array(rows) { FloatArray(cols) } }
+            val eg = Array(rows) { FloatArray(cols) }
             val active = ArrayList<LiqLevel>()
             var prev: Double? = null
             var col = -1
@@ -76,9 +90,9 @@ object HeatmapModel {
                         val delta = cur - p
                         if (delta > 0) {
                             val entry = (c.high + c.low + c.close) / 3
-                            for ((lev, w) in TIERS) {
-                                active += LiqLevel(entry * (1 - 1 / lev + MMR), true, delta * w)
-                                active += LiqLevel(entry * (1 + 1 / lev - MMR), false, delta * w)
+                            TIERS.forEachIndexed { ti, (lev, w) ->
+                                active += LiqLevel(entry * (1 - 1 / lev + MMR), true, delta * w, ti, entry)
+                                active += LiqLevel(entry * (1 + 1 / lev - MMR), false, delta * w, ti, entry)
                             }
                         } else if (delta < 0) {
                             val total = active.sumOf { it.btc } / 2
@@ -90,32 +104,57 @@ object HeatmapModel {
                     col++
                     for (l in active) {
                         val r = floor((l.price - lo) / pStep).toInt()
-                        if (r in 0 until rows) { if (l.isLong) lg[r][col] += l.btc.toFloat() else sg[r][col] += l.btc.toFloat() }
+                        if (r in 0 until rows) {
+                            if (l.isLong) { lg[r][col] += l.btc.toFloat(); lt[l.tier][r][col] += l.btc.toFloat() }
+                            else { sg[r][col] += l.btc.toFloat(); st[l.tier][r][col] += l.btc.toFloat() }
+                        }
+                        val re = floor((l.entry - lo) / pStep).toInt()
+                        if (re in 0 until rows) eg[re][col] += l.btc.toFloat()
                     }
                 }
             }
-            longG[v] = lg; shortG[v] = sg
-            finals[v] = active.map { LiqLevel(it.price, it.isLong, it.btc) }
+            longG[v] = lg; shortG[v] = sg; longT[v] = lt; shortT[v] = st; entryG[v] = eg
+            finals[v] = active.map { LiqLevel(it.price, it.isLong, it.btc, it.tier, it.entry) }
         }
-        return HeatData(range, win, win.first().timeMs, range.stepMs, cols, lo, pStep, rows, longG, shortG, finals, coverage, now)
+        return HeatData(range, win, win.first().timeMs, range.stepMs, cols, lo, pStep, rows, longG, shortG, longT, shortT, entryG, finals, coverage, now)
     }
 
-    /** Soma as grades das corretoras escolhidas. */
-    fun combine(d: HeatData, venues: Set<Venue>): Pair<Array<FloatArray>, Array<FloatArray>> {
+    /** Soma as grades das corretoras e alavancagens escolhidas. */
+    fun combine(d: HeatData, venues: Set<Venue>, tiers: Set<Int> = HEAT_TIERS.indices.toSet()): Pair<Array<FloatArray>, Array<FloatArray>> {
         val l = Array(d.rows) { FloatArray(d.cols) }
         val s = Array(d.rows) { FloatArray(d.cols) }
+        fun addAll(dst: Array<FloatArray>, g: Array<FloatArray>) { for (r in 0 until d.rows) for (c in 0 until d.cols) dst[r][c] += g[r][c] }
         for (v in venues) {
-            d.longGrid[v]?.let { g -> for (r in 0 until d.rows) for (c in 0 until d.cols) l[r][c] += g[r][c] }
-            d.shortGrid[v]?.let { g -> for (r in 0 until d.rows) for (c in 0 until d.cols) s[r][c] += g[r][c] }
+            if (tiers.size == HEAT_TIERS.size) {
+                d.longGrid[v]?.let { addAll(l, it) }; d.shortGrid[v]?.let { addAll(s, it) }
+            } else for (t in tiers) {
+                d.longTier[v]?.getOrNull(t)?.let { addAll(l, it) }; d.shortTier[v]?.getOrNull(t)?.let { addAll(s, it) }
+            }
         }
         return l to s
     }
 
+    /** Open interest estimado por preço de entrada, somado nas corretoras escolhidas. */
+    fun entries(d: HeatData, venues: Set<Venue>): Array<FloatArray> {
+        val e = Array(d.rows) { FloatArray(d.cols) }
+        for (v in venues) d.entryGrid[v]?.let { g -> for (r in 0 until d.rows) for (c in 0 until d.cols) e[r][c] += g[r][c] }
+        return e
+    }
+
+    /** Por coluna: níveis LONG em aberto − níveis SHORT em aberto (BTC). Positivo = mais longs expostos. */
+    fun levelDelta(g: Pair<Array<FloatArray>, Array<FloatArray>>): FloatArray {
+        val cols = g.first.firstOrNull()?.size ?: 0
+        val out = FloatArray(cols)
+        for (r in g.first.indices) for (c in 0 until cols) out[c] += g.first[r][c] - g.second[r][c]
+        return out
+    }
+
     /** Níveis-chave no fim da janela, agrupados em faixas de [binUsd]. */
-    fun summary(d: HeatData, venues: Set<Venue>, price: Double, binUsd: Double, n: Int = 6): HeatSummary {
+    fun summary(d: HeatData, venues: Set<Venue>, price: Double, binUsd: Double, n: Int = 6, tiers: Set<Int> = HEAT_TIERS.indices.toSet()): HeatSummary {
         val above = HashMap<Double, Double>(); val below = HashMap<Double, Double>()
         var sa = 0.0; var lb = 0.0
         for (v in venues) d.finalLevels[v]?.forEach { l ->
+            if (l.tier !in tiers) return@forEach
             val k = floor(l.price / binUsd) * binUsd + binUsd / 2
             if (!l.isLong && l.price > price) { above[k] = (above[k] ?: 0.0) + l.btc; sa += l.btc }
             if (l.isLong && l.price < price) { below[k] = (below[k] ?: 0.0) + l.btc; lb += l.btc }

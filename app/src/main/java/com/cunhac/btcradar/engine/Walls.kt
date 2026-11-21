@@ -4,6 +4,7 @@ import kotlin.math.abs
 import kotlin.math.max
 
 enum class BookSide { BID, ASK }
+enum class WallSignal(val label: String) { ABSORPTION("ABSORÇÃO"), ICEBERG("ICEBERG") }
 enum class WallClass { SMALL, MEDIUM, LARGE, EXTREME }
 
 enum class WallStatus {
@@ -47,7 +48,21 @@ data class Wall(
     val tradedNearBtc: Double = 0.0,
     /** BTC negociado exatamente neste preço desde que a parede apareceu. */
     val executedBtc: Double = 0.0,
+    /** Execução que o livro "não sentiu": a quantidade foi reposta enquanto era consumida. */
+    val replenishedBtc: Double = 0.0,
+    /** Quantas vezes o nível voltou a crescer logo depois de ser consumido. */
+    val refills: Int = 0,
 ) {
+    /**
+     * ICEBERG: o nível foi executado mais do que mostrava e continua de pé (reposição repetida).
+     * ABSORÇÃO: recebeu execução relevante e manteve pelo menos 80% do tamanho inicial.
+     * São inferências a partir do livro agregado e dos trades públicos, não identificação de ordens.
+     */
+    val signal: WallSignal? get() = when {
+        replenishedBtc >= max(1.0, 0.5 * peakQty) && refills >= 2 && executedBtc > currentQty -> WallSignal.ICEBERG
+        executedBtc >= max(0.5, 0.5 * initialQty) && currentQty >= 0.8 * initialQty -> WallSignal.ABSORPTION
+        else -> null
+    }
     val changeBtc get() = currentQty - initialQty
     val changePct get() = if (initialQty > 0) changeBtc / initialQty * 100 else 0.0
     val permanenceMs get() = lastSeenMs - firstSeenMs
@@ -63,6 +78,8 @@ class WallTracker(val thresholds: WallThresholds) {
     private val lock = Any()
     /** Gancho para persistência de eventos de paredes. */
     @Volatile var onEvent: ((Wall) -> Unit)? = null
+    /** Chamado quando uma parede passa a mostrar absorção ou iceberg. */
+    @Volatile var onSignal: ((Wall) -> Unit)? = null
 
     private fun key(v: Venue, s: BookSide, p: Double) = "${v.name}|${s.name}|$p"
     private fun execKey(v: Venue, p: Double) = "${v.name}|${Math.round(p * 10)}"
@@ -98,11 +115,17 @@ class WallTracker(val thresholds: WallThresholds) {
                             now - w.statusMs > 15_000 -> WallStatus.ACTIVE
                             else -> w.status
                         }
+                        val ex = exec[execKey(w.venue, w.price)] ?: 0.0
+                        // Se executou X mas o tamanho caiu menos que X, a diferença foi reposta.
+                        val hidden = if (ex > 0) max(0.0, ex - max(0.0, prev - lv.qtyBtc)) else 0.0
+                        val refill = ex > 0 && lv.qtyBtc >= prev * 0.95 && hidden >= 0.1
                         val nw = w.copy(currentQty = lv.qtyBtc, peakQty = max(w.peakQty, lv.qtyBtc), lastSeenMs = now,
                             status = st, statusMs = if (st != w.status) now else w.statusMs, cls = cls,
-                            executedBtc = w.executedBtc + (exec[execKey(w.venue, w.price)] ?: 0.0))
+                            executedBtc = w.executedBtc + ex, replenishedBtc = w.replenishedBtc + hidden,
+                            refills = w.refills + if (refill) 1 else 0)
                         active[k] = nw
                         if (st != w.status && (st == WallStatus.INCREASED || st == WallStatus.REDUCED)) events += nw
+                        if (nw.signal != null && nw.signal != w.signal) onSignal?.invoke(nw)
                     }
                 }
 
@@ -129,6 +152,11 @@ class WallTracker(val thresholds: WallThresholds) {
 
     fun top(side: BookSide, venue: Venue?, n: Int = 50): List<Wall> = synchronized(lock) {
         active.values.filter { it.side == side && (venue == null || it.venue == venue) }.sortedByDescending { it.currentQty }.take(n)
+    }
+
+    /** Paredes ativas com absorção ou iceberg, maiores primeiro. */
+    fun signals(n: Int = 30): List<Wall> = synchronized(lock) {
+        active.values.filter { it.signal != null }.sortedByDescending { it.executedBtc }.take(n)
     }
 
     fun history(n: Int = 300): List<Wall> = synchronized(lock) { history.take(n) }

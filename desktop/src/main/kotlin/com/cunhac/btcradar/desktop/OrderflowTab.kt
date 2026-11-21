@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -33,6 +35,7 @@ import com.cunhac.btcradar.engine.ConnState
 import com.cunhac.btcradar.engine.ConsRow
 import com.cunhac.btcradar.engine.Consolidate
 import com.cunhac.btcradar.engine.TerminalState
+import com.cunhac.btcradar.engine.CORE_VENUES
 import com.cunhac.btcradar.engine.Venue
 import kotlin.math.floor
 
@@ -41,6 +44,7 @@ private val LEVS = listOf(25, 50, 100, 200, 500)
 private val MINS = listOf(0.0, 0.1, 0.5, 1.0, 5.0)
 private val INTS = listOf(0.5f, 1f, 2f, 4f)
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun OrderflowTab(ctx: AppContext, s: TerminalState) {
     var venueIdx by remember { mutableIntStateOf(SettingsStore.i("of.venue", 0)) }
@@ -54,7 +58,7 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
     var rMin by remember { mutableStateOf(SettingsStore.d("of.rmin", 0.0).takeIf { it > 0 }) }
     var rMax by remember { mutableStateOf(SettingsStore.d("of.rmax", 0.0).takeIf { it > 0 }) }
 
-    val venues = if (venueIdx == 0) Venue.entries.toSet() else setOf(Venue.entries[venueIdx - 1])
+    val venues = if (venueIdx == 0) CORE_VENUES.toSet() else setOf(CORE_VENUES[venueIdx - 1])
     val levels = LEVS[levIdx]
     val book = remember(s.tick, venueIdx, granIdx, levIdx, minIdx, rpi, manual, rMin, rMax) {
         val ranged = manual && (rMin != null || rMax != null)
@@ -73,19 +77,14 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
 
     Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Column(Modifier.weight(1.7f).fillMaxHeight().background(Q.Panel).padding(10.dp)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                Chips("Livro", listOf("CONSOLIDADO") + Venue.entries.map { it.label.uppercase() }, venueIdx) { venueIdx = it; SettingsStore.put("of.venue", it) }
+            // Controles quebram linha sozinhos quando a interface está ampliada.
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Chips("Livro", listOf("CONSOLIDADO") + CORE_VENUES.map { it.label.uppercase() }, venueIdx) { venueIdx = it; SettingsStore.put("of.venue", it) }
                 Chips("Agrupar", listOf("Exato", "1", "5", "10", "50", "100"), granIdx) { granIdx = it; SettingsStore.put("of.gran", it) }
-            }
-            Spacer(Modifier.height(6.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
                 Chips("Níveis", LEVS.map { it.toString() }, levIdx) { levIdx = it; SettingsStore.put("of.lev", it) }
                 Chips("Mín.", MINS.map { num(it, 1) }, minIdx) { minIdx = it; SettingsStore.put("of.min", it) }
                 Chips("Intensidade", listOf("0,5x", "1x", "2x", "4x"), intIdx) { intIdx = it; SettingsStore.put("of.int", it) }
                 Toggle("Bybit RPI", rpi) { rpi = it; SettingsStore.put("of.rpi", it) }
-            }
-            Spacer(Modifier.height(6.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
                 Chips("Executado", listOf("5m", "15m", "1h"), exIdx) { exIdx = it; SettingsStore.put("of.ex", it) }
                 Chips("Centro", listOf("AUTO (mid ${px(s.price)})", "MANUAL"), if (manual) 1 else 0) { manual = it == 1; SettingsStore.put("of.manual", manual) }
                 if (manual) {
@@ -109,7 +108,7 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
                     KV("Spread consolidado", when { bb == null || ba == null -> "—"; ba < bb -> "cruzado entre corretoras"; else -> num(ba - bb, 1) + " USDT" })
                 }
             }
-            Venue.entries.forEach { v -> s.books[v]?.let { BookCard(it, s) } }
+            CORE_VENUES.forEach { v -> s.books[v]?.let { BookCard(it, s) } }
             s.rpi?.let { BookCard(it, s, "BYBIT RPI (só parte RPI, 50 níveis)") }
         }
     }

@@ -1,11 +1,20 @@
 package com.cunhac.btcradar.engine
 
-/** Corretoras suportadas. Todos os instrumentos são perpétuos BTC/USDT. */
-enum class Venue(val label: String, val instrument: String) {
+/**
+ * Corretoras suportadas (perpétuos de BTC).
+ * core = livro, trades e open interest completos. As demais entram só com liquidações reais.
+ */
+enum class Venue(val label: String, val instrument: String, val core: Boolean = true) {
     BINANCE("Binance", "BTCUSDT perp (USD-M)"),
     BYBIT("Bybit", "BTCUSDT linear"),
     OKX("OKX", "BTC-USDT-SWAP"),
+    GATE("Gate", "BTC_USDT perp", core = false),
+    BITGET("Bitget", "BTCUSDT perp (USDT-M)", core = false),
+    DERIBIT("Deribit", "BTC-PERPETUAL (inverso, USD)", core = false),
 }
+
+/** Corretoras com livro de ofertas, trades e open interest. */
+val CORE_VENUES: List<Venue> = Venue.entries.filter { it.core }
 
 /** Quem iniciou a execução (lado agressor / taker). */
 enum class Aggressor { BUY, SELL }

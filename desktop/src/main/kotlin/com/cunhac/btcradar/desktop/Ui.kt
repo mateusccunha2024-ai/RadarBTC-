@@ -36,37 +36,56 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
 
-/** Paleta Quant Orderflow. */
+/** Preferências de visualização (salvas entre sessões). Ler estes valores numa tela faz ela redesenhar ao mudar. */
+object Look {
+    var dark by mutableStateOf(SettingsStore.b("ui.dark", true)); private set
+    var colorblind by mutableStateOf(SettingsStore.b("ui.cb", false)); private set
+    var footnotes by mutableStateOf(SettingsStore.b("ui.notes", true)); private set
+    var compact by mutableStateOf(SettingsStore.b("ui.compact", false)); private set
+    fun useDark(v: Boolean) { dark = v; SettingsStore.put("ui.dark", v) }
+    fun useColorblind(v: Boolean) { colorblind = v; SettingsStore.put("ui.cb", v) }
+    fun useFootnotes(v: Boolean) { footnotes = v; SettingsStore.put("ui.notes", v) }
+    fun useCompact(v: Boolean) { compact = v; SettingsStore.put("ui.compact", v) }
+}
+
+/**
+ * Paleta com papéis fixos: fundo, superfície, superfície elevada, linha, tinta, tinta suave
+ * e UM acento (laranja do Bitcoin). Compra/venda têm variante para daltonismo (azul/laranja).
+ * Contraste de texto ≥ 4,5:1 nos dois temas.
+ */
 object Q {
-    val Bg = Color(0xFF000000)
-    val Panel = Color(0xFF101317)
-    val Panel2 = Color(0xFF171B21)
-    val Line = Color(0xFF262B33)
-    val Text = Color(0xFFE6E8EA)
-    val Muted = Color(0xFF8A919E)
-    val Buy = Color(0xFF16C784)
-    val Sell = Color(0xFFEA3943)
-    val LiqLong = Color(0xFFFF9F1C)
-    val LiqShort = Color(0xFF3A86FF)
-    val Accent = Color(0xFFF7931A)
-    val Warn = Color(0xFFE0B341)
-    /** Escala de calor (Magnet Zones): do vermelho escuro ao vermelho vivo. */
-    val HeatLow = Color(0xFF3A0C12)
-    val HeatHigh = Color(0xFFFF3B4E)
+    private fun c(dark: Long, light: Long) = Color(if (Look.dark) dark else light)
+    val Bg get() = c(0xFF000000, 0xFFF4F5F7)
+    val Panel get() = c(0xFF101317, 0xFFFFFFFF)
+    val Panel2 get() = c(0xFF171B21, 0xFFECEEF2)
+    val Line get() = c(0xFF262B33, 0xFFD5DAE1)
+    val Text get() = c(0xFFE6E8EA, 0xFF14171C)
+    val Muted get() = c(0xFF8A919E, 0xFF555D6B)
+    val Buy get() = if (Look.colorblind) c(0xFF3A9BFF, 0xFF1A64C8) else c(0xFF16C784, 0xFF07875A)
+    val Sell get() = if (Look.colorblind) c(0xFFFF9F1C, 0xFFB35E00) else c(0xFFEA3943, 0xFFC4202B)
+    val LiqLong get() = c(0xFFFF9F1C, 0xFFB35E00)
+    val LiqShort get() = c(0xFF3A86FF, 0xFF1A64C8)
+    val Accent get() = c(0xFFF7931A, 0xFFB86200)
+    val Warn get() = c(0xFFE0B341, 0xFF8A6500)
+    /** Escala de calor (Magnet Zones): do vermelho apagado ao vermelho vivo. */
+    val HeatLow get() = c(0xFF3A0C12, 0xFFFBE1E4)
+    val HeatHigh get() = c(0xFFFF3B4E, 0xFFC4202B)
+    /** Fundo de dicas flutuantes (tooltip). */
+    val Tip get() = c(0xF0101317, 0xF5FFFFFF)
 }
 
 /** Tamanho da interface (Ctrl + / Ctrl - / Ctrl 0), salvo entre sessões. */
 object UiScale {
     var scale by mutableFloatStateOf(SettingsStore.d("ui.scale", 1.0).toFloat().coerceIn(0.7f, 1.8f))
         private set
-    private fun set(v: Float) { scale = (v * 10).roundToInt() / 10f; SettingsStore.put("ui.scale", scale.toDouble()) }
+    fun set(v: Float) { scale = ((v * 100).roundToInt() / 100f).coerceIn(0.7f, 1.8f); SettingsStore.put("ui.scale", scale.toDouble()) }
     fun inc() = set((scale + 0.1f).coerceAtMost(1.8f))
     fun dec() = set((scale - 0.1f).coerceAtLeast(0.7f))
     fun reset() = set(1.0f)
 }
 
 val BR: Locale = Locale.forLanguageTag("pt-BR")
-val mono = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 12.sp, color = Q.Text)
+val mono: TextStyle get() = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 12.sp, color = Q.Text)
 fun btc(v: Double, d: Int = 2) = String.format(BR, "%,.${d}f BTC", v)
 fun num(v: Double, d: Int = 2) = String.format(BR, "%,.${d}f", v)
 /** Quantidade de livro: valores menores que 0,001 BTC aparecem como <0,001 em vez de 0,000. */
@@ -98,7 +117,7 @@ fun T(text: String, color: Color = Q.Text, size: Int = 12, bold: Boolean = false
 
 @Composable
 fun Section(title: String, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    Column(modifier.background(Q.Panel).border(1.dp, Q.Line).padding(10.dp)) {
+    Column(modifier.background(Q.Panel).border(1.dp, Q.Line).padding(if (Look.compact) 6.dp else 10.dp)) {
         T(title.uppercase(), Q.Muted, 11, bold = true)
         Box(Modifier.padding(top = 6.dp)) { content() }
     }
@@ -119,7 +138,7 @@ fun Badge(text: String, color: Color) =
         modifier = Modifier.border(1.dp, color.copy(alpha = 0.55f)).padding(horizontal = 5.dp, vertical = 1.dp))
 
 @Composable
-fun Footnote(text: String, modifier: Modifier = Modifier) = T(text, Q.Muted, 11, wrap = true, modifier = modifier)
+fun Footnote(text: String, modifier: Modifier = Modifier) { if (Look.footnotes) T(text, Q.Muted, 11, wrap = true, modifier = modifier) }
 
 @Composable
 private fun ChipItem(s: String, on: Boolean, onClick: () -> Unit) =

@@ -142,6 +142,53 @@ object Parse {
                     side, d.lng("ts"), "liquidation-orders")
             }
         }
+
+    // ---------------- Gate, Bitget, Deribit (somente liquidações) ----------------
+    // Formatos capturados ao vivo em 2026-11-21 e conferidos contra o REST de cada corretora.
+
+    /** Gate futures.public_liquidates: size em contratos (1 = 0,0001 BTC); size < 0 = ordem de venda = LONG liquidado. */
+    fun gateLiquidations(j: JsonObject, multiplier: Double): List<LiqEvent> {
+        if (j.str("event") != "update") return emptyList()
+        return j.arr("result").mapNotNull {
+            val d = it.o
+            if (d.str("contract") != "BTC_USDT") return@mapNotNull null
+            val size = d.dbl("size")
+            if (size == 0.0) return@mapNotNull null
+            LiqEvent(Venue.GATE, "BTC_USDT", d.dbl("price"), kotlin.math.abs(size) * multiplier, kotlin.math.abs(size), "contratos",
+                if (size < 0) LiqSide.LONG else LiqSide.SHORT, d.lng("time"), "futures.public_liquidates")
+        }
+    }
+
+    /** Bitget liquidation (UTA v3): amount em USDT; side = lado da POSIÇÃO (sell = SHORT liquidado). */
+    fun bitgetLiquidations(j: JsonObject): List<LiqEvent> = j.arr("data").mapNotNull {
+        val d = it.o
+        if (d.str("symbol") != "BTCUSDT") return@mapNotNull null
+        val p = d.dbl("price"); val usd = d.dbl("amount")
+        if (p <= 0 || usd <= 0) return@mapNotNull null
+        LiqEvent(Venue.BITGET, "BTCUSDT", p, usd / p, usd, "USDT",
+            if (d.str("side") == "sell") LiqSide.SHORT else LiqSide.LONG, d.lng("ts"), "liquidation")
+    }
+
+    /**
+     * Deribit trades.BTC-PERPETUAL: trades com campo "liquidation" (M = lado passivo, T = agressor, MT = ambos).
+     * amount em USD (contrato inverso). Agressor vendendo e liquidado = LONG; passivo de uma venda = comprador = SHORT.
+     */
+    fun deribitLiquidations(j: JsonObject): List<LiqEvent> {
+        val data = j.obj("params")?.get("data") as? JsonArray ?: return emptyList()
+        val out = ArrayList<LiqEvent>()
+        for (e in data) {
+            val d = e.o
+            val liq = d.str("liquidation")
+            if (liq.isEmpty()) continue
+            val p = d.dbl("price"); val usd = d.dbl("amount")
+            if (p <= 0 || usd <= 0) continue
+            val takerSells = d.str("direction") == "sell"
+            fun ev(side: LiqSide) = LiqEvent(Venue.DERIBIT, "BTC-PERPETUAL", p, usd / p, usd, "USD", side, d.lng("timestamp"), "trades.liquidation=$liq")
+            if (liq.contains("T")) out += ev(if (takerSells) LiqSide.LONG else LiqSide.SHORT)
+            if (liq.contains("M")) out += ev(if (takerSells) LiqSide.SHORT else LiqSide.LONG)
+        }
+        return out
+    }
 }
 
 /**
