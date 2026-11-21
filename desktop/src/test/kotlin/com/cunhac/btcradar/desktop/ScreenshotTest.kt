@@ -44,7 +44,8 @@ class ScreenshotTest {
         shot("light-menu", 0, settings = true)
         UiScale.set(1.25f)
         shot("light-zoom125-00", 0)
-        // Celular em pé: 412 dp de largura; altura grande para mostrar a página inteira que rola.
+        // Celular em pé: 412 dp de largura (tamanho 100%); altura grande para mostrar a página inteira que rola.
+        Look.useDark(true); UiScale.set(1.0f)
         TABS.indices.forEach { i -> shot("phone-%02d".format(i), i, w = 618, h = 3600, density = 1.5f) }
         shot("phone-menu", 0, settings = true, w = 618, h = 1372, density = 1.5f)
         Look.useDark(false)

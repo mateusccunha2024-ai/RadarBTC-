@@ -217,7 +217,7 @@ private fun ViewSettingsPanel(ctx: AppContext, onClose: () -> Unit) {
         .clickable(remember { MutableInteractionSource() }, null) {}  // não fecha ao clicar dentro
         .verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            T("Configurações de visualização", Q.Text, 15, bold = true, modifier = Modifier.weight(1f))
+            T(if (compact) "Visualização" else "Configurações de visualização", Q.Text, 15, bold = true, modifier = Modifier.weight(1f))
             SmallButton("Fechar ✕", onClick = onClose)
         }
         SettingGroup("Tema") {
@@ -235,7 +235,7 @@ private fun ViewSettingsPanel(ctx: AppContext, onClose: () -> Unit) {
             }
             Spacer(Modifier.height(6.dp))
             Chips(null, SCALES.map { "${(it * 100).roundToInt()}%" }, SCALES.indexOfFirst { kotlin.math.abs(it - UiScale.scale) < 0.01f }) { UiScale.set(SCALES[it]) }
-            Footnote("Atalhos: Ctrl + e Ctrl − ajustam, Ctrl 0 volta a 100%.")
+            if (!Platform.isMobile) Footnote("Atalhos: Ctrl + e Ctrl − ajustam, Ctrl 0 volta a 100%.")
         }
         SettingGroup("Densidade") {
             Chips(null, listOf("Confortável", "Compacta"), if (Look.compact) 1 else 0) { Look.useCompact(it == 1) }

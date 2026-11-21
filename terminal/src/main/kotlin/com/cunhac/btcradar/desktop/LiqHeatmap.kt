@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -147,8 +148,8 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                 Spacer(Modifier.height(6.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Chips("Mapa", listOf("LIQUIDAÇÕES", "OI POR ENTRADA", "LONGS × SHORTS"), mode) { mode = it; SettingsStore.put("hm.mode", it) }
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        T("Alavancagem", Q.Muted, 11)
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        T("Alavancagem", Q.Muted, 11, modifier = Modifier.padding(top = 4.dp))
                         HEAT_TIERS.forEachIndexed { i, t ->
                             Toggle(t, tierMask and (1 shl i) != 0) { on ->
                                 val m = if (on) tierMask or (1 shl i) else tierMask and (1 shl i).inv()
@@ -178,7 +179,8 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                         Empty(if (hs.loading) "Montando o heatmap (${hs.progress})…" else "Heatmap indisponível", hs.error ?: "Usa velas e open interest históricos públicos das corretoras")
                         return@BoxWithConstraints
                     }
-                    val axisW = 70f; val axisH = 18f
+                    val u = LocalDensity.current.density
+                    val axisW = 64f * u; val axisH = 18f * u
                     // Mouse (PC) ou toque (celular): mostra a cruz e o detalhe do ponto.
                     Canvas(Modifier.fillMaxSize().pointerInput(Unit) {
                         awaitPointerEventScope {
@@ -210,18 +212,18 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                         drawRect(Q.Panel, Offset(0f, h), Size(size.width, axisH))
                         for (k in 0..7) {
                             val p = d.pMin + (pMax - d.pMin) * k / 7
-                            drawText(tm, px(p), Offset(w + 6f, y(p) - 7f), axis)
+                            drawText(tm, px(p), Offset(w + 6f * u, y(p) - 7f * u), axis)
                         }
                         val fmt = SimpleDateFormat(if (d.range.ms <= HeatRange.H48.ms) "HH:mm" else "dd/MM")
                         for (k in 0..5) {
                             val t = d.t0 + (d.stepMs * d.cols) * k / 6
-                            drawText(tm, fmt.format(Date(t)), Offset(x(t) + 2f, h + 2f), axis)
+                            drawText(tm, fmt.format(Date(t)), Offset(x(t) + 2f * u, h + 2f * u), axis)
                         }
                         price?.let { p ->
                             val yy = y(p)
                             drawLine(Q.Accent.copy(alpha = 0.6f), Offset(0f, yy), Offset(w, yy), 1f)
-                            drawRect(Q.Accent, Offset(w, yy - 8f), Size(axisW, 16f))
-                            drawText(tm, px(p), Offset(w + 6f, yy - 7f), axis.copy(color = if (Look.dark) Color.Black else Color.White))
+                            drawRect(Q.Accent, Offset(w, yy - 8f * u), Size(axisW, 16f * u))
+                            drawText(tm, px(p), Offset(w + 6f * u, yy - 7f * u), axis.copy(color = if (Look.dark) Color.Black else Color.White))
                         }
                         hover?.let { hp -> if (hp.x < w && hp.y < h) { drawLine(Color.White.copy(alpha = 0.35f), Offset(hp.x, 0f), Offset(hp.x, h), 1f); drawLine(Color.White.copy(alpha = 0.35f), Offset(0f, hp.y), Offset(w, hp.y), 1f) } }
                     }
@@ -231,7 +233,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                             val col = (hp.x / w * d.cols).toInt().coerceIn(0, d.cols - 1)
                             val row = ((h - hp.y) / h * d.rows).toInt().coerceIn(0, d.rows - 1)
                             HeatTooltip(d, grids, entries, mode, venues, col, row, price, Modifier.offset {
-                                IntOffset((hp.x + 16).toInt().coerceAtMost((w - 300).toInt().coerceAtLeast(0)), (hp.y + 12).toInt().coerceAtMost((h - 190).toInt().coerceAtLeast(0)))
+                                IntOffset((hp.x + 16 * u).toInt().coerceAtMost((w - 300 * u).toInt().coerceAtLeast(0)), (hp.y + 12 * u).toInt().coerceAtMost((h - 190 * u).toInt().coerceAtLeast(0)))
                             })
                         }
                     }
@@ -294,7 +296,7 @@ private fun DeltaStrip(delta: FloatArray, modifier: Modifier) {
     val tm = rememberTextMeasurer()
     val st = TextStyle(color = Q.Muted, fontSize = 10.sp)
     Canvas(modifier.background(Q.Panel2)) {
-        val axisW = 70f
+        val axisW = 64.dp.toPx()
         val w = size.width - axisW
         val mx = (delta.maxOfOrNull { kotlin.math.abs(it) } ?: 0f).takeIf { it > 0 } ?: 1f
         val mid = size.height / 2
@@ -305,8 +307,8 @@ private fun DeltaStrip(delta: FloatArray, modifier: Modifier) {
                 Offset(i * bw, if (hh >= 0) mid - hh else mid), Size(bw.coerceAtLeast(1f), kotlin.math.abs(hh)))
         }
         drawLine(Q.Line, Offset(0f, mid), Offset(w, mid), 1f)
-        drawText(tm, "Delta dos níveis", Offset(w + 4f, 2f), st)
-        drawText(tm, String.format(BR, "%+,.0f BTC", delta.last()), Offset(w + 4f, mid + 4f), st.copy(color = if (delta.last() >= 0) Q.Buy else Q.Sell))
+        drawText(tm, "Delta", Offset(w + 4.dp.toPx(), 2.dp.toPx()), st)
+        drawText(tm, String.format(BR, "%+,.0f BTC", delta.last()), Offset(w + 4.dp.toPx(), mid + 4.dp.toPx()), st.copy(color = if (delta.last() >= 0) Q.Buy else Q.Sell))
     }
 }
 

@@ -7,6 +7,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +40,7 @@ private val DMY = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 private val DM = DateTimeFormatter.ofPattern("dd/MM")
 
 /** ETFs spot de BTC nos EUA: entradas e saídas diárias por fundo (Farside). */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun EtfTab(ctx: AppContext) {
     val m = ctx.etf
@@ -64,7 +67,7 @@ fun EtfTab(ctx: AppContext) {
                     T(mi(latest.total), if (latest.total >= 0) Q.Buy else Q.Sell, 30, bold = true, monoFont = true)
                     T(if (latest.total >= 0) "entrada líquida no dia" else "saída líquida no dia", Q.Muted, 12)
                     Spacer(Modifier.height(10.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(28.dp)) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(28.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         listOf(5, 20, 60).forEach { n ->
                             Column {
                                 T("$n pregões", Q.Muted, 11)
@@ -108,7 +111,7 @@ private fun FlowBars(days: List<EtfDay>, modifier: Modifier) {
     val st = TextStyle(color = Q.Muted, fontSize = 10.sp)
     Canvas(modifier) {
         if (days.isEmpty()) return@Canvas
-        val axisH = 16f
+        val axisH = 18.dp.toPx()
         val h = size.height - axisH
         val max = (days.maxOfOrNull { abs(it.total) } ?: 0.0).coerceAtLeast(1.0)
         val mid = h / 2
@@ -120,7 +123,7 @@ private fun FlowBars(days: List<EtfDay>, modifier: Modifier) {
             drawRect(if (d.total >= 0) buy else sell, Offset(i * slot + (slot - w) / 2, if (d.total >= 0) mid - bh else mid), Size(w, bh))
         }
         val every = (days.size / 6).coerceAtLeast(1)
-        for (i in days.indices step every) drawText(tm, days[i].date.format(DM), Offset(i * slot, h + 2f), st)
+        for (i in days.indices step every) drawText(tm, days[i].date.format(DM), Offset(i * slot, h + 2.dp.toPx()), st)
         drawText(tm, mi(max), Offset(2f, 2f), st)
     }
 }

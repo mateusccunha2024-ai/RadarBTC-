@@ -163,10 +163,11 @@ private fun CorrelationChart(b: List<FlowBucket>, modifier: Modifier) {
     val tm = rememberTextMeasurer()
     val buy = Q.Buy; val sell = Q.Sell; val text = Q.Text; val muted = Q.Muted; val line = Q.Line; val liqL = Q.LiqLong; val liqS = Q.LiqShort; val accent = Q.Accent
     Canvas(modifier) {
-        val labelW = 120f
+        val u = density
+        val labelW = 110f * u
         val w = size.width - labelW
-        val gap = 10f
-        val bandH = (size.height - gap * 3 - 16f) / 4
+        val gap = 10f * u
+        val bandH = (size.height - gap * 3 - 16f * u) / 4
         val cw = w / b.size
         val st = TextStyle(color = muted, fontSize = 10.sp)
         val vst = TextStyle(color = text, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
@@ -190,7 +191,7 @@ private fun CorrelationChart(b: List<FlowBucket>, modifier: Modifier) {
                 if (k == 0) path.moveTo(x, y) else path.lineTo(x, y)
             }
             drawPath(path, accent, style = Stroke(1.8f))
-            drawText(tm, px(hi), Offset(2f, band(0) + 16f), st); drawText(tm, px(lo), Offset(2f, band(0) + bandH - 14f), st)
+            drawText(tm, px(hi), Offset(2f, band(0) + 16f * u), st); drawText(tm, px(lo), Offset(2f, band(0) + bandH - 14f * u), st)
         }
         drawText(tm, "PREÇO", Offset(2f, band(0)), vst)
         // 2. CVD
@@ -201,7 +202,7 @@ private fun CorrelationChart(b: List<FlowBucket>, modifier: Modifier) {
         bars(band(2), b.map { it.oiChgBtc }, text.copy(alpha = 0.7f), muted)
         // 4. liquidações: shorts para cima (azul), longs para baixo (laranja)
         drawText(tm, "LIQUIDAÇÕES", Offset(2f, band(3)), vst)
-        drawText(tm, "▲ short  ▼ long", Offset(2f, band(3) + 16f), st)
+        drawText(tm, "▲ short  ▼ long", Offset(2f, band(3) + 16f * u), st)
         val mxL = b.maxOfOrNull { max(it.liqLongBtc, it.liqShortBtc) }?.takeIf { it > 0 } ?: 1.0
         val mid = band(3) + bandH / 2
         drawLine(line, Offset(labelW, mid), Offset(size.width, mid), 1f)
@@ -212,7 +213,7 @@ private fun CorrelationChart(b: List<FlowBucket>, modifier: Modifier) {
         }
         val tf = SimpleDateFormat("HH:mm")
         val every = max(1, b.size / 8)
-        for (i in b.indices step every) drawText(tm, tf.format(Date(b[i].startMs)), Offset(labelW + i * cw, size.height - 14f), st)
+        for (i in b.indices step every) drawText(tm, tf.format(Date(b[i].startMs)), Offset(labelW + i * cw, size.height - 14f * u), st)
     }
 }
 
@@ -301,7 +302,8 @@ private fun WallScatter(ev: List<WallRecord>, period: Long, price: Double?, modi
     val tm = rememberTextMeasurer()
     val buy = Q.Buy; val sell = Q.Sell; val muted = Q.Muted; val accent = Q.Accent; val warn = Q.Warn; val line = Q.Line; val panel2 = Q.Panel2
     Canvas(modifier) {
-        val axisW = 72f; val axisH = 18f
+        val u = density
+        val axisW = 66f * u; val axisH = 18f * u
         val w = size.width - axisW; val h = size.height - axisH
         val now = System.currentTimeMillis(); val t0 = now - period
         val lo = (ev.minOf { it.price } * 0.999).let { p -> price?.let { minOf(p, it) } ?: p }
@@ -312,7 +314,7 @@ private fun WallScatter(ev: List<WallRecord>, period: Long, price: Double?, modi
         for (k in 0..5) { val p = lo + (hi - lo) * k / 5; drawLine(line, Offset(0f, y(p)), Offset(w, y(p)), 0.6f) }
         val mx = ev.maxOf { it.peak }
         ev.asReversed().forEach { e ->
-            val r = (2.5f + sqrt(e.peak / mx).toFloat() * 11f)
+            val r = (2.5f + sqrt(e.peak / mx).toFloat() * 11f) * u
             val c = (if (e.bid) buy else sell).copy(alpha = 0.55f)
             val o = Offset(x(e.tsMs).coerceIn(r, w - r), y(e.price))
             drawCircle(c, r, o)
@@ -323,10 +325,10 @@ private fun WallScatter(ev: List<WallRecord>, period: Long, price: Double?, modi
         }
         price?.let { p -> drawLine(accent.copy(alpha = 0.6f), Offset(0f, y(p)), Offset(w, y(p)), 1f) }
         drawRect(panel2, Offset(w, 0f), Size(axisW, h))
-        for (k in 0..5) { val p = lo + (hi - lo) * k / 5; drawText(tm, px(p), Offset(w + 4f, (y(p) - 7f).coerceIn(0f, h - 14f)), st) }
+        for (k in 0..5) { val p = lo + (hi - lo) * k / 5; drawText(tm, px(p), Offset(w + 4f * u, (y(p) - 7f * u).coerceIn(0f, h - 14f * u)), st) }
         drawRect(panel2, Offset(0f, h), Size(size.width, axisH))
         val fmt = SimpleDateFormat(if (period <= 86_400_000L) "HH:mm" else "dd/MM HH:mm")
-        for (k in 0..5) { val t = t0 + period * k / 6; drawText(tm, fmt.format(Date(t)), Offset(x(t) + 2f, h + 2f), st) }
+        for (k in 0..5) { val t = t0 + period * k / 6; drawText(tm, fmt.format(Date(t)), Offset(x(t) + 2f * u, h + 2f * u), st) }
     }
 }
 
@@ -375,7 +377,7 @@ fun AlertsTab(ctx: AppContext, s: TerminalState) {
             Section("Telegram", Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Toggle("Enviar pelo Telegram", c.telegramOn) { c = c.copy(telegramOn = it) }
-                    TextSetting("Token do bot", c.telegramToken, if (compact) 250.dp else 420.dp, secret = true) { c = c.copy(telegramToken = it) }
+                    TextSetting("Token do bot", c.telegramToken, if (compact) 210.dp else 420.dp, secret = true) { c = c.copy(telegramToken = it) }
                     TextSetting("Chat ID", c.telegramChat, 200.dp) { c = c.copy(telegramChat = it) }
                     Footnote("Crie um bot com o @BotFather, mande uma mensagem para ele e pegue o chat ID em api.telegram.org/bot<token>/getUpdates.")
                 }

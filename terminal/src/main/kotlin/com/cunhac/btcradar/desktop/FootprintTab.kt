@@ -119,7 +119,8 @@ private fun FootprintChart(candles: List<FootCandle>, step: Double, price: Doubl
     val tm = rememberTextMeasurer()
     val buyC = Q.Buy; val sellC = Q.Sell; val text = Q.Text; val muted = Q.Muted; val line = Q.Line; val accent = Q.Accent; val panel2 = Q.Panel2
     Canvas(modifier) {
-        val axisW = 72f; val footH = 34f; val headH = 16f
+        val u = density
+        val axisW = 66f * u; val footH = 34f * u; val headH = 16f * u
         val w = size.width - axisW; val h = size.height - footH - headH
         val lo = candles.minOf { it.low }.let { kotlin.math.floor(it / step) * step }
         val hi = candles.maxOf { it.high }.let { kotlin.math.floor(it / step) * step + step }
@@ -138,7 +139,7 @@ private fun FootprintChart(candles: List<FootCandle>, step: Double, price: Doubl
 
         candles.forEachIndexed { i, c ->
             val x0 = i * colW
-            drawText(tm, tf.format(Date(c.startMs)), Offset(x0 + 4f, 1f), axis)
+            drawText(tm, tf.format(Date(c.startMs)), Offset(x0 + 4f * u, 1f), axis)
             val poc = c.poc
             for ((p, v) in c.cells) {
                 val top = y(p + step); val vol = v[0] + v[1]
@@ -163,19 +164,19 @@ private fun FootprintChart(candles: List<FootCandle>, step: Double, price: Doubl
             drawRect(if (up) buyC else sellC, Offset(x0 + 2f, y(max(c.open, c.close))), Size(4f, abs(y(c.open) - y(c.close)).coerceAtLeast(1f)))
             // rodapé: delta e volume
             drawRect(panel2, Offset(x0 + 1f, headH + h + 2f), Size(colW - 2f, footH - 2f))
-            drawText(tm, "Δ " + String.format(BR, "%+.1f", c.delta), Offset(x0 + 6f, headH + h + 3f), axis.copy(color = if (c.delta >= 0) buyC else sellC))
-            drawText(tm, "V " + String.format(BR, "%.1f", c.volume), Offset(x0 + 6f, headH + h + 17f), axis)
+            drawText(tm, "Δ " + String.format(BR, "%+.1f", c.delta), Offset(x0 + 6f * u, headH + h + 2f * u), axis.copy(color = if (c.delta >= 0) buyC else sellC))
+            drawText(tm, "V " + String.format(BR, "%.1f", c.volume), Offset(x0 + 6f * u, headH + h + 17f * u), axis)
             drawLine(line, Offset(x0 + colW, headH), Offset(x0 + colW, headH + h), 1f)
         }
         // eixo de preço
         drawRect(panel2, Offset(w, headH), Size(axisW, h))
-        val every = max(1, (rows / (h / 18f)).toInt() + 1)
+        val every = max(1, (rows / (h / (18f * u))).toInt() + 1)
         for (r in 0..rows step every) {
             val p = lo + r * step
-            drawText(tm, px(p), Offset(w + 4f, y(p) - 7f), axis)
+            drawText(tm, px(p), Offset(w + 4f * u, y(p) - 7f * u), axis)
         }
-        price?.let { p -> if (p in lo..hi) { val yy = y(p); drawLine(accent, Offset(0f, yy), Offset(w, yy), 1f); drawText(tm, px(p), Offset(w + 4f, yy - 7f), axis.copy(color = accent)) } }
-        if (!showText) drawText(tm, "Aumente a faixa US$ ou reduza o nº de velas para ver os números", Offset(10f, headH + h - 16f), axis)
+        price?.let { p -> if (p in lo..hi) { val yy = y(p); drawLine(accent, Offset(0f, yy), Offset(w, yy), 1f); drawText(tm, px(p), Offset(w + 4f * u, yy - 7f * u), axis.copy(color = accent)) } }
+        if (!showText) drawText(tm, "Aumente a faixa US$ ou reduza o nº de velas para ver os números", Offset(10f * u, headH + h - 16f * u), axis)
     }
 }
 
@@ -187,7 +188,7 @@ private fun ProfileChart(p: VolumeProfile, price: Double?, modifier: Modifier) {
         val rows = p.rows
         val lo = rows.first().price; val hi = rows.last().price
         val step = if (rows.size > 1) (hi - lo) / (rows.size - 1) else 1.0
-        val axisW = 70f
+        val axisW = 70.dp.toPx()
         val w = size.width - axisW
         val rh = size.height / (rows.size).coerceAtLeast(1)
         val mx = rows.maxOf { it.total }.coerceAtLeast(1e-9)
@@ -208,7 +209,7 @@ private fun ProfileChart(p: VolumeProfile, price: Double?, modifier: Modifier) {
             v ?: return
             val yy = y(v + step / 2)
             drawLine(c, Offset(0f, yy), Offset(w, yy), 1f)
-            drawText(tm, "$label ${px(v)}", Offset(w + 2f, yy - 7f), axis.copy(color = c))
+            drawText(tm, "$label ${px(v)}", Offset(w + 2f, yy - 7.dp.toPx()), axis.copy(color = c))
         }
         // Rótulos que caem no mesmo preço do POC não são repetidos (evita texto sobreposto).
         if (p.vah != p.poc) mark("VAH", p.vah, muted)
