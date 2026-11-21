@@ -73,10 +73,11 @@ fun CorrelationTab(ctx: AppContext, s: TerminalState) {
         val perSec = cum.mapIndexed { i, p -> p.first to (p.second - if (i == 0) 0.0 else cum[i - 1].second) }
         Analytics.buckets(ctx.hub.samples(n * 60_000L + 120_000), perSec, ctx.hub.liqs.since(from - 60_000), from, 60_000L, n)
     }
+    // Só minutos com preço (desde a abertura do app) entram na correlação; zeros sem dados distorceriam o r.
     val price = buckets.map { it.priceChgPct }
-    val cvd = buckets.map { it.cvdDeltaBtc as Double? }
-    val oi = buckets.map { it.oiChgBtc }
-    val liq = buckets.map { it.liqNetBtc as Double? }
+    val cvd = buckets.map { b -> if (b.priceChgPct == null) null else b.cvdDeltaBtc }
+    val oi = buckets.map { b -> if (b.priceChgPct == null) null else b.oiChgBtc }
+    val liq = buckets.map { b -> if (b.priceChgPct == null) null else b.liqNetBtc }
     val pairs = listOf(
         Triple("Preço × CVD", Analytics.pearson(price, cvd), "Positiva = o preço anda junto com a agressão compradora/vendedora."),
         Triple("Preço × open interest", Analytics.pearson(price, oi), "Positiva = alta com abertura de posições; negativa = alta com fechamento."),
@@ -307,12 +308,12 @@ private fun WallScatter(ev: List<WallRecord>, period: Long, price: Double?, modi
         fun x(t: Long) = ((t - t0).toFloat() / period) * w
         fun y(p: Double) = (h - (p - lo) / (hi - lo) * h).toFloat()
         val st = TextStyle(color = muted, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
-        for (k in 0..5) { val p = lo + (hi - lo) * k / 5; drawLine(line, Offset(0f, y(p)), Offset(w, y(p)), 0.6f); drawText(tm, px(p), Offset(w + 4f, y(p) - 7f), st) }
+        for (k in 0..5) { val p = lo + (hi - lo) * k / 5; drawLine(line, Offset(0f, y(p)), Offset(w, y(p)), 0.6f) }
         val mx = ev.maxOf { it.peak }
         ev.asReversed().forEach { e ->
             val r = (2.5f + sqrt(e.peak / mx).toFloat() * 11f)
             val c = (if (e.bid) buy else sell).copy(alpha = 0.55f)
-            val o = Offset(x(e.tsMs), y(e.price))
+            val o = Offset(x(e.tsMs).coerceIn(r, w - r), y(e.price))
             drawCircle(c, r, o)
             when (e.status) {
                 "EXECUTION_CORROBORATED" -> drawCircle(accent, r + 1.5f, o, style = Stroke(1.6f))
@@ -320,6 +321,8 @@ private fun WallScatter(ev: List<WallRecord>, period: Long, price: Double?, modi
             }
         }
         price?.let { p -> drawLine(accent.copy(alpha = 0.6f), Offset(0f, y(p)), Offset(w, y(p)), 1f) }
+        drawRect(panel2, Offset(w, 0f), Size(axisW, h))
+        for (k in 0..5) { val p = lo + (hi - lo) * k / 5; drawText(tm, px(p), Offset(w + 4f, (y(p) - 7f).coerceIn(0f, h - 14f)), st) }
         drawRect(panel2, Offset(0f, h), Size(size.width, axisH))
         val fmt = SimpleDateFormat(if (period <= 86_400_000L) "HH:mm" else "dd/MM HH:mm")
         for (k in 0..5) { val t = t0 + period * k / 6; drawText(tm, fmt.format(Date(t)), Offset(x(t) + 2f, h + 2f), st) }

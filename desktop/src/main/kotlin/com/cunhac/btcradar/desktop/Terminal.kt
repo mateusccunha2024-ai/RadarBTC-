@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -139,6 +140,7 @@ private fun TopBar(s: TerminalState, onSettings: () -> Unit) {
         Spacer(Modifier.width(20.dp))
         T(px(s.price), Q.Text, 18, bold = true, monoFont = true)
         Spacer(Modifier.width(20.dp))
+        Row(Modifier.weight(1f).clipToBounds(), verticalAlignment = Alignment.CenterVertically) {
         val live = s.liveCount()
         T("$live/3 LIVROS AO VIVO", if (live == 3) Q.Buy else if (live > 0) Q.Warn else Q.Sell, 12, bold = true)
         Spacer(Modifier.width(10.dp))
@@ -151,6 +153,7 @@ private fun TopBar(s: TerminalState, onSettings: () -> Unit) {
         Venue.entries.filter { !it.core }.forEach { v -> T("● ${v.label}", venueDot(s, v), 11, modifier = Modifier.padding(end = 6.dp)) }
         T(String.format(BR, "%,.0f msg/s · %,d trades · %,d liquidações", s.msgsPerSec, s.tradesTotal, s.liqTotal), Q.Muted, 11,
             modifier = Modifier.weight(1f).padding(horizontal = 12.dp), align = TextAlign.End)
+        }
         SmallButton("A−") { UiScale.dec() }
         T("${(UiScale.scale * 100).roundToInt()}%", Q.Text, 11, monoFont = true, modifier = Modifier.padding(horizontal = 6.dp))
         SmallButton("A+") { UiScale.inc() }
@@ -173,7 +176,7 @@ private val SCALES = listOf(0.8f, 0.9f, 1.0f, 1.1f, 1.25f, 1.5f)
 @Composable
 private fun ViewSettingsPanel(ctx: AppContext, onClose: () -> Unit) {
     var refresh by remember { mutableStateOf(ctx.hub.refreshMs) }
-    Column(Modifier.width(430.dp).fillMaxHeight(0.92f).background(Q.Panel).border(1.dp, Q.Line)
+    Column(Modifier.width(440.dp).fillMaxHeight(0.92f).background(Q.Panel).border(1.dp, Q.Line)
         .clickable(remember { MutableInteractionSource() }, null) {}  // não fecha ao clicar dentro
         .verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -214,7 +217,7 @@ private fun ViewSettingsPanel(ctx: AppContext, onClose: () -> Unit) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 TABS.chunked(2).forEach { pair ->
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        pair.forEach { t -> Box(Modifier.width(190.dp)) { Toggle(t, t !in TabPrefs.hidden) { TabPrefs.toggle(t) } } }
+                        pair.forEach { t -> Box(Modifier.width(196.dp)) { Toggle(t, t !in TabPrefs.hidden) { TabPrefs.toggle(t) } } }
                     }
                 }
             }

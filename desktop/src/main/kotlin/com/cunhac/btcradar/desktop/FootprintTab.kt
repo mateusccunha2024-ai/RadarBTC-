@@ -191,9 +191,10 @@ private fun ProfileChart(p: VolumeProfile, price: Double?, modifier: Modifier) {
         val rh = size.height / (rows.size).coerceAtLeast(1)
         val mx = rows.maxOf { it.total }.coerceAtLeast(1e-9)
         val axis = TextStyle(color = muted, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
-        fun y(price: Double) = ((hi - price) / (hi - lo + step) * size.height).toFloat()
+        // Faixa do topo começa em y = 0: o perfil nunca desenha por cima do título.
+        fun y(p: Double) = ((hi + step - p) / (hi - lo + step) * size.height).toFloat()
         rows.forEach { r ->
-            val top = y(r.price + step) + 0f
+            val top = y(r.price + step)
             val inVa = p.vah != null && p.val_ != null && r.price in p.val_!!..p.vah!!
             val bw = (r.total / mx * w).toFloat()
             val bb = (r.buy / mx * w).toFloat()

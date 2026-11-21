@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -42,6 +44,7 @@ private val LEVS = listOf(25, 50, 100, 200, 500)
 private val MINS = listOf(0.0, 0.1, 0.5, 1.0, 5.0)
 private val INTS = listOf(0.5f, 1f, 2f, 4f)
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun OrderflowTab(ctx: AppContext, s: TerminalState) {
     var venueIdx by remember { mutableIntStateOf(SettingsStore.i("of.venue", 0)) }
@@ -74,19 +77,14 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
 
     Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Column(Modifier.weight(1.7f).fillMaxHeight().background(Q.Panel).padding(10.dp)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
+            // Controles quebram linha sozinhos quando a interface está ampliada.
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Chips("Livro", listOf("CONSOLIDADO") + CORE_VENUES.map { it.label.uppercase() }, venueIdx) { venueIdx = it; SettingsStore.put("of.venue", it) }
                 Chips("Agrupar", listOf("Exato", "1", "5", "10", "50", "100"), granIdx) { granIdx = it; SettingsStore.put("of.gran", it) }
-            }
-            Spacer(Modifier.height(6.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
                 Chips("Níveis", LEVS.map { it.toString() }, levIdx) { levIdx = it; SettingsStore.put("of.lev", it) }
                 Chips("Mín.", MINS.map { num(it, 1) }, minIdx) { minIdx = it; SettingsStore.put("of.min", it) }
                 Chips("Intensidade", listOf("0,5x", "1x", "2x", "4x"), intIdx) { intIdx = it; SettingsStore.put("of.int", it) }
                 Toggle("Bybit RPI", rpi) { rpi = it; SettingsStore.put("of.rpi", it) }
-            }
-            Spacer(Modifier.height(6.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
                 Chips("Executado", listOf("5m", "15m", "1h"), exIdx) { exIdx = it; SettingsStore.put("of.ex", it) }
                 Chips("Centro", listOf("AUTO (mid ${px(s.price)})", "MANUAL"), if (manual) 1 else 0) { manual = it == 1; SettingsStore.put("of.manual", manual) }
                 if (manual) {

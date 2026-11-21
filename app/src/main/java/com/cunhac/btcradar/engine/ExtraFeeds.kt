@@ -24,7 +24,7 @@ class GateFeed(private val sink: FeedSink, private val scope: CoroutineScope) {
             }.onFailure { sink.log(LogLevel.WARN, v, "metadados do contrato indisponíveis, usando 0,0001 BTC: ${it.message}") }
         }
         conn = WsConn("wss://fx-ws.gateio.ws/v4/ws/usdt", sink.status(v, "Liquidações (futures.public_liquidates)"), scope,
-            { l, t -> sink.log(l, v, t) }, ping = """{"channel":"futures.ping"}""", pingEveryMs = 20_000,
+            { l, t -> sink.log(l, v, t) }, ping = """{"channel":"futures.ping"}""", pingEveryMs = 8_000,
             onOpen = {
                 it.send("""{"time":${System.currentTimeMillis() / 1000},"channel":"futures.public_liquidates","event":"subscribe","payload":["BTC_USDT"]}""")
             }, onText = { text ->
@@ -43,7 +43,7 @@ class BitgetFeed(private val sink: FeedSink, private val scope: CoroutineScope) 
 
     fun start() {
         conn = WsConn("wss://ws.bitget.com/v3/ws/public", sink.status(v, "Liquidações (UTA v3 liquidation)"), scope,
-            { l, t -> sink.log(l, v, t) }, ping = "ping", pingEveryMs = 25_000,
+            { l, t -> sink.log(l, v, t) }, ping = "ping", pingEveryMs = 8_000,
             onOpen = { it.send("""{"op":"subscribe","args":[{"instType":"usdt-futures","topic":"liquidation"}]}""") },
             onText = { text ->
                 if (text != "pong") {

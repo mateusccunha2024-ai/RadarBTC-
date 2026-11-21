@@ -131,7 +131,7 @@ private fun WallTable(title: String, walls: List<Wall>, mid: Double, color: Colo
     val maxQ = (walls.maxOfOrNull { it.currentQty } ?: 0.0).coerceAtLeast(1e-9)
     Section("$title · ${walls.size}", modifier.fillMaxHeight()) {
         Column {
-            Th("PREÇO" to 80, "CORR." to 54, "ATUAL (BTC)" to 0, "Δ BTC" to 60, "EXECUTADO" to 66, "% CONS." to 52, "DIST." to 58, "TEMPO" to 46, "STATUS" to 88, "CLASSE" to 64, "SINAL" to 72)
+            Th("PREÇO" to 80, "CORR." to 54, "ATUAL (BTC)" to 0, "Δ BTC" to 60, "EXEC." to 66, "% CONS." to 52, "DIST." to 58, "TEMPO" to 46, "STATUS" to 88, "CLASSE" to 64, "SINAL" to 72)
             if (walls.isEmpty()) Empty("Nenhuma parede acima do limite SMALL nesta faixa", "Ajuste os limites ou a faixa ±% acima")
             LazyColumn {
                 items(walls) { w ->
