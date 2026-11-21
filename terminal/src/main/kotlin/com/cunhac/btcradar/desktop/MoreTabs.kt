@@ -212,8 +212,13 @@ private fun CorrelationChart(b: List<FlowBucket>, modifier: Modifier) {
             drawRect(liqL, Offset(labelW + i * cw + 1f, mid), Size((cw - 2f).coerceAtLeast(1f), hl))
         }
         val tf = SimpleDateFormat("HH:mm")
-        val every = max(1, b.size / 8)
-        for (i in b.indices step every) drawText(tm, tf.format(Date(b[i].startMs)), Offset(labelW + i * cw, size.height - 14f * u), st)
+        val slots = max(2, (w / (56f * u)).toInt())
+        val every = max(1, (b.size + slots - 1) / slots)
+        for (i in b.indices step every) {
+            val x = labelW + i * cw
+            if (x + 40f * u > size.width) break
+            drawText(tm, tf.format(Date(b[i].startMs)), Offset(x, size.height - 14f * u), st)
+        }
     }
 }
 
