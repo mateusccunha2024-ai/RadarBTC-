@@ -209,7 +209,10 @@ private fun ProfileChart(p: VolumeProfile, price: Double?, modifier: Modifier) {
             drawLine(c, Offset(0f, yy), Offset(w, yy), 1f)
             drawText(tm, "$label ${px(v)}", Offset(w + 2f, yy - 7f), axis.copy(color = c))
         }
-        mark("VAH", p.vah, muted); mark("VAL", p.val_, muted); mark("POC", p.poc, accent)
+        // Rótulos que caem no mesmo preço do POC não são repetidos (evita texto sobreposto).
+        if (p.vah != p.poc) mark("VAH", p.vah, muted)
+        if (p.val_ != p.poc) mark("VAL", p.val_, muted)
+        mark(listOfNotNull("POC", "VAH".takeIf { p.vah == p.poc }, "VAL".takeIf { p.val_ == p.poc }).joinToString("/"), p.poc, accent)
         price?.let { if (it in lo..(hi + step)) { val yy = y(it); drawLine(line, Offset(0f, yy), Offset(w, yy), 2f) } }
     }
 }

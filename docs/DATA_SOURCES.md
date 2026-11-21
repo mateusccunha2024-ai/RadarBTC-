@@ -18,3 +18,13 @@
 
 ## RPI Bybit
 Canal `orderbook.rpi.BTCUSDT`: cada nível = [preço, qtd não-RPI, qtd RPI]. Guardamos **só a parte RPI** em livro separado para não duplicar o livro orgânico; somar é opcional (botão “Bybit RPI”).
+
+
+## Liquidações adicionais (atualização 2)
+| Corretora | Canal | Quantidade | Lado |
+|---|---|---|---|
+| Gate | `wss://fx-ws.gateio.ws/v4/ws/usdt` · `futures.public_liquidates` BTC_USDT | contratos × `quanto_multiplier` (0,0001 BTC) | size < 0 = ordem de venda = LONG liquidado |
+| Bitget | `wss://ws.bitget.com/v3/ws/public` · `{instType: usdt-futures, topic: liquidation}` | `amount` em USDT ÷ preço | `side` = lado da posição (sell = SHORT) |
+| Deribit | `wss://www.deribit.com/ws/api/v2` · `trades.BTC-PERPETUAL.100ms` | `amount` em USD ÷ preço (inverso) | campo `liquidation`: T = agressor, M = passivo, MT = ambos |
+
+Essas três corretoras entram só nas liquidações reais (sem livro, fluxo ou open interest).
