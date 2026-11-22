@@ -178,10 +178,11 @@ fun Section(title: String, modifier: Modifier = Modifier, minWidth: Dp? = null, 
         T(title.uppercase(), Q.Muted, 11, bold = true, wrap = compact)
         if (minWidth == null) Box(Modifier.padding(top = 6.dp)) { content() }
         else BoxWithConstraints(Modifier.padding(top = 6.dp)) {
-            if (maxWidth >= minWidth) content()
+            val visible = maxWidth
+            if (visible >= minWidth) content()
             else Column {
                 T("◂ ▸ deslize para o lado para ver todas as colunas", Q.Accent, 10, modifier = Modifier.padding(bottom = 4.dp))
-                CompositionLocalProvider(LocalViewport provides maxWidth) {
+                CompositionLocalProvider(LocalViewport provides visible) {
                     Box(Modifier.horizontalScroll(rememberScrollState())) { Box(Modifier.width(minWidth)) { content() } }
                 }
             }
