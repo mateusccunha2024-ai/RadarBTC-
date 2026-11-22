@@ -170,12 +170,24 @@ private fun FootprintChart(candles: List<FootCandle>, step: Double, price: Doubl
         }
         // eixo de preço
         drawRect(panel2, Offset(w, headH), Size(axisW, h))
+        // Faixas de US$ 1 ou mais: preço inteiro (60.000), alinhado à direita, sem cortar e sem encostar no preço atual.
+        fun lbl(p: Double) = if (step >= 1) String.format(BR, "%,.0f", p) else px(p)
+        fun right(t: String, yy: Float, st: TextStyle) {
+            val m = tm.measure(t, st)
+            drawText(m, topLeft = Offset((w + axisW - m.size.width - 4f * u).coerceAtLeast(w + 2f), (yy - m.size.height / 2f).coerceIn(headH, headH + h - m.size.height)))
+        }
+        val cur = price?.takeIf { it in lo..hi }?.let { y(it) }
         val every = max(1, (rows / (h / (18f * u))).toInt() + 1)
         for (r in 0..rows step every) {
-            val p = lo + r * step
-            drawText(tm, px(p), Offset(w + 4f * u, y(p) - 7f * u), axis)
+            val p = lo + r * step; val yy = y(p)
+            if (cur != null && abs(yy - cur) < 15f * u) continue
+            right(lbl(p), yy, axis)
         }
-        price?.let { p -> if (p in lo..hi) { val yy = y(p); drawLine(accent, Offset(0f, yy), Offset(w, yy), 1f); drawText(tm, px(p), Offset(w + 4f * u, yy - 7f * u), axis.copy(color = accent)) } }
+        price?.let { p -> if (cur != null) {
+            drawLine(accent, Offset(0f, cur), Offset(w, cur), 1f)
+            drawRect(accent, Offset(w, cur - 8f * u), Size(axisW, 16f * u))
+            right(px(p), cur, axis.copy(color = panel2))
+        } }
         if (!showText) drawText(tm, "Aumente a faixa US$ ou reduza o nº de velas para ver os números", Offset(10f * u, headH + h - 16f * u), axis)
     }
 }

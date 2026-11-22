@@ -25,9 +25,9 @@ class ScreenshotTest {
         Thread.sleep(90_000)
         val out = File("build/screens").apply { mkdirs() }
 
-        fun shot(name: String, tab: Int, settings: Boolean = false, w: Int = 1600, h: Int = 900, density: Float = 1f) {
+        fun shot(name: String, tab: Int, settings: Boolean = false, w: Int = 1600, h: Int = 900, density: Float = 1f, tabs: Boolean = false) {
             val scene = ImageComposeScene(w, h, Density(density)) {
-                RadarTheme { Terminal(ctx, initialTab = tab, showSettings = settings) }
+                RadarTheme { Terminal(ctx, initialTab = tab, showSettings = settings, showTabs = tabs) }
             }
             var t = 0L
             repeat(6) { scene.render(t); t += 400_000_000L; Thread.sleep(250) }
@@ -48,8 +48,11 @@ class ScreenshotTest {
         Look.useDark(true); UiScale.set(1.0f)
         TABS.indices.forEach { i -> shot("phone-%02d".format(i), i, w = 618, h = 3600, density = 1.5f) }
         shot("phone-menu", 0, settings = true, w = 618, h = 1372, density = 1.5f)
+        shot("phone-tabs", 0, w = 618, h = 1372, density = 1.5f, tabs = true)
         Look.useDark(false)
-        shot("phone-light-00", 0, w = 618, h = 3600, density = 1.5f)
+        listOf(0, 5, 8).forEach { i -> shot("phone-light-%02d".format(i), i, w = 618, h = 3600, density = 1.5f) }
+        Look.useDark(true); UiScale.set(1.25f)
+        listOf(0, 8).forEach { i -> shot("phone-zoom125-%02d".format(i), i, w = 618, h = 3600, density = 1.5f) }
         Look.useDark(true); UiScale.set(1.0f)
         hub.stop()
     }

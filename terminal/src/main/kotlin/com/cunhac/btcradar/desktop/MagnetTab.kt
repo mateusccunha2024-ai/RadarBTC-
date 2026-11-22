@@ -59,8 +59,7 @@ fun MagnetTab(m: MapModel) {
                     T(magnetReason(s.error), Q.Text, 12, wrap = true, align = TextAlign.Center, modifier = Modifier.padding(top = 10.dp).widthIn(max = 620.dp))
                     T("O mapa estimado usa velas e histórico de open interest da Binance (REST).", Q.Muted, 11, wrap = true,
                         align = TextAlign.Center, modifier = Modifier.padding(top = 6.dp).widthIn(max = 620.dp))
-                    Text("Tentar de novo", color = Q.HeatHigh, fontSize = 12.sp, modifier = Modifier.padding(top = 18.dp)
-                        .border(1.dp, Q.HeatHigh).clickable { m.start() }.padding(horizontal = 16.dp, vertical = 6.dp))
+                    Box(Modifier.padding(top = 18.dp)) { OutlineButton("Tentar de novo", Q.HeatHigh) { m.start() } }
                 }
             }
         }

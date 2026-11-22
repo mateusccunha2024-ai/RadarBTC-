@@ -76,7 +76,7 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
     }
 
     val full = !compact
-    Panes(Modifier.fillMaxSize(), Pane(1.7f, 640.dp) { pm ->
+    Panes(Modifier.fillMaxSize(), Pane(1.7f, 900.dp) { pm ->
         Column(pm.background(Q.Panel).padding(10.dp)) {
             // Controles quebram linha sozinhos quando a interface está ampliada.
             FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -92,7 +92,7 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
                     NumField("Faixa mín", rMin) { rMin = it; SettingsStore.put("of.rmin", it ?: 0.0) }
                     NumField("Faixa máx", rMax) { rMax = it; SettingsStore.put("of.rmax", it ?: 0.0) }
                 }
-                if (book.missing.isNotEmpty()) T("Fora da consolidação: " + book.missing.joinToString { it.label } + " (livro inválido, ver STATUS)", Q.Sell, 11)
+                if (book.missing.isNotEmpty()) T("Fora da consolidação: " + book.missing.joinToString { it.label } + " (livro inválido, ver STATUS)", Q.Sell, 11, wrap = compact)
             }
             Spacer(Modifier.height(8.dp))
             Ladder(book.asks, book.bids, rpi, INTS[intIdx], s.tick, exec, g, listOf("5m", "15m", "1h")[exIdx], full)
@@ -122,7 +122,7 @@ private fun BookCard(b: BookView, s: TerminalState, title: String = "${b.venue.l
     val connOk = conn.isNotEmpty() && conn.all { it.state == ConnState.LIVE }
     Section(title) {
         Column {
-            KV("Conexão", if (connOk) "LIVE" else conn.joinToString { it.state.name }.ifEmpty { "—" }, if (connOk) Q.Buy else Q.Sell)
+            KV("Conexão", if (connOk) "Ao vivo" else conn.joinToString { it.state.pt() }.ifEmpty { "—" }, if (connOk) Q.Buy else Q.Sell)
             KV("Sequência", if (b.valid) "OK" else shortReason(b.note), if (b.valid) Q.Buy else Q.Sell)
             KV("Spread próprio", if (b.valid && b.bestBid != null && b.bestAsk != null) num(b.bestAsk!! - b.bestBid!!, 1) + " USDT" else "—")
             KV("Níveis válidos (bid/ask)", if (b.valid) "${b.bidLevels} / ${b.askLevels}" else "—")

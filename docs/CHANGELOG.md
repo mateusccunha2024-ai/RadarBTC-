@@ -1,5 +1,16 @@
 # Changelog
 
+## V8 — atualização 4 (2026-11-22) · ajustes de celular
+- Celular: a aba atual vira um botão "Abas ▾" que abre a lista das 12 abas, cada uma com uma linha explicando o que mostra.
+- Celular: filtros, caixas de marcar e botões com área de toque de 48 dp (padrão do Android); campos de texto mais altos.
+- LONG e SHORT usam as cores de compra e venda em todo o app (inclusive no modo daltonismo); pontos e escala do heatmap também.
+- CVD com o zero e os extremos marcados em BTC; heatmap com legenda de cores (BTC por faixa) e dos pontos de liquidação.
+- Footprint: preços do eixo inteiros, alinhados e sem sobrepor o preço atual.
+- Tabelas largas avisam "deslize para o lado"; mensagens de tabela vazia ficam na área visível; textos que cortavam agora quebram linha.
+- Status em português (Saiu, Executada (confirmada), Ao vivo…); números do motor sempre com vírgula decimal.
+- Barra do topo do celular: "Livros 2/3" e corretoras em duas linhas; em telas estreitas o nome do app some para caber tudo.
+- Corrige travamento do heatmap no celular com zoom de 125%.
+
 ## V8 — atualização 3 (2026-11-21) · terminal completo no Android
 - O Android passa a rodar o mesmo terminal do Windows: todas as 12 abas (ORDERFLOW, FOOTPRINT, LIQUIDITY WALLS, LIQUIDITY HISTORY,
   MAGNET ZONES, LONG & SHORT FLOW, MARKET FLOW CORRELATION, LARGE TRADES, LIQUIDATION RADAR, ETFs, ALERTAS, STATUS),

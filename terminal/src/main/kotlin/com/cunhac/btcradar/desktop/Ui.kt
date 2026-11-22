@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +42,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.CompositionLocalProvider
+import com.cunhac.btcradar.engine.ConnState
+import com.cunhac.btcradar.engine.WallStatus
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -72,8 +77,9 @@ object Q {
     val Muted get() = c(0xFF8A919E, 0xFF555D6B)
     val Buy get() = if (Look.colorblind) c(0xFF3A9BFF, 0xFF1A64C8) else c(0xFF16C784, 0xFF07875A)
     val Sell get() = if (Look.colorblind) c(0xFFFF9F1C, 0xFFB35E00) else c(0xFFEA3943, 0xFFC4202B)
-    val LiqLong get() = c(0xFFFF9F1C, 0xFFB35E00)
-    val LiqShort get() = c(0xFF3A86FF, 0xFF1A64C8)
+    /** LONG e SHORT usam as cores de compra e venda em TODO o app (inclui a opção para daltonismo). */
+    val LiqLong get() = Buy
+    val LiqShort get() = Sell
     val Accent get() = c(0xFFF7931A, 0xFFB86200)
     val Warn get() = c(0xFFE0B341, 0xFF8A6500)
     /** Escala de calor (Magnet Zones): do vermelho apagado ao vermelho vivo. */
@@ -106,6 +112,17 @@ fun usdM(v: Double) = String.format(BR, "US$ %,.2f mi", v / 1e6)
 private val hms = SimpleDateFormat("HH:mm:ss")
 fun hhmmss(ms: Long) = hms.format(Date(ms))
 fun ago(ms: Long) = when { ms < 0 -> "nunca"; ms < 1000 -> "${ms} ms"; ms < 60_000 -> "${ms / 1000} s"; else -> "${ms / 60_000} min" }
+
+/** Rótulos em português para a tela (os nomes internos do código não mudam). */
+fun WallStatus.pt() = when (this) {
+    WallStatus.NEW -> "Nova"; WallStatus.ACTIVE -> "Ativa"; WallStatus.INCREASED -> "Aumentou"; WallStatus.REDUCED -> "Reduziu"
+    WallStatus.DISAPPEARED -> "Saiu"; WallStatus.POSSIBLY_EXECUTED -> "Talvez executada"; WallStatus.EXECUTION_CORROBORATED -> "Executada (confirmada)"
+}
+fun wallStatusPt(name: String) = WallStatus.entries.firstOrNull { it.name == name }?.pt() ?: name
+fun ConnState.pt() = when (this) {
+    ConnState.CONNECTING -> "Conectando"; ConnState.SUBSCRIBED -> "Inscrito"; ConnState.LIVE -> "Ao vivo"
+    ConnState.RESYNCING -> "Ressincronizando"; ConnState.DOWN -> "Fora do ar"
+}
 
 /** Motivo curto para cartões; o detalhe completo fica na aba STATUS. */
 fun shortReason(note: String) = when {
@@ -161,8 +178,14 @@ fun Section(title: String, modifier: Modifier = Modifier, minWidth: Dp? = null, 
         T(title.uppercase(), Q.Muted, 11, bold = true, wrap = compact)
         if (minWidth == null) Box(Modifier.padding(top = 6.dp)) { content() }
         else BoxWithConstraints(Modifier.padding(top = 6.dp)) {
-            if (maxWidth >= minWidth) content()
-            else Box(Modifier.horizontalScroll(rememberScrollState())) { Box(Modifier.width(minWidth)) { content() } }
+            val visible = maxWidth
+            if (visible >= minWidth) content()
+            else Column {
+                T("◂ ▸ deslize para o lado para ver todas as colunas", Q.Accent, 10, modifier = Modifier.padding(bottom = 4.dp))
+                CompositionLocalProvider(LocalViewport provides visible) {
+                    Box(Modifier.horizontalScroll(rememberScrollState())) { Box(Modifier.width(minWidth)) { content() } }
+                }
+            }
         }
     }
 }
@@ -175,10 +198,14 @@ fun Controls(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(6.dp)) { content() }
 }
 
+/** Largura visível quando a tabela rola para o lado (o estado vazio fica dentro da área visível). */
+val LocalViewport = staticCompositionLocalOf<Dp?> { null }
+
 /** Estado vazio: diz o que está acontecendo e o que esperar. */
 @Composable
 fun Empty(title: String, hint: String? = null) {
-    Column(Modifier.fillMaxWidth().padding(vertical = 28.dp, horizontal = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    val vp = LocalViewport.current
+    Column((if (vp != null) Modifier.width(vp - 4.dp) else Modifier.fillMaxWidth()).padding(vertical = 28.dp, horizontal = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         T(title, Q.Text, 13, wrap = true, align = TextAlign.Center)
         if (hint != null) T(hint, Q.Muted, 11, wrap = true, align = TextAlign.Center, modifier = Modifier.padding(top = 4.dp))
     }
@@ -192,18 +219,42 @@ fun Badge(text: String, color: Color) =
 @Composable
 fun Footnote(text: String, modifier: Modifier = Modifier) { if (Look.footnotes) T(text, Q.Muted, 11, wrap = true, modifier = modifier) }
 
+/**
+ * Área de toque: no celular tem pelo menos 48 × 48 dp (padrão do Android) em volta do visual,
+ * sem mudar o desenho do botão; no PC é o próprio visual.
+ */
 @Composable
-private fun ChipItem(s: String, on: Boolean, onClick: () -> Unit) =
+fun Tap(onClick: () -> Unit, enabled: Boolean = true, content: @Composable () -> Unit) {
+    if (compact) Box(Modifier.heightIn(min = 48.dp).widthIn(min = 48.dp).clickable(enabled = enabled, onClick = onClick),
+        contentAlignment = Alignment.Center) { content() }
+    else Box(Modifier.clickable(enabled = enabled, onClick = onClick)) { content() }
+}
+
+/** Botão com contorno (ações como Atualizar, Tentar de novo). */
+@Composable
+fun OutlineButton(label: String, color: Color = Q.Accent, border: Color = color, enabled: Boolean = true, size: Int = 12, onClick: () -> Unit) =
+    Tap(onClick, enabled) {
+        Text(label, color = color, fontSize = size.sp, lineHeight = (size + 4).sp, maxLines = 1,
+            modifier = Modifier.border(1.dp, border).padding(horizontal = if (compact) 14.dp else 10.dp, vertical = if (compact) 9.dp else 5.dp))
+    }
+
+@Composable
+private fun ChipItem(s: String, on: Boolean, onClick: () -> Unit) = Tap(onClick) {
     Text(s, color = if (on) Q.Accent else Q.Muted, fontSize = 11.sp, lineHeight = 14.sp, maxLines = 1,
         modifier = Modifier.background(if (on) Q.Panel2 else Q.Panel).border(1.dp, if (on) Q.Accent else Q.Line)
-            .clickable(onClick = onClick).padding(horizontal = 8.dp, vertical = 4.dp))
+            .padding(horizontal = if (compact) 11.dp else 8.dp, vertical = if (compact) 8.dp else 4.dp))
+}
 
 /** Grupo de opções; quebra linha sozinho quando não cabe (celular). */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Chips(label: String?, options: List<String>, selected: Int, onSelect: (Int) -> Unit) {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        if (label != null) T(label, Q.Muted, 11, modifier = Modifier.padding(end = 2.dp, top = 4.dp))
+    val c = compact
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(if (c) 2.dp else 4.dp), verticalArrangement = Arrangement.spacedBy(if (c) 0.dp else 4.dp)) {
+        if (label != null) {
+            if (c) Box(Modifier.heightIn(min = 48.dp).padding(end = 4.dp), contentAlignment = Alignment.CenterStart) { T(label, Q.Muted, 11) }
+            else T(label, Q.Muted, 11, modifier = Modifier.padding(end = 2.dp, top = 4.dp))
+        }
         options.forEachIndexed { i, s -> ChipItem(s, i == selected) { onSelect(i) } }
     }
 }
@@ -215,7 +266,7 @@ fun Toggle(label: String, on: Boolean, onChange: (Boolean) -> Unit) = ChipItem((
 @Composable
 fun NumField(label: String, value: Double?, width: Dp = 90.dp, onValue: (Double?) -> Unit) {
     var text by remember(value) { mutableStateOf(value?.let { if (it % 1.0 == 0.0) it.toLong().toString() else it.toString().replace(".", ",") } ?: "") }
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.then(if (compact) Modifier.heightIn(min = 48.dp) else Modifier), verticalAlignment = Alignment.CenterVertically) {
         T(label, Q.Muted, 11, modifier = Modifier.padding(end = 4.dp))
         BasicTextField(
             value = text,
@@ -227,7 +278,7 @@ fun NumField(label: String, value: Double?, width: Dp = 90.dp, onValue: (Double?
             singleLine = true,
             textStyle = mono.copy(fontSize = 12.sp),
             cursorBrush = SolidColor(Q.Accent),
-            modifier = Modifier.width(width).background(Q.Panel2).border(1.dp, Q.Line).padding(horizontal = 6.dp, vertical = 4.dp),
+            modifier = Modifier.width(width).background(Q.Panel2).border(1.dp, Q.Line).padding(horizontal = 6.dp, vertical = if (compact) 11.dp else 4.dp),
         )
     }
 }

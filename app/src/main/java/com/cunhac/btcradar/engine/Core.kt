@@ -1,5 +1,8 @@
 package com.cunhac.btcradar.engine
 
+/** Textos para a tela sempre no padrão brasileiro (vírgula decimal), seja qual for o idioma do aparelho. */
+val PT_BR: java.util.Locale = java.util.Locale.forLanguageTag("pt-BR")
+
 /**
  * Corretoras suportadas (perpétuos de BTC).
  * core = livro, trades e open interest completos. As demais entram só com liquidações reais.

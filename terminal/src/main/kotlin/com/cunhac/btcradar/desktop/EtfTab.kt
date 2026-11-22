@@ -52,8 +52,7 @@ fun EtfTab(ctx: AppContext) {
                 if (s.loading) Empty("Carregando os fluxos dos ETFs…", "Fonte: tabela pública diária da Farside Investors")
                 else {
                     Empty("Fluxos indisponíveis no momento", s.error ?: "Sem dados")
-                    Text("Tentar de novo", color = Q.Accent, fontSize = 12.sp, modifier = Modifier.padding(start = 12.dp, top = 8.dp)
-                        .border(1.dp, Q.Accent).clickable { m.load() }.padding(horizontal = 14.dp, vertical = 6.dp))
+                    Box(Modifier.padding(start = 12.dp, top = 8.dp)) { OutlineButton("Tentar de novo") { m.load() } }
                 }
             }
         }

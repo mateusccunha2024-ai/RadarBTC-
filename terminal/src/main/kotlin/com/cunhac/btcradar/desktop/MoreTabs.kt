@@ -253,7 +253,7 @@ fun LiquidityHistoryTab(ctx: AppContext, s: TerminalState) {
             Chips("Corretora", listOf("TODAS") + CORE_VENUES.map { it.label.uppercase() }, vIdx) { vIdx = it }
             Chips("Lado", listOf("AMBOS", "COMPRA", "VENDA"), sideIdx) { sideIdx = it }
             NumField("Pico ≥ (BTC)", minPeak, 56.dp) { it?.let { v -> minPeak = v; SettingsStore.put("lh.min", v) } }
-            T("${ev.size} paredes encerradas · ${all.size} eventos gravados no período", Q.Muted, 11)
+            T(String.format(BR, "%,d paredes encerradas · %,d eventos gravados no período", ev.size, all.size), Q.Muted, 11, wrap = true)
         }
         Panes(grow(1f), Pane(1.5f, 420.dp) { m ->
             Section("Onde as paredes estiveram e como terminaram", m) {
@@ -436,8 +436,7 @@ private fun kindHint(k: AlertKind, c: AlertConfig) = when (k) {
 
 @Composable
 private fun ActionButton(label: String, enabled: Boolean, onClick: () -> Unit) =
-    Text(label, color = if (enabled) Q.Accent else Q.Muted, fontSize = 12.sp, lineHeight = 16.sp, maxLines = 1,
-        modifier = Modifier.border(1.dp, if (enabled) Q.Accent else Q.Line).clickable(enabled = enabled, onClick = onClick).padding(horizontal = 12.dp, vertical = 6.dp))
+    OutlineButton(label, if (enabled) Q.Accent else Q.Muted, if (enabled) Q.Accent else Q.Line, enabled, onClick = onClick)
 
 @Composable
 private fun TextSetting(label: String, value: String, width: Dp, secret: Boolean = false, onChange: (String) -> Unit) {
@@ -448,8 +447,8 @@ private fun TextSetting(label: String, value: String, width: Dp, secret: Boolean
             BasicTextField(value, onChange, singleLine = true, textStyle = mono,
                 visualTransformation = if (secret && !show) PasswordVisualTransformation() else VisualTransformation.None,
                 cursorBrush = SolidColor(Q.Accent),
-                modifier = Modifier.width(width).background(Q.Panel2).border(1.dp, Q.Line).padding(horizontal = 6.dp, vertical = 5.dp))
-            if (secret) T(if (show) "ocultar" else "mostrar", Q.Accent, 11, modifier = Modifier.padding(start = 8.dp).clickable { show = !show })
+                modifier = Modifier.width(width).background(Q.Panel2).border(1.dp, Q.Line).padding(horizontal = 6.dp, vertical = if (compact) 12.dp else 5.dp))
+            if (secret) Tap({ show = !show }) { T(if (show) "ocultar" else "mostrar", Q.Accent, 11, modifier = Modifier.padding(horizontal = 8.dp)) }
         }
     }
 }

@@ -105,12 +105,12 @@ fun StatusTab(ctx: AppContext, s: TerminalState) {
     val stats = remember(s.tick / 2) { processStats() }
     Panes(Modifier.fillMaxSize(), Pane(1.4f) { pm ->
         Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Section("Conexões (LIVE = handshake + inscrição + dados recentes)", Modifier.fillMaxWidth(), minWidth = 900.dp) {
+            Section("Conexões (Ao vivo = conexão + inscrição + dados recentes)", Modifier.fillMaxWidth(), minWidth = 900.dp) {
                 Column {
-                    Th("CORRETORA" to 70, "CANAL" to 0, "ESTADO" to 80, "ÚLTIMA MSG" to 80, "MENSAGENS" to 90, "RECONEX." to 64, "ÚLTIMO ERRO" to 260)
+                    Th("CORRETORA" to 70, "CANAL" to 0, "ESTADO" to 110, "ÚLTIMA MSG" to 80, "MENSAGENS" to 90, "RECONEX." to 64, "ÚLTIMO ERRO" to 260)
                     s.statuses.forEach { r ->
                         val c = when (r.state) { ConnState.LIVE -> Q.Buy; ConnState.DOWN -> Q.Sell; else -> Q.Warn }
-                        Td(Triple(r.venue.label, 70, Q.Text), Triple(r.channel, 0, Q.Muted), Triple(r.state.name, 80, c), Triple(ago(r.lastMsgAgoMs), 80, Q.Text),
+                        Td(Triple(r.venue.label, 70, Q.Text), Triple(r.channel, 0, Q.Muted), Triple(r.state.pt(), 110, c), Triple(ago(r.lastMsgAgoMs), 80, Q.Text),
                             Triple(String.format(BR, "%,d", r.messages), 90, Q.Text), Triple(r.reconnects.toString(), 64, Q.Text), Triple(r.lastError ?: "—", 260, if (r.lastError != null) Q.Sell else Q.Muted))
                     }
                 }
