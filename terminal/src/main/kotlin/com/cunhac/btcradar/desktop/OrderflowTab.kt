@@ -76,7 +76,7 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
     }
 
     val full = !compact
-    Panes(Modifier.fillMaxSize(), Pane(1.7f, 640.dp) { pm ->
+    Panes(Modifier.fillMaxSize(), Pane(1.7f, 900.dp) { pm ->
         Column(pm.background(Q.Panel).padding(10.dp)) {
             // Controles quebram linha sozinhos quando a interface está ampliada.
             FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -92,7 +92,7 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
                     NumField("Faixa mín", rMin) { rMin = it; SettingsStore.put("of.rmin", it ?: 0.0) }
                     NumField("Faixa máx", rMax) { rMax = it; SettingsStore.put("of.rmax", it ?: 0.0) }
                 }
-                if (book.missing.isNotEmpty()) T("Fora da consolidação: " + book.missing.joinToString { it.label } + " (livro inválido, ver STATUS)", Q.Sell, 11)
+                if (book.missing.isNotEmpty()) T("Fora da consolidação: " + book.missing.joinToString { it.label } + " (livro inválido, ver STATUS)", Q.Sell, 11, wrap = compact)
             }
             Spacer(Modifier.height(8.dp))
             Ladder(book.asks, book.bids, rpi, INTS[intIdx], s.tick, exec, g, listOf("5m", "15m", "1h")[exIdx], full)

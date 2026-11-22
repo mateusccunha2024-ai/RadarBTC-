@@ -244,10 +244,12 @@ private fun TopBar(s: TerminalState, onSettings: () -> Unit) {
 /** Barra do celular: nome, preço, fontes e o menu; detalhes numa segunda linha que rola para o lado. */
 @Composable
 private fun CompactTopBar(s: TerminalState, onSettings: () -> Unit) {
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+    // Telas muito estreitas (ou zoom alto): some o nome do app para o preço e os botões caberem.
+    val roomy = maxWidth >= 380.dp
     Column(Modifier.fillMaxWidth().background(Q.Bg).padding(horizontal = 10.dp, vertical = 6.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            T("RADAR BTC", Q.Text, 13, bold = true)
-            Spacer(Modifier.width(10.dp))
+            if (roomy) { T("RADAR BTC", Q.Text, 13, bold = true); Spacer(Modifier.width(10.dp)) }
             T(px(s.price), Q.Text, 17, bold = true, monoFont = true)
             Spacer(Modifier.weight(1f))
             val live = s.liveCount()
@@ -270,6 +272,7 @@ private fun CompactTopBar(s: TerminalState, onSettings: () -> Unit) {
             T("Liquidações:", Q.Muted, 11, modifier = Modifier.padding(end = 4.dp))
             Venue.entries.filter { !it.core }.forEach { v -> T("● ${v.label}", venueDot(s, v), 11, modifier = Modifier.padding(end = 6.dp)) }
         }
+    }
     }
     Box(Modifier.fillMaxWidth().height(1.dp).background(Q.Line))
 }

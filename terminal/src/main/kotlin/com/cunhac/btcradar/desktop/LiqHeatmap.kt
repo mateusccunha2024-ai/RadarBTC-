@@ -137,7 +137,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
     val tm = rememberTextMeasurer()
     val axis = TextStyle(color = Q.Muted, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
 
-    Panes(modifier, Pane(1f, 640.dp) { hm ->
+    Panes(modifier, Pane(1f) { hm ->
         Section(HEAT_MODES[mode] + " · estimado (modelo V8) · " + if (venueIdx == 0) "Binance + Bybit + OKX" else CORE_VENUES[venueIdx - 1].label,
             hm) {
             Column {
@@ -173,7 +173,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                     OutlineButton("Atualizar", border = Q.Line, size = 11) { ctx.heat.load(hs.range, force = true) }
                 }
                 Spacer(Modifier.height(6.dp))
-                BoxWithConstraints(Modifier.fillMaxWidth().weight(1f).background(if (d == null) Q.Panel2 else VIRIDIS[0])) {
+                BoxWithConstraints(Modifier.fillMaxWidth().then(if (compact) Modifier.height(420.dp) else Modifier.weight(1f)).background(if (d == null) Q.Panel2 else VIRIDIS[0])) {
                     if (d == null || img == null) {
                         Empty(if (hs.loading) "Montando o heatmap (${hs.progress})…" else "Heatmap indisponível", hs.error ?: "Usa velas e open interest históricos públicos das corretoras")
                         return@BoxWithConstraints
