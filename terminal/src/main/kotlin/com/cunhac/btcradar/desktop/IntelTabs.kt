@@ -29,6 +29,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.TextStyle
 import com.cunhac.btcradar.engine.Aggressor
 import com.cunhac.btcradar.engine.BookSide
 import com.cunhac.btcradar.engine.FLOW_WINDOWS
@@ -96,7 +101,7 @@ fun WallsTab(ctx: AppContext, s: TerminalState) {
                     items(hist) { w ->
                         val c = when (w.status) { WallStatus.EXECUTION_CORROBORATED -> Q.Accent; WallStatus.POSSIBLY_EXECUTED -> Q.Warn; else -> Q.Muted }
                         Td(Triple(hhmmss(w.statusMs), 70, Q.Muted), Triple(w.venue.label, 80, Q.Text), Triple(w.side.name, 44, if (w.side == BookSide.BID) Q.Buy else Q.Sell),
-                            Triple(px(w.price), 90, Q.Text), Triple(w.status.name, 190, c), Triple(num(w.peakQty), 90, Q.Text), Triple(num(w.currentQty), 90, Q.Text),
+                            Triple(px(w.price), 90, Q.Text), Triple(w.status.pt(), 190, c), Triple(num(w.peakQty), 90, Q.Text), Triple(num(w.currentQty), 90, Q.Text),
                             Triple(btc(w.tradedNearBtc), 130, Q.Text), Triple(ago(w.permanenceMs), 0, Q.Muted))
                     }
                 }
@@ -118,7 +123,7 @@ fun WallsTab(ctx: AppContext, s: TerminalState) {
         }
         })
         Footnote("Identidade = corretora + instrumento + lado + preço. O livro público é agregado por preço: não identificamos ordens individuais nem quem as colocou. " +
-            "Sumir do livro não prova execução: EXECUTION_CORROBORATED exige trades no nível ≥ 50% da quantidade. " +
+            "Sumir do livro não prova execução: \"Executada (confirmada)\" exige trades no nível ≥ 50% da quantidade. " +
             "EXECUTADO = BTC negociado exatamente no preço da parede desde que ela apareceu; % CONS. = executado ÷ (executado + restante). " +
             "ABSORÇÃO = recebeu execução ≥ 50% do tamanho inicial e manteve ≥ 80% dele. ICEBERG = executou mais do que mostrava e foi reposta 2+ vezes " +
             "(REPOSTO = execução que não reduziu o livro). Ambos são inferências.", Modifier.padding(top = 4.dp))
@@ -128,9 +133,9 @@ fun WallsTab(ctx: AppContext, s: TerminalState) {
 @Composable
 private fun WallTable(title: String, walls: List<Wall>, mid: Double, color: Color, modifier: Modifier) {
     val maxQ = (walls.maxOfOrNull { it.currentQty } ?: 0.0).coerceAtLeast(1e-9)
-    Section("$title · ${walls.size}", modifier.fillMaxHeight(), minWidth = 700.dp) {
+    Section("$title · ${walls.size}", modifier.fillMaxHeight(), minWidth = 790.dp) {
         Column {
-            Th("PREÇO" to 80, "CORR." to 54, "ATUAL (BTC)" to 0, "Δ BTC" to 60, "EXEC." to 66, "% CONS." to 52, "DIST." to 58, "TEMPO" to 46, "STATUS" to 88, "CLASSE" to 64, "SINAL" to 72)
+            Th("PREÇO" to 80, "CORR." to 54, "ATUAL (BTC)" to 0, "Δ BTC" to 60, "EXEC." to 66, "% CONS." to 52, "DIST." to 58, "TEMPO" to 46, "STATUS" to 104, "CLASSE" to 64, "SINAL" to 72)
             if (walls.isEmpty()) Empty("Nenhuma parede acima do limite SMALL nesta faixa", "Ajuste os limites ou a faixa ±% acima")
             LazyColumn {
                 items(walls) { w ->
@@ -146,7 +151,7 @@ private fun WallTable(title: String, walls: List<Wall>, mid: Double, color: Colo
                         T(num(w.consumedPct, 0) + "%", if (w.consumedPct >= 50) Q.Accent else Q.Muted, 11, monoFont = true, modifier = Modifier.width(52.dp))
                         T(pct(if (mid > 0) w.distancePct(mid) else null), Q.Muted, 11, monoFont = true, modifier = Modifier.width(58.dp))
                         T(ago(w.permanenceMs), Q.Muted, 11, modifier = Modifier.width(46.dp))
-                        Box(Modifier.width(88.dp)) { Badge(w.status.name, statusColor(w.status)) }
+                        Box(Modifier.width(104.dp)) { Badge(w.status.pt(), statusColor(w.status)) }
                         Box(Modifier.width(64.dp)) { Badge(w.cls.name, classColor(w.cls)) }
                         Box(Modifier.width(72.dp)) { w.signal?.let { Badge(it.label, if (it == WallSignal.ICEBERG) Q.Accent else Q.Warn) } }
                     }
@@ -299,19 +304,31 @@ private fun ImbalanceBar(imb: Double, modifier: Modifier) {
 
 @Composable
 private fun CvdChart(series: List<Pair<Long, DoubleArray>>) {
+    if (series.size < 2) { Empty("Aguardando trades para desenhar o CVD"); return }
+    val tm = rememberTextMeasurer()
+    val st = TextStyle(color = Q.Muted, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+    val line = Q.Line; val zero = Q.Muted; val text = Q.Text; val colors = VENUE_COLORS
     Canvas(Modifier.fillMaxSize().padding(top = 6.dp)) {
-        if (series.size < 2) return@Canvas
         val totals = series.map { it.second.sum() }
         val all = totals + series.flatMap { it.second.toList() }
-        val lo = all.minOrNull()!!; val hi = all.maxOrNull()!!
+        // Uma escala só (BTC); o zero sempre aparece.
+        val lo = minOf(all.minOrNull()!!, 0.0); val hi = maxOf(all.maxOrNull()!!, 0.0)
         val span = (hi - lo).takeIf { it > 1e-9 } ?: 1.0
+        val gut = 72.dp.toPx(); val pad = 7.dp.toPx()
+        val w = size.width - gut; val h = size.height - 2 * pad
         val t0 = series.first().first; val t1 = series.last().first
         val tw = (t1 - t0).coerceAtLeast(1).toFloat()
-        fun x(t: Long) = (t - t0) / tw * size.width
-        fun y(v: Double) = (size.height - ((v - lo) / span * size.height)).toFloat()
-        drawLine(Q.Line, Offset(0f, y(0.0)), Offset(size.width, y(0.0)), 1f)
+        fun x(t: Long) = (t - t0) / tw * w
+        fun y(v: Double) = (pad + (hi - v) / span * h).toFloat()
+        fun label(v: Double, c: androidx.compose.ui.graphics.Color = st.color) =
+            drawText(tm, String.format(BR, "%+,.1f BTC", v).replace("+0,0", "0"), Offset(w + 6.dp.toPx(), y(v) - 7.dp.toPx()), st.copy(color = c))
+        val minGap = 14.dp.toPx()
+        drawLine(zero.copy(alpha = 0.7f), Offset(0f, y(0.0)), Offset(w, y(0.0)), 1f)
+        label(0.0)
+        if (y(0.0) - y(hi) > minGap) { drawLine(line, Offset(0f, y(hi)), Offset(w, y(hi)), 1f); label(hi) }
+        if (y(lo) - y(0.0) > minGap) { drawLine(line, Offset(0f, y(lo)), Offset(w, y(lo)), 1f); label(lo) }
         for (vi in 0..3) {
-            val color = if (vi == 3) Q.Text else VENUE_COLORS[vi]
+            val color = if (vi == 3) text else colors[vi]
             var prev: Offset? = null
             series.forEachIndexed { i, (t, d) ->
                 val p = Offset(x(t), y(if (vi == 3) totals[i] else d[vi]))

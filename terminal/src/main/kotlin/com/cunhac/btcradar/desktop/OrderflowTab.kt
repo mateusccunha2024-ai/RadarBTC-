@@ -122,7 +122,7 @@ private fun BookCard(b: BookView, s: TerminalState, title: String = "${b.venue.l
     val connOk = conn.isNotEmpty() && conn.all { it.state == ConnState.LIVE }
     Section(title) {
         Column {
-            KV("Conexão", if (connOk) "LIVE" else conn.joinToString { it.state.name }.ifEmpty { "—" }, if (connOk) Q.Buy else Q.Sell)
+            KV("Conexão", if (connOk) "Ao vivo" else conn.joinToString { it.state.pt() }.ifEmpty { "—" }, if (connOk) Q.Buy else Q.Sell)
             KV("Sequência", if (b.valid) "OK" else shortReason(b.note), if (b.valid) Q.Buy else Q.Sell)
             KV("Spread próprio", if (b.valid && b.bestBid != null && b.bestAsk != null) num(b.bestAsk!! - b.bestBid!!, 1) + " USDT" else "—")
             KV("Níveis válidos (bid/ask)", if (b.valid) "${b.bidLevels} / ${b.askLevels}" else "—")

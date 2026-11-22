@@ -53,6 +53,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.cunhac.btcradar.engine.HEAT_TIERS
 import com.cunhac.btcradar.engine.HeatData
@@ -78,11 +79,8 @@ fun viridis(t: Float): Color {
     return lerp(VIRIDIS[i], VIRIDIS[i + 1], x - i)
 }
 
-private val DIV_LONG = Color(0xFF16C784)
-private val DIV_SHORT = Color(0xFFEA3943)
-
-/** Escala divergente para LONGS × SHORTS: verde = mais longs a liquidar, vermelho = mais shorts. */
-fun diverging(t: Float): Color = if (t >= 0) lerp(VIRIDIS[0], DIV_LONG, t.coerceIn(0f, 1f)) else lerp(VIRIDIS[0], DIV_SHORT, (-t).coerceIn(0f, 1f))
+/** Escala divergente para LONGS × SHORTS: cor de LONG = mais longs a liquidar, cor de SHORT = mais shorts (as mesmas do app todo). */
+fun diverging(t: Float): Color = if (t >= 0) lerp(VIRIDIS[0], Q.LiqLong, t.coerceIn(0f, 1f)) else lerp(VIRIDIS[0], Q.LiqShort, (-t).coerceIn(0f, 1f))
 
 /** Converte a grade numa imagem (1 pixel por célula) para desenhar rápido mesmo com 730 colunas. */
 private fun heatImage(rows: Int, cols: Int, color: (Int, Int) -> Color): ImageBitmap {
@@ -122,9 +120,10 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
         }
     }
     val ref = remember(grids, entries, mode) { d?.let { q99(it.rows, it.cols, value) } ?: 0f }
-    val img = remember(grids, entries, mode, intensity) {
+    /** Valor (BTC por faixa) que chega à cor mais forte da escala. */
+    val k = ref / (0.25f + 1.5f * intensity)
+    val img = remember(grids, entries, mode, intensity, Look.colorblind, Look.dark) {
         if (d == null || grids == null) null else {
-            val k = ref / (0.25f + 1.5f * intensity)
             heatImage(d.rows, d.cols) { r, c -> val v = value(r, c); if (mode == 2) diverging(if (k > 0) v / k else 0f) else viridis(if (k > 0) v / k else 0f) }
         }
     }
@@ -171,7 +170,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                         d != null -> "Atualizado ${hhmmss(d.builtAt)} · ${d.cols} colunas"
                         else -> ""
                     }, if (hs.error != null) Q.Sell else Q.Muted, 11)
-                    Text("Atualizar", color = Q.Accent, fontSize = 11.sp, modifier = Modifier.border(1.dp, Q.Line).clickable { ctx.heat.load(hs.range, force = true) }.padding(horizontal = 8.dp, vertical = 3.dp))
+                    OutlineButton("Atualizar", border = Q.Line, size = 11) { ctx.heat.load(hs.range, force = true) }
                 }
                 Spacer(Modifier.height(6.dp))
                 BoxWithConstraints(Modifier.fillMaxWidth().weight(1f).background(if (d == null) Q.Panel2 else VIRIDIS[0])) {
@@ -238,6 +237,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                         }
                     }
                 }
+                if (d != null && img != null) HeatLegend(mode, k, showReal, Modifier.fillMaxWidth().padding(top = 6.dp))
                 if (d != null && delta != null && delta.isNotEmpty()) {
                     Spacer(Modifier.height(4.dp))
                     DeltaStrip(delta, Modifier.fillMaxWidth().height(54.dp))
@@ -281,11 +281,39 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                     Footnote("Estimativa: 10x/25x/50x/100x sobre o aumento de open interest de cada corretora; níveis atravessados pelo preço somem. " +
                         "OI POR ENTRADA = onde o modelo estima que as posições ainda abertas entraram. LONGS × SHORTS: verde = mais longs a liquidar naquele preço, vermelho = mais shorts. " +
                         "Faixa inferior = total de níveis LONG em aberto menos SHORT. O filtro de alavancagem vale para o mapa e os níveis-chave. " +
-                        "Pontos laranja/azuis = liquidações REAIS reportadas pelas 6 corretoras (gravadas desde a instalação).", Modifier.padding(top = 6.dp))
+                        "Pontos = liquidações REAIS reportadas pelas 6 corretoras (gravadas desde a instalação), na cor de LONG ou de SHORT.", Modifier.padding(top = 6.dp))
                 }
             }
         }
     })
+}
+
+/** Legenda de cores do mapa: quanto BTC cada tom representa (e o significado dos pontos). */
+@Composable
+private fun HeatLegend(mode: Int, k: Float, showReal: Boolean, modifier: Modifier) {
+    val fmt = { v: Float -> num(v.toDouble(), if (v < 10) 1 else 0) }
+    Column(modifier) {
+        T(if (mode == 2) "Escala: longs − shorts a liquidar por faixa (BTC)" else if (mode == 1) "Escala: OI aberto por faixa de preço (BTC)" else "Escala: BTC a liquidar por faixa de preço",
+            Q.Muted, 10, wrap = true)
+        val stops = if (mode == 2) listOf(Q.LiqShort, VIRIDIS[0], Q.LiqLong) else VIRIDIS
+        Canvas(Modifier.fillMaxWidth().height(10.dp).padding(vertical = 1.dp)) {
+            drawRect(androidx.compose.ui.graphics.Brush.horizontalGradient(stops), size = size)
+        }
+        Row(Modifier.fillMaxWidth()) {
+            if (mode == 2) {
+                T("≥ ${fmt(k)} mais shorts", Q.LiqShort, 10, monoFont = true)
+                T("0", Q.Muted, 10, monoFont = true, modifier = Modifier.weight(1f), align = TextAlign.Center)
+                T("≥ ${fmt(k)} mais longs", Q.LiqLong, 10, monoFont = true)
+            } else {
+                T("0", Q.Muted, 10, monoFont = true)
+                T(fmt(k / 2), Q.Muted, 10, monoFont = true, modifier = Modifier.weight(1f), align = TextAlign.Center)
+                T("≥ ${fmt(k)}", Q.Muted, 10, monoFont = true)
+            }
+        }
+        if (showReal) Row(Modifier.padding(top = 2.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            T("Pontos:", Q.Muted, 10); T("● LONG liquidado", Q.LiqLong, 10); T("● SHORT liquidado", Q.LiqShort, 10)
+        }
+    }
 }
 
 private val HEAT_MODES = listOf("Liquidation heatmap", "Open interest por preço de entrada", "Longs × shorts a liquidar")

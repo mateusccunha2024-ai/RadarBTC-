@@ -112,12 +112,12 @@ class Hub(@Volatile var refreshMs: Long = 1_500) : FeedSink {
             history?.wallEvent(w)
             val gone = w.status == WallStatus.DISAPPEARED || w.status == WallStatus.POSSIBLY_EXECUTED || w.status == WallStatus.EXECUTION_CORROBORATED
             if (gone && (w.cls == WallClass.LARGE || w.cls == WallClass.EXTREME))
-                emit(AlertKind.WALL_PULLED, "wall|${w.venue}|${w.side}|${w.price}", "Parede %s %s de %.2f BTC em %.1f (%s): %s".format(
+                emit(AlertKind.WALL_PULLED, "wall|${w.venue}|${w.side}|${w.price}", "Parede %s %s de %.2f BTC em %,.1f (%s): %s".format(PT_BR, 
                     w.cls.name, if (w.side == BookSide.BID) "de compra" else "de venda", w.peakQty, w.price, w.venue.label, wallStatusText(w.status)))
         }
         walls.onSignal = { w ->
             val sig = w.signal ?: WallSignal.ABSORPTION
-            val txt = "%s em %.1f (%s, %s): executado %.2f BTC, restante %.2f BTC".format(sig.label, w.price, w.venue.label,
+            val txt = "%s em %,.1f (%s, %s): executado %.2f BTC, restante %.2f BTC".format(PT_BR, sig.label, w.price, w.venue.label,
                 if (w.side == BookSide.BID) "compra" else "venda", w.executedBtc, w.currentQty)
             alert(txt)
             emit(AlertKind.WALL_SIGNAL, "sig|${w.venue}|${w.price}|${sig.name}", txt)
@@ -145,7 +145,7 @@ class Hub(@Volatile var refreshMs: Long = 1_500) : FeedSink {
         footprint.add(t)
         if (large.offer(t)) {
             history?.largeTrade(t)
-            if (t.qtyBtc >= large.minBtc * 5) alert("Execução grande: %s %.2f BTC @ %.1f (%s)".format(
+            if (t.qtyBtc >= large.minBtc * 5) alert("Execução grande: %s %.2f BTC @ %,.1f (%s)".format(PT_BR, 
                 if (t.aggressor == Aggressor.BUY) "COMPRA" else "VENDA", t.qtyBtc, t.price, t.venue.label))
         }
     }
@@ -154,9 +154,9 @@ class Hub(@Volatile var refreshMs: Long = 1_500) : FeedSink {
         liqs.add(l)
         history?.liquidation(l)
         val c = liqThresholds.classify(l.qtyBtc)
-        if (c != LiqClass.SMALL) alert("Liquidação %s: %s %.3f BTC @ %.1f (%s)".format(c.name, l.side.name, l.qtyBtc, l.price, l.venue.label))
+        if (c != LiqClass.SMALL) alert("Liquidação %s: %s %.3f BTC @ %,.1f (%s)".format(PT_BR, c.name, l.side.name, l.qtyBtc, l.price, l.venue.label))
         if (c == LiqClass.EXTREME) emit(AlertKind.LIQ_EXTREME, "liq|${l.venue}|${l.timeMs}|${l.price}",
-            "Liquidação EXTREME: %s %.3f BTC @ %.1f (%s)".format(l.side.name, l.qtyBtc, l.price, l.venue.label))
+            "Liquidação EXTREME: %s %.3f BTC @ %,.1f (%s)".format(PT_BR, l.side.name, l.qtyBtc, l.price, l.venue.label))
     }
 
     override fun onTicker(v: Venue, update: (DerivTicker) -> DerivTicker) {

@@ -14,8 +14,8 @@ data class Divergence(
     val price1: Double, val price2: Double, val cvd1: Double, val cvd2: Double,
 ) {
     val text: String get() = when (kind) {
-        DivKind.BULLISH -> "Preço: fundo mais baixo (%.1f → %.1f). CVD: fundo mais alto (%+.2f → %+.2f BTC). Vendas agressoras perdendo força.".format(price1, price2, cvd1, cvd2)
-        DivKind.BEARISH -> "Preço: topo mais alto (%.1f → %.1f). CVD: topo mais baixo (%+.2f → %+.2f BTC). Compras agressoras perdendo força.".format(price1, price2, cvd1, cvd2)
+        DivKind.BULLISH -> "Preço: fundo mais baixo (%,.1f → %,.1f). CVD: fundo mais alto (%+.2f → %+.2f BTC). Vendas agressoras perdendo força.".format(PT_BR, price1, price2, cvd1, cvd2)
+        DivKind.BEARISH -> "Preço: topo mais alto (%,.1f → %,.1f). CVD: topo mais baixo (%+.2f → %+.2f BTC). Compras agressoras perdendo força.".format(PT_BR, price1, price2, cvd1, cvd2)
     }
 }
 

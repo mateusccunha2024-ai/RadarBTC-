@@ -201,12 +201,12 @@ object Signals {
      */
     fun classify(flow: FlowStats, priceChangePct: Double?, oiChangePct: Double?, funding: Double?): FlowSignal {
         val obs = mutableListOf(
-            "Compra agressora: %.3f BTC".format(flow.buyBtc),
-            "Venda agressora: %.3f BTC".format(flow.sellBtc),
-            "Delta: %+.3f BTC (desequilíbrio %+.0f%%)".format(flow.deltaBtc, flow.imbalance * 100),
-            "Preço: " + (priceChangePct?.let { "%+.3f%%".format(it) } ?: "sem dado"),
-            "Open interest: " + (oiChangePct?.let { "%+.3f%%".format(it) } ?: "sem dado"),
-            "Funding médio: " + (funding?.let { "%+.4f%%".format(it * 100) } ?: "sem dado"),
+            "Compra agressora: %.3f BTC".format(PT_BR, flow.buyBtc),
+            "Venda agressora: %.3f BTC".format(PT_BR, flow.sellBtc),
+            "Delta: %+.3f BTC (desequilíbrio %+.0f%%)".format(PT_BR, flow.deltaBtc, flow.imbalance * 100),
+            "Preço: " + (priceChangePct?.let { "%+.3f%%".format(PT_BR, it) } ?: "sem dado"),
+            "Open interest: " + (oiChangePct?.let { "%+.3f%%".format(PT_BR, it) } ?: "sem dado"),
+            "Funding médio: " + (funding?.let { "%+.4f%%".format(PT_BR, it * 100) } ?: "sem dado"),
         )
         val imb = flow.imbalance
         if (flow.volumeBtc <= 0 || abs(imb) < 0.10) {
