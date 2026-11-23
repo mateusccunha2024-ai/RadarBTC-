@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -64,10 +65,10 @@ val TABS = listOf(
 
 /** Nome de cada aba na tela, em português (o id interno não muda: continua salvo nas preferências). */
 val TAB_LABELS = mapOf(
-    "ORDERFLOW" to "Livro de ofertas", "FOOTPRINT" to "Footprint", "LIQUIDITY WALLS" to "Paredes de liquidez",
-    "LIQUIDITY HISTORY" to "Histórico de paredes", "MAGNET ZONES" to "Zonas ímã", "LONG & SHORT FLOW" to "Fluxo long/short",
-    "MARKET FLOW CORRELATION" to "Correlação de mercado", "LARGE TRADES" to "Grandes negócios",
-    "LIQUIDATION RADAR" to "Radar de liquidações", "ETFs" to "ETFs", "ALERTAS" to "Alertas", "STATUS" to "Status",
+    "ORDERFLOW" to "Livro de ofertas", "FOOTPRINT" to "Footprint", "LIQUIDITY WALLS" to "Paredes",
+    "LIQUIDITY HISTORY" to "Histórico de paredes", "MAGNET ZONES" to "Zonas ímã", "LONG & SHORT FLOW" to "Long/short",
+    "MARKET FLOW CORRELATION" to "Correlação", "LARGE TRADES" to "Grandes negócios",
+    "LIQUIDATION RADAR" to "Radar", "ETFs" to "ETFs", "ALERTAS" to "Alertas", "STATUS" to "Status",
 )
 fun tabLabel(id: String) = TAB_LABELS[id] ?: id
 
@@ -263,7 +264,7 @@ private fun TopBar(s: TerminalState, onSettings: () -> Unit) {
         T(String.format(BR, "%,.0f msg/s", s.msgsPerSec), Q.Muted, 11,
             modifier = Modifier.weight(1f).padding(horizontal = 12.dp), align = TextAlign.End)
         }
-        SmallButton("ⓘ Notas", on = Look.footnotes) { Look.useFootnotes(!Look.footnotes) }
+        SmallButton("Notas", on = Look.footnotes) { Look.useFootnotes(!Look.footnotes) }
         Spacer(Modifier.width(8.dp))
         SmallButton("A−") { UiScale.dec() }
         T("${(UiScale.scale * 100).roundToInt()}%", Q.Text, 11, monoFont = true, modifier = Modifier.padding(horizontal = 6.dp))
@@ -285,12 +286,10 @@ private fun CompactTopBar(s: TerminalState, onSettings: () -> Unit) {
     Column(Modifier.fillMaxWidth().background(Q.Bg).padding(horizontal = 10.dp, vertical = 6.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (roomy) { T("Radar BTC", Q.Text, 14, bold = true); Spacer(Modifier.width(10.dp)) }
-            T(px(s.price), Q.Text, 20, bold = true, monoFont = true)
-            Spacer(Modifier.weight(1f))
+            T(px(s.price), Q.Text, 18, bold = true, monoFont = true)
+            Spacer(Modifier.weight(1f).widthIn(min = 8.dp))
             val live = s.liveCount()
             T("Livros $live/3", if (live == 3) Q.Buy else if (live > 0) Q.Warn else Q.Sell, 12, bold = true, modifier = Modifier.padding(end = 4.dp))
-            SmallButton("ⓘ", on = Look.footnotes) { Look.useFootnotes(!Look.footnotes) }
-            Spacer(Modifier.width(6.dp))
             SmallButton(if (Look.dark) "☾" else "☀") { Look.useDark(!Look.dark) }
             Spacer(Modifier.width(6.dp))
             SmallButton("⚙", onClick = onSettings)
@@ -361,7 +360,7 @@ private fun ViewSettingsPanel(ctx: AppContext, onClose: () -> Unit) {
         }
         SettingGroup("Textos explicativos") {
             Toggle("Mostrar notas de rodapé", Look.footnotes) { Look.useFootnotes(it) }
-            T("Também pelo botão ⓘ na barra do topo.", Q.Muted, 11, modifier = Modifier.padding(top = 4.dp))
+            if (!compact) T("Também pelo botão Notas na barra do topo.", Q.Muted, 11, modifier = Modifier.padding(top = 4.dp))
         }
         SettingGroup("Abas visíveis") {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

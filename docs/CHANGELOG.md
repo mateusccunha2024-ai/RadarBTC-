@@ -6,14 +6,14 @@
 - Texto mais legível: rótulos com no mínimo 12 sp, números e texto corrido com 13 sp; preço do topo maior (24 sp no PC, 20 sp no celular).
 - Barra do topo do PC sem texto cortado: contadores de trades/liquidações saem (continuam na aba Status); aviso de livros cruzados quebra linha.
 - Hierarquia: só o título de cada painel fica em caixa alta; abas, botões e cabeçalhos de tabela em caixa normal; sinal de fluxo em destaque (28 sp).
-- Tudo em português: abas (Livro de ofertas, Paredes de liquidez, Fluxo long/short, Radar de liquidações…) e sinais (Pressão vendedora,
+- Tudo em português: abas (Livro de ofertas, Paredes, Long/short, Radar, Zonas ímã…) e sinais (Pressão vendedora,
   Recompra de shorts…). Mantidos termos técnicos: Footprint, CVD, POC, OI, ETFs.
 - Abas agrupadas por assunto: Livro, Fluxo, Liquidações e Mais (barra do PC com separadores; lista do celular com títulos de grupo).
 - Livro de ofertas: célula vazia no lugar de "·"; valores abaixo de 0,001 BTC em cinza para os níveis relevantes se destacarem.
 - Cores das corretoras nos gráficos (CVD) em tons frios; amarelo/laranja ficam só para aviso e acento.
 - Heatmap de liquidações na escala de laranja do app (antes roxo/verde).
 - Estados vazios mais baixos; a dica "deslize para o lado" aparece só no celular.
-- Notas de rodapé escondidas por padrão; botão "ⓘ Notas" na barra do topo mostra/esconde.
+- Notas de rodapé escondidas por padrão; botão "Notas" na barra do topo do PC (e Visualização no celular) mostra/esconde.
 
 ## V8 — atualização 4 (2026-11-22) · ajustes de celular
 - Celular: a aba atual vira um botão "Abas ▾" que abre a lista das 12 abas, cada uma com uma linha explicando o que mostra.

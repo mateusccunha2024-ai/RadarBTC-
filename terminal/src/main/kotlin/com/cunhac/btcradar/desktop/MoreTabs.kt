@@ -375,8 +375,8 @@ fun AlertsTab(ctx: AppContext, s: TerminalState) {
                         NumField("Zona: tamanho ≥ BTC", c.zoneMinBtc, 64.dp) { it?.let { v -> c = c.copy(zoneMinBtc = v) } }
                         NumField("Repetir o mesmo aviso após (min)", c.cooldownMin, 44.dp) { it?.let { v -> c = c.copy(cooldownMin = v) } }
                     }
-                    Footnote("Liquidação EXTREME usa o limite da aba Radar de liquidações; parede grande = classe LARGE ou EXTREME da aba Paredes de liquidez; " +
-                        "mudança de sinal = janela de 5 min da aba Fluxo long/short. Máximo de 20 envios por minuto.")
+                    Footnote("Liquidação EXTREME usa o limite da aba Radar (Liquidações); parede grande = classe LARGE ou EXTREME da aba Paredes; " +
+                        "mudança de sinal = janela de 5 min da aba Long/short. Máximo de 20 envios por minuto.")
                 }
             }
             Section("Telegram", Modifier.fillMaxWidth()) {

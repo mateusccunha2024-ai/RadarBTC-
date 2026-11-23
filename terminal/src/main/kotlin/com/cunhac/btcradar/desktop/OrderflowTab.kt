@@ -145,7 +145,7 @@ private fun Ladder(asks: List<ConsRow>, bids: List<ConsRow>, showRpi: Boolean, i
     fun ex(r: ConsRow): DoubleArray? = exec[if (g > 0 && r.side == BookSide.ASK) r.price - g else r.price]
     Row(Modifier.fillMaxWidth().padding(bottom = 2.dp)) {
         T("Preço", Q.Muted, 10, modifier = Modifier.width(88.dp))
-        T("Quantidade (BTC)", Q.Muted, 10, modifier = Modifier.weight(1f))
+        T(if (full) "Quantidade (BTC)" else "Qtd. (BTC)", Q.Muted, 10, modifier = Modifier.weight(1f))
         if (full) {
             listOf("Bin", "Byb", "OKX").forEach { T(it, Q.Muted, 10, modifier = Modifier.width(60.dp)) }
             if (showRpi) T("RPI", Q.Muted, 10, modifier = Modifier.width(52.dp))
@@ -153,8 +153,8 @@ private fun Ladder(asks: List<ConsRow>, bids: List<ConsRow>, showRpi: Boolean, i
         }
         T("Total", Q.Muted, 10, modifier = Modifier.width(70.dp).padding(start = 4.dp))
         if (full) T("Acumulado", Q.Muted, 10, modifier = Modifier.width(78.dp))
-        T(if (full) "Ex. compra" else "Ex. C", Q.Muted, 10, modifier = Modifier.width(if (full) 74.dp else 56.dp))
-        T(if (full) "Ex. venda" else "Ex. V", Q.Muted, 10, modifier = Modifier.width(if (full) 70.dp else 56.dp))
+        T("Ex. C", Q.Muted, 10, modifier = Modifier.width(if (full) 74.dp else 56.dp))
+        T("Ex. V", Q.Muted, 10, modifier = Modifier.width(if (full) 70.dp else 56.dp))
     }
     if (Look.footnotes) T(if (full) "ACUMULADO = BTC somado do preço atual até a linha · ORDENS = nº de ordens no nível (só a OKX publica) · EX. = BTC executado no nível nos últimos $exLabel"
         else "Celular: colunas por corretora ocultas (veja no PC ou na aba de cada livro) · EX. = executado nos últimos $exLabel",
