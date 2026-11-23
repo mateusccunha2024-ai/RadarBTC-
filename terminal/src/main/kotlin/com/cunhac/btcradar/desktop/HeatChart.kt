@@ -59,12 +59,12 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 /** Ferramentas do gráfico do heatmap. MOVER = navegar (zoom/arrastar) e selecionar marcações. */
-enum class DrawTool(val label: String, val hint: String) {
-    NONE("Mover", ""),
-    HLINE("Linha de preço", "Clique no preço onde a linha deve ficar"),
-    TREND("Tendência", "Arraste do ponto inicial até o final"),
-    ZONE("Zona", "Arraste de um canto da zona até o canto oposto"),
-    TEXT("Texto", "Clique onde a nota deve ficar"),
+enum class DrawTool(val label: String, val short: String, val hint: String) {
+    NONE("Mover", "Mover", ""),
+    HLINE("Linha de preço", "Linha", "Clique no preço onde a linha deve ficar"),
+    TREND("Tendência", "Tendência", "Arraste do ponto inicial até o final"),
+    ZONE("Zona", "Zona", "Arraste de um canto da zona até o canto oposto"),
+    TEXT("Texto", "Texto", "Clique onde a nota deve ficar"),
 }
 
 /** Uma marcação do usuário em coordenadas do gráfico (tempo em ms, preço em US$); vale para todos os períodos. */
@@ -155,7 +155,7 @@ fun HeatChart(d: HeatData, img: ImageBitmap, real: List<LiqEvent>, price: Double
         // Barra de ferramentas
         FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier.padding(bottom = 4.dp)) {
-            Chips(null, DrawTool.entries.map { it.label }, tool.ordinal) { tool = DrawTool.entries[it]; draft = null; pendingText = null }
+            Chips(null, DrawTool.entries.map { if (compact) it.short else it.label }, tool.ordinal) { tool = DrawTool.entries[it]; draft = null; pendingText = null }
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
                 OutlineButton("−", color = Q.Text, border = Q.Line, size = 12) { val c = (view.tA + view.tB) / 2; setView(view.copy(tA = c - (c - view.tA) * 1.5, tB = c + (view.tB - c) * 1.5)) }
                 OutlineButton("+", color = Q.Text, border = Q.Line, size = 12) { val c = (view.tA + view.tB) / 2; setView(view.copy(tA = c - (c - view.tA) / 1.5, tB = c + (view.tB - c) / 1.5)) }
@@ -167,11 +167,8 @@ fun HeatChart(d: HeatData, img: ImageBitmap, real: List<LiqEvent>, price: Double
             if (Drawings.list.isNotEmpty())
                 OutlineButton("Apagar todas (${Drawings.list.size})", color = Q.Muted, border = Q.Line, size = 12) { Drawings.clear(); selected = null }
         }
-        T(when {
-            tool != DrawTool.NONE -> tool.hint
-            compact -> "Pinça: zoom · arrastar: mover · toque duplo: período inteiro · toque numa marcação: selecionar"
-            else -> "Roda do mouse: zoom no tempo (na escala de preço: zoom no preço) · arrastar: mover · duplo clique: período inteiro · clique numa marcação: selecionar"
-        }, if (tool != DrawTool.NONE) Q.Accent else Q.Muted, 11, wrap = true, modifier = Modifier.padding(bottom = 4.dp))
+        // Instrução só enquanto uma ferramenta de desenho está ativa; a ajuda de navegação fica dentro do gráfico.
+        if (tool != DrawTool.NONE) T(tool.hint, Q.Accent, 11, wrap = true, modifier = Modifier.padding(bottom = 4.dp))
         pendingText?.let { (t, p) ->
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.padding(bottom = 4.dp)) {
                 T("Nota em ${px(p)}:", Q.Muted, 11)
@@ -365,7 +362,8 @@ fun HeatChart(d: HeatData, img: ImageBitmap, real: List<LiqEvent>, price: Double
                 drawRect(Q.Panel, Offset(0f, h), Size(size.width, axisHpx))
                 for (k in 0..7) {
                     val p = v.pA + (v.pB - v.pA) * k / 7
-                    drawText(tm, px(p), Offset(w + 6f * u, (y(p) - 7f * u).coerceIn(0f, h - 14f * u)), axis)
+                    val yy = y(p)
+                    if (yy >= 7f * u && yy <= h - 7f * u) drawText(tm, px(p), Offset(w + 6f * u, yy - 7f * u), axis)
                 }
                 val span = v.tB - v.tA
                 val fmt = SimpleDateFormat(when {
@@ -392,6 +390,13 @@ fun HeatChart(d: HeatData, img: ImageBitmap, real: List<LiqEvent>, price: Double
                         drawRect(Q.Accent, Offset(w, yy - 8f * u), Size(axisWpx, 16f * u))
                         drawText(tm, px(p), Offset(w + 6f * u, yy - 7f * u), axis.copy(color = if (Look.dark) Color.Black else Color.White))
                     }
+                }
+                // Ajuda de navegação dentro do gráfico (some ao dar zoom ou passar o mouse), sem ocupar altura.
+                if (custom == null && hover == null && tool == DrawTool.NONE) {
+                    val help = tm.measure(if (compact) "Pinça: zoom · arrastar: mover · toque duplo: voltar"
+                        else "Roda: zoom · na escala: zoom no preço · arrastar: mover · duplo clique: voltar", axis)
+                    drawRect(Color.Black.copy(alpha = 0.55f), Offset(4f * u, 4f * u), Size(help.size.width + 8f * u, help.size.height + 4f * u))
+                    drawText(help, topLeft = Offset(8f * u, 6f * u))
                 }
                 hover?.let { hp ->
                     if (hp.x < w && hp.y < h) {
