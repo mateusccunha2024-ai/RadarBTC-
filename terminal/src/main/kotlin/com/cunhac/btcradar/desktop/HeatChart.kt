@@ -322,7 +322,8 @@ fun HeatChart(d: HeatData, img: ImageBitmap, real: List<LiqEvent>, price: Double
                         filterQuality = if (custom == null) FilterQuality.Low else FilterQuality.None)
                     // níveis em aberto: linha do nascimento até a borda direita, na cor da caixa (short acima = venda, long abaixo = compra)
                     val maxB = openLevels.maxOfOrNull { it.btc } ?: 0.0
-                    openLevels.forEach { ol ->
+                    val labelYs = ArrayList<Float>() // rótulos já desenhados: o maior nível ganha o rótulo quando dois ficam colados
+                    openLevels.sortedByDescending { it.btc }.forEach { ol ->
                         val yy = y(ol.price)
                         if (yy < 0f || yy > h) return@forEach
                         val k = if (maxB > 0) (ol.btc / maxB).toFloat().coerceIn(0f, 1f) else 0f
@@ -330,6 +331,8 @@ fun HeatChart(d: HeatData, img: ImageBitmap, real: List<LiqEvent>, price: Double
                         val x0 = x(ol.bornMs.toDouble()).coerceIn(0f, w)
                         drawLine(c.copy(alpha = 0.5f + 0.5f * k), Offset(x0, yy), Offset(w, yy), (1f + 2f * k) * u)
                         val lay = tm.measure(num(ol.btc, if (ol.btc < 10) 1 else 0) + " BTC", axis.copy(color = c))
+                        if (labelYs.any { kotlin.math.abs(it - yy) < lay.size.height + 2f * u }) return@forEach
+                        labelYs += yy
                         drawRect(Color.Black.copy(alpha = 0.6f), Offset(w - lay.size.width - 6f * u, yy - lay.size.height - 2f * u),
                             Size(lay.size.width + 4f * u, lay.size.height.toFloat()))
                         drawText(lay, topLeft = Offset(w - lay.size.width - 4f * u, yy - lay.size.height - 2f * u))
