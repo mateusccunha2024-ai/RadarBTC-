@@ -150,6 +150,7 @@ fun HeatChart(d: HeatData, img: ImageBitmap, real: List<LiqEvent>, price: Double
     val tm = rememberTextMeasurer()
     val axis = TextStyle(color = Q.Muted, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
     val note = TextStyle(color = Color.White, fontSize = 11.sp)
+    val small = compact // lido aqui: dentro do desenho não dá para ler valores de composição
 
     Column(modifier) {
         // Barra de ferramentas
@@ -393,7 +394,7 @@ fun HeatChart(d: HeatData, img: ImageBitmap, real: List<LiqEvent>, price: Double
                 }
                 // Ajuda de navegação dentro do gráfico (some ao dar zoom ou passar o mouse), sem ocupar altura.
                 if (custom == null && hover == null && tool == DrawTool.NONE) {
-                    val help = tm.measure(if (compact) "Pinça: zoom · arrastar: mover · toque duplo: voltar"
+                    val help = tm.measure(if (small) "Pinça: zoom · arrastar: mover · toque duplo: voltar"
                         else "Roda: zoom · na escala: zoom no preço · arrastar: mover · duplo clique: voltar", axis)
                     drawRect(Color.Black.copy(alpha = 0.55f), Offset(4f * u, 4f * u), Size(help.size.width + 8f * u, help.size.height + 4f * u))
                     drawText(help, topLeft = Offset(8f * u, 6f * u))
