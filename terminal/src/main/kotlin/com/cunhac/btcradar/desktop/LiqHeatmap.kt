@@ -74,7 +74,7 @@ import kotlin.math.sqrt
  * Escala do mapa na família de cor do app (laranja do Bitcoin): quase preto = pouco, laranja claro = muito.
  * O fundo fica escuro nos dois temas para a linha de preço (branca) e os pontos aparecerem.
  */
-private val HEAT = listOf(Color(0xFF0E1014), Color(0xFF3B1D07), Color(0xFF8C450A), Color(0xFFE07F14), Color(0xFFFFC46B))
+internal val HEAT = listOf(Color(0xFF0E1014), Color(0xFF3B1D07), Color(0xFF8C450A), Color(0xFFE07F14), Color(0xFFFFC46B))
 
 fun heatScale(t: Float): Color {
     val x = t.coerceIn(0f, 1f) * (HEAT.size - 1)
