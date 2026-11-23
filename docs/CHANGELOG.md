@@ -14,6 +14,8 @@
 - Heatmap de liquidações na escala de laranja do app (antes roxo/verde).
 - Estados vazios mais baixos; a dica "deslize para o lado" aparece só no celular.
 - Notas de rodapé escondidas por padrão; botão "Notas" na barra do topo do PC (e Visualização no celular) mostra/esconde.
+- Painel de alertas (Radar): cada alerta em duas linhas — hora, tipo e lado (faixa na cor de compra/venda) e depois preço · corretora · números,
+  sem cortar o texto; filtro Todos/Paredes/Liquidações/Execuções/Divergências; eventos repetidos no mesmo nível viram uma linha com "×N".
 
 ## V8 — atualização 4 (2026-11-22) · ajustes de celular
 - Celular: a aba atual vira um botão "Abas ▾" que abre a lista das 12 abas, cada uma com uma linha explicando o que mostra.
