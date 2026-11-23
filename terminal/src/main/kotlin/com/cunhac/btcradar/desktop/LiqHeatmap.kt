@@ -178,69 +178,12 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                 }
                 }
                 Spacer(Modifier.height(6.dp))
-                BoxWithConstraints(Modifier.fillMaxWidth().then(if (compact) Modifier.height(420.dp) else Modifier.weight(1f)).background(if (d == null) Q.Panel2 else HEAT[0])) {
-                    if (d == null || img == null) {
-                        Empty(if (hs.loading) "Montando o heatmap (${hs.progress})…" else "Heatmap indisponível", hs.error ?: "Usa velas e open interest históricos públicos das corretoras")
-                        return@BoxWithConstraints
-                    }
-                    val u = LocalDensity.current.density
-                    val axisW = 64f * u; val axisH = 18f * u
-                    // Mouse (PC) ou toque (celular): mostra a cruz e o detalhe do ponto.
-                    Canvas(Modifier.fillMaxSize().pointerInput(Unit) {
-                        awaitPointerEventScope {
-                            while (true) {
-                                val e = awaitPointerEvent()
-                                if (e.type == PointerEventType.Exit) hover = null else e.changes.firstOrNull()?.let { hover = it.position }
-                            }
-                        }
-                    }) {
-                        val w = size.width - axisW; val h = size.height - axisH
-                        val pMax = d.pMin + d.pStep * d.rows
-                        fun y(p: Double) = (h - (p - d.pMin) / (pMax - d.pMin) * h).toFloat()
-                        fun x(t: Long) = ((t - d.t0).toFloat() / (d.stepMs * d.cols)) * w
-                        drawImage(img, srcOffset = IntOffset.Zero, srcSize = IntSize(img.width, img.height), dstSize = IntSize(w.toInt(), h.toInt()), filterQuality = FilterQuality.Low)
-                        // preço (fechamento das velas)
-                        val path = Path()
-                        d.candles.forEachIndexed { i, c -> val px = (i + 0.5f) / d.cols * w; if (i == 0) path.moveTo(px, y(c.close)) else path.lineTo(px, y(c.close)) }
-                        drawPath(path, Color.White, style = Stroke(1.4f))
-                        // liquidações reais
-                        real.forEach { e ->
-                            if (e.price < d.pMin || e.price > pMax) return@forEach
-                            val r = (2f + sqrt(e.qtyBtc).toFloat() * 2.5f).coerceAtMost(10f)
-                            val c = if (e.side == LiqSide.LONG) Q.LiqLong else Q.LiqShort
-                            drawCircle(Color.Black, r + 1.2f, Offset(x(e.recvMs), y(e.price)))
-                            drawCircle(c, r, Offset(x(e.recvMs), y(e.price)))
-                        }
-                        // eixos
-                        drawRect(Q.Panel, Offset(w, 0f), Size(axisW, size.height))
-                        drawRect(Q.Panel, Offset(0f, h), Size(size.width, axisH))
-                        for (k in 0..7) {
-                            val p = d.pMin + (pMax - d.pMin) * k / 7
-                            drawText(tm, px(p), Offset(w + 6f * u, y(p) - 7f * u), axis)
-                        }
-                        val fmt = SimpleDateFormat(if (d.range.ms <= HeatRange.H48.ms) "HH:mm" else "dd/MM")
-                        for (k in 0..5) {
-                            val t = d.t0 + (d.stepMs * d.cols) * k / 6
-                            drawText(tm, fmt.format(Date(t)), Offset(x(t) + 2f * u, h + 2f * u), axis)
-                        }
-                        price?.let { p ->
-                            val yy = y(p)
-                            drawLine(Q.Accent.copy(alpha = 0.6f), Offset(0f, yy), Offset(w, yy), 1f)
-                            drawRect(Q.Accent, Offset(w, yy - 8f * u), Size(axisW, 16f * u))
-                            drawText(tm, px(p), Offset(w + 6f * u, yy - 7f * u), axis.copy(color = if (Look.dark) Color.Black else Color.White))
-                        }
-                        hover?.let { hp -> if (hp.x < w && hp.y < h) { drawLine(Color.White.copy(alpha = 0.35f), Offset(hp.x, 0f), Offset(hp.x, h), 1f); drawLine(Color.White.copy(alpha = 0.35f), Offset(0f, hp.y), Offset(w, hp.y), 1f) } }
-                    }
-                    hover?.let { hp ->
-                        val w = constraints.maxWidth - axisW; val h = constraints.maxHeight - axisH
-                        if (hp.x < w && hp.y < h && grids != null) {
-                            val col = (hp.x / w * d.cols).toInt().coerceIn(0, d.cols - 1)
-                            val row = ((h - hp.y) / h * d.rows).toInt().coerceIn(0, d.rows - 1)
-                            HeatTooltip(d, grids, entries, mode, venues, col, row, price, Modifier.offset {
-                                IntOffset((hp.x + 16 * u).toInt().coerceAtMost((w - 300 * u).toInt().coerceAtLeast(0)), (hp.y + 12 * u).toInt().coerceAtMost((h - 190 * u).toInt().coerceAtLeast(0)))
-                            })
-                        }
-                    }
+                // Gráfico navegável: zoom, arrastar e marcações (HeatChart.kt).
+                val chartMod = Modifier.fillMaxWidth().then(if (compact) Modifier.height(560.dp) else Modifier.weight(1f))
+                if (d == null || img == null) Box(chartMod.background(Q.Panel2)) {
+                    Empty(if (hs.loading) "Montando o heatmap (${hs.progress})…" else "Heatmap indisponível", hs.error ?: "Usa velas e open interest históricos públicos das corretoras")
+                } else HeatChart(d, img, real, price, chartMod) { col, row, m ->
+                    grids?.let { g -> HeatTooltip(d, g, entries, mode, venues, col, row, price, m) }
                 }
                 if (d != null && img != null) HeatLegend(mode, k, showReal, Modifier.fillMaxWidth().padding(top = 6.dp))
                 if (d != null && delta != null && delta.isNotEmpty()) {
