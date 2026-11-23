@@ -331,7 +331,7 @@ fun HeatChart(d: HeatData, img: ImageBitmap, real: List<LiqEvent>, price: Double
                         drawLine(c.copy(alpha = 0.5f + 0.5f * k), Offset(x0, yy), Offset(w, yy), (1f + 2f * k) * u)
                         val lay = tm.measure(num(ol.btc, if (ol.btc < 10) 1 else 0) + " BTC", axis.copy(color = c))
                         drawRect(Color.Black.copy(alpha = 0.6f), Offset(w - lay.size.width - 6f * u, yy - lay.size.height - 2f * u),
-                            Size(lay.size.width + 4f * u, lay.size.height))
+                            Size(lay.size.width + 4f * u, lay.size.height.toFloat()))
                         drawText(lay, topLeft = Offset(w - lay.size.width - 4f * u, yy - lay.size.height - 2f * u))
                     }
                     // preço (fechamento das velas)
