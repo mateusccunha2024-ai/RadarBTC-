@@ -106,15 +106,24 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
     var venueIdx by remember { mutableIntStateOf(SettingsStore.i("hm.venue", 0)) }
     var intensity by remember { mutableFloatStateOf(SettingsStore.d("hm.int", 0.5).toFloat()) }
     var showReal by remember { mutableStateOf(SettingsStore.b("hm.real", true)) }
+    // Filtro do mapa: níveis já executados (o preço passou) e/ou em aberto (ainda de pé). Os dois ligados = tudo.
+    var showDone by remember { mutableStateOf(SettingsStore.b("hm.done", true)) }
+    var showOpen by remember { mutableStateOf(SettingsStore.b("hm.open", true)) }
     var hover by remember { mutableStateOf<Offset?>(null) }
     var mode by remember { mutableIntStateOf(SettingsStore.i("hm.mode", 0)) }
     var tierMask by remember { mutableIntStateOf(SettingsStore.i("hm.tiers", 0b1111).takeIf { it in 1..15 } ?: 0b1111) }
     val tiers = HEAT_TIERS.indices.filter { tierMask and (1 shl it) != 0 }.toSet()
     val venues = if (venueIdx == 0) CORE_VENUES.toSet() else setOf(CORE_VENUES[venueIdx - 1])
     val d = hs.data
-    val grids = remember(d, venueIdx, tierMask) { d?.let { HeatmapModel.combine(it, venues, tiers) } }
+    val allGrids = remember(d, venueIdx, tierMask) { d?.let { HeatmapModel.combine(it, venues, tiers) } }
+    val grids = remember(allGrids, showDone, showOpen) {
+        if (d == null || allGrids == null || (showDone && showOpen)) allGrids else {
+            val open = HeatmapModel.openGrids(d, venues, tiers)
+            if (showOpen) open else HeatmapModel.minus(allGrids, open)
+        }
+    }
     val entries = remember(d, venueIdx, mode) { if (d != null && mode == 1) HeatmapModel.entries(d, venues) else null }
-    val delta = remember(grids) { grids?.let { HeatmapModel.levelDelta(it) } }
+    val delta = remember(allGrids) { allGrids?.let { HeatmapModel.levelDelta(it) } }
     val value: (Int, Int) -> Float = { r, c ->
         when (mode) {
             1 -> entries?.get(r)?.get(c) ?: 0f
@@ -146,6 +155,22 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                     Chips("Período", HeatRange.entries.map { it.label }, hs.range.ordinal) { ctx.heat.load(HeatRange.entries[it]) }
+                }
+                if (mode != 1) {
+                    Spacer(Modifier.height(6.dp))
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        T("Mostrar", Q.Muted, 11, modifier = Modifier.padding(top = 4.dp, end = 2.dp))
+                        // Nunca os dois desligados: desligar um com o outro já desligado liga o outro.
+                        Toggle("Já executadas", showDone) { on ->
+                            showDone = on; if (!on && !showOpen) showOpen = true
+                            SettingsStore.put("hm.done", showDone); SettingsStore.put("hm.open", showOpen)
+                        }
+                        Toggle("Em aberto", showOpen) { on ->
+                            showOpen = on; if (!on && !showDone) showDone = true
+                            SettingsStore.put("hm.done", showDone); SettingsStore.put("hm.open", showOpen)
+                        }
+                        if (showOpen) T("linhas = níveis em aberto das caixas ao lado, até agora", Q.Muted, 11, modifier = Modifier.padding(top = 4.dp))
+                    }
                 }
                 Spacer(Modifier.height(6.dp))
                 MoreFilters(listOf("Liquidações", "OI por entrada", "Longs × shorts")[mode] + " · " + (if (venueIdx == 0) "todas" else CORE_VENUES[venueIdx - 1].label)) {
@@ -182,7 +207,10 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                 val chartMod = Modifier.fillMaxWidth().then(if (compact) Modifier.height(560.dp) else Modifier.weight(1f))
                 if (d == null || img == null) Box(chartMod.background(Q.Panel2)) {
                     Empty(if (hs.loading) "Montando o heatmap (${hs.progress})…" else "Heatmap indisponível", hs.error ?: "Usa velas e open interest históricos públicos das corretoras")
-                } else HeatChart(d, img, real, price, chartMod) { col, row, m ->
+                } else HeatChart(d, img, real, price, chartMod,
+                    openLevels = if (showOpen && mode != 1) summary?.let { sm ->
+                        sm.above.map { OpenLine(it.price, it.btc, it.bornMs, short = true) } + sm.below.map { OpenLine(it.price, it.btc, it.bornMs, short = false) }
+                    } ?: emptyList() else emptyList()) { col, row, m ->
                     grids?.let { g -> HeatTooltip(d, g, entries, mode, venues, col, row, price, m) }
                 }
                 if (d != null && img != null) HeatLegend(mode, k, showReal, Modifier.fillMaxWidth().padding(top = 6.dp))
