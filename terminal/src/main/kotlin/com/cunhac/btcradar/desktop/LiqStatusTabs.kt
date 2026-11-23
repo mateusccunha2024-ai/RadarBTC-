@@ -50,7 +50,7 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         LiqHeatmapPanel(ctx, s, Modifier.fillMaxWidth().then(grow(1.6f)))
         Controls {
-            T("LIQUIDAÇÕES REAIS", Q.Text, 12, bold = true)
+            T("Liquidações reais", Q.Text, 14, bold = true)
             Chips("Período", LIQ_PERIODS.map { it.first }, pIdx) { pIdx = it; SettingsStore.put("lq.period", it) }
             NumField("LARGE ≥", r.thresholds.large, 56.dp) { it?.let { v -> r.thresholds.large = v; SettingsStore.put("lq.large", v); ver++ } }
             NumField("EXTREME ≥", r.thresholds.extreme, 56.dp) { it?.let { v -> r.thresholds.extreme = v; SettingsStore.put("lq.extreme", v); ver++ } }

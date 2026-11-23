@@ -174,13 +174,18 @@ class LargeTrades(@Volatile var minBtc: Double = 2.0, private val keepMs: Long =
 // ---------------------------------------------------------------------
 
 enum class FlowClass(val label: String, val side: String) {
-    LONG_ACCUMULATION("LONG-BIASED ACCUMULATION", "LONG FLOW"),
-    SHORT_COVERING("SHORT COVERING", "LONG FLOW"),
-    BUYING_PRESSURE("BUYING PRESSURE", "LONG FLOW"),
-    SHORT_ACCUMULATION("SHORT-BIASED ACCUMULATION", "SHORT FLOW"),
-    LONG_CLOSING("LONG CLOSING", "SHORT FLOW"),
-    SELLING_PRESSURE("SELLING PRESSURE", "SHORT FLOW"),
-    NEUTRAL("SEM VIÉS CLARO", "—"),
+    LONG_ACCUMULATION("Acumulação comprada", "Fluxo long"),
+    SHORT_COVERING("Recompra de shorts", "Fluxo long"),
+    BUYING_PRESSURE("Pressão compradora", "Fluxo long"),
+    SHORT_ACCUMULATION("Acumulação vendida", "Fluxo short"),
+    LONG_CLOSING("Fechamento de longs", "Fluxo short"),
+    SELLING_PRESSURE("Pressão vendedora", "Fluxo short"),
+    NEUTRAL("Sem viés claro", "—");
+
+    companion object {
+        const val LONG_SIDE = "Fluxo long"
+        const val SHORT_SIDE = "Fluxo short"
+    }
 }
 
 data class FlowSignal(

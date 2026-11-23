@@ -74,9 +74,11 @@ fun FootprintTab(ctx: AppContext, s: TerminalState) {
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Controls {
             Chips("Vela", FP_CANDLES.map { it.first }, cIdx) { cIdx = it; SettingsStore.put("fp.c", it) }
-            Chips("Faixa US$", FP_STEPS.map { num(it, 0) }, stIdx) { stIdx = it; SettingsStore.put("fp.s", it) }
-            Chips("Velas", FP_COUNTS.map { it.toString() }, nIdx) { nIdx = it; SettingsStore.put("fp.n", it) }
-            Chips("Corretoras", listOf("TODAS") + CORE_VENUES.map { it.label.uppercase() }, vIdx) { vIdx = it; SettingsStore.put("fp.v", it) }
+            MoreFilters("faixa US$ ${num(FP_STEPS[stIdx], 0)} · ${FP_COUNTS[nIdx]} velas") {
+                Chips("Faixa US$", FP_STEPS.map { num(it, 0) }, stIdx) { stIdx = it; SettingsStore.put("fp.s", it) }
+                Chips("Velas", FP_COUNTS.map { it.toString() }, nIdx) { nIdx = it; SettingsStore.put("fp.n", it) }
+                Chips("Corretoras", listOf("Todas") + CORE_VENUES.map { it.label }, vIdx) { vIdx = it; SettingsStore.put("fp.v", it) }
+            }
             T(oldest?.let { "Dados desde ${hhmmss(it)}" } ?: "Aguardando trades", Q.Muted, 11)
         }
         // No celular o footprint rola para o lado (cada vela precisa de largura para os números).

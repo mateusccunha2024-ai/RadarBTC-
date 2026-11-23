@@ -70,17 +70,20 @@ import java.util.Date
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-private val VIRIDIS = listOf(Color(0xFF2B0A3D), Color(0xFF3B528B), Color(0xFF21918C), Color(0xFF5EC962), Color(0xFFFDE725))
+/**
+ * Escala do mapa na família de cor do app (laranja do Bitcoin): quase preto = pouco, laranja claro = muito.
+ * O fundo fica escuro nos dois temas para a linha de preço (branca) e os pontos aparecerem.
+ */
+private val HEAT = listOf(Color(0xFF0E1014), Color(0xFF3B1D07), Color(0xFF8C450A), Color(0xFFE07F14), Color(0xFFFFC46B))
 
-/** Escala Viridis (a mesma família de cores do CoinGlass): roxo = pouco, amarelo = muito. */
-fun viridis(t: Float): Color {
-    val x = t.coerceIn(0f, 1f) * (VIRIDIS.size - 1)
-    val i = x.toInt().coerceAtMost(VIRIDIS.size - 2)
-    return lerp(VIRIDIS[i], VIRIDIS[i + 1], x - i)
+fun heatScale(t: Float): Color {
+    val x = t.coerceIn(0f, 1f) * (HEAT.size - 1)
+    val i = x.toInt().coerceAtMost(HEAT.size - 2)
+    return lerp(HEAT[i], HEAT[i + 1], x - i)
 }
 
 /** Escala divergente para LONGS × SHORTS: cor de LONG = mais longs a liquidar, cor de SHORT = mais shorts (as mesmas do app todo). */
-fun diverging(t: Float): Color = if (t >= 0) lerp(VIRIDIS[0], Q.LiqLong, t.coerceIn(0f, 1f)) else lerp(VIRIDIS[0], Q.LiqShort, (-t).coerceIn(0f, 1f))
+fun diverging(t: Float): Color = if (t >= 0) lerp(HEAT[0], Q.LiqLong, t.coerceIn(0f, 1f)) else lerp(HEAT[0], Q.LiqShort, (-t).coerceIn(0f, 1f))
 
 /** Converte a grade numa imagem (1 pixel por célula) para desenhar rápido mesmo com 730 colunas. */
 private fun heatImage(rows: Int, cols: Int, color: (Int, Int) -> Color): ImageBitmap {
@@ -124,7 +127,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
     val k = ref / (0.25f + 1.5f * intensity)
     val img = remember(grids, entries, mode, intensity, Look.colorblind, Look.dark) {
         if (d == null || grids == null) null else {
-            heatImage(d.rows, d.cols) { r, c -> val v = value(r, c); if (mode == 2) diverging(if (k > 0) v / k else 0f) else viridis(if (k > 0) v / k else 0f) }
+            heatImage(d.rows, d.cols) { r, c -> val v = value(r, c); if (mode == 2) diverging(if (k > 0) v / k else 0f) else heatScale(if (k > 0) v / k else 0f) }
         }
     }
     val price = s.price ?: d?.candles?.lastOrNull()?.close
@@ -145,8 +148,9 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                     Chips("Período", HeatRange.entries.map { it.label }, hs.range.ordinal) { ctx.heat.load(HeatRange.entries[it]) }
                 }
                 Spacer(Modifier.height(6.dp))
+                MoreFilters(listOf("Liquidações", "OI por entrada", "Longs × shorts")[mode] + " · " + (if (venueIdx == 0) "todas" else CORE_VENUES[venueIdx - 1].label)) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Chips("Mapa", listOf("LIQUIDAÇÕES", "OI POR ENTRADA", "LONGS × SHORTS"), mode) { mode = it; SettingsStore.put("hm.mode", it) }
+                    Chips("Mapa", listOf("Liquidações", "OI por entrada", "Longs × shorts"), mode) { mode = it; SettingsStore.put("hm.mode", it) }
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         T("Alavancagem", Q.Muted, 11, modifier = Modifier.padding(top = 4.dp))
                         HEAT_TIERS.forEachIndexed { i, t ->
@@ -159,7 +163,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                 }
                 Spacer(Modifier.height(6.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Chips("Corretoras", listOf("TODAS") + CORE_VENUES.map { it.label.uppercase() }, venueIdx) { venueIdx = it; SettingsStore.put("hm.venue", it) }
+                    Chips("Corretoras", listOf("Todas") + CORE_VENUES.map { it.label }, venueIdx) { venueIdx = it; SettingsStore.put("hm.venue", it) }
                     T("Intensidade", Q.Muted, 11)
                     Slider(intensity, { intensity = it; SettingsStore.put("hm.int", it.toDouble()) }, Modifier.width(150.dp).height(20.dp),
                         colors = SliderDefaults.colors(thumbColor = Q.Accent, activeTrackColor = Q.Accent, inactiveTrackColor = Q.Line))
@@ -172,8 +176,9 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                     }, if (hs.error != null) Q.Sell else Q.Muted, 11)
                     OutlineButton("Atualizar", border = Q.Line, size = 11) { ctx.heat.load(hs.range, force = true) }
                 }
+                }
                 Spacer(Modifier.height(6.dp))
-                BoxWithConstraints(Modifier.fillMaxWidth().then(if (compact) Modifier.height(420.dp) else Modifier.weight(1f)).background(if (d == null) Q.Panel2 else VIRIDIS[0])) {
+                BoxWithConstraints(Modifier.fillMaxWidth().then(if (compact) Modifier.height(420.dp) else Modifier.weight(1f)).background(if (d == null) Q.Panel2 else HEAT[0])) {
                     if (d == null || img == null) {
                         Empty(if (hs.loading) "Montando o heatmap (${hs.progress})…" else "Heatmap indisponível", hs.error ?: "Usa velas e open interest históricos públicos das corretoras")
                         return@BoxWithConstraints
@@ -276,10 +281,10 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                         KV("Shorts (acima do preço)", btc(sm.shortsAboveBtc, 0) + " · " + num((1 - f) * 100.0, 0) + "%", Q.Sell)
                     }
                     Spacer(Modifier.height(6.dp))
-                    T("COBERTURA DO HISTÓRICO", Q.Muted, 10)
+                    T("Cobertura do histórico", Q.Muted, 11, bold = true)
                     CORE_VENUES.forEach { v -> KV(v.label, d?.coverage?.get(v) ?: "—", if (d?.coverage?.get(v)?.startsWith("completo") == true) Q.Text else Q.Warn) }
                     Footnote("Estimativa: 10x/25x/50x/100x sobre o aumento de open interest de cada corretora; níveis atravessados pelo preço somem. " +
-                        "OI POR ENTRADA = onde o modelo estima que as posições ainda abertas entraram. LONGS × SHORTS: verde = mais longs a liquidar naquele preço, vermelho = mais shorts. " +
+                        "OI por entrada = onde o modelo estima que as posições ainda abertas entraram. Longs × shorts: cor de compra = mais longs a liquidar naquele preço, cor de venda = mais shorts. " +
                         "Faixa inferior = total de níveis LONG em aberto menos SHORT. O filtro de alavancagem vale para o mapa e os níveis-chave. " +
                         "Pontos = liquidações REAIS reportadas pelas 6 corretoras (gravadas desde a instalação), na cor de LONG ou de SHORT.", Modifier.padding(top = 6.dp))
                 }
@@ -295,7 +300,7 @@ private fun HeatLegend(mode: Int, k: Float, showReal: Boolean, modifier: Modifie
     Column(modifier) {
         T(if (mode == 2) "Escala: longs − shorts a liquidar por faixa (BTC)" else if (mode == 1) "Escala: OI aberto por faixa de preço (BTC)" else "Escala: BTC a liquidar por faixa de preço",
             Q.Muted, 10, wrap = true)
-        val stops = if (mode == 2) listOf(Q.LiqShort, VIRIDIS[0], Q.LiqLong) else VIRIDIS
+        val stops = if (mode == 2) listOf(Q.LiqShort, HEAT[0], Q.LiqLong) else HEAT
         Canvas(Modifier.fillMaxWidth().height(10.dp).padding(vertical = 1.dp)) {
             drawRect(androidx.compose.ui.graphics.Brush.horizontalGradient(stops), size = size)
         }
@@ -316,7 +321,7 @@ private fun HeatLegend(mode: Int, k: Float, showReal: Boolean, modifier: Modifie
     }
 }
 
-private val HEAT_MODES = listOf("Liquidation heatmap", "Open interest por preço de entrada", "Longs × shorts a liquidar")
+private val HEAT_MODES = listOf("Mapa de liquidações", "Open interest por preço de entrada", "Longs × shorts a liquidar")
 
 /** Faixa inferior: níveis LONG em aberto − níveis SHORT em aberto ao longo do tempo (mesmo eixo X do mapa). */
 @Composable
