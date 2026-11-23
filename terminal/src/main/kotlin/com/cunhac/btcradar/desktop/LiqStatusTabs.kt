@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,9 +24,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.dp
 import com.cunhac.btcradar.engine.ConnState
+import com.cunhac.btcradar.engine.FeedAlert
 import com.cunhac.btcradar.engine.LIQ_PERIODS
 import com.cunhac.btcradar.engine.LiqClass
 import com.cunhac.btcradar.engine.LiqEvent
@@ -50,7 +53,7 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         LiqHeatmapPanel(ctx, s, Modifier.fillMaxWidth().then(grow(1.6f)))
         Controls {
-            T("LIQUIDAÇÕES REAIS", Q.Text, 12, bold = true)
+            T("Liquidações reais", Q.Text, 14, bold = true)
             Chips("Período", LIQ_PERIODS.map { it.first }, pIdx) { pIdx = it; SettingsStore.put("lq.period", it) }
             NumField("LARGE ≥", r.thresholds.large, 56.dp) { it?.let { v -> r.thresholds.large = v; SettingsStore.put("lq.large", v); ver++ } }
             NumField("EXTREME ≥", r.thresholds.extreme, 56.dp) { it?.let { v -> r.thresholds.extreme = v; SettingsStore.put("lq.extreme", v); ver++ } }
@@ -62,13 +65,8 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
             Pane(1f, 360.dp) { m -> LiqTable("Top LONG liquidadas · $pl", topL, r.thresholds::classify, m, "Nenhuma liquidação LONG de BTC em $pl · ${r.received} eventos desde a abertura") },
             Pane(1f, 360.dp) { m -> LiqTable("Top SHORT liquidadas · $pl", topS, r.thresholds::classify, m, "Nenhuma liquidação SHORT de BTC em $pl · ${r.received} eventos desde a abertura") },
             Pane(1f, 360.dp) { m -> LiqTable("Top geral · $pl", topAll, r.thresholds::classify, m, "Nenhuma liquidação de BTC em $pl") },
-            Pane(0.8f, 300.dp) { m ->
-            Section("Alertas", m) {
-                Column {
-                    if (s.alerts.isEmpty()) Empty("Sem alertas por enquanto", "Liquidações ≥ LARGE e execuções muito grandes aparecem aqui")
-                    LazyColumn { items(s.alerts) { T(it, if (it.contains("EXTREME")) Q.Accent else Q.Text, 11, monoFont = true, wrap = compact) } }
-                }
-            }
+            Pane(1.1f, 480.dp) { m ->
+            AlertFeed(s, m)
             })
         Footnote("Liquidações reais = Binance, Bybit, OKX, Gate, Bitget e Deribit (feeds públicos, não garantem todos os eventos; Binance envia no máximo 1/s e a Bitget agrupa por segundo). " +
             "Conversões para BTC: OKX ${s.okxCtVal}; Gate 1 contrato = 0,0001 BTC; Bitget USDT ÷ preço; Deribit USD ÷ preço. " +
@@ -167,4 +165,50 @@ fun StatusTab(ctx: AppContext, s: TerminalState) {
             }
         }
     })
+}
+
+private val FEED_FILTERS = listOf("Todos", "Paredes", "Liquidações", "Execuções", "Divergências")
+
+/**
+ * Painel de alertas: uma linha de cabeçalho (hora, tipo, lado) e uma de dados (preço · corretora · números),
+ * com faixa lateral na cor do lado e filtro por tipo. Antes era uma frase única cortada no meio.
+ */
+@Composable
+private fun AlertFeed(s: TerminalState, modifier: Modifier) {
+    var filter by remember { mutableIntStateOf(0) }
+    val list = if (filter == 0) s.alerts else s.alerts.filter { it.kind.group == FEED_FILTERS[filter] }
+    Section("Alertas · ${s.alerts.size}", modifier) {
+        Column {
+            Chips(null, FEED_FILTERS, filter) { filter = it }
+            Spacer(Modifier.height(6.dp))
+            if (list.isEmpty()) Empty(if (filter == 0) "Sem alertas por enquanto" else "Nenhum alerta deste tipo",
+                "Absorção e iceberg em paredes, liquidações ≥ LARGE, execuções muito grandes e divergências preço × CVD aparecem aqui")
+            else LazyColumn(if (compact) Modifier.heightIn(max = 520.dp) else Modifier.fillMaxSize()) {
+                items(list) { AlertRow(it) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AlertRow(a: FeedAlert) {
+    val side = when (a.buy) { true -> Q.Buy; false -> Q.Sell; null -> Q.Muted }
+    Column(Modifier.fillMaxWidth()
+        .drawBehind {
+            drawRect(side, Offset(0f, 4.dp.toPx()), Size(2.dp.toPx(), size.height - 8.dp.toPx()))
+            drawRect(Q.Line, Offset(0f, size.height - 1f), Size(size.width, 1f))
+        }
+        .padding(start = 10.dp, top = 5.dp, bottom = 6.dp, end = 4.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            T(hhmmss(a.timeMs), Q.Muted, 11, monoFont = true)
+            T(a.kind.label, if (a.strong) Q.Accent else Q.Text, 12, bold = true)
+            T(a.sideLabel, side, 12, bold = true)
+            if (a.count > 1) Badge("×${a.count}", Q.Muted)
+        }
+        val head = listOfNotNull(a.price?.let { px(it) }, a.where).joinToString("  ·  ")
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (head.isNotEmpty()) T(head, Q.Text, 12, monoFont = true, modifier = Modifier.padding(end = 8.dp))
+        }
+        T(a.detail, Q.Muted, 11, wrap = true)
+    }
 }

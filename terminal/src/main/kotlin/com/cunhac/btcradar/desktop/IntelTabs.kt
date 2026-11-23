@@ -49,14 +49,34 @@ import com.cunhac.btcradar.engine.WallSignal
 import com.cunhac.btcradar.engine.Analytics
 import com.cunhac.btcradar.engine.WallStatus
 
-/** Cor de cada corretora (índice = Venue.ordinal), com variante legível no tema claro. */
+/**
+ * Cor de cada corretora (índice = Venue.ordinal), com variante legível no tema claro.
+ * Cores frias e neutras de propósito: amarelo/laranja ficam reservados para aviso e acento,
+ * verde/vermelho para compra/venda — uma cor nunca faz dois papéis.
+ */
 val VENUE_COLORS: List<Color> get() = if (Look.dark)
-    listOf(Color(0xFFF3BA2F), Color(0xFF9B7BFF), Color(0xFF5BC0EB), Color(0xFF6E8BFF), Color(0xFF1DD3C0), Color(0xFF7FD69B))
-else listOf(Color(0xFF9A7200), Color(0xFF6A4BD6), Color(0xFF15799F), Color(0xFF2950D8), Color(0xFF00857A), Color(0xFF2E8A55))
+    listOf(Color(0xFF5AA9FF), Color(0xFFB59CFF), Color(0xFF63D2DC), Color(0xFF93A4BD), Color(0xFFE08FCB), Color(0xFFA7AEBB))
+else listOf(Color(0xFF1F63C6), Color(0xFF6A4BD6), Color(0xFF0F7A85), Color(0xFF4A5B75), Color(0xFFA23E86), Color(0xFF5D6573))
 
 @Composable
 fun Th(vararg cols: Pair<String, Int>) = Row(Modifier.fillMaxWidth().padding(vertical = if (Look.compact) 1.dp else 3.dp)) {
-    cols.forEach { (t, w) -> T(t, Q.Muted, 10, modifier = if (w > 0) Modifier.width(w.dp) else Modifier.weight(1f)) }
+    cols.forEach { (t, w) -> T(headerCase(t), Q.Muted, 10, modifier = if (w > 0) Modifier.width(w.dp) else Modifier.weight(1f)) }
+}
+
+/** Siglas que continuam em maiúsculas nos cabeçalhos. */
+private val ACRONYMS = setOf("BTC", "OI", "OKX", "USD", "US$", "CVD", "POC", "VAH", "VAL", "ETF", "ETFS", "RPI", "LONG", "SHORT", "BID", "ASK", "OHLC")
+
+/** Cabeçalho de tabela em caixa normal ("MAIOR COMPRA" → "Maior compra"), mantendo siglas. Só o título do painel fica em caixa alta. */
+fun headerCase(t: String): String {
+    if (t.any { it.isLowerCase() }) return t
+    return t.split(" ").mapIndexed { i, w ->
+        val core = w.trim('(', ')', '.', ',', '%', '/')
+        when {
+            core.uppercase() in ACRONYMS || core.length <= 1 -> w
+            i == 0 -> w.lowercase().replaceFirstChar { it.uppercase() }
+            else -> w.lowercase()
+        }
+    }.joinToString(" ")
 }
 
 @Composable
@@ -79,7 +99,7 @@ fun WallsTab(ctx: AppContext, s: TerminalState) {
     val mid = s.price ?: 0.0
     Column(Modifier.fillMaxSize()) {
         Controls {
-            Chips("Corretora", listOf("TODAS") + CORE_VENUES.map { it.label.uppercase() }, venueIdx) { venueIdx = it }
+            Chips("Corretora", listOf("Todas") + CORE_VENUES.map { it.label }, venueIdx) { venueIdx = it }
             NumField("SMALL ≥", th.small, 60.dp) { it?.let { v -> th.small = v; SettingsStore.put("w.small", v); ver++ } }
             NumField("MEDIUM ≥", th.medium, 60.dp) { it?.let { v -> th.medium = v; SettingsStore.put("w.medium", v) } }
             NumField("LARGE ≥", th.large, 60.dp) { it?.let { v -> th.large = v; SettingsStore.put("w.large", v) } }
@@ -88,8 +108,8 @@ fun WallsTab(ctx: AppContext, s: TerminalState) {
             T("BTC · ativas: ${ctx.hub.walls.activeCount()}", Q.Muted, 11)
         }
         Spacer(Modifier.height(8.dp))
-        Panes(grow(1f), Pane(1f, 440.dp) { m -> WallTable("TOP 50 BID WALLS", bids, mid, Q.Buy, m) },
-            Pane(1f, 440.dp) { m -> WallTable("TOP 50 ASK WALLS", asks, mid, Q.Sell, m) })
+        Panes(grow(1f), Pane(1f, 440.dp) { m -> WallTable("Top 50 paredes de compra", bids, mid, Q.Buy, m) },
+            Pane(1f, 440.dp) { m -> WallTable("Top 50 paredes de venda", asks, mid, Q.Sell, m) })
         Spacer(Modifier.height(8.dp))
         val sigs = remember(s.tick) { ctx.hub.walls.signals() }
         Panes(if (compact) Modifier else Modifier.fillMaxWidth().height(230.dp), Pane(1.7f, 300.dp) { m ->
@@ -192,12 +212,12 @@ fun FlowTab(ctx: AppContext, s: TerminalState) {
             }
             Section("Fluxo agressor (${w.first})", Modifier.fillMaxWidth(), minWidth = 900.dp) {
                 Column {
-                    Th("FONTE" to 90, "COMPRADO" to 100, "VENDIDO" to 100, "DELTA" to 100, "TRADES" to 70, "MÉDIO" to 80, "MAIOR COMPRA" to 110, "MAIOR VENDA" to 110, "TRADES/S" to 0)
+                    Th("Fonte" to 100, "Comprado" to 100, "Vendido" to 100, "Delta" to 100, "Trades" to 70, "Médio" to 80, "Maior compra" to 110, "Maior venda" to 110, "Trades/s" to 0)
                     fun row(name: String, f: FlowStats?) {}
-                    val rows = listOf<Pair<String, FlowStats?>>("CONSOLIDADO" to s.flowAll.getOrNull(winIdx)) + CORE_VENUES.map { it.label to s.flowByVenue[it]?.getOrNull(winIdx) }
+                    val rows = listOf<Pair<String, FlowStats?>>("Consolidado" to s.flowAll.getOrNull(winIdx)) + CORE_VENUES.map { it.label to s.flowByVenue[it]?.getOrNull(winIdx) }
                     rows.forEach { (n, f) ->
-                        if (f == null) Td(Triple(n, 90, Q.Text), Triple("sem dados", 0, Q.Muted))
-                        else Td(Triple(n, 90, Q.Text), Triple(num(f.buyBtc, 3), 100, Q.Buy), Triple(num(f.sellBtc, 3), 100, Q.Sell),
+                        if (f == null) Td(Triple(n, 100, Q.Text), Triple("sem dados", 0, Q.Muted))
+                        else Td(Triple(n, 100, Q.Text), Triple(num(f.buyBtc, 3), 100, Q.Buy), Triple(num(f.sellBtc, 3), 100, Q.Sell),
                             Triple(String.format(BR, "%+.3f", f.deltaBtc), 100, if (f.deltaBtc >= 0) Q.Buy else Q.Sell), Triple(f.count.toString(), 70, Q.Text),
                             Triple(num(f.avgBtc, 4), 80, Q.Muted), Triple(f.maxBuy?.let { num(it.qtyBtc, 3) } ?: "—", 110, Q.Buy),
                             Triple(f.maxSell?.let { num(it.qtyBtc, 3) } ?: "—", 110, Q.Sell), Triple(num(f.tradesPerSec, 1), 0, Q.Muted))
@@ -225,17 +245,18 @@ fun FlowTab(ctx: AppContext, s: TerminalState) {
         Column(pm.then(if (compact) Modifier else Modifier.verticalScroll(rememberScrollState())), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             val sig = s.signals.getOrNull(winIdx)
             if (sig != null) {
-                val c = when (sig.cls.side) { "LONG FLOW" -> Q.Buy; "SHORT FLOW" -> Q.Sell; else -> Q.Muted }
-                Section(if (sig.cls.side == "—") "FLOW SIGNAL" else "${sig.cls.side} SIGNAL (${w.first})") {
+                val c = when (sig.cls.side) { FlowClass.LONG_SIDE -> Q.Buy; FlowClass.SHORT_SIDE -> Q.Sell; else -> Q.Muted }
+                Section("Sinal de fluxo (${w.first})") {
                     Column {
-                        T(sig.cls.label, c, 18, bold = true)
-                        if (sig.cls != FlowClass.NEUTRAL) T("Confiança: ${sig.confidence}", Q.Text, 12)
-                        Spacer(Modifier.height(6.dp)); T("DADOS OBSERVADOS", Q.Muted, 10)
-                        sig.observed.forEach { T("· $it", Q.Text, 11) }
-                        Spacer(Modifier.height(6.dp)); T("INTERPRETAÇÃO", Q.Muted, 10)
-                        androidx.compose.material3.Text(sig.interpretation, color = Q.Text, fontSize = androidx.compose.ui.unit.TextUnit(12f, androidx.compose.ui.unit.TextUnitType.Sp))
-                        Spacer(Modifier.height(6.dp)); T("LIMITAÇÕES", Q.Muted, 10)
-                        androidx.compose.material3.Text(sig.limitation, color = Q.Muted, fontSize = androidx.compose.ui.unit.TextUnit(11f, androidx.compose.ui.unit.TextUnitType.Sp))
+                        // O veredito é o dado principal da aba: grande, na cor do lado.
+                        T(sig.cls.label, c, 28, bold = true, wrap = true)
+                        if (sig.cls != FlowClass.NEUTRAL) T("${sig.cls.side} · confiança ${sig.confidence.lowercase()}", Q.Text, 13, modifier = Modifier.padding(top = 2.dp))
+                        Spacer(Modifier.height(10.dp)); T("Dados observados", Q.Muted, 11, bold = true)
+                        sig.observed.forEach { T("· $it", Q.Text, 12, wrap = true) }
+                        Spacer(Modifier.height(8.dp)); T("Interpretação", Q.Muted, 11, bold = true)
+                        T(sig.interpretation, Q.Text, 13, wrap = true)
+                        Spacer(Modifier.height(8.dp)); T("Limitações", Q.Muted, 11, bold = true)
+                        T(sig.limitation, Q.Muted, 12, wrap = true)
                     }
                 }
             }
@@ -360,7 +381,7 @@ fun LargeTradesTab(ctx: AppContext, s: TerminalState) {
     Column(Modifier.fillMaxSize()) {
         Controls {
             Chips("Período", LT_PERIODS.map { it.first }, pIdx) { pIdx = it }
-            Chips("Corretora", listOf("TODAS") + CORE_VENUES.map { it.label.uppercase() }, venueIdx) { venueIdx = it }
+            Chips("Corretora", listOf("Todas") + CORE_VENUES.map { it.label }, venueIdx) { venueIdx = it }
             NumField("Mínimo (BTC)", minBtc, 60.dp) { it?.let { v -> ctx.hub.large.minBtc = v; SettingsStore.put("lt.min", v); ver++ } }
             T("Compras $pl: ${buys.size} · ${btc(buys.sumOf { it.qtyBtc })}", Q.Buy, 12, bold = true)
             T("Vendas $pl: ${sells.size} · ${btc(sells.sumOf { it.qtyBtc })}", Q.Sell, 12, bold = true)

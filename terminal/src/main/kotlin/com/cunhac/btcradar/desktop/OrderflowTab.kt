@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cunhac.btcradar.engine.BookSide
 import com.cunhac.btcradar.engine.BookView
@@ -80,19 +81,22 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
         Column(pm.background(Q.Panel).padding(10.dp)) {
             // Controles quebram linha sozinhos quando a interface está ampliada.
             FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Chips("Livro", listOf("CONSOLIDADO") + CORE_VENUES.map { it.label.uppercase() }, venueIdx) { venueIdx = it; SettingsStore.put("of.venue", it) }
+                Chips("Livro", listOf("Consolidado") + CORE_VENUES.map { it.label }, venueIdx) { venueIdx = it; SettingsStore.put("of.venue", it) }
                 Chips("Agrupar", listOf("Exato", "1", "5", "10", "50", "100"), granIdx) { granIdx = it; SettingsStore.put("of.gran", it) }
-                Chips("Níveis", LEVS.map { it.toString() }, levIdx) { levIdx = it; SettingsStore.put("of.lev", it) }
-                Chips("Mín.", MINS.map { num(it, 1) }, minIdx) { minIdx = it; SettingsStore.put("of.min", it) }
-                Chips("Intensidade", listOf("0,5x", "1x", "2x", "4x"), intIdx) { intIdx = it; SettingsStore.put("of.int", it) }
-                Toggle("Bybit RPI", rpi) { rpi = it; SettingsStore.put("of.rpi", it) }
-                Chips("Executado", listOf("5m", "15m", "1h"), exIdx) { exIdx = it; SettingsStore.put("of.ex", it) }
-                Chips("Centro", listOf("AUTO (mid ${px(s.price)})", "MANUAL"), if (manual) 1 else 0) { manual = it == 1; SettingsStore.put("of.manual", manual) }
-                if (manual) {
-                    NumField("Faixa mín", rMin) { rMin = it; SettingsStore.put("of.rmin", it ?: 0.0) }
-                    NumField("Faixa máx", rMax) { rMax = it; SettingsStore.put("of.rmax", it ?: 0.0) }
+                // No celular o resto fica atrás de "Mais filtros" para o livro aparecer já na primeira tela.
+                MoreFilters("${LEVS[levIdx]} níveis · mín. ${num(MINS[minIdx], 1)} · ${listOf("5m", "15m", "1h")[exIdx]}") {
+                    Chips("Níveis", LEVS.map { it.toString() }, levIdx) { levIdx = it; SettingsStore.put("of.lev", it) }
+                    Chips("Mín.", MINS.map { num(it, 1) }, minIdx) { minIdx = it; SettingsStore.put("of.min", it) }
+                    Chips("Intensidade", listOf("0,5x", "1x", "2x", "4x"), intIdx) { intIdx = it; SettingsStore.put("of.int", it) }
+                    Toggle("Bybit RPI", rpi) { rpi = it; SettingsStore.put("of.rpi", it) }
+                    Chips("Executado", listOf("5m", "15m", "1h"), exIdx) { exIdx = it; SettingsStore.put("of.ex", it) }
+                    Chips("Centro", listOf("Auto (meio ${px(s.price)})", "Manual"), if (manual) 1 else 0) { manual = it == 1; SettingsStore.put("of.manual", manual) }
+                    if (manual) {
+                        NumField("Faixa mín", rMin) { rMin = it; SettingsStore.put("of.rmin", it ?: 0.0) }
+                        NumField("Faixa máx", rMax) { rMax = it; SettingsStore.put("of.rmax", it ?: 0.0) }
+                    }
                 }
-                if (book.missing.isNotEmpty()) T("Fora da consolidação: " + book.missing.joinToString { it.label } + " (livro inválido, ver STATUS)", Q.Sell, 11, wrap = compact)
+                if (book.missing.isNotEmpty()) T("Fora da consolidação: " + book.missing.joinToString { it.label } + " (livro inválido, ver aba Status)", Q.Sell, 11, wrap = compact)
             }
             Spacer(Modifier.height(8.dp))
             Ladder(book.asks, book.bids, rpi, INTS[intIdx], s.tick, exec, g, listOf("5m", "15m", "1h")[exIdx], full)
@@ -111,13 +115,13 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
                 }
             }
             CORE_VENUES.forEach { v -> s.books[v]?.let { BookCard(it, s) } }
-            s.rpi?.let { BookCard(it, s, "BYBIT RPI (só parte RPI, 50 níveis)") }
+            s.rpi?.let { BookCard(it, s, "Bybit RPI (só parte RPI, 50 níveis)") }
         }
     })
 }
 
 @Composable
-private fun BookCard(b: BookView, s: TerminalState, title: String = "${b.venue.label.uppercase()} ORDER BOOK") {
+private fun BookCard(b: BookView, s: TerminalState, title: String = "Livro ${b.venue.label}") {
     val conn = s.statuses.filter { it.venue == b.venue }
     val connOk = conn.isNotEmpty() && conn.all { it.state == ConnState.LIVE }
     Section(title) {
@@ -140,19 +144,19 @@ private fun Ladder(asks: List<ConsRow>, bids: List<ConsRow>, showRpi: Boolean, i
     val max = ((asks + bids).maxOfOrNull { it.total } ?: 0.0).coerceAtLeast(1e-9)
     fun ex(r: ConsRow): DoubleArray? = exec[if (g > 0 && r.side == BookSide.ASK) r.price - g else r.price]
     Row(Modifier.fillMaxWidth().padding(bottom = 2.dp)) {
-        T("PREÇO", Q.Muted, 10, modifier = Modifier.width(88.dp))
-        T("QUANTIDADE (BTC)", Q.Muted, 10, modifier = Modifier.weight(1f))
+        T("Preço", Q.Muted, 10, modifier = Modifier.width(88.dp))
+        T(if (full) "Quantidade (BTC)" else "Qtd. (BTC)", Q.Muted, 10, modifier = Modifier.weight(1f))
         if (full) {
-            listOf("BIN", "BYB", "OKX").forEach { T(it, Q.Muted, 10, modifier = Modifier.width(60.dp)) }
+            listOf("Bin", "Byb", "OKX").forEach { T(it, Q.Muted, 10, modifier = Modifier.width(60.dp)) }
             if (showRpi) T("RPI", Q.Muted, 10, modifier = Modifier.width(52.dp))
-            T("ORDENS", Q.Muted, 10, modifier = Modifier.width(52.dp))
+            T("Ordens", Q.Muted, 10, modifier = Modifier.width(52.dp))
         }
-        T("TOTAL", Q.Muted, 10, modifier = Modifier.width(70.dp).padding(start = 4.dp))
-        if (full) T("ACUMULADO", Q.Muted, 10, modifier = Modifier.width(78.dp))
-        T(if (full) "EX.COMPRA" else "EX.C", Q.Muted, 10, modifier = Modifier.width(if (full) 74.dp else 56.dp))
-        T(if (full) "EX.VENDA" else "EX.V", Q.Muted, 10, modifier = Modifier.width(if (full) 70.dp else 56.dp))
+        T("Total", Q.Muted, 10, modifier = Modifier.width(70.dp).padding(start = 4.dp))
+        if (full) T("Acumulado", Q.Muted, 10, modifier = Modifier.width(78.dp))
+        T("Ex. C", Q.Muted, 10, modifier = Modifier.width(if (full) 74.dp else 56.dp))
+        T("Ex. V", Q.Muted, 10, modifier = Modifier.width(if (full) 70.dp else 56.dp))
     }
-    T(if (full) "ACUMULADO = BTC somado do preço atual até a linha · ORDENS = nº de ordens no nível (só a OKX publica) · EX. = BTC executado no nível nos últimos $exLabel"
+    if (Look.footnotes) T(if (full) "ACUMULADO = BTC somado do preço atual até a linha · ORDENS = nº de ordens no nível (só a OKX publica) · EX. = BTC executado no nível nos últimos $exLabel"
         else "Celular: colunas por corretora ocultas (veja no PC ou na aba de cada livro) · EX. = executado nos últimos $exLabel",
         Q.Muted, 10, wrap = !full, modifier = Modifier.padding(bottom = 4.dp))
     val list = rememberLazyListState()
@@ -164,12 +168,12 @@ private fun Ladder(asks: List<ConsRow>, bids: List<ConsRow>, showRpi: Boolean, i
         items(asks.reversed()) { LadderRow(it, max, showRpi, intensity, ex(it), full) }
         item {
             val bb = bids.firstOrNull()?.price; val ba = asks.firstOrNull()?.price
-            Row(Modifier.fillMaxWidth().background(Q.Panel2).padding(vertical = 3.dp), horizontalArrangement = Arrangement.Center) {
+            Row(Modifier.fillMaxWidth().background(Q.Panel2).padding(vertical = 3.dp, horizontal = 8.dp), horizontalArrangement = Arrangement.Center) {
                 T(when {
                     bb == null || ba == null -> "sem livro válido"
-                    ba < bb -> "livros cruzados entre corretoras: melhor compra ${px(bb)} acima da melhor venda ${px(ba)} (cada corretora tem preço próprio)"
-                    else -> "spread ${num(ba - bb, 1)}  ·  mid ${px((ba + bb) / 2)}"
-                }, Q.Accent, 11)
+                    ba < bb -> "Livros cruzados entre corretoras: melhor compra ${px(bb)} acima da melhor venda ${px(ba)} (cada corretora tem preço próprio)"
+                    else -> "spread ${num(ba - bb, 1)}  ·  meio ${px((ba + bb) / 2)}"
+                }, Q.Warn, 11, wrap = true, align = TextAlign.Center)
             }
         }
         items(bids) { LadderRow(it, max, showRpi, intensity, ex(it), full) }
@@ -186,15 +190,23 @@ private fun LadderRow(r: ConsRow, max: Double, showRpi: Boolean, intensity: Floa
         Box(Modifier.weight(1f).fillMaxHeight().padding(vertical = 2.dp)) {
             if (frac > 0.003f) Box(Modifier.fillMaxHeight().fillMaxWidth(frac).background(base.copy(alpha = 0.25f + 0.6f * frac)))
         }
+        // Zero = célula vazia; poeira (< 0,001 BTC) em cinza: só os níveis com volume de verdade chamam atenção.
         if (full) {
-            for (i in 0..2) T(if (r.byVenue[i] > 0) qty(r.byVenue[i]) else "·", if (r.byVenue[i] > 0) Q.Text else Q.Line, 11, monoFont = true, modifier = Modifier.width(60.dp))
-            if (showRpi) T(if (r.byVenue[3] > 0) qty(r.byVenue[3]) else "·", Q.Muted, 11, monoFont = true, modifier = Modifier.width(52.dp))
-            T(if (r.okxOrders > 0) r.okxOrders.toString() else "·", if (r.okxOrders > 0) Q.Muted else Q.Line, 11, monoFont = true, modifier = Modifier.width(52.dp))
+            for (i in 0..2) T(cell(r.byVenue[i]), tint(r.byVenue[i], Q.Text), 11, monoFont = true, modifier = Modifier.width(60.dp))
+            if (showRpi) T(cell(r.byVenue[3]), Q.Muted, 11, monoFont = true, modifier = Modifier.width(52.dp))
+            T(if (r.okxOrders > 0) r.okxOrders.toString() else "", Q.Muted, 11, monoFont = true, modifier = Modifier.width(52.dp))
         }
-        T(qty(r.total), Q.Text, 11, bold = frac > 0.5f, monoFont = true, modifier = Modifier.width(70.dp).padding(start = 4.dp))
+        T(qty(r.total), tint(r.total, Q.Text), 11, bold = frac > 0.5f, monoFont = true, modifier = Modifier.width(70.dp).padding(start = 4.dp))
         if (full) T(num(r.cumulative, 2), Q.Muted, 11, monoFont = true, modifier = Modifier.width(78.dp))
         val eb = ex?.get(0) ?: 0.0; val es = ex?.get(1) ?: 0.0
-        T(if (eb > 0) qty(eb) else "·", if (eb > 0) Q.Buy else Q.Line, 11, monoFont = true, modifier = Modifier.width(if (full) 74.dp else 56.dp))
-        T(if (es > 0) qty(es) else "·", if (es > 0) Q.Sell else Q.Line, 11, monoFont = true, modifier = Modifier.width(if (full) 70.dp else 56.dp))
+        T(cell(eb), tint(eb, Q.Buy), 11, monoFont = true, modifier = Modifier.width(if (full) 74.dp else 56.dp))
+        T(cell(es), tint(es, Q.Sell), 11, monoFont = true, modifier = Modifier.width(if (full) 70.dp else 56.dp))
     }
 }
+
+/** Célula de quantidade: vazia quando é zero. */
+private fun cell(v: Double) = if (v > 0) qty(v) else ""
+
+/** Valores menores que 0,001 BTC aparecem apagados para não competir com os níveis relevantes. */
+@Composable
+private fun tint(v: Double, color: androidx.compose.ui.graphics.Color) = if (v < 0.001) Q.Muted else color

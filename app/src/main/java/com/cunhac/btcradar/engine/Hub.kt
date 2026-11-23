@@ -38,6 +38,23 @@ data class StatusRow(
 
 data class Sample(val tMs: Long, val price: Double?, val oiBtc: Double?)
 
+/** Tipo de evento do painel de alertas (também usado no filtro da tela). */
+enum class FeedKind(val label: String, val group: String) {
+    ABSORPTION("Absorção", "Paredes"), ICEBERG("Iceberg", "Paredes"),
+    LIQUIDATION("Liquidação", "Liquidações"), BIG_TRADE("Execução grande", "Execuções"),
+    DIVERGENCE("Divergência", "Divergências"),
+}
+
+/**
+ * Um alerta do painel, com os campos separados para a tela organizar (tipo, lado, preço, corretora, números)
+ * em vez de uma frase longa que era cortada. [buy] define a cor: compra/long/alta = true, venda/short/baixa = false.
+ * Eventos iguais seguidos (mesmo tipo, lado, preço e corretora em até 2 min) viram uma linha só com [count].
+ */
+data class FeedAlert(
+    val timeMs: Long, val kind: FeedKind, val buy: Boolean?, val sideLabel: String,
+    val price: Double?, val where: String?, val detail: String, val strong: Boolean = false, val count: Int = 1,
+)
+
 data class TerminalState(
     val tick: Long = 0,
     val now: Long = 0,
@@ -52,7 +69,7 @@ data class TerminalState(
     val tradesTotal: Long = 0,
     val liqTotal: Long = 0,
     val msgsPerSec: Double = 0.0,
-    val alerts: List<String> = emptyList(),
+    val alerts: List<FeedAlert> = emptyList(),
     val okxCtVal: String = "",
     val divergences: List<Divergence> = emptyList(),
 ) {
@@ -89,7 +106,7 @@ class Hub(@Volatile var refreshMs: Long = 1_500) : FeedSink {
     @Volatile var history: HistorySink? = null
     @Volatile var logSink: ((LogLine) -> Unit)? = null
     private val logs = ArrayDeque<LogLine>()
-    private val alerts = ArrayDeque<String>()
+    private val alerts = ArrayDeque<FeedAlert>()
     private val samples = ArrayDeque<Sample>()
     private val lock = Any()
 
@@ -119,7 +136,10 @@ class Hub(@Volatile var refreshMs: Long = 1_500) : FeedSink {
             val sig = w.signal ?: WallSignal.ABSORPTION
             val txt = "%s em %,.1f (%s, %s): executado %.2f BTC, restante %.2f BTC".format(PT_BR, sig.label, w.price, w.venue.label,
                 if (w.side == BookSide.BID) "compra" else "venda", w.executedBtc, w.currentQty)
-            alert(txt)
+            val bid = w.side == BookSide.BID
+            alert(FeedAlert(System.currentTimeMillis(), if (sig == WallSignal.ICEBERG) FeedKind.ICEBERG else FeedKind.ABSORPTION,
+                bid, if (bid) "Parede de compra" else "Parede de venda", w.price, w.venue.label,
+                "executado %.2f BTC · restante %.2f BTC".format(PT_BR, w.executedBtc, w.currentQty)))
             emit(AlertKind.WALL_SIGNAL, "sig|${w.venue}|${w.price}|${sig.name}", txt)
         }
         log(LogLevel.INFO, null, "Iniciando conexões (Binance, Bybit, OKX; liquidações também de Gate, Bitget e Deribit)")
@@ -145,8 +165,11 @@ class Hub(@Volatile var refreshMs: Long = 1_500) : FeedSink {
         footprint.add(t)
         if (large.offer(t)) {
             history?.largeTrade(t)
-            if (t.qtyBtc >= large.minBtc * 5) alert("Execução grande: %s %.2f BTC @ %,.1f (%s)".format(PT_BR, 
-                if (t.aggressor == Aggressor.BUY) "COMPRA" else "VENDA", t.qtyBtc, t.price, t.venue.label))
+            if (t.qtyBtc >= large.minBtc * 5) {
+                val buy = t.aggressor == Aggressor.BUY
+                alert(FeedAlert(System.currentTimeMillis(), FeedKind.BIG_TRADE, buy, if (buy) "Compra" else "Venda", t.price, t.venue.label,
+                    "%.2f BTC agressor".format(PT_BR, t.qtyBtc)))
+            }
         }
     }
 
@@ -154,7 +177,9 @@ class Hub(@Volatile var refreshMs: Long = 1_500) : FeedSink {
         liqs.add(l)
         history?.liquidation(l)
         val c = liqThresholds.classify(l.qtyBtc)
-        if (c != LiqClass.SMALL) alert("Liquidação %s: %s %.3f BTC @ %,.1f (%s)".format(PT_BR, c.name, l.side.name, l.qtyBtc, l.price, l.venue.label))
+        if (c != LiqClass.SMALL) alert(FeedAlert(System.currentTimeMillis(), FeedKind.LIQUIDATION, l.side == LiqSide.LONG,
+            if (l.side == LiqSide.LONG) "Long" else "Short", l.price, l.venue.label, "%.3f BTC · %s".format(PT_BR, l.qtyBtc, c.name),
+            strong = c == LiqClass.EXTREME))
         if (c == LiqClass.EXTREME) emit(AlertKind.LIQ_EXTREME, "liq|${l.venue}|${l.timeMs}|${l.price}",
             "Liquidação EXTREME: %s %.3f BTC @ %,.1f (%s)".format(PT_BR, l.side.name, l.qtyBtc, l.price, l.venue.label))
     }
@@ -169,9 +194,16 @@ class Hub(@Volatile var refreshMs: Long = 1_500) : FeedSink {
         logSink?.invoke(line)
     }
 
-    private fun alert(text: String) = synchronized(lock) {
-        alerts.addFirst(String.format("%tT  %s", System.currentTimeMillis(), text))
-        while (alerts.size > 100) alerts.removeLast()
+    private fun alert(a: FeedAlert) = synchronized(lock) {
+        val last = alerts.firstOrNull()
+        if (last != null && last.kind == a.kind && last.buy == a.buy && last.price == a.price && last.where == a.where &&
+            a.timeMs - last.timeMs < 120_000) {
+            // Mesmo evento repetido no mesmo nível: atualiza a linha em vez de empilhar cópias.
+            alerts[0] = a.copy(count = last.count + 1, strong = a.strong || last.strong)
+        } else {
+            alerts.addFirst(a)
+            while (alerts.size > 100) alerts.removeLast()
+        }
     }
 
     fun emit(kind: AlertKind, key: String, text: String) {
@@ -269,7 +301,8 @@ class Hub(@Volatile var refreshMs: Long = 1_500) : FeedSink {
             }
             if (fresh) {
                 val label = "${d.kind.label} (${w / 60_000} min)"
-                alert("$label: ${d.text}")
+                alert(FeedAlert(now, FeedKind.DIVERGENCE, d.kind.bullish, if (d.kind.bullish) "De alta" else "De baixa", null,
+                    "janela ${w / 60_000} min", "preço %,.1f → %,.1f · CVD %+.2f → %+.2f BTC".format(PT_BR, d.price1, d.price2, d.cvd1, d.cvd2)))
                 emit(AlertKind.DIVERGENCE, "div|$w|${d.kind}|${now / 300_000}", "$label. ${d.text}")
             }
         }

@@ -54,7 +54,8 @@ import kotlin.math.roundToInt
 object Look {
     var dark by mutableStateOf(SettingsStore.b("ui.dark", true)); private set
     var colorblind by mutableStateOf(SettingsStore.b("ui.cb", false)); private set
-    var footnotes by mutableStateOf(SettingsStore.b("ui.notes", true)); private set
+    /** Notas explicativas ficam escondidas por padrão; o botão ⓘ da barra do topo mostra/esconde. */
+    var footnotes by mutableStateOf(SettingsStore.b("ui.notes", false)); private set
     var compact by mutableStateOf(SettingsStore.b("ui.compact", false)); private set
     fun useDark(v: Boolean) { dark = v; SettingsStore.put("ui.dark", v) }
     fun useColorblind(v: Boolean) { colorblind = v; SettingsStore.put("ui.cb", v) }
@@ -100,7 +101,7 @@ object UiScale {
 }
 
 val BR: Locale = Locale.forLanguageTag("pt-BR")
-val mono: TextStyle get() = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 12.sp, color = Q.Text)
+val mono: TextStyle get() = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 13.sp, color = Q.Text)
 fun btc(v: Double, d: Int = 2) = String.format(BR, "%,.${d}f BTC", v)
 fun num(v: Double, d: Int = 2) = String.format(BR, "%,.${d}f", v)
 /** Quantidade de livro: valores menores que 0,001 BTC aparecem como <0,001 em vez de 0,000. */
@@ -133,13 +134,26 @@ fun shortReason(note: String) = when {
     else -> note.take(42).uppercase()
 }
 
+/**
+ * Escala mínima de leitura: rótulos nunca abaixo de 12 sp e números (fonte mono) e texto corrido
+ * com pelo menos 13 sp. Tamanhos maiores (títulos, preço, sinais) passam como estão.
+ */
+fun readable(size: Int, monoFont: Boolean = false) = when {
+    monoFont && size <= 12 -> 13
+    size <= 11 -> 12
+    size == 12 -> 13
+    else -> size
+}
+
 @Composable
 fun T(text: String, color: Color = Q.Text, size: Int = 12, bold: Boolean = false, monoFont: Boolean = false,
-      modifier: Modifier = Modifier, wrap: Boolean = false, align: TextAlign? = null) =
-    Text(text, color = color, fontSize = size.sp, lineHeight = (size + 4).sp,
+      modifier: Modifier = Modifier, wrap: Boolean = false, align: TextAlign? = null) {
+    val fs = readable(size, monoFont)
+    Text(text, color = color, fontSize = fs.sp, lineHeight = (fs + 4).sp,
         fontWeight = if (bold) FontWeight.SemiBold else FontWeight.Normal,
         fontFamily = if (monoFont) FontFamily.Monospace else FontFamily.Default, modifier = modifier,
         maxLines = if (wrap) Int.MAX_VALUE else 1, overflow = TextOverflow.Ellipsis, softWrap = wrap, textAlign = align)
+}
 
 // ---------------------------------------------------------------------
 // Layout adaptável: o mesmo código serve ao PC (painéis lado a lado) e ao celular
@@ -176,18 +190,32 @@ fun ColumnScope.grow(weight: Float = 1f, mobile: Dp? = null): Modifier =
 fun Section(title: String, modifier: Modifier = Modifier, minWidth: Dp? = null, content: @Composable () -> Unit) {
     Column(modifier.background(Q.Panel).border(1.dp, Q.Line).padding(if (Look.compact) 6.dp else 10.dp)) {
         T(title.uppercase(), Q.Muted, 11, bold = true, wrap = compact)
+        // Título de painel = único texto em caixa alta; o resto da tela usa caixa normal.
         if (minWidth == null) Box(Modifier.padding(top = 6.dp)) { content() }
         else BoxWithConstraints(Modifier.padding(top = 6.dp)) {
             val visible = maxWidth
             if (visible >= minWidth) content()
             else Column {
-                T("◂ ▸ deslize para o lado para ver todas as colunas", Q.Accent, 10, modifier = Modifier.padding(bottom = 4.dp))
+                // A dica de deslizar só faz sentido no toque (celular); no PC a barra de rolagem já aparece.
+                if (compact) T("◂ ▸ deslize para o lado para ver todas as colunas", Q.Muted, 10, modifier = Modifier.padding(bottom = 4.dp))
                 CompositionLocalProvider(LocalViewport provides visible) {
                     Box(Modifier.horizontalScroll(rememberScrollState())) { Box(Modifier.width(minWidth)) { content() } }
                 }
             }
         }
     }
+}
+
+/**
+ * Filtros secundários. No PC ficam à mostra; no celular ficam atrás de um botão "Mais filtros"
+ * para os dados aparecerem já na primeira tela. [summary] resume os valores escolhidos.
+ */
+@Composable
+fun MoreFilters(summary: String, content: @Composable () -> Unit) {
+    if (!compact) { content(); return }
+    var open by remember { mutableStateOf(false) }
+    OutlineButton(if (open) "Menos filtros ▴" else "Mais filtros ▾ · $summary", color = Q.Text, border = Q.Line, size = 12) { open = !open }
+    if (open) content()
 }
 
 /** Linha de controles que quebra linha quando não cabe (zoom alto ou celular). */
@@ -205,7 +233,7 @@ val LocalViewport = staticCompositionLocalOf<Dp?> { null }
 @Composable
 fun Empty(title: String, hint: String? = null) {
     val vp = LocalViewport.current
-    Column((if (vp != null) Modifier.width(vp - 4.dp) else Modifier.fillMaxWidth()).padding(vertical = 28.dp, horizontal = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column((if (vp != null) Modifier.width(vp - 4.dp) else Modifier.fillMaxWidth()).padding(vertical = 16.dp, horizontal = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         T(title, Q.Text, 13, wrap = true, align = TextAlign.Center)
         if (hint != null) T(hint, Q.Muted, 11, wrap = true, align = TextAlign.Center, modifier = Modifier.padding(top = 4.dp))
     }
@@ -213,7 +241,7 @@ fun Empty(title: String, hint: String? = null) {
 
 @Composable
 fun Badge(text: String, color: Color) =
-    Text(text, color = color, fontSize = 10.sp, lineHeight = 13.sp, maxLines = 1,
+    Text(text, color = color, fontSize = 11.sp, lineHeight = 14.sp, maxLines = 1,
         modifier = Modifier.border(1.dp, color.copy(alpha = 0.55f)).padding(horizontal = 5.dp, vertical = 1.dp))
 
 @Composable
@@ -240,7 +268,7 @@ fun OutlineButton(label: String, color: Color = Q.Accent, border: Color = color,
 
 @Composable
 private fun ChipItem(s: String, on: Boolean, onClick: () -> Unit) = Tap(onClick) {
-    Text(s, color = if (on) Q.Accent else Q.Muted, fontSize = 11.sp, lineHeight = 14.sp, maxLines = 1,
+    Text(s, color = if (on) Q.Accent else Q.Muted, fontSize = 12.sp, lineHeight = 16.sp, maxLines = 1,
         modifier = Modifier.background(if (on) Q.Panel2 else Q.Panel).border(1.dp, if (on) Q.Accent else Q.Line)
             .padding(horizontal = if (compact) 11.dp else 8.dp, vertical = if (compact) 8.dp else 4.dp))
 }

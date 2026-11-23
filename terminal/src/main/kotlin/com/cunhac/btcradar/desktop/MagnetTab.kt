@@ -49,7 +49,7 @@ fun MagnetTab(m: MapModel) {
     val s by m.state.collectAsState()
     val stats = s.stats
     if (stats == null) {
-        Section("Magnet Zones · mapa estimado de liquidações", if (compact) Modifier.fillMaxWidth() else Modifier.fillMaxSize()) {
+        Section("Zonas ímã · mapa estimado de liquidações", if (compact) Modifier.fillMaxWidth() else Modifier.fillMaxSize()) {
             Column(Modifier.fillMaxWidth().padding(top = if (compact) 24.dp else 80.dp, bottom = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 if (s.loading) {
                     T("Calculando o mapa a partir do histórico de posições…", Q.Text, 14, wrap = true, align = TextAlign.Center)
@@ -108,10 +108,10 @@ fun MagnetTab(m: MapModel) {
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(Modifier.fillMaxWidth().padding(bottom = 2.dp)) {
-                    T("PREÇO", Q.Muted, 10, modifier = Modifier.width(96.dp))
-                    T("LIQUIDAÇÕES ESTIMADAS", Q.Muted, 10, modifier = Modifier.weight(1.4f))
+                    T("Preço", Q.Muted, 10, modifier = Modifier.width(96.dp))
+                    T("Liquidações estimadas", Q.Muted, 10, modifier = Modifier.weight(1.4f))
                     T("BTC", Q.Muted, 10, modifier = Modifier.width(78.dp))
-                    T("PAREDES DO BOOK", Q.Muted, 10, modifier = Modifier.weight(1f))
+                    T("Paredes do livro", Q.Muted, 10, modifier = Modifier.weight(1f))
                     T("BTC", Q.Muted, 10, modifier = Modifier.width(70.dp))
                 }
                 MagnetLadder(s.bins, price)

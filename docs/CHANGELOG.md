@@ -1,5 +1,25 @@
 # Changelog
 
+## V8 — atualização 5 (2026-11-22) · redesenho visual
+- Celular: filtros secundários (níveis, mín., intensidade, executado, centro; mapa e corretoras do heatmap; faixa e velas do footprint)
+  ficam atrás de "Mais filtros ▾", com resumo do que está escolhido; os dados aparecem já na primeira tela.
+- Texto mais legível: rótulos com no mínimo 12 sp, números e texto corrido com 13 sp; preço do topo maior (24 sp no PC, 20 sp no celular).
+- Barra do topo do PC sem texto cortado: contadores de trades/liquidações saem (continuam na aba Status); aviso de livros cruzados quebra linha.
+- Hierarquia: só o título de cada painel fica em caixa alta; abas, botões e cabeçalhos de tabela em caixa normal; sinal de fluxo em destaque (28 sp).
+- Tudo em português: abas (Livro de ofertas, Paredes, Long/short, Radar, Zonas ímã…) e sinais (Pressão vendedora,
+  Recompra de shorts…). Mantidos termos técnicos: Footprint, CVD, POC, OI, ETFs.
+- Abas agrupadas por assunto: Livro, Fluxo, Liquidações e Mais (barra do PC com separadores; lista do celular com títulos de grupo).
+- Livro de ofertas: célula vazia no lugar de "·"; valores abaixo de 0,001 BTC em cinza para os níveis relevantes se destacarem.
+- Cores das corretoras nos gráficos (CVD) em tons frios; amarelo/laranja ficam só para aviso e acento.
+- Heatmap de liquidações na escala de laranja do app (antes roxo/verde).
+- Estados vazios mais baixos; a dica "deslize para o lado" aparece só no celular.
+- Notas de rodapé escondidas por padrão; botão "Notas" na barra do topo do PC (e Visualização no celular) mostra/esconde.
+- Heatmap navegável como gráfico de preço: roda do mouse = zoom no tempo (na escala de preço = zoom no preço), arrastar = mover,
+  arrastar a escala = esticar o preço, duplo clique/toque duplo = período inteiro, pinça no celular; botões −, + e Ajustar.
+- Marcações no heatmap: linha de preço, tendência, zona e texto; clicar numa marcação seleciona para apagar; ficam salvas entre aberturas.
+- Painel de alertas (Radar): cada alerta em duas linhas — hora, tipo e lado (faixa na cor de compra/venda) e depois preço · corretora · números,
+  sem cortar o texto; filtro Todos/Paredes/Liquidações/Execuções/Divergências; eventos repetidos no mesmo nível viram uma linha com "×N".
+
 ## V8 — atualização 4 (2026-11-22) · ajustes de celular
 - Celular: a aba atual vira um botão "Abas ▾" que abre a lista das 12 abas, cada uma com uma linha explicando o que mostra.
 - Celular: filtros, caixas de marcar e botões com área de toque de 48 dp (padrão do Android); campos de texto mais altos.

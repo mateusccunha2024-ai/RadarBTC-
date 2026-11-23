@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -35,6 +36,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -59,6 +61,23 @@ class AppContext(val hub: Hub, val db: SqliteHistory, val map: MapModel,
 val TABS = listOf(
     "ORDERFLOW", "FOOTPRINT", "LIQUIDITY WALLS", "LIQUIDITY HISTORY", "MAGNET ZONES", "LONG & SHORT FLOW",
     "MARKET FLOW CORRELATION", "LARGE TRADES", "LIQUIDATION RADAR", "ETFs", "ALERTAS", "STATUS",
+)
+
+/** Nome de cada aba na tela, em português (o id interno não muda: continua salvo nas preferências). */
+val TAB_LABELS = mapOf(
+    "ORDERFLOW" to "Livro de ofertas", "FOOTPRINT" to "Footprint", "LIQUIDITY WALLS" to "Paredes",
+    "LIQUIDITY HISTORY" to "Histórico de paredes", "MAGNET ZONES" to "Zonas ímã", "LONG & SHORT FLOW" to "Long/short",
+    "MARKET FLOW CORRELATION" to "Correlação", "LARGE TRADES" to "Grandes negócios",
+    "LIQUIDATION RADAR" to "Radar", "ETFs" to "ETFs", "ALERTAS" to "Alertas", "STATUS" to "Status",
+)
+fun tabLabel(id: String) = TAB_LABELS[id] ?: id
+
+/** Abas agrupadas por assunto (barra do PC e lista do celular). */
+val TAB_GROUPS = listOf(
+    "Livro" to listOf("ORDERFLOW", "FOOTPRINT", "LIQUIDITY WALLS", "LIQUIDITY HISTORY"),
+    "Fluxo" to listOf("LONG & SHORT FLOW", "MARKET FLOW CORRELATION", "LARGE TRADES"),
+    "Liquidações" to listOf("LIQUIDATION RADAR", "MAGNET ZONES"),
+    "Mais" to listOf("ETFs", "ALERTAS", "STATUS"),
 )
 
 /** Abas que o usuário escondeu no menu de visualização (STATUS nunca some). */
@@ -96,16 +115,24 @@ private fun TerminalBody(ctx: AppContext, initialTab: Int?, showSettings: Boolea
     Box(Modifier.fillMaxSize().background(Q.Bg)) {
         Column(Modifier.fillMaxSize()) {
             if (compact) CompactTopBar(s, onSettings = { settingsOpen = !settingsOpen }) else TopBar(s, onSettings = { settingsOpen = !settingsOpen })
-            if (compact) TabPickerBar(current, tabs) { tabsOpen = true }
-            else Row(Modifier.fillMaxWidth().background(Q.Panel).horizontalScroll(rememberScrollState()).padding(horizontal = 8.dp)) {
-                tabs.forEach { t ->
-                    val on = t == current
-                    Text(t, color = if (on) Q.Text else Q.Muted, fontSize = 12.sp, lineHeight = 16.sp, maxLines = 1,
-                        modifier = Modifier
-                            .background(if (on) Q.Panel2 else Q.Panel)
-                            .drawBehind { if (on) drawRect(Q.Accent, Offset(0f, size.height - 2.dp.toPx()), Size(size.width, 2.dp.toPx())) }
-                            .clickable { pick(t) }
-                            .padding(horizontal = 13.dp, vertical = 10.dp))
+            if (compact) TabPickerBar(current, orderedTabs(tabs)) { tabsOpen = true }
+            else Row(Modifier.fillMaxWidth().background(Q.Panel).horizontalScroll(rememberScrollState()).padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                TAB_GROUPS.forEachIndexed { gi, (group, ids) ->
+                    val shown = ids.filter { it in tabs }
+                    if (shown.isEmpty()) return@forEachIndexed
+                    if (gi > 0) Box(Modifier.padding(horizontal = 8.dp).width(1.dp).height(20.dp).background(Q.Line))
+                    T(group.uppercase(), Q.Muted, 10, bold = true, modifier = Modifier.padding(start = 4.dp, end = 2.dp))
+                    shown.forEach { t ->
+                        val on = t == current
+                        Text(tabLabel(t), color = if (on) Q.Text else Q.Muted, fontSize = 13.sp, lineHeight = 17.sp, maxLines = 1,
+                            fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal,
+                            modifier = Modifier
+                                .background(if (on) Q.Panel2 else Q.Panel)
+                                .drawBehind { if (on) drawRect(Q.Accent, Offset(0f, size.height - 2.dp.toPx()), Size(size.width, 2.dp.toPx())) }
+                                .clickable { pick(t) }
+                                .padding(horizontal = 11.dp, vertical = 10.dp))
+                    }
                 }
             }
             Box(Modifier.fillMaxWidth().height(1.dp).background(Q.Line))
@@ -131,7 +158,7 @@ private fun TerminalBody(ctx: AppContext, initialTab: Int?, showSettings: Boolea
         if (tabsOpen && compact) {
             Box(Modifier.fillMaxSize().background(Q.Bg.copy(alpha = 0.55f))
                 .clickable(remember { MutableInteractionSource() }, null) { tabsOpen = false })
-            TabSheet(current, tabs, onPick = { pick(it) }, onClose = { tabsOpen = false })
+            TabSheet(current, orderedTabs(tabs), onPick = { pick(it) }, onClose = { tabsOpen = false })
         }
         if (settingsOpen) {
             // Véu: clicar fora fecha o menu.
@@ -150,6 +177,9 @@ private fun SmallButton(label: String, on: Boolean = false, onClick: () -> Unit)
         modifier = Modifier.background(if (on) Q.Panel2 else Q.Bg).border(1.dp, if (on) Q.Accent else Q.Line)
             .padding(horizontal = if (compact) 12.dp else 9.dp, vertical = if (compact) 8.dp else 3.dp))
 }
+
+/** Abas visíveis na ordem dos grupos. */
+private fun orderedTabs(tabs: List<String>) = TAB_GROUPS.flatMap { it.second }.filter { it in tabs } + tabs.filter { t -> TAB_GROUPS.none { t in it.second } }
 
 /** O que cada aba mostra (lista de abas do celular). */
 private val TAB_HINTS = mapOf(
@@ -174,7 +204,7 @@ private fun TabPickerBar(current: String, tabs: List<String>, onOpen: () -> Unit
         verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.width(3.dp).height(22.dp).background(Q.Accent))
         Spacer(Modifier.width(10.dp))
-        T(current, Q.Text, 14, bold = true, modifier = Modifier.weight(1f))
+        T(tabLabel(current), Q.Text, 15, bold = true, modifier = Modifier.weight(1f))
         T("${tabs.indexOf(current) + 1} de ${tabs.size}", Q.Muted, 11, modifier = Modifier.padding(end = 10.dp))
         Text("Abas ▾", color = Q.Accent, fontSize = 13.sp, lineHeight = 17.sp, maxLines = 1,
             modifier = Modifier.border(1.dp, Q.Accent).padding(horizontal = 12.dp, vertical = 7.dp))
@@ -192,12 +222,14 @@ private fun TabSheet(current: String, tabs: List<String>, onPick: (String) -> Un
         }
         Spacer(Modifier.height(6.dp))
         tabs.forEach { t ->
+            val firstOf = TAB_GROUPS.firstOrNull { (_, ids) -> ids.firstOrNull { it in tabs } == t }?.first
+            if (firstOf != null) T(firstOf.uppercase(), Q.Muted, 11, bold = true, modifier = Modifier.padding(top = 12.dp, bottom = 4.dp))
             val on = t == current
             Row(Modifier.fillMaxWidth().background(if (on) Q.Panel2 else Q.Panel).clickable { onPick(t) }.heightIn(min = 56.dp)
                 .drawBehind { if (on) drawRect(Q.Accent, Offset(0f, 0f), Size(3.dp.toPx(), size.height)) }
                 .padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    T(t, if (on) Q.Accent else Q.Text, 13, bold = true)
+                    T(tabLabel(t), if (on) Q.Accent else Q.Text, 14, bold = true)
                     TAB_HINTS[t]?.let { T(it, Q.Muted, 11) }
                 }
                 if (on) T("atual", Q.Accent, 11)
@@ -211,14 +243,15 @@ private fun TabSheet(current: String, tabs: List<String>, onPick: (String) -> Un
 @Composable
 private fun TopBar(s: TerminalState, onSettings: () -> Unit) {
     Row(Modifier.fillMaxWidth().background(Q.Bg).padding(horizontal = 14.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        T("BTC ORDERFLOW TERMINAL", Q.Text, 14, bold = true)
-        T("  V8 · Radar BTC", Q.Muted, 11)
+        T("Radar BTC", Q.Text, 14, bold = true)
+        T("  Orderflow V8", Q.Muted, 11)
         Spacer(Modifier.width(20.dp))
-        T(px(s.price), Q.Text, 18, bold = true, monoFont = true)
+        // O preço é o dado mais importante do app: maior que qualquer título.
+        T(px(s.price), Q.Text, 24, bold = true, monoFont = true)
         Spacer(Modifier.width(20.dp))
         Row(Modifier.weight(1f).clipToBounds(), verticalAlignment = Alignment.CenterVertically) {
         val live = s.liveCount()
-        T("$live/3 LIVROS AO VIVO", if (live == 3) Q.Buy else if (live > 0) Q.Warn else Q.Sell, 12, bold = true)
+        T("$live/3 livros ao vivo", if (live == 3) Q.Buy else if (live > 0) Q.Warn else Q.Sell, 12, bold = true)
         Spacer(Modifier.width(10.dp))
         CORE_VENUES.forEach { v ->
             val ok = s.books[v]?.valid == true && s.statuses.any { it.venue == v && it.state == ConnState.LIVE }
@@ -227,9 +260,12 @@ private fun TopBar(s: TerminalState, onSettings: () -> Unit) {
         }
         T("Liq.:", Q.Muted, 11, modifier = Modifier.padding(start = 4.dp, end = 4.dp))
         Venue.entries.filter { !it.core }.forEach { v -> T("● ${v.label}", venueDot(s, v), 11, modifier = Modifier.padding(end = 6.dp)) }
-        T(String.format(BR, "%,.0f msg/s · %,d trades · %,d liquidações", s.msgsPerSec, s.tradesTotal, s.liqTotal), Q.Muted, 11,
+        // Contadores detalhados (trades, liquidações) ficam na aba Status; aqui só o ritmo de mensagens.
+        T(String.format(BR, "%,.0f msg/s", s.msgsPerSec), Q.Muted, 11,
             modifier = Modifier.weight(1f).padding(horizontal = 12.dp), align = TextAlign.End)
         }
+        SmallButton("Notas", on = Look.footnotes) { Look.useFootnotes(!Look.footnotes) }
+        Spacer(Modifier.width(8.dp))
         SmallButton("A−") { UiScale.dec() }
         T("${(UiScale.scale * 100).roundToInt()}%", Q.Text, 11, monoFont = true, modifier = Modifier.padding(horizontal = 6.dp))
         SmallButton("A+") { UiScale.inc() }
@@ -249,9 +285,9 @@ private fun CompactTopBar(s: TerminalState, onSettings: () -> Unit) {
     val roomy = maxWidth >= 380.dp
     Column(Modifier.fillMaxWidth().background(Q.Bg).padding(horizontal = 10.dp, vertical = 6.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (roomy) { T("RADAR BTC", Q.Text, 13, bold = true); Spacer(Modifier.width(10.dp)) }
-            T(px(s.price), Q.Text, 17, bold = true, monoFont = true)
-            Spacer(Modifier.weight(1f))
+            if (roomy) { T("Radar BTC", Q.Text, 14, bold = true); Spacer(Modifier.width(10.dp)) }
+            T(px(s.price), Q.Text, 18, bold = true, monoFont = true)
+            Spacer(Modifier.weight(1f).widthIn(min = 8.dp))
             val live = s.liveCount()
             T("Livros $live/3", if (live == 3) Q.Buy else if (live > 0) Q.Warn else Q.Sell, 12, bold = true, modifier = Modifier.padding(end = 4.dp))
             SmallButton(if (Look.dark) "☾" else "☀") { Look.useDark(!Look.dark) }
@@ -324,16 +360,17 @@ private fun ViewSettingsPanel(ctx: AppContext, onClose: () -> Unit) {
         }
         SettingGroup("Textos explicativos") {
             Toggle("Mostrar notas de rodapé", Look.footnotes) { Look.useFootnotes(it) }
+            if (!compact) T("Também pelo botão Notas na barra do topo.", Q.Muted, 11, modifier = Modifier.padding(top = 4.dp))
         }
         SettingGroup("Abas visíveis") {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 TABS.chunked(2).forEach { pair ->
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        pair.forEach { t -> Box(Modifier.width(if (compact) 168.dp else 196.dp)) { Toggle(t, t !in TabPrefs.hidden) { TabPrefs.toggle(t) } } }
+                        pair.forEach { t -> Box(Modifier.width(if (compact) 168.dp else 196.dp)) { Toggle(tabLabel(t), t !in TabPrefs.hidden) { TabPrefs.toggle(t) } } }
                     }
                 }
             }
-            Footnote("STATUS fica sempre visível. Esconder uma aba não para a coleta de dados dela.")
+            Footnote("Status fica sempre visível. Esconder uma aba não para a coleta de dados dela.")
         }
     }
 }

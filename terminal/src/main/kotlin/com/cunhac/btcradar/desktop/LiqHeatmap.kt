@@ -70,17 +70,20 @@ import java.util.Date
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-private val VIRIDIS = listOf(Color(0xFF2B0A3D), Color(0xFF3B528B), Color(0xFF21918C), Color(0xFF5EC962), Color(0xFFFDE725))
+/**
+ * Escala do mapa na família de cor do app (laranja do Bitcoin): quase preto = pouco, laranja claro = muito.
+ * O fundo fica escuro nos dois temas para a linha de preço (branca) e os pontos aparecerem.
+ */
+internal val HEAT = listOf(Color(0xFF0E1014), Color(0xFF3B1D07), Color(0xFF8C450A), Color(0xFFE07F14), Color(0xFFFFC46B))
 
-/** Escala Viridis (a mesma família de cores do CoinGlass): roxo = pouco, amarelo = muito. */
-fun viridis(t: Float): Color {
-    val x = t.coerceIn(0f, 1f) * (VIRIDIS.size - 1)
-    val i = x.toInt().coerceAtMost(VIRIDIS.size - 2)
-    return lerp(VIRIDIS[i], VIRIDIS[i + 1], x - i)
+fun heatScale(t: Float): Color {
+    val x = t.coerceIn(0f, 1f) * (HEAT.size - 1)
+    val i = x.toInt().coerceAtMost(HEAT.size - 2)
+    return lerp(HEAT[i], HEAT[i + 1], x - i)
 }
 
 /** Escala divergente para LONGS × SHORTS: cor de LONG = mais longs a liquidar, cor de SHORT = mais shorts (as mesmas do app todo). */
-fun diverging(t: Float): Color = if (t >= 0) lerp(VIRIDIS[0], Q.LiqLong, t.coerceIn(0f, 1f)) else lerp(VIRIDIS[0], Q.LiqShort, (-t).coerceIn(0f, 1f))
+fun diverging(t: Float): Color = if (t >= 0) lerp(HEAT[0], Q.LiqLong, t.coerceIn(0f, 1f)) else lerp(HEAT[0], Q.LiqShort, (-t).coerceIn(0f, 1f))
 
 /** Converte a grade numa imagem (1 pixel por célula) para desenhar rápido mesmo com 730 colunas. */
 private fun heatImage(rows: Int, cols: Int, color: (Int, Int) -> Color): ImageBitmap {
@@ -124,7 +127,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
     val k = ref / (0.25f + 1.5f * intensity)
     val img = remember(grids, entries, mode, intensity, Look.colorblind, Look.dark) {
         if (d == null || grids == null) null else {
-            heatImage(d.rows, d.cols) { r, c -> val v = value(r, c); if (mode == 2) diverging(if (k > 0) v / k else 0f) else viridis(if (k > 0) v / k else 0f) }
+            heatImage(d.rows, d.cols) { r, c -> val v = value(r, c); if (mode == 2) diverging(if (k > 0) v / k else 0f) else heatScale(if (k > 0) v / k else 0f) }
         }
     }
     val price = s.price ?: d?.candles?.lastOrNull()?.close
@@ -145,8 +148,9 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                     Chips("Período", HeatRange.entries.map { it.label }, hs.range.ordinal) { ctx.heat.load(HeatRange.entries[it]) }
                 }
                 Spacer(Modifier.height(6.dp))
+                MoreFilters(listOf("Liquidações", "OI por entrada", "Longs × shorts")[mode] + " · " + (if (venueIdx == 0) "todas" else CORE_VENUES[venueIdx - 1].label)) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Chips("Mapa", listOf("LIQUIDAÇÕES", "OI POR ENTRADA", "LONGS × SHORTS"), mode) { mode = it; SettingsStore.put("hm.mode", it) }
+                    Chips("Mapa", listOf("Liquidações", "OI por entrada", "Longs × shorts"), mode) { mode = it; SettingsStore.put("hm.mode", it) }
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         T("Alavancagem", Q.Muted, 11, modifier = Modifier.padding(top = 4.dp))
                         HEAT_TIERS.forEachIndexed { i, t ->
@@ -159,7 +163,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                 }
                 Spacer(Modifier.height(6.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Chips("Corretoras", listOf("TODAS") + CORE_VENUES.map { it.label.uppercase() }, venueIdx) { venueIdx = it; SettingsStore.put("hm.venue", it) }
+                    Chips("Corretoras", listOf("Todas") + CORE_VENUES.map { it.label }, venueIdx) { venueIdx = it; SettingsStore.put("hm.venue", it) }
                     T("Intensidade", Q.Muted, 11)
                     Slider(intensity, { intensity = it; SettingsStore.put("hm.int", it.toDouble()) }, Modifier.width(150.dp).height(20.dp),
                         colors = SliderDefaults.colors(thumbColor = Q.Accent, activeTrackColor = Q.Accent, inactiveTrackColor = Q.Line))
@@ -172,70 +176,14 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                     }, if (hs.error != null) Q.Sell else Q.Muted, 11)
                     OutlineButton("Atualizar", border = Q.Line, size = 11) { ctx.heat.load(hs.range, force = true) }
                 }
+                }
                 Spacer(Modifier.height(6.dp))
-                BoxWithConstraints(Modifier.fillMaxWidth().then(if (compact) Modifier.height(420.dp) else Modifier.weight(1f)).background(if (d == null) Q.Panel2 else VIRIDIS[0])) {
-                    if (d == null || img == null) {
-                        Empty(if (hs.loading) "Montando o heatmap (${hs.progress})…" else "Heatmap indisponível", hs.error ?: "Usa velas e open interest históricos públicos das corretoras")
-                        return@BoxWithConstraints
-                    }
-                    val u = LocalDensity.current.density
-                    val axisW = 64f * u; val axisH = 18f * u
-                    // Mouse (PC) ou toque (celular): mostra a cruz e o detalhe do ponto.
-                    Canvas(Modifier.fillMaxSize().pointerInput(Unit) {
-                        awaitPointerEventScope {
-                            while (true) {
-                                val e = awaitPointerEvent()
-                                if (e.type == PointerEventType.Exit) hover = null else e.changes.firstOrNull()?.let { hover = it.position }
-                            }
-                        }
-                    }) {
-                        val w = size.width - axisW; val h = size.height - axisH
-                        val pMax = d.pMin + d.pStep * d.rows
-                        fun y(p: Double) = (h - (p - d.pMin) / (pMax - d.pMin) * h).toFloat()
-                        fun x(t: Long) = ((t - d.t0).toFloat() / (d.stepMs * d.cols)) * w
-                        drawImage(img, srcOffset = IntOffset.Zero, srcSize = IntSize(img.width, img.height), dstSize = IntSize(w.toInt(), h.toInt()), filterQuality = FilterQuality.Low)
-                        // preço (fechamento das velas)
-                        val path = Path()
-                        d.candles.forEachIndexed { i, c -> val px = (i + 0.5f) / d.cols * w; if (i == 0) path.moveTo(px, y(c.close)) else path.lineTo(px, y(c.close)) }
-                        drawPath(path, Color.White, style = Stroke(1.4f))
-                        // liquidações reais
-                        real.forEach { e ->
-                            if (e.price < d.pMin || e.price > pMax) return@forEach
-                            val r = (2f + sqrt(e.qtyBtc).toFloat() * 2.5f).coerceAtMost(10f)
-                            val c = if (e.side == LiqSide.LONG) Q.LiqLong else Q.LiqShort
-                            drawCircle(Color.Black, r + 1.2f, Offset(x(e.recvMs), y(e.price)))
-                            drawCircle(c, r, Offset(x(e.recvMs), y(e.price)))
-                        }
-                        // eixos
-                        drawRect(Q.Panel, Offset(w, 0f), Size(axisW, size.height))
-                        drawRect(Q.Panel, Offset(0f, h), Size(size.width, axisH))
-                        for (k in 0..7) {
-                            val p = d.pMin + (pMax - d.pMin) * k / 7
-                            drawText(tm, px(p), Offset(w + 6f * u, y(p) - 7f * u), axis)
-                        }
-                        val fmt = SimpleDateFormat(if (d.range.ms <= HeatRange.H48.ms) "HH:mm" else "dd/MM")
-                        for (k in 0..5) {
-                            val t = d.t0 + (d.stepMs * d.cols) * k / 6
-                            drawText(tm, fmt.format(Date(t)), Offset(x(t) + 2f * u, h + 2f * u), axis)
-                        }
-                        price?.let { p ->
-                            val yy = y(p)
-                            drawLine(Q.Accent.copy(alpha = 0.6f), Offset(0f, yy), Offset(w, yy), 1f)
-                            drawRect(Q.Accent, Offset(w, yy - 8f * u), Size(axisW, 16f * u))
-                            drawText(tm, px(p), Offset(w + 6f * u, yy - 7f * u), axis.copy(color = if (Look.dark) Color.Black else Color.White))
-                        }
-                        hover?.let { hp -> if (hp.x < w && hp.y < h) { drawLine(Color.White.copy(alpha = 0.35f), Offset(hp.x, 0f), Offset(hp.x, h), 1f); drawLine(Color.White.copy(alpha = 0.35f), Offset(0f, hp.y), Offset(w, hp.y), 1f) } }
-                    }
-                    hover?.let { hp ->
-                        val w = constraints.maxWidth - axisW; val h = constraints.maxHeight - axisH
-                        if (hp.x < w && hp.y < h && grids != null) {
-                            val col = (hp.x / w * d.cols).toInt().coerceIn(0, d.cols - 1)
-                            val row = ((h - hp.y) / h * d.rows).toInt().coerceIn(0, d.rows - 1)
-                            HeatTooltip(d, grids, entries, mode, venues, col, row, price, Modifier.offset {
-                                IntOffset((hp.x + 16 * u).toInt().coerceAtMost((w - 300 * u).toInt().coerceAtLeast(0)), (hp.y + 12 * u).toInt().coerceAtMost((h - 190 * u).toInt().coerceAtLeast(0)))
-                            })
-                        }
-                    }
+                // Gráfico navegável: zoom, arrastar e marcações (HeatChart.kt).
+                val chartMod = Modifier.fillMaxWidth().then(if (compact) Modifier.height(560.dp) else Modifier.weight(1f))
+                if (d == null || img == null) Box(chartMod.background(Q.Panel2)) {
+                    Empty(if (hs.loading) "Montando o heatmap (${hs.progress})…" else "Heatmap indisponível", hs.error ?: "Usa velas e open interest históricos públicos das corretoras")
+                } else HeatChart(d, img, real, price, chartMod) { col, row, m ->
+                    grids?.let { g -> HeatTooltip(d, g, entries, mode, venues, col, row, price, m) }
                 }
                 if (d != null && img != null) HeatLegend(mode, k, showReal, Modifier.fillMaxWidth().padding(top = 6.dp))
                 if (d != null && delta != null && delta.isNotEmpty()) {
@@ -276,10 +224,10 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                         KV("Shorts (acima do preço)", btc(sm.shortsAboveBtc, 0) + " · " + num((1 - f) * 100.0, 0) + "%", Q.Sell)
                     }
                     Spacer(Modifier.height(6.dp))
-                    T("COBERTURA DO HISTÓRICO", Q.Muted, 10)
+                    T("Cobertura do histórico", Q.Muted, 11, bold = true)
                     CORE_VENUES.forEach { v -> KV(v.label, d?.coverage?.get(v) ?: "—", if (d?.coverage?.get(v)?.startsWith("completo") == true) Q.Text else Q.Warn) }
                     Footnote("Estimativa: 10x/25x/50x/100x sobre o aumento de open interest de cada corretora; níveis atravessados pelo preço somem. " +
-                        "OI POR ENTRADA = onde o modelo estima que as posições ainda abertas entraram. LONGS × SHORTS: verde = mais longs a liquidar naquele preço, vermelho = mais shorts. " +
+                        "OI por entrada = onde o modelo estima que as posições ainda abertas entraram. Longs × shorts: cor de compra = mais longs a liquidar naquele preço, cor de venda = mais shorts. " +
                         "Faixa inferior = total de níveis LONG em aberto menos SHORT. O filtro de alavancagem vale para o mapa e os níveis-chave. " +
                         "Pontos = liquidações REAIS reportadas pelas 6 corretoras (gravadas desde a instalação), na cor de LONG ou de SHORT.", Modifier.padding(top = 6.dp))
                 }
@@ -295,7 +243,7 @@ private fun HeatLegend(mode: Int, k: Float, showReal: Boolean, modifier: Modifie
     Column(modifier) {
         T(if (mode == 2) "Escala: longs − shorts a liquidar por faixa (BTC)" else if (mode == 1) "Escala: OI aberto por faixa de preço (BTC)" else "Escala: BTC a liquidar por faixa de preço",
             Q.Muted, 10, wrap = true)
-        val stops = if (mode == 2) listOf(Q.LiqShort, VIRIDIS[0], Q.LiqLong) else VIRIDIS
+        val stops = if (mode == 2) listOf(Q.LiqShort, HEAT[0], Q.LiqLong) else HEAT
         Canvas(Modifier.fillMaxWidth().height(10.dp).padding(vertical = 1.dp)) {
             drawRect(androidx.compose.ui.graphics.Brush.horizontalGradient(stops), size = size)
         }
@@ -316,7 +264,7 @@ private fun HeatLegend(mode: Int, k: Float, showReal: Boolean, modifier: Modifie
     }
 }
 
-private val HEAT_MODES = listOf("Liquidation heatmap", "Open interest por preço de entrada", "Longs × shorts a liquidar")
+private val HEAT_MODES = listOf("Mapa de liquidações", "Open interest por preço de entrada", "Longs × shorts a liquidar")
 
 /** Faixa inferior: níveis LONG em aberto − níveis SHORT em aberto ao longo do tempo (mesmo eixo X do mapa). */
 @Composable

@@ -250,8 +250,8 @@ fun LiquidityHistoryTab(ctx: AppContext, s: TerminalState) {
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Controls {
             Chips("Período", LH_PERIODS.map { it.first }, pIdx) { pIdx = it; SettingsStore.put("lh.p", it) }
-            Chips("Corretora", listOf("TODAS") + CORE_VENUES.map { it.label.uppercase() }, vIdx) { vIdx = it }
-            Chips("Lado", listOf("AMBOS", "COMPRA", "VENDA"), sideIdx) { sideIdx = it }
+            Chips("Corretora", listOf("Todas") + CORE_VENUES.map { it.label }, vIdx) { vIdx = it }
+            Chips("Lado", listOf("Ambos", "Compra", "Venda"), sideIdx) { sideIdx = it }
             NumField("Pico ≥ (BTC)", minPeak, 56.dp) { it?.let { v -> minPeak = v; SettingsStore.put("lh.min", v) } }
             T(String.format(BR, "%,d paredes encerradas · %,d eventos gravados no período", ev.size, all.size), Q.Muted, 11, wrap = true)
         }
@@ -375,8 +375,8 @@ fun AlertsTab(ctx: AppContext, s: TerminalState) {
                         NumField("Zona: tamanho ≥ BTC", c.zoneMinBtc, 64.dp) { it?.let { v -> c = c.copy(zoneMinBtc = v) } }
                         NumField("Repetir o mesmo aviso após (min)", c.cooldownMin, 44.dp) { it?.let { v -> c = c.copy(cooldownMin = v) } }
                     }
-                    Footnote("Liquidação EXTREME usa o limite da aba LIQUIDATION RADAR; parede grande = classe LARGE ou EXTREME da aba LIQUIDITY WALLS; " +
-                        "mudança de sinal = janela de 5 min da aba LONG & SHORT FLOW. Máximo de 20 envios por minuto.")
+                    Footnote("Liquidação EXTREME usa o limite da aba Radar (Liquidações); parede grande = classe LARGE ou EXTREME da aba Paredes; " +
+                        "mudança de sinal = janela de 5 min da aba Long/short. Máximo de 20 envios por minuto.")
                 }
             }
             Section("Telegram", Modifier.fillMaxWidth()) {
