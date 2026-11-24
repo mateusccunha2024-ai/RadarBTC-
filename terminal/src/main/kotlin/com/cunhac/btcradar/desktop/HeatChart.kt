@@ -91,6 +91,9 @@ object Drawings {
     fun clear() { list = emptyList(); save() }
 }
 
+/** Nível de liquidação ainda de pé (mesmo das caixas "Níveis-chave"): vira uma linha do nascimento até a borda direita. */
+data class OpenLine(val price: Double, val btc: Double, val bornMs: Long, val short: Boolean)
+
 /** Janela visível: tempo [tA, tB] em ms e preço [pA, pB] em US$. */
 private data class View(val tA: Double, val tB: Double, val pA: Double, val pB: Double)
 
@@ -128,6 +131,7 @@ private val AXIS_H = 18.dp
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun HeatChart(d: HeatData, img: ImageBitmap, real: List<LiqEvent>, price: Double?, modifier: Modifier,
+              openLevels: List<OpenLine> = emptyList(),
               tooltip: @Composable (col: Int, row: Int, modifier: Modifier) -> Unit) {
     val pMax = d.pMin + d.pStep * d.rows
     val full = View(d.t0.toDouble(), d.t0 + d.stepMs.toDouble() * d.cols, d.pMin, pMax)
@@ -316,6 +320,23 @@ fun HeatChart(d: HeatData, img: ImageBitmap, real: List<LiqEvent>, price: Double
                         dstOffset = IntOffset(x0.roundToInt(), yT.roundToInt()),
                         dstSize = IntSize((x1 - x0).roundToInt().coerceAtLeast(1), (yB - yT).roundToInt().coerceAtLeast(1)),
                         filterQuality = if (custom == null) FilterQuality.Low else FilterQuality.None)
+                    // níveis em aberto: linha do nascimento até a borda direita, na cor da caixa (short acima = venda, long abaixo = compra)
+                    val maxB = openLevels.maxOfOrNull { it.btc } ?: 0.0
+                    val labelYs = ArrayList<Float>() // rótulos já desenhados: o maior nível ganha o rótulo quando dois ficam colados
+                    openLevels.sortedByDescending { it.btc }.forEach { ol ->
+                        val yy = y(ol.price)
+                        if (yy < 0f || yy > h) return@forEach
+                        val k = if (maxB > 0) (ol.btc / maxB).toFloat().coerceIn(0f, 1f) else 0f
+                        val c = if (ol.short) Q.Sell else Q.Buy
+                        val x0 = x(ol.bornMs.toDouble()).coerceIn(0f, w)
+                        drawLine(c.copy(alpha = 0.5f + 0.5f * k), Offset(x0, yy), Offset(w, yy), (1f + 2f * k) * u)
+                        val lay = tm.measure(num(ol.btc, if (ol.btc < 10) 1 else 0) + " BTC", axis.copy(color = c))
+                        if (labelYs.any { kotlin.math.abs(it - yy) < lay.size.height + 2f * u }) return@forEach
+                        labelYs += yy
+                        drawRect(Color.Black.copy(alpha = 0.6f), Offset(w - lay.size.width - 6f * u, yy - lay.size.height - 2f * u),
+                            Size(lay.size.width + 4f * u, lay.size.height.toFloat()))
+                        drawText(lay, topLeft = Offset(w - lay.size.width - 4f * u, yy - lay.size.height - 2f * u))
+                    }
                     // preço (fechamento das velas)
                     val path = Path()
                     d.candles.forEachIndexed { i, c ->

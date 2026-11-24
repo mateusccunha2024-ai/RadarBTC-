@@ -101,20 +101,29 @@ private fun q99(rows: Int, cols: Int, v: (Int, Int) -> Float): Float {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
+fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier, expanded: Boolean = false, onExpand: (() -> Unit)? = null) {
     val hs by ctx.heat.state.collectAsState()
     var venueIdx by remember { mutableIntStateOf(SettingsStore.i("hm.venue", 0)) }
     var intensity by remember { mutableFloatStateOf(SettingsStore.d("hm.int", 0.5).toFloat()) }
     var showReal by remember { mutableStateOf(SettingsStore.b("hm.real", true)) }
+    // Filtro do mapa: níveis já executados (o preço passou) e/ou em aberto (ainda de pé). Os dois ligados = tudo.
+    var showDone by remember { mutableStateOf(SettingsStore.b("hm.done", true)) }
+    var showOpen by remember { mutableStateOf(SettingsStore.b("hm.open", true)) }
     var hover by remember { mutableStateOf<Offset?>(null) }
     var mode by remember { mutableIntStateOf(SettingsStore.i("hm.mode", 0)) }
     var tierMask by remember { mutableIntStateOf(SettingsStore.i("hm.tiers", 0b1111).takeIf { it in 1..15 } ?: 0b1111) }
     val tiers = HEAT_TIERS.indices.filter { tierMask and (1 shl it) != 0 }.toSet()
     val venues = if (venueIdx == 0) CORE_VENUES.toSet() else setOf(CORE_VENUES[venueIdx - 1])
     val d = hs.data
-    val grids = remember(d, venueIdx, tierMask) { d?.let { HeatmapModel.combine(it, venues, tiers) } }
+    val allGrids = remember(d, venueIdx, tierMask) { d?.let { HeatmapModel.combine(it, venues, tiers) } }
+    val grids = remember(allGrids, showDone, showOpen) {
+        if (d == null || allGrids == null || (showDone && showOpen)) allGrids else {
+            val open = HeatmapModel.openGrids(d, venues, tiers)
+            if (showOpen) open else HeatmapModel.minus(allGrids, open)
+        }
+    }
     val entries = remember(d, venueIdx, mode) { if (d != null && mode == 1) HeatmapModel.entries(d, venues) else null }
-    val delta = remember(grids) { grids?.let { HeatmapModel.levelDelta(it) } }
+    val delta = remember(allGrids) { allGrids?.let { HeatmapModel.levelDelta(it) } }
     val value: (Int, Int) -> Float = { r, c ->
         when (mode) {
             1 -> entries?.get(r)?.get(c) ?: 0f
@@ -144,8 +153,22 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
         Section(HEAT_MODES[mode] + " · estimado (modelo V8) · " + if (venueIdx == 0) "Binance + Bybit + OKX" else CORE_VENUES[venueIdx - 1].label,
             hm) {
             Column {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                // Período, filtro executadas/em aberto e "Ampliar gráfico" na mesma linha (no PC sobra altura para o mapa).
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Chips("Período", HeatRange.entries.map { it.label }, hs.range.ordinal) { ctx.heat.load(HeatRange.entries[it]) }
+                    if (mode != 1) FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        T("Mostrar", Q.Muted, 11, modifier = Modifier.padding(top = 4.dp, end = 2.dp))
+                        // Nunca os dois desligados: desligar um com o outro já desligado liga o outro.
+                        Toggle("Já executadas", showDone) { on ->
+                            showDone = on; if (!on && !showOpen) showOpen = true
+                            SettingsStore.put("hm.done", showDone); SettingsStore.put("hm.open", showOpen)
+                        }
+                        Toggle("Em aberto", showOpen) { on ->
+                            showOpen = on; if (!on && !showDone) showDone = true
+                            SettingsStore.put("hm.done", showDone); SettingsStore.put("hm.open", showOpen)
+                        }
+                    }
+                    onExpand?.let { OutlineButton(if (expanded) "Reduzir gráfico" else "Ampliar gráfico", color = Q.Text, border = Q.Line, size = 12, onClick = it) }
                 }
                 Spacer(Modifier.height(6.dp))
                 MoreFilters(listOf("Liquidações", "OI por entrada", "Longs × shorts")[mode] + " · " + (if (venueIdx == 0) "todas" else CORE_VENUES[venueIdx - 1].label)) {
@@ -182,13 +205,16 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                 val chartMod = Modifier.fillMaxWidth().then(if (compact) Modifier.height(560.dp) else Modifier.weight(1f))
                 if (d == null || img == null) Box(chartMod.background(Q.Panel2)) {
                     Empty(if (hs.loading) "Montando o heatmap (${hs.progress})…" else "Heatmap indisponível", hs.error ?: "Usa velas e open interest históricos públicos das corretoras")
-                } else HeatChart(d, img, real, price, chartMod) { col, row, m ->
+                } else HeatChart(d, img, real, price, chartMod,
+                    openLevels = if (showOpen && mode != 1) summary?.let { sm ->
+                        sm.above.map { OpenLine(it.price, it.btc, it.bornMs, short = true) } + sm.below.map { OpenLine(it.price, it.btc, it.bornMs, short = false) }
+                    } ?: emptyList() else emptyList()) { col, row, m ->
                     grids?.let { g -> HeatTooltip(d, g, entries, mode, venues, col, row, price, m) }
                 }
-                if (d != null && img != null) HeatLegend(mode, k, showReal, Modifier.fillMaxWidth().padding(top = 6.dp))
+                if (d != null && img != null) HeatLegend(mode, k, showReal, showOpen && mode != 1, Modifier.fillMaxWidth().padding(top = 6.dp))
                 if (d != null && delta != null && delta.isNotEmpty()) {
                     Spacer(Modifier.height(4.dp))
-                    DeltaStrip(delta, Modifier.fillMaxWidth().height(54.dp))
+                    DeltaStrip(delta, Modifier.fillMaxWidth().height(if (compact) 54.dp else 44.dp))
                 }
             }
         }
@@ -237,13 +263,32 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
 }
 
 /** Legenda de cores do mapa: quanto BTC cada tom representa (e o significado dos pontos). */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun HeatLegend(mode: Int, k: Float, showReal: Boolean, modifier: Modifier) {
+private fun HeatLegend(mode: Int, k: Float, showReal: Boolean, showLines: Boolean, modifier: Modifier) {
     val fmt = { v: Float -> num(v.toDouble(), if (v < 10) 1 else 0) }
-    Column(modifier) {
-        T(if (mode == 2) "Escala: longs − shorts a liquidar por faixa (BTC)" else if (mode == 1) "Escala: OI aberto por faixa de preço (BTC)" else "Escala: BTC a liquidar por faixa de preço",
-            Q.Muted, 10, wrap = true)
-        val stops = if (mode == 2) listOf(Q.LiqShort, HEAT[0], Q.LiqLong) else HEAT
+    val label = if (mode == 2) "Escala: longs − shorts a liquidar por faixa (BTC)" else if (mode == 1) "Escala: OI aberto por faixa de preço (BTC)" else "Escala: BTC a liquidar por faixa de preço"
+    val stops = if (mode == 2) listOf(Q.LiqShort, HEAT[0], Q.LiqLong) else HEAT
+    val marks: @Composable () -> Unit = {
+        if (showReal) { T("Pontos:", Q.Muted, 10); T("● LONG liquidado", Q.LiqLong, 10); T("● SHORT liquidado", Q.LiqShort, 10) }
+        if (showLines) { T("Linhas:", Q.Muted, 10); T("níveis em aberto (caixas ao lado)", Q.Muted, 10) }
+    }
+    // No PC tudo numa linha (rótulo · barra · pontos/linhas) para sobrar altura ao mapa; no celular, empilhado.
+    if (compact) Column(modifier) {
+        T(label, Q.Muted, 10, wrap = true)
+        LegendBar(mode, k, stops, fmt)
+        FlowRow(Modifier.padding(top = 2.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) { marks() }
+    } else Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        T(label, Q.Muted, 10)
+        Column(Modifier.weight(1f)) { LegendBar(mode, k, stops, fmt) }
+        marks()
+    }
+}
+
+/** Barra de cores da legenda com os valores (0, meio e máximo). */
+@Composable
+private fun LegendBar(mode: Int, k: Float, stops: List<Color>, fmt: (Float) -> String) {
+    Column {
         Canvas(Modifier.fillMaxWidth().height(10.dp).padding(vertical = 1.dp)) {
             drawRect(androidx.compose.ui.graphics.Brush.horizontalGradient(stops), size = size)
         }
@@ -257,9 +302,6 @@ private fun HeatLegend(mode: Int, k: Float, showReal: Boolean, modifier: Modifie
                 T(fmt(k / 2), Q.Muted, 10, monoFont = true, modifier = Modifier.weight(1f), align = TextAlign.Center)
                 T("≥ ${fmt(k)}", Q.Muted, 10, monoFont = true)
             }
-        }
-        if (showReal) Row(Modifier.padding(top = 2.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            T("Pontos:", Q.Muted, 10); T("● LONG liquidado", Q.LiqLong, 10); T("● SHORT liquidado", Q.LiqShort, 10)
         }
     }
 }

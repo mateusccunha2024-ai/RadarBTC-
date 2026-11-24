@@ -1,5 +1,12 @@
 # Changelog
 
+## V8 — atualização 6 (2026-11-23) · liquidações executadas × em aberto
+- Radar: botões "Já executadas" e "Em aberto" para filtrar o mapa (os dois ligados = tudo). Níveis em aberto viram linhas
+  do nascimento até a borda direita, nas cores e nos níveis das caixas "Níveis-chave" (short acima = vermelho, long abaixo = verde),
+  com o tamanho em BTC; quando duas linhas ficam coladas, só o rótulo da maior aparece.
+- Radar no PC com gráfico mais alto: "Mostrar" na mesma linha do período, legenda de cores numa linha só, mais espaço para o mapa
+  que para as tabelas e botão "Ampliar gráfico", que esconde as tabelas de liquidações reais para o mapa ocupar a aba inteira.
+
 ## V8 — atualização 5 (2026-11-22) · redesenho visual
 - Celular: filtros secundários (níveis, mín., intensidade, executado, centro; mapa e corretoras do heatmap; faixa e velas do footprint)
   ficam atrás de "Mais filtros ▾", com resumo do que está escolhido; os dados aparecem já na primeira tela.
