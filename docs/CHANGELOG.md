@@ -1,5 +1,12 @@
 # Changelog
 
+## V8 — atualização 6 (2026-11-23) · liquidações executadas × em aberto
+- Radar: botões "Já executadas" e "Em aberto" para filtrar o mapa (os dois ligados = tudo). Níveis em aberto viram linhas
+  do nascimento até a borda direita, nas cores e nos níveis das caixas "Níveis-chave" (short acima = vermelho, long abaixo = verde),
+  com o tamanho em BTC; quando duas linhas ficam coladas, só o rótulo da maior aparece.
+- Radar no PC com gráfico mais alto: "Mostrar" na mesma linha do período, legenda de cores numa linha só, mais espaço para o mapa
+  que para as tabelas e botão "Ampliar gráfico", que esconde as tabelas de liquidações reais para o mapa ocupar a aba inteira.
+
 ## V8 — atualização 5 (2026-11-22) · redesenho visual
 - Celular: filtros secundários (níveis, mín., intensidade, executado, centro; mapa e corretoras do heatmap; faixa e velas do footprint)
   ficam atrás de "Mais filtros ▾", com resumo do que está escolhido; os dados aparecem já na primeira tela.
@@ -14,8 +21,6 @@
 - Heatmap de liquidações na escala de laranja do app (antes roxo/verde).
 - Estados vazios mais baixos; a dica "deslize para o lado" aparece só no celular.
 - Notas de rodapé escondidas por padrão; botão "Notas" na barra do topo do PC (e Visualização no celular) mostra/esconde.
-- Radar: botões "Já executadas" e "Em aberto" para filtrar o mapa (os dois ligados = tudo). Níveis em aberto viram linhas
-  do nascimento até a borda direita, nas cores e nos níveis das caixas "Níveis-chave" (short acima = vermelho, long abaixo = verde), com o tamanho em BTC.
 - Heatmap navegável como gráfico de preço: roda do mouse = zoom no tempo (na escala de preço = zoom no preço), arrastar = mover,
   arrastar a escala = esticar o preço, duplo clique/toque duplo = período inteiro, pinça no celular; botões −, + e Ajustar.
 - Marcações no heatmap: linha de preço, tendência, zona e texto; clicar numa marcação seleciona para apagar; ficam salvas entre aberturas.

@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -50,8 +51,13 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
     val topL = remember(s.tick, pIdx, ver) { r.top(period, LiqSide.LONG, 30) }
     val topS = remember(s.tick, pIdx, ver) { r.top(period, LiqSide.SHORT, 30) }
     val topAll = remember(s.tick, pIdx, ver) { r.top(period, null, 30) }
+    // "Ampliar gráfico" (só no PC): esconde as tabelas de baixo para o mapa ocupar a aba inteira.
+    var big by remember { mutableStateOf(SettingsStore.b("lq.big", false)) }
+    val expanded = big && !compact
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        LiqHeatmapPanel(ctx, s, Modifier.fillMaxWidth().then(grow(1.6f)))
+        LiqHeatmapPanel(ctx, s, Modifier.fillMaxWidth().then(grow(if (expanded) 1f else 2f)), expanded,
+            if (compact) null else ({ big = !big; SettingsStore.put("lq.big", big) }))
+        if (!expanded) {
         Controls {
             T("Liquidações reais", Q.Text, 14, bold = true)
             Chips("Período", LIQ_PERIODS.map { it.first }, pIdx) { pIdx = it; SettingsStore.put("lq.period", it) }
@@ -71,6 +77,7 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
         Footnote("Liquidações reais = Binance, Bybit, OKX, Gate, Bitget e Deribit (feeds públicos, não garantem todos os eventos; Binance envia no máximo 1/s e a Bitget agrupa por segundo). " +
             "Conversões para BTC: OKX ${s.okxCtVal}; Gate 1 contrato = 0,0001 BTC; Bitget USDT ÷ preço; Deribit USD ÷ preço. " +
             "Heatmap = estimativa a partir do open interest histórico de Binance, Bybit e OKX.")
+        }
     }
 }
 

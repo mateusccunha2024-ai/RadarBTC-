@@ -101,7 +101,7 @@ private fun q99(rows: Int, cols: Int, v: (Int, Int) -> Float): Float {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
+fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier, expanded: Boolean = false, onExpand: (() -> Unit)? = null) {
     val hs by ctx.heat.state.collectAsState()
     var venueIdx by remember { mutableIntStateOf(SettingsStore.i("hm.venue", 0)) }
     var intensity by remember { mutableFloatStateOf(SettingsStore.d("hm.int", 0.5).toFloat()) }
@@ -153,12 +153,10 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
         Section(HEAT_MODES[mode] + " · estimado (modelo V8) · " + if (venueIdx == 0) "Binance + Bybit + OKX" else CORE_VENUES[venueIdx - 1].label,
             hm) {
             Column {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                // Período, filtro executadas/em aberto e "Ampliar gráfico" na mesma linha (no PC sobra altura para o mapa).
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Chips("Período", HeatRange.entries.map { it.label }, hs.range.ordinal) { ctx.heat.load(HeatRange.entries[it]) }
-                }
-                if (mode != 1) {
-                    Spacer(Modifier.height(6.dp))
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    if (mode != 1) FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         T("Mostrar", Q.Muted, 11, modifier = Modifier.padding(top = 4.dp, end = 2.dp))
                         // Nunca os dois desligados: desligar um com o outro já desligado liga o outro.
                         Toggle("Já executadas", showDone) { on ->
@@ -169,8 +167,8 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                             showOpen = on; if (!on && !showDone) showDone = true
                             SettingsStore.put("hm.done", showDone); SettingsStore.put("hm.open", showOpen)
                         }
-                        if (showOpen) T("linhas = níveis em aberto das caixas ao lado, até agora", Q.Muted, 11, modifier = Modifier.padding(top = 4.dp))
                     }
+                    onExpand?.let { OutlineButton(if (expanded) "Reduzir gráfico" else "Ampliar gráfico", color = Q.Text, border = Q.Line, size = 12, onClick = it) }
                 }
                 Spacer(Modifier.height(6.dp))
                 MoreFilters(listOf("Liquidações", "OI por entrada", "Longs × shorts")[mode] + " · " + (if (venueIdx == 0) "todas" else CORE_VENUES[venueIdx - 1].label)) {
@@ -213,10 +211,10 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
                     } ?: emptyList() else emptyList()) { col, row, m ->
                     grids?.let { g -> HeatTooltip(d, g, entries, mode, venues, col, row, price, m) }
                 }
-                if (d != null && img != null) HeatLegend(mode, k, showReal, Modifier.fillMaxWidth().padding(top = 6.dp))
+                if (d != null && img != null) HeatLegend(mode, k, showReal, showOpen && mode != 1, Modifier.fillMaxWidth().padding(top = 6.dp))
                 if (d != null && delta != null && delta.isNotEmpty()) {
                     Spacer(Modifier.height(4.dp))
-                    DeltaStrip(delta, Modifier.fillMaxWidth().height(54.dp))
+                    DeltaStrip(delta, Modifier.fillMaxWidth().height(if (compact) 54.dp else 44.dp))
                 }
             }
         }
@@ -265,13 +263,32 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier) {
 }
 
 /** Legenda de cores do mapa: quanto BTC cada tom representa (e o significado dos pontos). */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun HeatLegend(mode: Int, k: Float, showReal: Boolean, modifier: Modifier) {
+private fun HeatLegend(mode: Int, k: Float, showReal: Boolean, showLines: Boolean, modifier: Modifier) {
     val fmt = { v: Float -> num(v.toDouble(), if (v < 10) 1 else 0) }
-    Column(modifier) {
-        T(if (mode == 2) "Escala: longs − shorts a liquidar por faixa (BTC)" else if (mode == 1) "Escala: OI aberto por faixa de preço (BTC)" else "Escala: BTC a liquidar por faixa de preço",
-            Q.Muted, 10, wrap = true)
-        val stops = if (mode == 2) listOf(Q.LiqShort, HEAT[0], Q.LiqLong) else HEAT
+    val label = if (mode == 2) "Escala: longs − shorts a liquidar por faixa (BTC)" else if (mode == 1) "Escala: OI aberto por faixa de preço (BTC)" else "Escala: BTC a liquidar por faixa de preço"
+    val stops = if (mode == 2) listOf(Q.LiqShort, HEAT[0], Q.LiqLong) else HEAT
+    val marks: @Composable () -> Unit = {
+        if (showReal) { T("Pontos:", Q.Muted, 10); T("● LONG liquidado", Q.LiqLong, 10); T("● SHORT liquidado", Q.LiqShort, 10) }
+        if (showLines) { T("Linhas:", Q.Muted, 10); T("níveis em aberto (caixas ao lado)", Q.Muted, 10) }
+    }
+    // No PC tudo numa linha (rótulo · barra · pontos/linhas) para sobrar altura ao mapa; no celular, empilhado.
+    if (compact) Column(modifier) {
+        T(label, Q.Muted, 10, wrap = true)
+        LegendBar(mode, k, stops, fmt)
+        FlowRow(Modifier.padding(top = 2.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) { marks() }
+    } else Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        T(label, Q.Muted, 10)
+        Column(Modifier.weight(1f)) { LegendBar(mode, k, stops, fmt) }
+        marks()
+    }
+}
+
+/** Barra de cores da legenda com os valores (0, meio e máximo). */
+@Composable
+private fun LegendBar(mode: Int, k: Float, stops: List<Color>, fmt: (Float) -> String) {
+    Column {
         Canvas(Modifier.fillMaxWidth().height(10.dp).padding(vertical = 1.dp)) {
             drawRect(androidx.compose.ui.graphics.Brush.horizontalGradient(stops), size = size)
         }
@@ -285,9 +302,6 @@ private fun HeatLegend(mode: Int, k: Float, showReal: Boolean, modifier: Modifie
                 T(fmt(k / 2), Q.Muted, 10, monoFont = true, modifier = Modifier.weight(1f), align = TextAlign.Center)
                 T("≥ ${fmt(k)}", Q.Muted, 10, monoFont = true)
             }
-        }
-        if (showReal) Row(Modifier.padding(top = 2.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            T("Pontos:", Q.Muted, 10); T("● LONG liquidado", Q.LiqLong, 10); T("● SHORT liquidado", Q.LiqShort, 10)
         }
     }
 }
