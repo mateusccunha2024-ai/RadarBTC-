@@ -8,6 +8,7 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.double
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -249,10 +250,245 @@ object MacroSources {
             val link = it.selectFirst("link")?.text()?.trim() ?: ""
             val src = it.selectFirst("source")?.text()?.trim()?.ifBlank { null } ?: defaultSource
             if (src.isNotBlank() && title.endsWith(" - $src")) title = title.removeSuffix(" - $src")
-            val t = runCatching { ZonedDateTime.parse(it.selectFirst("pubDate")!!.text().trim(), RFC).toInstant().toEpochMilli() }.getOrNull() ?: return@mapNotNull null
+            val raw = (it.selectFirst("pubDate") ?: it.selectFirst("dc|date") ?: it.selectFirst("date"))?.text()?.trim() ?: return@mapNotNull null
+            val t = parseDate(raw) ?: return@mapNotNull null
             RawNews(title, src, link, t, origin)
         }
     }
+
+    private val ZONES = mapOf(" GMT" to " +0000", " UTC" to " +0000", " UT" to " +0000", " EST" to " -0500", " EDT" to " -0400",
+        " CST" to " -0600", " CDT" to " -0500", " PST" to " -0800", " PDT" to " -0700", " Z" to " +0000")
+
+    /** Datas de RSS: RFC 1123 (com fuso por nome ou número) ou ISO 8601. */
+    fun parseDate(raw0: String): Long? {
+        var raw = raw0.trim().replace(Regex("\\s+"), " ")
+        runCatching { return ZonedDateTime.parse(raw, RFC).toInstant().toEpochMilli() }
+        for ((k, v) in ZONES) if (raw.endsWith(k)) { raw = raw.removeSuffix(k) + v; break }
+        runCatching { return ZonedDateTime.parse(raw, RFC).toInstant().toEpochMilli() }
+        // Sem dia da semana: "26 Nov 2026 10:00:00 +0000"
+        runCatching { return ZonedDateTime.parse(raw, DateTimeFormatter.ofPattern("d MMM yyyy HH:mm[:ss] Z", Locale.ENGLISH)).toInstant().toEpochMilli() }
+        runCatching { return ZonedDateTime.parse(raw, DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm[:ss] Z", Locale.ENGLISH)).toInstant().toEpochMilli() }
+        runCatching { return OffsetDateTime.parse(raw0.trim()).toInstant().toEpochMilli() }
+        runCatching { return java.time.Instant.parse(raw0.trim()).toEpochMilli() }
+        return null
+    }
+
+    /** Mais veículos e órgãos oficiais (RSS público). Nome exibido → endereço. */
+    val FEEDS = listOf(
+        "SEC" to "https://www.sec.gov/news/pressreleases.rss",
+        "CFTC" to "https://www.cftc.gov/RSS/RSSGP/rssgp.xml",
+        "ECB" to "https://www.ecb.europa.eu/rss/press.html",
+        "CoinDesk" to "https://www.coindesk.com/arc/outboundfeeds/rss/",
+        "Cointelegraph" to "https://cointelegraph.com/rss",
+        "Decrypt" to "https://decrypt.co/feed",
+        "The Block" to "https://www.theblock.co/rss.xml",
+        "Bitcoin Magazine" to "https://bitcoinmagazine.com/.rss/full/",
+        "CNBC" to "https://www.cnbc.com/id/100003114/device/rss/rss.html",
+        "CNBC Economy" to "https://www.cnbc.com/id/20910258/device/rss/rss.html",
+        "MarketWatch" to "https://feeds.content.dowjones.io/public/rss/mw_topstories",
+        "WSJ Markets" to "https://feeds.content.dowjones.io/public/rss/RSSMarketsMain",
+        "New York Times" to "https://rss.nytimes.com/services/xml/rss/nyt/Business.xml",
+        "New York Times World" to "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
+        "BBC Business" to "https://feeds.bbci.co.uk/news/business/rss.xml",
+        "BBC World" to "https://feeds.bbci.co.uk/news/world/rss.xml",
+        "Al Jazeera" to "https://www.aljazeera.com/xml/rss/all.xml",
+        "Financial Times" to "https://www.ft.com/world?format=rss",
+        "Bloomberg" to "https://feeds.bloomberg.com/markets/news.rss",
+        "DW Business" to "https://rss.dw.com/rdf/rss-en-bus",
+        "Investing.com" to "https://www.investing.com/rss/news_14.rss",
+        "OilPrice" to "https://oilprice.com/rss/main",
+    )
+
+    // ------------------------------------------------------------------ mais mercados (Yahoo)
+    /** key, rótulo, símbolo, grupo. */
+    val EXTRA_MARKETS = listOf(
+        listOf("RUT", "Russell 2000", "^RUT", "Bolsas"), listOf("FTSE", "FTSE 100 (Londres)", "^FTSE", "Bolsas"),
+        listOf("DAX", "DAX (Alemanha)", "^GDAXI", "Bolsas"), listOf("N225", "Nikkei 225 (Japão)", "^N225", "Bolsas"),
+        listOf("HSI", "Hang Seng (Hong Kong)", "^HSI", "Bolsas"), listOf("SSE", "Xangai", "000001.SS", "Bolsas"),
+        listOf("BVSP", "Ibovespa", "^BVSP", "Bolsas"),
+        listOf("EURUSD", "Euro / dólar", "EURUSD=X", "Moedas"), listOf("USDJPY", "Dólar / iene", "JPY=X", "Moedas"),
+        listOf("USDCNY", "Dólar / yuan", "CNY=X", "Moedas"), listOf("USDBRL", "Dólar / real", "BRL=X", "Moedas"),
+        listOf("SILVER", "Prata", "SI=F", "Commodities"), listOf("COPPER", "Cobre", "HG=F", "Commodities"),
+        listOf("NATGAS", "Gás natural", "NG=F", "Commodities"),
+        listOf("IRX", "Treasury 13 semanas", "^IRX", "Juros e crédito"), listOf("FVX", "Treasury 5 anos", "^FVX", "Juros e crédito"),
+        listOf("TYX", "Treasury 30 anos", "^TYX", "Juros e crédito"), listOf("MOVE", "MOVE (volatilidade dos Treasuries)", "^MOVE", "Juros e crédito"),
+        listOf("HYG", "HYG (crédito high yield)", "HYG", "Juros e crédito"),
+        listOf("ETH", "Ethereum", "ETH-USD", "Cripto e ações ligadas"), listOf("IBIT", "IBIT (ETF de BTC da BlackRock)", "IBIT", "Cripto e ações ligadas"),
+        listOf("MSTR", "Strategy (MSTR)", "MSTR", "Cripto e ações ligadas"), listOf("COIN", "Coinbase (COIN)", "COIN", "Cripto e ações ligadas"),
+    )
+
+    private val MONTH_CODES = "FGHJKMNQUVXZ"
+
+    /** Contratos futuros de Fed funds (CBOT) dos próximos [n] meses: (AAAA-MM, símbolo). Taxa implícita = 100 − preço. */
+    fun fedFuturesSymbols(nowMs: Long, n: Int = 8): List<Pair<String, String>> {
+        val d = java.time.Instant.ofEpochMilli(nowMs).atZone(ZoneOffset.UTC).toLocalDate().withDayOfMonth(1)
+        return (0 until n).map { i ->
+            val m = d.plusMonths(i.toLong())
+            "%04d-%02d".format(m.year, m.monthValue) to "ZQ${MONTH_CODES[m.monthValue - 1]}${"%02d".format(m.year % 100)}.CBT"
+        }
+    }
+
+    // ------------------------------------------------------------------ Treasury: juros reais (TIPS)
+    fun treasuryRealUrl(year: Int) = "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/$year/all" +
+        "?type=daily_treasury_real_yield_curve&field_tdr_date_value=$year&page&_format=csv"
+
+    /** Uma coluna da curva do Tesouro (ex.: "10 YR" da curva real), mais recente primeiro. */
+    fun parseTreasuryColumn(csv: String, column: String): List<Pair<String, Double>> {
+        val lines = csv.lines().filter { it.isNotBlank() }
+        if (lines.isEmpty()) return emptyList()
+        val head = lines[0].split(',').map { it.trim('"', ' ').uppercase() }
+        val ci = head.indexOf(column.uppercase())
+        if (ci < 0) error("coluna $column não encontrada")
+        val fmt = DateTimeFormatter.ofPattern("MM/dd/yyyy")
+        return lines.drop(1).mapNotNull { l ->
+            val p = l.split(',')
+            val d = runCatching { LocalDate.parse(p[0].trim('"'), fmt).toString() }.getOrNull() ?: return@mapNotNull null
+            val v = p.getOrNull(ci)?.trim()?.toDoubleOrNull() ?: return@mapNotNull null
+            d to v
+        }.distinctBy { it.first }.sortedByDescending { it.first }
+    }
+
+    // ------------------------------------------------------------------ NY Fed: SOFR e reverse repo
+    const val SOFR_URL = "https://markets.newyorkfed.org/api/rates/secured/sofr/last/1.json"
+
+    /** (data, taxa) de uma taxa de referência do NY Fed (SOFR, EFFR…). */
+    fun parseRefRate(text: String): Pair<String, Double> {
+        val r = Net.parse(text).jsonObject["refRates"]!!.jsonArray.first().jsonObject
+        return r["effectiveDate"]!!.jsonPrimitive.content to ((r["percentRate"] as JsonPrimitive).doubleOrNull ?: error("sem taxa"))
+    }
+
+    fun rrpUrl(nowMs: Long): String {
+        val from = java.time.Instant.ofEpochMilli(nowMs - 45 * 86_400_000L).atZone(ZoneOffset.UTC).toLocalDate()
+        return "https://markets.newyorkfed.org/api/rp/reverserepo/propositions/search.json?startDate=$from"
+    }
+
+    /** Reverse repo overnight do Fed: (data, US$ milhões aceitos), mais recente primeiro. */
+    fun parseRrp(text: String): List<Pair<String, Double>> {
+        val ops = Net.parse(text).jsonObject["repo"]!!.jsonObject["operations"]!!.jsonArray.map { it.jsonObject }
+        return ops.mapNotNull { o ->
+            val d = o["operationDate"]?.jsonPrimitive?.content ?: return@mapNotNull null
+            val v = (o["totalAmtAccepted"] as? JsonPrimitive)?.doubleOrNull ?: return@mapNotNull null
+            d to v / 1e6
+        }.groupBy { it.first }.map { (d, l) -> d to l.sumOf { it.second } }.sortedByDescending { it.first }
+    }
+
+    // ------------------------------------------------------------------ Fed: balanço (H.4.1)
+    const val H41_URL = "https://www.federalreserve.gov/releases/h41/current/h41.htm"
+
+    /** Balanço semanal do Fed (US$ milhões). */
+    data class FedBalance(val week: String, val totalAssets: Double, val weekChange: Double, val yearChange: Double?,
+                          val reserves: Double?, val reservesWeekChange: Double?)
+
+    fun parseH41(html: String): FedBalance {
+        val t = html.replace(Regex("&#xa0;|&nbsp;|&#160;"), " ").replace(Regex("<[^>]+>"), " ").replace(Regex("\\s+"), " ")
+        fun n(x: String) = x.replace(",", "").toDouble()
+        fun sgn(sig: String, x: String) = if (sig == "-") -n(x) else n(x)
+        val ta = Regex("Total assets\\s*(?:\\(\\d+\\)\\s*)?([\\d,]+)\\s*([+-])\\s*([\\d,]+)\\s*([+-])\\s*([\\d,]+)").find(t) ?: error("total de ativos não encontrado")
+        val rs = Regex("Reserve balances with Federal Reserve Banks\\s*([\\d,]+)\\s*([+-])\\s*([\\d,]+)").find(t)
+        val wk = Regex("Week ended\\s+([A-Z][a-z]{2,8}\\.? \\d{1,2}, \\d{4})").find(t)?.groupValues?.get(1)
+        val week = wk?.let { s -> runCatching { LocalDate.parse(s.replace(".", ""), DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH)).toString() }.getOrNull() ?: s } ?: "—"
+        return FedBalance(week, n(ta.groupValues[1]), sgn(ta.groupValues[2], ta.groupValues[3]), sgn(ta.groupValues[4], ta.groupValues[5]),
+            rs?.let { n(it.groupValues[1]) }, rs?.let { sgn(it.groupValues[2], it.groupValues[3]) })
+    }
+
+    // ------------------------------------------------------------------ Kalshi: probabilidades da próxima decisão do Fed
+    const val KALSHI_URL = "https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=KXFEDDECISION&status=open&limit=200"
+
+    data class FedOdds(val event: String, val closeMs: Long, val outcomes: List<Pair<String, Double>>)
+
+    /** Mercados abertos agrupados por reunião, da mais próxima para a mais distante. Probabilidade = último preço (0–1). */
+    fun parseKalshi(text: String, nowMs: Long): List<FedOdds> {
+        val ms = Net.parse(text).jsonObject["markets"]!!.jsonArray.map { it.jsonObject }
+        return ms.mapNotNull { m ->
+            val ev = m["event_ticker"]?.jsonPrimitive?.content ?: return@mapNotNull null
+            val close = runCatching { OffsetDateTime.parse(m["close_time"]!!.jsonPrimitive.content).toInstant().toEpochMilli() }.getOrNull() ?: return@mapNotNull null
+            val name = m["yes_sub_title"]?.jsonPrimitive?.contentOrNull ?: return@mapNotNull null
+            val p = (m["last_price_dollars"] as? JsonPrimitive)?.contentOrNull?.toDoubleOrNull()
+                ?: (m["last_price"] as? JsonPrimitive)?.doubleOrNull?.div(100) ?: return@mapNotNull null
+            Triple(ev, close, name to p)
+        }.filter { it.second > nowMs }.groupBy { it.first }
+            .map { (ev, l) -> FedOdds(ev, l.first().second, l.map { it.third }.sortedByDescending { it.second }) }
+            .sortedBy { it.closeMs }
+    }
+
+    // ------------------------------------------------------------------ cripto: sentimento, mercado, stablecoins, rede
+    const val FNG_URL = "https://api.alternative.me/fng/?limit=31"
+    data class FearGreed(val value: Int, val label: String, val dayMs: Long, val weekAgo: Int?, val monthAgo: Int?)
+
+    fun parseFng(text: String): FearGreed {
+        val d = Net.parse(text).jsonObject["data"]!!.jsonArray.map { it.jsonObject }
+        fun v(i: Int) = d.getOrNull(i)?.get("value")?.jsonPrimitive?.content?.toIntOrNull()
+        val first = d.first()
+        return FearGreed(v(0) ?: error("sem valor"), first["value_classification"]?.jsonPrimitive?.content ?: "",
+            (first["timestamp"]?.jsonPrimitive?.content?.toLongOrNull() ?: 0) * 1000, v(7), v(30))
+    }
+
+    const val CG_GLOBAL_URL = "https://api.coingecko.com/api/v3/global"
+    data class CryptoGlobal(val totalCapUsd: Double, val btcDominance: Double, val ethDominance: Double?, val cap24hPct: Double?, val volumeUsd: Double?, val updatedMs: Long)
+
+    fun parseCgGlobal(text: String): CryptoGlobal {
+        val d = Net.parse(text).jsonObject["data"]!!.jsonObject
+        fun obj(k: String) = d[k]?.jsonObject
+        return CryptoGlobal(obj("total_market_cap")?.get("usd")?.jsonPrimitive?.doubleOrNull ?: error("sem valor de mercado"),
+            obj("market_cap_percentage")?.get("btc")?.jsonPrimitive?.doubleOrNull ?: error("sem dominância"),
+            obj("market_cap_percentage")?.get("eth")?.jsonPrimitive?.doubleOrNull,
+            d["market_cap_change_percentage_24h_usd"]?.jsonPrimitive?.doubleOrNull, obj("total_volume")?.get("usd")?.jsonPrimitive?.doubleOrNull,
+            (d["updated_at"]?.jsonPrimitive?.content?.toLongOrNull() ?: 0) * 1000)
+    }
+
+    const val STABLE_URL = "https://stablecoins.llama.fi/stablecoincharts/all"
+
+    /** Total de stablecoins em dólar por dia (US$), mais recente primeiro (últimos 400 dias). */
+    fun parseStablecoins(text: String): List<Pair<Long, Double>> = Net.parse(text).jsonArray.mapNotNull { e ->
+        val o = e.jsonObject
+        val t = o["date"]?.jsonPrimitive?.content?.toLongOrNull() ?: return@mapNotNull null
+        val v = o["totalCirculatingUSD"]?.jsonObject?.get("peggedUSD")?.jsonPrimitive?.doubleOrNull ?: return@mapNotNull null
+        t * 1000 to v
+    }.sortedByDescending { it.first }.take(400)
+
+    const val HASHRATE_URL = "https://mempool.space/api/v1/mining/hashrate/1m"
+    const val FEES_URL = "https://mempool.space/api/v1/fees/recommended"
+    data class Network(val hashrateEh: Double, val hashrate30dChangePct: Double?, val difficulty: Double?)
+
+    fun parseHashrate(text: String): Network {
+        val o = Net.parse(text).jsonObject
+        val hs = o["hashrates"]!!.jsonArray.map { it.jsonObject["avgHashrate"]!!.jsonPrimitive.double }
+        val cur = (o["currentHashrate"] as? JsonPrimitive)?.doubleOrNull ?: hs.last()
+        val first = hs.firstOrNull()
+        return Network(cur / 1e18, if (first != null && first > 0) (cur - first) / first * 100 else null, (o["currentDifficulty"] as? JsonPrimitive)?.doubleOrNull)
+    }
+
+    /** Taxas recomendadas (sat/vB): rápida, 30 min, 1 h. */
+    fun parseFees(text: String): Triple<Int, Int, Int> {
+        val o = Net.parse(text).jsonObject
+        fun i(k: String) = o[k]?.jsonPrimitive?.content?.toDoubleOrNull()?.toInt() ?: error("sem $k")
+        return Triple(i("fastestFee"), i("halfHourFee"), i("hourFee"))
+    }
+
+    // ------------------------------------------------------------------ outros: BCE e dívida dos EUA
+    const val ECB_URL = "https://data-api.ecb.europa.eu/service/data/FM/D.U2.EUR.4F.KR.DFR.LEV?lastNObservations=1&format=jsondata"
+
+    /** Taxa de depósito do BCE: (data, %). */
+    fun parseEcb(text: String): Pair<String, Double> {
+        val root = Net.parse(text).jsonObject
+        val series = root["dataSets"]!!.jsonArray.first().jsonObject["series"]!!.jsonObject.values.first().jsonObject
+        val obs = series["observations"]!!.jsonObject
+        val lastKey = obs.keys.maxByOrNull { it.toInt() } ?: error("sem observação")
+        val v = obs[lastKey]!!.jsonArray.first().jsonPrimitive.double
+        val dates = root["structure"]!!.jsonObject["dimensions"]!!.jsonObject["observation"]!!.jsonArray.first().jsonObject["values"]!!.jsonArray
+        val d = dates.getOrNull(lastKey.toInt())?.jsonObject?.get("id")?.jsonPrimitive?.content ?: "—"
+        return d to v
+    }
+
+    const val DEBT_URL = "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?sort=-record_date&page[size]=40"
+
+    /** Dívida pública total dos EUA (US$), mais recente primeiro. */
+    fun parseDebt(text: String): List<Pair<String, Double>> = Net.parse(text).jsonObject["data"]!!.jsonArray.mapNotNull { e ->
+        val o = e.jsonObject
+        val d = o["record_date"]?.jsonPrimitive?.content ?: return@mapNotNull null
+        val v = o["tot_pub_debt_out_amt"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: return@mapNotNull null
+        d to v
+    }.sortedByDescending { it.first }
 
     const val FED_RSS = "https://www.federalreserve.gov/feeds/press_all.xml"
 
@@ -279,6 +515,33 @@ object MacroSources {
         MacroNews(Integer.toHexString((r.url.ifBlank { r.title }).hashCode()), r.title, r.source.ifBlank { r.origin }, r.url, r.timeMs,
             rule.category, rule.dir, rule.intensity, rule.horizon, rel, rule.intensity.weight * rel.weight, rule.rationale, rule.chain, r.origin)
     }
+}
+
+/** Catálogo das fontes do Radar macro (aba Fontes e docs/MACRO.md). */
+object MacroCatalog {
+    data class Src(val name: String, val provides: String, val url: String, val official: Boolean)
+    val ALL = listOf(
+        Src("Federal Reserve Bank of New York", "Taxa efetiva do Fed (EFFR), intervalo-alvo, SOFR e reverse repo overnight", "https://markets.newyorkfed.org", true),
+        Src("Federal Reserve", "Calendário do FOMC, balanço semanal (H.4.1), reservas bancárias e comunicados", "https://www.federalreserve.gov", true),
+        Src("U.S. Treasury", "Curva de juros nominal e real (TIPS), saldo do TGA e dívida pública", "https://home.treasury.gov", true),
+        Src("Treasury Fiscal Data", "Daily Treasury Statement (TGA) e Debt to the Penny", "https://fiscaldata.treasury.gov", true),
+        Src("U.S. Bureau of Labor Statistics (BLS)", "CPI, núcleo do CPI, payroll, desemprego e salário por hora", "https://www.bls.gov", true),
+        Src("U.S. Bureau of Economic Analysis (BEA) via DBnomics", "PCE e núcleo do PCE", "https://db.nomics.world/BEA", true),
+        Src("Banco Central Europeu (BCE)", "Taxa de depósito e comunicados", "https://data.ecb.europa.eu", true),
+        Src("SEC e CFTC", "Comunicados dos reguladores americanos", "https://www.sec.gov", true),
+        Src("Yahoo Finance", "Bolsas (EUA, Europa, Ásia, Brasil), VIX, MOVE, DXY, moedas, commodities, Treasuries intradiários, futuros de Fed funds (CBOT), ETH, IBIT, MSTR, COIN, HYG", "https://finance.yahoo.com", false),
+        Src("Kalshi", "Probabilidades negociadas da próxima decisão de juros do Fed", "https://kalshi.com", false),
+        Src("Forex Factory (faireconomy.media)", "Calendário econômico semanal: horário, impacto, expectativa e anterior", "https://www.forexfactory.com/calendar", false),
+        Src("Farside Investors", "Fluxo diário dos ETFs spot de bitcoin", "https://farside.co.uk", false),
+        Src("CoinGecko", "Valor de mercado cripto, dominância do BTC e volume", "https://www.coingecko.com", false),
+        Src("DefiLlama", "Estoque total de stablecoins", "https://defillama.com/stablecoins", false),
+        Src("Alternative.me", "Índice Fear & Greed do mercado cripto", "https://alternative.me/crypto/fear-and-greed-index/", false),
+        Src("mempool.space", "Hashrate, dificuldade e taxas da rede Bitcoin", "https://mempool.space", false),
+        Src("Google News", "Manchetes por tema (conflitos, comércio, energia, Fed, fiscal, regulação cripto)", "https://news.google.com", false),
+        Src("GDELT Project", "Monitor global de notícias", "https://www.gdeltproject.org", false),
+        Src("Veículos (RSS)", MacroSources.FEEDS.joinToString(", ") { it.first }, "https://www.coindesk.com", false),
+        Src("Google Tradutor", "Tradução automática de manchetes e textos sem tradução pronta", "https://translate.google.com", false),
+    )
 }
 
 /** Liga um evento do calendário à série oficial que traz o resultado (para comparar com a expectativa). */

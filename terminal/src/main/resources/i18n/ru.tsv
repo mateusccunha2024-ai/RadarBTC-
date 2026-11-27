@@ -1,0 +1,1339 @@
+# Radar BTC · Russian · gerado do código-fonte (docs/I18N.md)
+Tabela de ETFs não encontrada	Таблица ETF не найдена
+th, td	th, td
+Total	Итого
+{0}/fapi/v1/depth?symbol=BTCUSDT&limit={1}	{0}/fapi/v1/depth?symbol=BTCUSDT&limit={1}
+{0}/fapi/v1/klines?symbol=BTCUSDT&interval={1}&limit={2}	{0}/fapi/v1/klines?symbol=BTCUSDT&interval={1}&limit={2}
+{0}/futures/data/openInterestHist?symbol=BTCUSDT&period={1}&limit={2}	{0}/futures/data/openInterestHist?symbol=BTCUSDT&period={1}&limit={2}
+{0}/fapi/v1/ticker/{1}hr?symbol=BTCUSDT	{0}/fapi/v1/ticker/{1}hr?symbol=BTCUSDT
+{0}/fapi/v1/premiumIndex?symbol=BTCUSDT	{0}/fapi/v1/premiumIndex?symbol=BTCUSDT
+{0}/fapi/v1/openInterest?symbol=BTCUSDT	{0}/fapi/v1/openInterest?symbol=BTCUSDT
+{0}/v5/market/orderbook?category=linear&symbol=BTCUSDT&limit={1}	{0}/v5/market/orderbook?category=linear&symbol=BTCUSDT&limit={1}
+Bybit: resposta sem 'result'	Bybit: ответ без 'result'
+{0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}	{0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}
+Buy	Покупка
+Conexão encerrada ({0})	Соединение закрыто ({0})
+HTTP {0} em {1}	HTTP {0} на {1}
+Resposta vazia em {0}	Пустой ответ от {0}
+Alertas do mercado	Рыночные оповещения
+Monitoramento em segundo plano	Фоновый мониторинг
+{0} INFO [app] {1}	{0} INFO [app] {1}
+Memória (usada / máx.)	Память (используется / макс.)
+{0} / {1} MB	{0} / {1} МБ
+Threads	Потоки
+Aparelho	Устройство
+{0} {1} · Android {2}	{0} {1} · Android {2}
+banco indisponível: {0}	база данных недоступна: {0}
+falha de gravação: {0}	ошибка записи: {0}
+Histórico: {0}	История: {0}
+Radar BTC monitorando	Радар BTC: мониторинг
+Conexões e alertas ativos em segundo plano	Активные подключения и оповещения в фоновом режиме
+DIVERGÊNCIA DE ALTA	БЫЧЬЯ ДИВЕРГЕНЦИЯ
+DIVERGÊNCIA DE BAIXA	МЕДВЕЖЬЯ ДИВЕРГЕНЦИЯ
+Preço: fundo mais baixo ({0} → {1}). CVD: fundo mais alto ({2} → {3} BTC). Vendas agressoras perdendo força.	Цена: более низкий минимум ({0} → {1}). CVD: более высокий минимум ({2} → {3} BTC). Агрессивные продажи теряют силу.
+Preço: topo mais alto ({0} → {1}). CVD: topo mais baixo ({2} → {3} BTC). Compras agressoras perdendo força.	Цена: более высокий максимум ({0} → {1}). CVD: более низкий максимум ({2} → {3} BTC). Агрессивные покупки теряют силу.
+sem dados	нет данных
+forte positiva	сильная положительная
+forte negativa	сильная отрицательная
+moderada positiva	умеренная положительная
+moderada negativa	умеренная отрицательная
+fraca positiva	слабая положительная
+fraca negativa	слабая отрицательная
+BTCUSDT perp (USD-M)	BTCUSDT perp (USD-M)
+BTCUSDT linear	BTCUSDT linear
+BTC_USDT perp	BTC_USDT perp
+BTCUSDT perp (USDT-M)	BTCUSDT perp (USDT-M)
+BTC-PERPETUAL (inverso, USD)	BTC-PERPETUAL (инверсный, USD)
+BTC-USDT perp (só open interest)	BTC-USDT perp (только open interest)
+PF_XBTUSD perp (só open interest)	PF_XBTUSD perp (только open interest)
+metadados do contrato indisponíveis, usando {0} BTC: {1}	метаданные контракта недоступны, используется {0} BTC: {1}
+Liquidações (futures.public_liquidates)	Ликвидации (futures.public_liquidates)
+Liquidações (UTA v3 liquidation)	Ликвидации (UTA v3 liquidation)
+inscrição recusada: {0}	подписка отклонена: {0}
+Trades com marca de liquidação	Сделки с меткой ликвидации
+Livro (/public depth@{0}ms + REST {1})	Стакан (/public depth@{0}ms + REST {1})
+nova conexão	новое подключение
+Trades/mark/liquidações (/market)	Сделки/mark/ликвидации (/market)
+open interest REST falhou: {0}	REST open interest не удался: {0}
+quebra de sequência (pu ≠ u anterior)	разрыв последовательности (pu ≠ предыдущий u)
+Livro inválido, reconstruindo: {0}	Некорректный стакан, пересборка: {0}
+snapshot REST indisponível: {0}	REST-снимок недоступен: {0}
+nova tentativa de snapshot	повторная попытка снимка
+buffer sem continuidade com o snapshot	буфер не согласуется со снимком
+Livro sincronizado (snapshot {0})	Стакан синхронизирован (снимок {0})
+@aggTrade	@aggTrade
+@markPrice	@markPrice
+@forceOrder	@forceOrder
+Livro {0} + RPI + trades + tickers + liquidações	Стакан {0} + RPI + сделки + тикеры + ликвидации
+aguardando snapshot	ожидание снимка
+quebra de sequência u {0} → {1}	разрыв последовательности u {0} → {1}
+{0}: quebra de sequência, pedindo novo snapshot	{0}: разрыв последовательности, запрос нового снимка
+padrão {0} BTC (metadados ainda não carregados)	стандарт {0} BTC (метаданные ещё не загружены)
+metadados OKX: {0} contrato = {1} BTC	метаданные OKX: {0} контракт = {1} BTC
+metadados inesperados ({0}); usando {1} BTC	неожиданные метаданные ({0}); используется {1} BTC
+metadados do instrumento indisponíveis: {0}	метаданные инструмента недоступны: {0}
+Livro {0} + trades + OI + funding + mark + liquidações	Стакан {0} + сделки + OI + funding + mark + ликвидации
+erro: {0}	ошибка: {0}
+quebra de sequência prevSeqId {0} ≠ {1}	разрыв последовательности prevSeqId {0} ≠ {1}
+books: quebra de sequência, pedindo novo snapshot	books: разрыв последовательности, запрашиваю новый snapshot
+Acumulação comprada	Накопление покупок
+Fluxo long	Лонг-поток
+Recompra de shorts	Выкуп шортов
+Pressão compradora	Давление покупателей
+Acumulação vendida	Накопление продаж
+Fluxo short	Шорт-поток
+Fechamento de longs	Закрытие лонгов
+Pressão vendedora	Давление продавцов
+Sem viés claro	Нет чёткого перекоса
+Inferência. A agressão mostra quem iniciou a execução, não se abriu ou fechou posição. Todo contrato tem comprador e vendedor; OI subindo com compra agressora é compatível com expansão LONG, mas não prova.	Вывод. Агрессия показывает, кто инициировал исполнение, а не открывал или закрывал позицию. У каждого контракта есть покупатель и продавец; рост OI при агрессивной покупке совместим с расширением LONG, но не доказывает его.
+Compra agressora: {0} BTC	Агрессивная покупка: {0} BTC
+Venda agressora: {0} BTC	Агрессивная продажа: {0} BTC
+Delta: {0} BTC (desequilíbrio {1}%)	Дельта: {0} BTC (дисбаланс {1}%)
+Preço: 	Цена: 
+sem dado	нет данных
+Open interest: 	Открытый интерес: 
+Funding médio: 	Средний фандинг: 
+Fluxo agressor equilibrado na janela.	Агрессивный поток сбалансирован в окне.
+MÉDIA	СРЕДНЕЕ
+Compras agressoras com OI subindo: compatível com abertura líquida de LONG.	Агрессивные покупки при росте OI: совместимо с открытием чистых LONG.
+Compras agressoras com OI caindo: compatível com fechamento de SHORT.	Агрессивные покупки при падении OI: совместимо с закрытием SHORT.
+Predomínio comprador sem variação relevante de OI.	Преобладание покупок без заметного изменения OI.
+Vendas agressoras com OI subindo: compatível com abertura líquida de SHORT.	Агрессивные продажи при росте OI: совместимо с открытием чистых SHORT.
+Vendas agressoras com OI caindo: compatível com fechamento de LONG.	Агрессивные продажи при падении OI: совместимо с закрытием LONG.
+Predomínio vendedor sem variação relevante de OI.	Преобладание продаж без заметного изменения OI.
+{0} dias	{0} дн.
+{0} sem	{0} нед.
+{0} mês	{0} мес.
+{0} meses	{0} мес.
+{0} ano	{0} г.
+{0} anos	{0} г.
+bloqueado nesta região	заблокировано в этом регионе
+indisponível: {0}	недоступно: {0}
+sem dados no período	нет данных за период
+parcial: desde 	частично: с 
+ (API guarda ~{0} dias)	 (API хранит ~{0} дн.)
+ (API guarda {0} pontos)	 (API хранит {0} точек)
+completo ({0} pontos)	полностью ({0} точек)
+Liquidação EXTREME	Ликвидация EXTREME
+Parede grande saiu do livro	Крупная стена вышла из стакана
+Absorção / iceberg	Поглощение / айсберг
+Mudança de sinal LONG/SHORT	Смена знака LONG/SHORT
+Divergência preço × CVD	Дивергенция цена × CVD
+Preço perto de zona do heatmap	Цена рядом с зоной heatmap
+Macro: evento de alto impacto chegando	Макро: приближается событие высокого влияния
+Macro: dado acima/abaixo do esperado	Макро: данные выше/ниже ожиданий
+Macro: DXY, yields ou VIX em movimento forte	Макро: сильное движение DXY, доходностей или VIX
+Macro: escalada geopolítica, tarifas ou regulação	Макро: геополитическая эскалация, тарифы или регулирование
+Macro: BTC diverge do mercado americano	Макро: BTC расходится с американским рынком
+Macro: mudança forte do BTC Macro Sentiment	Макро: сильное изменение BTC Macro Sentiment
+Absorção	Поглощение
+Paredes	Стены
+Iceberg	Айсберг
+Liquidação	Ликвидация
+Liquidações	Ликвидации
+Execução grande	Крупное исполнение
+Execuções	Исполнения
+Divergência	Дивергенция
+Divergências	Дивергенции
+Macro	Макро
+wall|{0}|{1}|{2}	wall|{0}|{1}|{2}
+Parede {0} {1} de {2} BTC em {3} ({4}): {5}	Стена {0} {1} на {2} BTC в {3} ({4}): {5}
+de compra	покупки
+de venda	продажи
+{0} em {1} ({2}, {3}): executado {4} BTC, restante {5} BTC	{0} в {1} ({2}, {3}): исполнено {4} BTC, остаток {5} BTC
+Parede de compra	Стена покупок
+Parede de venda	Стена продаж
+executado {0} BTC · restante {1} BTC	исполнено {0} BTC · остаток {1} BTC
+sig|{0}|{1}|{2}	sig|{0}|{1}|{2}
+Iniciando conexões (Binance, Bybit, OKX; liquidações também de Gate, Bitget e Deribit)	Запуск подключений (Binance, Bybit, OKX; ликвидации также с Gate, Bitget и Deribit)
+publicação: {0}	публикация: {0}
+Conexões encerradas	Подключения завершены
+Compra	Покупка
+Venda	Продажа
+{0} BTC agressor	{0} BTC агрессор
+Long	Long
+Short	Short
+{0} BTC · {1}	{0} BTC · {1}
+liq|{0}|{1}|{2}	liq|{0}|{1}|{2}
+Liquidação EXTREME: {0} {1} BTC @ {2} ({3})	Ликвидация EXTREME: {0} {1} BTC @ {2} ({3})
+side|{0}|{1}	side|{0}|{1}
+Sinal mudou para {0} ({1} min): {2}, confiança {3}	Сигнал изменился на {0} ({1} мин): {2}, уверенность {3}
+{0} ({1} min)	{0} ({1} мин)
+De alta	Бычий
+De baixa	Медвежий
+janela {0} min	окно {0} мин
+preço {0} → {1} · CVD {2} → {3} BTC	цена {0} → {1} · CVD {2} → {3} BTC
+div|{0}|{1}|{2}	div|{0}|{1}|{2}
+retirada sem execução (provável cancelamento)	отмена без исполнения (вероятная отмена)
+preço atravessou, execução não confirmada	цена прошла, исполнение не подтверждено
+execução confirmada pelos trades	исполнение подтверждено сделками
+livro cruzado (bid {0} >= ask {1})	перекрещённый стакан (bid {0} >= ask {1})
+Favorável ao BTC	Благоприятно для BTC
+Desfavorável ao BTC	Неблагоприятно для BTC
+Neutro	Нейтрально
+Indeterminado	Неопределённо
+Baixa	Низкая
+Moderada	Умеренная
+Alta	Высокая
+Crítica	Критическая
+Imediato (minutos a horas)	Немедленно (от минут до часов)
+Curto prazo ({0} a {1} dias)	Краткосрочно ({0}–{1} дн.)
+Médio prazo ({0} a {1} semanas)	Среднесрочно ({0}–{1} нед.)
+Longo prazo (acima de {0} mês)	Долгосрочно (более {0} мес.)
+Fonte oficial	Официальный источник
+Média	Средняя
+Conflitos e segurança	Конфликты и безопасность
+Comércio internacional	Международная торговля
+Energia e commodities	Энергетика и сырьё
+Federal Reserve	ФРС США
+Política fiscal e dívida	Фискальная политика и долг
+Regulação cripto	Регулирование крипто
+Política americana	Политика США
+Avanço regulatório ou institucional reduz risco jurídico e pode ampliar a demanda por BTC.	Продвижение регулирования или институционализации снижает правовой риск и может увеличить спрос на BTC.
+Decisão regulatória	Регуляторное решение
+Acesso institucional / segurança jurídica	Институциональный доступ / правовая определённость
+Demanda por cripto	Спрос на крипто
+Possível alta do BTC	Возможный рост BTC
+Ação restritiva, processo ou incidente no setor aumenta o risco percebido e pode gerar vendas.	Ограничительные меры, судебный процесс или инцидент в отрасли повышают воспринимаемый риск и могут вызвать продажи.
+Ação contra o setor	Действие против отрасли
+Risco regulatório / de contraparte	Регуляторный / контрагентский риск
+Saída de capital de cripto	Отток капитала из крипто
+Possível pressão no BTC	Возможное давление на BTC
+Tema regulatório em andamento: o efeito depende do conteúdo final.	Регуляторный вопрос в процессе: эффект зависит от окончательного содержания.
+Debate regulatório	Регуляторные дебаты
+Incerteza sobre regras	Неопределённость правил
+Posicionamento do mercado	Позиционирование рынка
+Efeito no BTC depende do desfecho	Эффект для BTC зависит от исхода
+Juros menores (ou expectativa de cortes) reduzem o custo do dinheiro e tendem a favorecer ativos de risco.	Более низкие ставки (или ожидание снижения) уменьшают стоимость денег и, как правило, благоприятствуют рисковым активам.
+Corte / sinal de corte de juros	Снижение / сигнал о снижении ставок
+Treasury yields e dólar tendem a cair	Доходность казначейских облигаций и доллар, как правило, снижаются
+Apetite por risco nas bolsas	Аппетит к риску на фондовых рынках
+Ambiente favorável ao BTC	Среда, благоприятная для BTC
+Juros mais altos por mais tempo fortalecem o dólar e encarecem o risco.	Более высокие ставки на более длительный срок укрепляют доллар и повышают стоимость риска.
+Sinal de juros altos	Сигнал о высоких ставках
+Yields e dólar sobem	Доходность и доллар растут
+Aversão a risco nas bolsas	Неприятие риска на фондовых рынках
+Pressão sobre o BTC	Давление на BTC
+Comunicação do Fed muda expectativas de juros; a direção depende do tom.	Коммуникация ФРС меняет ожидания по ставкам; направление зависит от тона.
+Comunicação do Fed	Коммуникация ФРС
+Expectativa de juros	Ожидания по ставкам
+Yields / dólar	Доходность / доллар
+BTC reage à mudança de expectativa	BTC реагирует на изменение ожиданий
+Alívio comercial reduz risco de inflação e de desaceleração; costuma melhorar o apetite por risco.	Торговое смягчение снижает риск инфляции и замедления экономики; обычно улучшает аппетит к риску.
+Alívio comercial	Торговое смягчение
+Menos pressão em preços e cadeias	Меньше давления на цены и цепочки поставок
+Bolsas tendem a subir	Фондовые рынки, как правило, растут
+Apoio ao BTC	Поддержка BTC
+Tarifas e sanções elevam custos e incerteza: pressão inflacionária, dólar mais forte e aversão a risco.	Тарифы и санкции повышают издержки и неопределённость: инфляционное давление, более сильный доллар и неприятие риска.
+Tarifa / sanção	Тарифы / санкции
+Inflação e incerteza sobem	Инфляция и неопределённость растут
+Dólar forte, bolsas pressionadas	Сильный доллар, давление на фондовые рынки
+Pressão de curto prazo no BTC	Краткосрочное давление на BTC
+Redução de tensão diminui a busca por proteção (dólar/ouro) e alivia petróleo.	Снижение напряжённости уменьшает спрос на защитные активы (доллар/золото) и снижает нефть.
+Redução de conflito	Снижение конфликта
+Petróleo e VIX tendem a cair	Нефть и VIX, как правило, снижаются
+Volta do apetite por risco	Возвращение аппетита к риску
+Escalada militar gera aversão a risco imediata (dólar, ouro e petróleo sobem). No longo prazo o efeito sobre o BTC é ambíguo.	Военная эскалация вызывает немедленное снижение аппетита к риску (доллар, золото и нефть растут). В долгосрочной перспективе влияние на BTC неоднозначно.
+Escalada militar	Escalada militar
+Petróleo, ouro, dólar e VIX sobem	Нефть, золото, доллар и VIX растут
+Venda de ativos de risco	Распродажа рисковых активов
+Pressão imediata no BTC	Немедленное давление на BTC
+Petróleo mais barato alivia a inflação e abre espaço para juros menores.	Более дешёвая нефть снижает инфляцию и открывает пространство для более низких ставок.
+Petróleo em queda	Нефть падает
+Inflação esperada menor	Ожидаемая инфляция ниже
+Juros/yields podem cair	Juros/yields podem cair
+Leve apoio ao BTC	Умеренная поддержка BTC
+Choque de energia pressiona a inflação e pode adiar cortes de juros.	Энергетический шок давит на инфляцию и может отложить снижение ставок.
+Petróleo / gás sobem	Нефть / газ растут
+Inflação esperada maior	Ожидаемая инфляция выше
+Pressão no BTC	Давление на BTC
+Impasse fiscal aumenta volatilidade; pode favorecer ativos fora do sistema, mas no curto prazo costuma haver aversão a risco.	Бюджетный тупик повышает волатильность; может благоприятствовать активам вне системы, но в краткосрочной перспективе обычно наблюдается снижение аппетита к риску.
+Impasse fiscal	Impasse fiscal
+Prêmio de risco nos Treasuries	Премия за риск по казначейским облигациям США
+Volatilidade nas bolsas	Volatilidade nas bolsas
+Efeito no BTC incerto	Влияние на BTC неопределённое
+Mais gasto/dívida pode aumentar liquidez e também os yields; o saldo depende da reação dos juros.	Больше расходов/долга может увеличить ликвидность, а также доходности; итог зависит от реакции ставок.
+Política fiscal	Фискальная политика
+Liquidez × oferta de títulos	Ликвидность × предложение облигаций
+Yields	Yields
+Efeito no BTC depende dos juros	Влияние на BTC зависит от ставок
+Inflação acima do esperado reduz a chance de cortes de juros.	Инфляция выше ожидаемой снижает вероятность снижения ставок.
+Inflação acima do esperado	Инфляция выше ожидаемой
+Menos cortes de juros	Меньше снижений ставок
+Inflação desacelerando aumenta a chance de cortes de juros.	Замедление инфляции повышает вероятность снижения ставок.
+Inflação abaixo do esperado	Инфляция ниже ожидаемой
+Mais cortes de juros precificados	Больше снижений ставок в цене
+Yields e dólar caem	Доходности и доллар падают
+Desaceleração aumenta chance de cortes de juros (positivo), mas também o risco de queda das bolsas (negativo).	Замедление повышает вероятность снижения ставок (позитивно), но также риск падения фондовых рынков (негативно).
+Sinais de desaceleração	Признаки замедления
+Expectativa de cortes ↑ / lucros ↓	Ожидание снижения ставок ↑ / прибыли ↓
+Bolsas oscilam	Bolsas oscilam
+Efeito no BTC ambíguo	Влияние на BTC неоднозначно
+High	High
+Menos cortes de juros / yields sobem	Меньше снижений ставок / доходности растут
+Dólar sobe, bolsas caem	Доллар растёт, фондовые рынки падают
+Pressão vendedora no BTC	Давление продавцов на BTC
+O impacto depende do que já estava precificado e da reação dos Treasury yields.	Влияние зависит от того, что уже заложено в цены, и от реакции доходностей казначейских облигаций (Treasury yields).
+Mais cortes de juros / yields caem	Больше снижений ставок / доходности падают
+Dólar cai, bolsas sobem	Доллар падает, фондовые рынки растут
+Alívio para o BTC	Облегчение для BTC
+Salários acima do esperado	Зарплаты выше ожидаемых
+Pressão inflacionária	Инфляционное давление
+Yields sobem	Yields sobem
+Salários fortes mantêm a inflação de serviços.	Сильные зарплаты поддерживают инфляцию в сфере услуг.
+Salários abaixo do esperado	Зарплаты ниже ожидаемых
+Menos pressão inflacionária	Меньше инфляционного давления
+Yields caem	Yields caem
+Empregos acima do esperado	Занятость выше ожидаемой
+Economia aquecida: menos cortes	Economia aquecida: menos cortes
+Um número muito fraco também pode assustar (risco de recessão).	Слишком слабое значение тоже может напугать (риск рецессии).
+Empregos abaixo do esperado	Занятость ниже ожидаемой
+Esfriamento: mais cortes	Охлаждение: больше снижений ставок
+Alívio para o BTC (se não virar medo de recessão)	Облегчение для BTC (если не перейдёт в страх рецессии)
+Desemprego/pedidos acima do esperado	Безработица/заявки выше ожидаемых
+Trabalho esfriando: mais cortes	Охлаждение рынка труда: больше снижений ставок
+Apoio ao BTC (se não virar medo de recessão)	Поддержка BTC (если не перейдёт в страх рецессии)
+Alta forte do desemprego pode virar aversão a risco.	Резкий рост безработицы может обернуться снижением аппетита к риску.
+Desemprego/pedidos abaixo do esperado	Безработица/заявки ниже ожидаемых
+Trabalho firme: menos cortes	Trabalho firme: menos cortes
+Juros acima do esperado	Ставки выше ожидаемых
+Política mais restritiva	Более жёсткая политика
+O comunicado e a coletiva costumam pesar mais que a decisão.	Заявление и пресс-конференция обычно важнее самого решения.
+Juros abaixo do esperado	Ставки ниже ожидаемых
+Política mais frouxa	Более мягкая политика
+Atividade acima do esperado	Активность выше ожидаемой
+Lucros melhores, mas juros podem subir	Lucros melhores, mas juros podem subir
+Bolsas e yields sobem juntos	Bolsas e yields sobem juntos
+Efeito no BTC depende da reação dos juros	Влияние на BTC зависит от реакции ставок
+Crescimento forte é bom para risco, mas pode adiar cortes de juros.	Сильный рост благоприятен для рисковых активов, но может отложить снижение ставок.
+Atividade abaixo do esperado	Активность ниже ожидаемой
+Mais cortes, mas lucros piores	Больше сокращений, но прибыль хуже
+Yields caem, bolsas oscilam	Yields caem, bolsas oscilam
+Em linha com o esperado	В соответствии с ожиданиями
+Sem surpresa: o impacto tende a ser pequeno. {0}	Без сюрпризов: влияние, как правило, невелико. {0}
+Acima do esperado	Выше ожидаемого
+Abaixo do esperado	Ниже ожидаемого
+Política monetária	Монетарная политика
+Média de: (a) Treasury {0} anos abaixo da taxa efetiva do Fed = cortes precificados (±{1} pp = ±{2}); (b) taxa implícita nos futuros de Fed funds de ~{3} meses à frente contra a taxa atual ({4} pp = {5}). Cortes esperados = favorável.	Среднее из: (а) доходность Treasury {0} лет ниже фактической ставки ФРС = заложенные в цены снижения (±{1} п.п. = ±{2}); (б) ставка, подразумеваемая фьючерсами на fed funds примерно через ~{3} мес., относительно текущей ставки ({4} п.п. = {5}). Ожидаемые снижения = благоприятно.
+Inflação	Инфляция
+Núcleo do CPI ({0} meses anualizado) contra a variação em {1} meses: desacelerando = favorável; acelerando = desfavorável. Escala: ±{2} pp = ±{3}.	Базовый CPI ({0} мес. в годовом выражении) против изменения за {1} мес.: замедление = благоприятно; ускорение = неблагоприятно. Шкала: ±{2} п.п. = ±{3}.
+Mercado de trabalho	Рынок труда
+Desemprego subindo {0}–{1} pp em {2} meses = esfriamento (mais cortes, {3}); acima de {4} pp = risco de recessão ({5}); salários > {6}% a/a = {7}.	Рост безработицы на {0}–{1} п.п. за {2} мес. = охлаждение (больше снижений, {3}); выше {4} п.п. = риск рецессии ({5}); зарплаты > {6}% г/г = {7}.
+Dólar (DXY)	Доллар (DXY)
+Variação em {0} pregões: dólar caindo = favorável. Escala: ±{1}% = ±{2}.	Изменение за {0} торг. сессий: падение доллара = благоприятно. Шкала: ±{1}% = ±{2}.
+Treasury yields	Доходности Treasury
+Média de: Treasury {0} anos nominal em {1} dias (±{2} bp = ∓{3}) e juro real de {4} anos (TIPS) em {5} dias (±{6} bp = ∓{7}). Juros caindo = favorável.	Среднее из: номинальная доходность Treasury {0} лет за {1} дн. (±{2} б.п. = ∓{3}) и реальная доходность {4} лет (TIPS) за {5} дн. (±{6} б.п. = ∓{7}). Падение доходностей = благоприятно.
+Liquidez	Ликвидность
+Média de: TGA em ~{0} semanas (caindo devolve liquidez; ±US$ {1} bi = ∓{2}), balanço do Fed na semana (±US$ {3} bi = ±{4}) e estoque de stablecoins em {5} dias (±{6}% = ±{7}, liquidez do mercado cripto).	Среднее из: TGA через ~{0} нед. (снижение возвращает ликвидность; ±US$ {1} млрд = ∓{2}), баланс ФРС за неделю (±US$ {3} млрд = ±{4}) и объём стейблкоинов за {5} дн. (±{6}% = ±{7}, ликвидность крипторынка).
+Mercado acionário	Фондовый рынок
+Nasdaq {0} em {1} pregões: alta = apetite por risco (favorável). Escala: ±{2}% = ±{3}.	Nasdaq {0} за {1} торг. сессий: рост = аппетит к риску (благоприятно). Шкала: ±{2}% = ±{3}.
+Volatilidade (VIX e MOVE)	Волатильность (VIX и MOVE)
+VIX < {0}: {1} · {2}–{3}: {4} · {5}–{6}: {7} · > {8}: {9}; salto > {10}% no dia soma {11}. MOVE (volatilidade dos Treasuries) > {12} soma {13}; < {14} soma {15}.	VIX < {0}: {1} · {2}–{3}: {4} · {5}–{6}: {7} · > {8}: {9}; скачок > {10}% за день добавляет {11}. MOVE (волатильность казначейских облигаций) > {12} добавляет {13}; < {14} добавляет {15}.
+Eventos geopolíticos	Геополитические события
+Soma das notícias classificadas nas últimas {0} h (direção × intensidade × confiabilidade), limitada a ±{1}.	Сумма классифицированных новостей за последние {0} ч (направление × интенсивность × достоверность), ограничена ±{1}.
+Fluxo institucional (ETFs)	Институциональные потоки (ETF)
+Soma dos fluxos dos ETFs spot nos últimos {0} pregões: ±US$ {1} bi = ±{2}.	Сумма потоков спотовых ETF за последние {0} торг. сессий: ±US$ {1} млрд = ±{2}.
+Sem dados suficientes	Недостаточно данных
+Extremamente desfavorável	Крайне неблагоприятно
+Desfavorável	Неблагоприятно
+Neutro / misto	Нейтрально / смешанно
+Favorável	Благоприятно
+Extremamente favorável	Крайне благоприятно
+Fed efetivo {0}% × Treasury {1} anos {2}% ({3})	Фактическая ставка ФРС {0}% × Treasury {1} лет {2}% ({3})
+sem mudança precificada	изменений не заложено
+futuros de Fed funds ~{0} meses: {1}% ({2} bp)	фьючерсы на fed funds ~{0} мес.: {1}% ({2} б.п.)
+Sem taxa do Fed, Treasury {0} anos ou futuros	Нет данных по ставке ФРС, Treasury {0} лет или фьючерсам
+Núcleo do CPI: {0}% em {1} meses, {2}% anualizado em {3} meses ({4})	Базовый CPI: {0}% за {1} мес., {2}% в годовом выражении за {3} мес. ({4})
+Núcleo do CPI desatualizado ({0})	Базовый CPI устарел ({0})
+Sem núcleo do CPI	Нет данных по базовому CPI
+Desemprego {0}% ({1} pp em {2} meses){3}	Безработица {0}% ({1} п.п. за {2} мес.){3}
+ · salários {0}% a/a	 · зарплаты {0}% г/г
+Desemprego desatualizado ({0})	Безработица устарела ({0})
+Sem dado de desemprego	Нет данных по безработице
+DXY {0}% em {1} pregões	DXY {0}% за {1} торг. сессий
+Sem DXY	Нет данных по DXY
+Treasury {0} anos {1} bp em {2} dias	Treasury {0} лет {1} б.п. за {2} дн.
+Sem Treasury {0} anos	Нет данных по Treasury {0} лет
+TGA US$ {0} bi ({1} bi em ~{2} semanas)	TGA US$ {0} млрд ({1} млрд через ~{2} нед.)
+balanço do Fed {0} bi na semana	баланс ФРС {0} млрд за неделю
+stablecoins {0}% em {1} dias	стейблкоины {0}% за {1} дн.
+Sem TGA, balanço do Fed ou stablecoins	Нет данных по TGA, балансу ФРС или стейблкоинам
+Nasdaq {0} {1}% em {2} pregões	Nasdaq {0} {1}% за {2} торг. сессий
+Sem Nasdaq	Нет данных по Nasdaq
+VIX {0}{1}	VIX {0}{1}
+ ({0}% no dia)	 ({0}% за день)
+MOVE {0}	MOVE {0}
+Sem VIX nem MOVE	Нет данных по VIX и MOVE
+{0} notícias desfavoráveis · {1} favoráveis · {2} indeterminadas ({3} h)	{0} неблагоприятных новостей · {1} благоприятных · {2} неопределённых ({3} ч)
+Sem notícias classificadas nas últimas {0} h	Нет классифицированных новостей за последние {0} ч
+ETFs spot: US$ {0} mi em {1} pregões	Спотовые ETF: US$ {0} млн за {1} торг. сессий
+Sem fluxo dos ETFs (abra a aba ETFs para carregar)	Нет данных по потокам ETF (откройте вкладку ETF для загрузки)
+ (desatualizado)	 (устарело)
+Comprador	Покупатель
+Vendedor	Продавец
+Equilibrado	Сбалансировано
+LONG liquidados	LONG ликвидированы
+SHORT liquidados	SHORT ликвидированы
+Sem evento relevante	Нет значимых событий
+Cenário A: macro desfavorável + vendas agressoras + liquidações de LONG. Possível queda reforçada por pressão macro e desalavancagem.	Сценарий A: макро неблагоприятно + агрессивные продажи + ликвидации LONG. Возможное падение, усиленное макродавлением и деливериджем.
+Cenário B: macro desfavorável, mas há absorção de vendas nas paredes de compra e o preço se sustenta. O mercado pode estar absorvendo a pressão vendedora (resistência à queda).	Сценарий B: макро неблагоприятно, но стенки покупок поглощают продажи, и цена удерживается. Рынок может поглощать давление продавцов (сопротивление падению).
+Cenário C: macro favorável + compras agressoras. Movimento de alta alinhado com as condições macro e com o fluxo comprador	Сценарий C: макро благоприятно + агрессивные покупки. Рост согласован с макроусловиями и покупательским потоком
+, reforçado por liquidações de SHORT.	, усиленный ликвидациями SHORT.
+Macro favorável, mas há absorção de compras nas paredes de venda e o preço não avança: oferta segurando a alta.	Макро благоприятно, но стенки продаж поглощают покупки, и цена не растёт: предложение сдерживает рост.
+Macro desfavorável e vendas agressoras na mesma direção, ainda sem desalavancagem forte (liquidações de LONG). Pressão vendedora alinhada ao cenário macro.	Макро неблагоприятно и агрессивные продажи в одном направлении, но без сильного деливериджа (ликвидаций LONG). Давление продавцов согласовано с макросценарием.
+Macro favorável e SHORT sendo liquidados, mas sem compra agressora clara: alta puxada por recompra forçada, menos sustentada.	Макро благоприятно и ликвидируются SHORT, но чёткой агрессивной покупки нет: рост подталкивается принудительным выкупом и менее устойчив.
+Macro desfavorável e LONG sendo liquidados, mas sem venda agressora clara: queda puxada por desalavancagem.	Макро неблагоприятно и ликвидируются LONG, но чёткой агрессивной продажи нет: падение подталкивается деливериджем.
+Divergência: o fluxo agressor vai contra o cenário macro. Pode ser movimento técnico local; vale cautela até haver confirmação.	Расхождение: агрессивный поток идёт против макросценария. Может быть локальным техническим движением; стоит соблюдать осторожность до подтверждения.
+Cenário macro neutro/misto: o order flow tende a dominar a leitura de curto prazo.	Макросценарий нейтральный/смешанный: order flow, как правило, определяет краткосрочную картину.
+Sem confirmação clara do order flow em relação ao cenário macro.	Нет чёткого подтверждения order flow относительно макросценария.
+ Dados públicos não permitem identificar participantes individuais.	 Публичные данные не позволяют идентифицировать отдельных участников.
+Accept	Принять
+limite de consultas da fonte (HTTP {0})	лимит запросов источника (HTTP {0})
+HTTP {0}	HTTP {0}
+^GSPC	^GSPC
+Nasdaq {0}	Nasdaq {0}
+^NDX	^NDX
+Dow Jones	Dow Jones
+^DJI	^DJI
+^VIX	^VIX
+Treasury {0} anos (intradiário)	Казначейские облигации {0} лет (внутридневные)
+^TNX	^TNX
+Ouro	Золото
+GC=F	GC=F
+Petróleo WTI	Нефть WTI
+CL=F	CL=F
+Petróleo Brent	Нефть Brent
+BZ=F	BZ=F
+Bitcoin	Bitcoin
+sem resultado ({0})	нет результата ({0})
+{0} Yr	{0} Yr
+colunas {0} Yr/{1} Yr não encontradas	столбцы {0} Yr/{1} Yr не найдены
+CPI (índice, dessaz.)	CPI (индекс, сезонно скорр.)
+Núcleo do CPI (índice, dessaz.)	Базовый CPI (индекс, сезонно скорр.)
+Nonfarm payrolls (mil)	Nonfarm payrolls (тыс.)
+Taxa de desemprego (%)	Уровень безработицы (%)
+Salário médio por hora (US$)	Средняя почасовая оплата (US$)
+,"registrationkey":"{0}"	,"registrationkey":"{0}"
+{"seriesid":[{0}],"startyear":"{1}","endyear":"{2}"{3}}	{"seriesid":[{0}],"startyear":"{1}","endyear":"{2}"{3}}
+BLS: {0} {1}	BLS: {0} {1}
+Results	Results
+PCE (índice de preços)	PCE (индекс цен)
+Núcleo do PCE (índice)	Базовый PCE (индекс)
+BEA (via DBnomics)	BEA (через DBnomics)
+Treasury General Account	Treasury General Account
+Closing	Closing
+Opening	Opening
+(war OR missile OR airstrike OR invasion OR ceasefire OR "military escalation" OR "Strait of Hormuz") (US OR China OR Russia OR Iran OR Israel OR Taiwan OR Ukraine)	(war OR missile OR airstrike OR invasion OR ceasefire OR "military escalation" OR "Strait of Hormuz") (US OR China OR Russia OR Iran OR Israel OR Taiwan OR Ukraine)
+(tariffs OR sanctions OR "export controls" OR "trade deal" OR "trade war")	(tariffs OR sanctions OR "export controls" OR "trade deal" OR "trade war")
+("oil prices" OR OPEC OR "natural gas prices" OR "energy supply")	("oil prices" OR OPEC OR "natural gas prices" OR "energy supply")
+("Federal Reserve" OR Powell OR FOMC OR "rate cut" OR "rate hike" OR "inflation report" OR "jobs report")	("Federal Reserve" OR Powell OR FOMC OR "rate cut" OR "rate hike" OR "inflation report" OR "jobs report")
+("debt ceiling" OR "government shutdown" OR "Treasury yields" OR "credit rating" OR "fiscal deficit")	("debt ceiling" OR "government shutdown" OR "Treasury yields" OR "credit rating" OR "fiscal deficit")
+(bitcoin OR crypto OR stablecoin) (SEC OR regulation OR bill OR ban OR "strategic reserve" OR ETF)	(bitcoin OR crypto OR stablecoin) (SEC OR regulation OR bill OR ban OR "strategic reserve" OR ETF)
+dc|date	dc|date
+ GMT	 GMT
+ UTC	 UTC
+ UT	 UT
+ EST	 EST
+ EDT	 EDT
+ CST	 CST
+ CDT	 CDT
+ PST	 PST
+ PDT	 PDT
+Cointelegraph	Cointelegraph
+Decrypt	Decrypt
+The Block	The Block
+Bitcoin Magazine	Bitcoin Magazine
+CNBC Economy	CNBC Economy
+WSJ Markets	WSJ Markets
+New York Times	New York Times
+New York Times World	New York Times World
+BBC Business	BBC Business
+BBC World	BBC World
+Al Jazeera	Al Jazeera
+Financial Times	Financial Times
+Bloomberg	Bloomberg
+DW Business	DW Business
+Russell {0}	Russell {0}
+^RUT	^RUT
+Bolsas	Биржи
+FTSE {0} (Londres)	FTSE {0} (Лондон)
+^FTSE	^FTSE
+DAX (Alemanha)	DAX (Германия)
+^GDAXI	^GDAXI
+Nikkei {0} (Japão)	Nikkei {0} (Япония)
+Hang Seng (Hong Kong)	Hang Seng (Гонконг)
+^HSI	^HSI
+Xangai	Шанхай
+Ibovespa	Ibovespa
+^BVSP	^BVSP
+Euro / dólar	Евро / доллар
+EURUSD=X	EURUSD=X
+Moedas	Валюты
+Dólar / iene	Доллар / иена
+JPY=X	JPY=X
+Dólar / yuan	Доллар / юань
+CNY=X	CNY=X
+Dólar / real	Доллар / реал
+BRL=X	BRL=X
+Prata	Серебро
+SI=F	SI=F
+Commodities	Сырьё
+Cobre	Медь
+HG=F	HG=F
+Gás natural	Природный газ
+NG=F	NG=F
+Treasury {0} semanas	Treasury {0} нед.
+^IRX	^IRX
+Juros e crédito	Ставки и кредит
+Treasury {0} anos	Treasury {0} л.
+^FVX	^FVX
+^TYX	^TYX
+MOVE (volatilidade dos Treasuries)	MOVE (волатильность Treasuries)
+^MOVE	^MOVE
+HYG (crédito high yield)	HYG (высокодоходные облигации)
+Ethereum	Ethereum
+Cripto e ações ligadas	Крипто и связанные акции
+IBIT (ETF de BTC da BlackRock)	IBIT (ETF на BTC от BlackRock)
+Strategy (MSTR)	Strategy (MSTR)
+Coinbase (COIN)	Coinbase (COIN)
+coluna {0} não encontrada	колонка {0} не найдена
+&#xa0;|&nbsp;|&#{0};	&#xa0;|&nbsp;|&#{0};
+total de ativos não encontrado	общее количество активов не найдено
+sem dominância	нет доминирования
+sem observação	нет наблюдения
+(tariffs OR sanctions OR ceasefire OR airstrike OR "federal reserve" OR "oil prices" OR "debt ceiling") sourcelang:english	(tariffs OR sanctions OR ceasefire OR airstrike OR "federal reserve" OR "oil prices" OR "debt ceiling") sourcelang:english
+&mode=artlist&maxrecords={0}&format=json&timespan={1}h&sort=datedesc	&mode=artlist&maxrecords={0}&format=json&timespan={1}h&sort=datedesc
+Federal Reserve Bank of New York	Федеральный резервный банк Нью-Йорка
+Taxa efetiva do Fed (EFFR), intervalo-alvo, SOFR e reverse repo overnight	Эффективная ставка ФРС (EFFR), целевой диапазон, SOFR и овернайт reverse repo
+Calendário do FOMC, balanço semanal (H.4.1), reservas bancárias e comunicados	Календарь FOMC, еженедельный баланс (H.4.1), банковские резервы и заявления
+U.S. Treasury	U.S. Treasury
+Curva de juros nominal e real (TIPS), saldo do TGA e dívida pública	Номинальная и реальная кривая доходности (TIPS), остаток TGA и госдолг
+Treasury Fiscal Data	Treasury Fiscal Data
+Daily Treasury Statement (TGA) e Debt to the Penny	Daily Treasury Statement (TGA) и Debt to the Penny
+U.S. Bureau of Labor Statistics (BLS)	U.S. Bureau of Labor Statistics (BLS)
+CPI, núcleo do CPI, payroll, desemprego e salário por hora	CPI, базовый CPI, payroll, безработица и почасовая зарплата
+U.S. Bureau of Economic Analysis (BEA) via DBnomics	U.S. Bureau of Economic Analysis (BEA) через DBnomics
+PCE e núcleo do PCE	PCE и базовый PCE
+Banco Central Europeu (BCE)	Европейский центральный банк (ЕЦБ)
+Taxa de depósito e comunicados	Ставка депозита и заявления
+SEC e CFTC	SEC и CFTC
+Comunicados dos reguladores americanos	Заявления американских регуляторов
+Bolsas (EUA, Europa, Ásia, Brasil), VIX, MOVE, DXY, moedas, commodities, Treasuries intradiários, futuros de Fed funds (CBOT), ETH, IBIT, MSTR, COIN, HYG	Биржи (США, Европа, Азия, Бразилия), VIX, MOVE, DXY, валюты, сырьё, внутридневные Treasuries, фьючерсы на ставки фондов ФРС (CBOT), ETH, IBIT, MSTR, COIN, HYG
+Probabilidades negociadas da próxima decisão de juros do Fed	Согласованные вероятности следующего решения ФРС по ставке
+Forex Factory (faireconomy.media)	Forex Factory (faireconomy.media)
+Calendário econômico semanal: horário, impacto, expectativa e anterior	Экономический календарь на неделю: время, влияние, прогноз и предыдущее значение
+Farside Investors	Farside Investors
+Fluxo diário dos ETFs spot de bitcoin	Ежедневный приток/отток спотовых ETF на биткоин
+Valor de mercado cripto, dominância do BTC e volume	Капитализация крипторынка, доминирование BTC и объём
+Estoque total de stablecoins	Совокупный объём стейблкоинов
+Índice Fear & Greed do mercado cripto	Индекс страха и жадности крипторынка (Fear & Greed)
+Hashrate, dificuldade e taxas da rede Bitcoin	Хешрейт, сложность и комиссии сети Bitcoin
+Google News	Google News
+Manchetes por tema (conflitos, comércio, energia, Fed, fiscal, regulação cripto)	Заголовки по темам (конфликты, торговля, энергетика, ФРС, фискальная политика, регулирование крипто)
+GDELT Project	GDELT Project
+Monitor global de notícias	Глобальный монитор новостей
+Veículos (RSS)	Издания (RSS)
+Google Tradutor	Google Translate
+Tradução automática de manchetes e textos sem tradução pronta	Автоматический перевод заголовков и текстов без готового перевода
+{0} ({1}, calculado do índice oficial)	{0} ({1}, рассчитано по официальному индексу)
+btcusdt@forceOrder	btcusdt@forceOrder
+trades.liquidation={0}	trades.liquidation={0}
+ABSORÇÃO	ПОГЛОЩЕНИЕ
+{0}: reiniciando conexão ({1})	{0}: перезапуск соединения ({1})
+{0}: conectado	{0}: подключено
+{0}: falha na inscrição: {1}	{0}: ошибка подписки: {1}
+parsing: {0}	парсинг: {0}
+{0}: falha de parsing: {1} | {2}	{0}: ошибка парсинга: {1} | {2}
+HTTP {0} 	HTTP {0} 
+{0}: desconectado: {1}	{0}: отключено: {1}
+{0}: fechado pelo servidor ({1} {2})	{0}: закрыто сервером ({1} {2})
+Tentar de novo	Повторить
+CPU do processo	Загрузка CPU процессом
+Radar BTC	Радар BTC
+Windows	Windows
+O Radar BTC já está aberto.	Радар BTC уже открыт.
+Iniciando Radar BTC V8 (Java {0})	Запуск Радар BTC V8 (Java {0})
+Encerrado	Закрыто
+BTC Orderflow Terminal V8 — Radar BTC	BTC Orderflow Terminal V8 — Радар BTC
+[app] {0}	[app] {0}
+acima (shorts a liquidar)	выше (шорты к ликвидации)
+abaixo (longs a liquidar)	ниже (лонги к ликвидации)
+zone|{0}	zone|{0}
+Preço {0} a {1}% da zona {2} {3} com ~{4} BTC estimados ({5})	Цена {0} на {1}% от зоны {2} {3} с ~{4} BTC оценочно ({5})
+Teste de alerta do Radar BTC: canal configurado corretamente.	Тестовое оповещение Радар BTC: канал настроен правильно.
+Radar BTC · {0}\n{1}\n{2}	Радар BTC · {0}\n{1}\n{2}
+Radar BTC · {0}	Радар BTC · {0}
+Celular: 	Телефон: 
+Windows: 	Windows: 
+notificações bloqueadas ou indisponíveis	уведомления заблокированы или недоступны
+Telegram: 	Telegram: 
+Radar BTC: {0}	Радар BTC: {0}
+E-mail: 	E-mail: 
+nenhum canal configurado	нет настроенных каналов
+alerta {0}: {1}	оповещение {0}: {1}
+token ou chat ID vazio	пустой токен или ID чата
+HTTP {0}: {1}	HTTP {0}: {1}
+servidor, usuário ou destinatário vazio	пустой сервер, пользователь или получатель
+US$ {0} mi	US$ {0} млн
+ETFs spot de BTC (EUA)	Спотовые ETF на BTC (США)
+Carregando os fluxos dos ETFs…	Загрузка потоков ETF…
+Fonte: tabela pública diária da Farside Investors	Источник: ежедневная публичная таблица Farside Investors
+Fluxos indisponíveis no momento	Потоки временно недоступны
+Sem dados	Нет данных
+Fluxo diário	Дневной поток
+Último pregão · 	Последняя сессия · 
+entrada líquida no dia	чистый приток за день
+saída líquida no dia	чистый отток за день
+{0} pregões	{0} сессий
+Fluxo diário · últimos {0} pregões	Дневной поток · последние {0} сессий
+Valores em milhões de dólares, como publicados pela Farside Investors (atualiza depois do fechamento do mercado americano). Barras verdes = entrada líquida no dia; vermelhas = saída.	Значения в миллионах долларов, как публикует Farside Investors (обновляется после закрытия американского рынка). Зелёные столбцы = чистый приток за день; красные = отток.
+Por fundo	По фонду
+Por fundo no último pregão	По фонду за последнюю сессию
+Velas visíveis	Видимые свечи
+Vela	Свеча
+faixa US$ {0} · {1} velas	диапазон US$ {0} · {1} свечей
+Faixa US$	Шаг US$
+Velas	Свечи
+Corretoras	Биржи
+Todas	Все
+Dados desde {0}	Данные с {0}
+Aguardando trades	Ожидание сделок
+Footprint · venda × compra agressora por faixa (BTC)	Footprint · агрессивная продажа × агрессивная покупка по уровням (BTC)
+Montando o footprint	Формирование footprint
+Precisa de trades das corretoras principais; cada vela aparece assim que recebe execuções	Нужны сделки основных бирж; каждая свеча появляется, как только получает исполнения
+Perfil de volume	Профиль объёма
+Sem volume no período	Нет объёма за период
+Resumo	Сводка
+POC (maior volume)	POC (максимальный объём)
+VAH (topo da área de valor)	VAH (верх зоны стоимости)
+VAL (base da área de valor)	VAL (низ зоны стоимости)
+Volume no perfil	Объём в профиле
+Delta do perfil	Дельта профиля
+{0} BTC	{0} BTC
+Delta da vela atual	Дельта текущей свечи
+Cada célula mostra venda agressora × compra agressora naquela faixa de preço. Fundo verde = compradores dominaram a faixa; vermelho = vendedores. Número em destaque = desequilíbrio diagonal (um lado ≥ {0}× o outro). Contorno laranja = POC da vela. Área de valor = faixas com {1}% do volume. Trades de Binance, Bybit e OKX, guardados por {2} h em faixas de US$ {3}.	Каждая ячейка показывает агрессивную продажу × агрессивную покупку на этом уровне цены. Зелёный фон = покупатели доминировали на уровне; красный = продавцы. Выделенное число = диагональный дисбаланс (одна сторона ≥ {0}× другой). Оранжевый контур = POC свечи. Зона стоимости = уровни с {1}% объёма. Сделки Binance, Bybit и OKX, хранятся {2} ч на уровнях шагом US$ {3}.
+Aumente a faixa US$ ou reduza o nº de velas para ver os números	Увеличьте шаг US$ или уменьшите число свечей, чтобы увидеть цифры
+Mover	Переместить
+Linha de preço	Ценовая линия
+Linha	Линия
+Clique no preço onde a linha deve ficar	Нажмите на цену, где должна быть линия
+Tendência	Тренд
+Arraste do ponto inicial até o final	Протяните от начальной точки до конечной
+Zona	Зона
+Arraste de um canto da zona até o canto oposto	Протяните от одного угла зоны до противоположного
+Texto	Текст
+Clique onde a nota deve ficar	Нажмите, где должна быть заметка
+Ajustar	Изменить
+Apagar marcação	Удалить отметку
+Apagar todas ({0})	Удалить все ({0})
+Nota em {0}:	Заметка на {0}:
+Salvar	Сохранить
+Cancelar	Отмена
+ BTC	 BTC
+Pinça: zoom · arrastar: mover · toque duplo: voltar	Щипок: масштаб · перетаскивание: сдвиг · двойное касание: сброс
+Roda: zoom · na escala: zoom no preço · arrastar: mover · duplo clique: voltar	Колесо: масштаб · на шкале: масштаб по цене · перетаскивание: сдвиг · двойной щелчок: сброс
+baixando velas	загрузка свечей
+open interest {0}	открытый интерес {0}
+histórico de preço insuficiente para {0}	недостаточно истории цены для {0}
+news-{0}|{1}	news-{0}|{1}
+US$	US$
+Corretora	Биржа
+SMALL ≥	SMALL ≥
+MEDIUM ≥	MEDIUM ≥
+LARGE ≥	LARGE ≥
+EXTREME ≥	EXTREME ≥
+Faixa ±%	Диапазон ±%
+BTC · ativas: {0}	BTC · активных: {0}
+Paredes de compra	Стены покупок
+Top {0} paredes de compra	Топ {0} стен покупок
+Paredes de venda	Стены продаж
+Top {0} paredes de venda	Топ {0} стен продаж
+Histórico de concentrações	История концентраций
+Histórico de concentrações (eventos de saída do livro)	История концентраций (события выхода из стакана)
+PREÇO	ЦЕНА
+NEGOCIADO NO NÍVEL	ИСПОЛНЕНО НА УРОВНЕ
+PERMANÊNCIA	ВРЕМЯ НА УРОВНЕ
+Nenhuma concentração saiu do livro ainda	Ни одна концентрация ещё не вышла из стакана
+Quando uma parede some, aqui aparece se houve execução corroborada por trades ou só retirada	Когда стена пропадает, здесь видно, была ли она исполнена сделками или только снята
+Absorção e iceberg	Поглощение и айсберг
+Absorção e iceberg · {0}	Поглощение и айсберг · {0}
+Nenhuma parede absorvendo agora	Сейчас стен, поглощающих ордера, нет
+Aparece quando um nível recebe execução e não diminui (ou volta a crescer)	Появляется, когда уровень получает исполнение и не уменьшается (или снова растёт)
+Identidade = corretora + instrumento + lado + preço. O livro público é agregado por preço: não identificamos ordens individuais nem quem as colocou. Sumir do livro não prova execução: "Executada (confirmada)" exige trades no nível ≥ {0}% da quantidade. EXECUTADO = BTC negociado exatamente no preço da parede desde que ela apareceu; % CONS. = executado ÷ (executado + restante). ABSORÇÃO = recebeu execução ≥ {1}% do tamanho inicial e manteve ≥ {2}% dele. ICEBERG = executou mais do que mostrava e foi reposta {3}+ vezes (REPOSTO = execução que não reduziu o livro). Ambos são inferências.	Идентичность = биржа + инструмент + сторона + цена. Публичный стакан агрегирован по цене: мы не определяем отдельные ордера и того, кто их выставил. Исчезновение из стакана не доказывает исполнение: «Исполнена (подтверждено)» требует сделок на уровне ≥ {0}% объёма. ИСПОЛНЕНО = BTC, проторгованный ровно по цене стены с момента её появления; % КОНС. = исполнено ÷ (исполнено + остаток). ПОГЛОЩЕНИЕ = получено исполнение ≥ {1}% начального размера и сохранено ≥ {2}% от него. АЙСБЕРГ = исполнено больше, чем показывалось, и восстанавливалась {3}+ раз (ВОССТАНОВЛЕНО = исполнение, которое не уменьшило стакан). Оба являются выводами, а не фактами.
+ATUAL (BTC)	ТЕКУЩАЯ (BTC)
+Δ BTC	Δ BTC
+% CONS.	% КОНС.
+Nenhuma parede acima do limite SMALL nesta faixa	Ни одна стена не превышает лимит SMALL в этом диапазоне
+Ajuste os limites ou a faixa ±% acima	Измените лимиты или диапазон ±% выше
+Fluxo e CVD	Поток и CVD
+Janela	Окно
+Eventos processados na chegada; a tela agrupa a cada {0} s.	События обрабатываются при поступлении; экран группирует их каждые {0} с.
+Fluxo agressor ({0})	Агрессивный поток ({0})
+Fonte	Источник
+Comprado	Куплено
+Vendido	Продано
+Delta	Дельта
+Trades	Сделки
+Médio	Средний
+Maior compra	Крупнейшая покупка
+Maior venda	Крупнейшая продажа
+Consolidado	Итого
+CVD e preço · últimos {0} (histórico desde que o app abriu, até {1} h)	CVD и цена · последние {0} (история с момента открытия приложения, до {1} ч)
+Período	Период
+— Total	— Итого
+— Preço BTC (escala à direita)	— Цена BTC (шкала справа)
+Total: 	Итого: 
+Normalizado: 	Нормализованный: 
+{0}% do OI	{0}% от OI
+Sinal e resumo	Сигнал и сводка
+Sinal de fluxo ({0})	Сигнал потока ({0})
+{0} · confiança {1}	{0} · уверенность {1}
+Dados observados	Наблюдаемые данные
+Interpretação	Интерпретация
+Limitações	Ограничения
+Divergências preço × CVD	Расхождения цена × CVD
+Nenhuma divergência detectada	Расхождений не обнаружено
+Checa {0} min, {1} min e {2} h a cada ~{3} s: preço faz novo fundo/topo e o CVD não confirma	Проверка {0} мин, {1} мин и {2} ч каждые ~{3} с: цена обновляет минимум или максимум, а CVD не подтверждает
+{0} · {1} min	{0} · {1} мин
+Divergência = o preço faz um fundo mais baixo (ou topo mais alto) na {0}ª metade da janela e o CVD não acompanha. Sinal de enfraquecimento, não de reversão garantida.	Расхождение = цена обновляет более низкий минимум (или более высокий максимум) во {0}-й половине окна, а CVD не следует за ней. Это признак ослабления, а не гарантированного разворота.
+Derivativos por corretora	Деривативы по биржам
+OI (BTC)	OI (BTC)
+OI somado ({0} corretoras)	Суммарный OI ({0} бирж)
+aguardando as {0} fontes	ожидание {0} источников
+Variação do OI ({0})	Изменение OI ({0})
+Variação do preço ({0})	Изменение цены ({0})
+OI Binance via REST a cada {0} s (não há WebSocket de OI); Bybit e OKX por WebSocket. CVD normalizado = CVD ÷ OI somado, em %: permite comparar dias com open interest diferente.	OI Binance через REST каждые {0} с (WebSocket для OI нет); Bybit и OKX через WebSocket. Нормализованный CVD = CVD ÷ суммарный OI, в %: позволяет сравнивать дни с разным открытым интересом.
+Delta por janela · consolidado	Дельта по окну · итого
+Barra = desequilíbrio entre compra e venda agressora (verde para a direita = compradores).	Столбец = дисбаланс между агрессивными покупками и продажами (зелёный вправо = покупатели).
+{0} min	{0} мин
+Aguardando trades para desenhar o CVD	Ожидание сделок для построения CVD
+Roda: zoom · arrastar: mover · duplo clique: voltar	Колесо: масштаб · перетаскивание: сдвиг · двойной щелчок: сброс
+Zoom ativo · duplo clique: voltar ao período todo	Масштаб активен · двойной щелчок: вернуться к полному периоду
+Preço BTC	Цена BTC
+CVD total	CVD total
+Mínimo (BTC)	Минимум (BTC)
+Compras {0}: {1} · {2}	Покупки {0}: {1} · {2}
+Vendas {0}: {1} · {2}	Продажи {0}: {1} · {2}
+Compras e vendas	Покупки и продажи
+Maiores compras agressoras · {0}	Крупнейшие агрессивные покупки · {0}
+Nenhuma compra ≥ {0} BTC em {1}	Нет покупок ≥ {0} BTC в {1}
+Maiores vendas agressoras · {0}	Крупнейшие агрессивные продажи · {0}
+Nenhuma venda ≥ {0} BTC em {1}	Нет продаж ≥ {0} BTC в {1}
+Fita e sequências	Лента и серии
+Fita de grandes execuções (mais recentes primeiro)	Лента крупных сделок (сначала новые)
+Aguardando execuções ≥ {0} BTC	Ожидание сделок ≥ {0} BTC
+Sequências · {0}+ grandes execuções do mesmo lado em até {1} s	Серии · {0}+ крупных сделок одной стороны в течение {1} с
+Nenhuma sequência em {0}	Нет серий в {0}
+Indica agressão concentrada: várias ordens grandes seguidas do mesmo lado	Указывает на концентрированную агрессию: несколько крупных ордеров подряд с одной стороны
+{0}–{1}  {2}  {3} execuções  {4}  {5}–{6}  	{0}–{1}  {2}  {3} сделок  {4}  {5}–{6}  
+Os eventos aparecem aqui assim que acontecem	События появляются здесь сразу по мере их возникновения
+Mapa	Карта
+ · estimado (modelo V8) · 	 · оценка (модель V8) · 
+Mostrar	Показать
+Já executadas	Исполненные
+Em aberto	Открытые
+Reduzir gráfico	Уменьшить график
+Ampliar gráfico	Увеличить график
+OI por entrada	OI по цене входа
+Longs × shorts	Лонги × шорты
+Alavancagem	Кредитное плечо
+Intensidade	Интенсивность
+Liquidações reais	Реальные ликвидации
+Carregando: {0}…	Загрузка: {0}…
+Erro: {0}	Ошибка: {0}
+Atualizado {0} · {1} colunas	Обновлено {0} · {1} столбцов
+Atualizar	Обновить
+Montando o heatmap ({0})…	Формирование тепловой карты ({0})…
+Heatmap indisponível	Тепловая карта недоступна
+Usa velas e open interest históricos públicos das corretoras	Использует исторические публичные свечи и open interest с бирж
+Níveis e visão geral	Уровни и обзор
+Níveis de liquidação em aberto	Уровни ликвидации открытых позиций
+Níveis-chave de liquidação	Ключевые уровни ликвидации
+Principais	Основные
+Todos	Все
+Aguardando o heatmap	Ожидание тепловой карты
+{0} faixas acima · {1} abaixo · as mesmas das linhas do gráfico	{0} диапазонов выше · {1} ниже · те же, что на линиях графика
+● Acima · liquidações de SHORT	● Выше · ликвидации SHORT
+● Abaixo · liquidações de LONG	● Ниже · ликвидации LONG
+Visão geral	Обзор
+Níveis de liquidação em aberto (estimados)	Уровни ликвидации открытых позиций (оценка)
+Longs (abaixo do preço)	Лонги (ниже цены)
+Shorts (acima do preço)	Шорты (выше цены)
+Cobertura do histórico	Охват истории
+Estimativa: {0}x/{1}x/{2}x/{3}x sobre o aumento de open interest de cada corretora (Binance, Bybit, OKX, Gate, HTX e Kraken, as que publicam histórico; Bitget, Deribit e Hyperliquid só informam o valor atual); níveis atravessados pelo preço somem. OI por entrada = onde o modelo estima que as posições ainda abertas entraram. Longs × shorts: cor de compra = mais longs a liquidar naquele preço, cor de venda = mais shorts. Faixa inferior = total de níveis LONG em aberto menos SHORT. O filtro de alavancagem vale para o mapa e os níveis-chave. Pontos = liquidações REAIS reportadas pelas {4} corretoras (gravadas desde a instalação), na cor de LONG ou de SHORT.	Оценка: {0}x/{1}x/{2}x/{3}x по приросту open interest каждой биржи (Binance, Bybit, OKX, Gate, HTX и Kraken — те, что публикуют историю; Bitget, Deribit и Hyperliquid сообщают только текущее значение); уровни, которые пересекла цена, исчезают. OI по цене входа = где модель оценивает, когда открытые позиции были открыты. Лонги × шорты: цвет покупки = больше лонгов к ликвидации по этой цене, цвет продажи = больше шортов. Нижняя полоса = общее количество открытых уровней LONG минус SHORT. Фильтр плеча действует на карту и ключевые уровни. Точки = РЕАЛЬНЫЕ ликвидации, зафиксированные {4} биржами (записаны с момента установки), цветом LONG или SHORT.
+Escala: longs − shorts a liquidar por faixa (BTC)	Шкала: лонги − шорты к ликвидации по диапазону (BTC)
+Escala: OI aberto por faixa de preço (BTC)	Шкала: открытый OI по диапазону цен (BTC)
+Escala: BTC a liquidar por faixa de preço	Шкала: BTC к ликвидации по диапазону цен
+● LONG liquidado	● LONG ликвидирован
+● SHORT liquidado	● SHORT ликвидирован
+níveis em aberto (caixas ao lado)	открытых уровней (блоки сбоку)
+≥ {0} mais shorts	≥ {0} больше шортов
+≥ {0} mais longs	≥ {0} больше лонгов
+Mapa de liquidações	Карта ликвидаций
+Open interest por preço de entrada	Открытый интерес по цене входа
+Longs × shorts a liquidar	Лонги × шорты к ликвидации
+  ·  fechamento 	  ·  закрытие 
+Faixa {0} – {1}	Диапазон {0} – {1}
+Distância do preço atual: 	Расстояние от текущей цены: 
+Longs a liquidar	Лонги к ликвидации
+Shorts a liquidar	Шорты к ликвидации
+Longs − shorts	Лонги − шорты
+OI aberto neste preço	OI открыто по этой цене
+Mapa e níveis	Карта и уровни
+Liquidações reais e alertas	Реальные ликвидации и оповещения
+LONG {0} ({1})	LONG {0} ({1})
+SHORT {0} ({1})	SHORT {0} ({1})
+Top LONG	Топ LONG
+Top LONG liquidadas · {0}	Топ ликвидированных LONG · {0}
+Nenhuma liquidação LONG de BTC em {0} · {1} eventos desde a abertura	Нет ликвидаций LONG по BTC в {0} · {1} событий с момента открытия
+Top SHORT	Топ SHORT
+Top SHORT liquidadas · {0}	Топ ликвидированных SHORT · {0}
+Nenhuma liquidação SHORT de BTC em {0} · {1} eventos desde a abertura	Нет ликвидаций SHORT по BTC в {0} · {1} событий с момента открытия
+Top geral	Общий топ
+Top geral · {0}	Топ в целом · {0}
+Nenhuma liquidação de BTC em {0}	Нет ликвидаций BTC на {0}
+Alertas	Оповещения
+Liquidações reais = Binance, Bybit, OKX, Gate, Bitget e Deribit (feeds públicos, não garantem todos os eventos; Binance envia no máximo {0}/s e a Bitget agrupa por segundo). Conversões para BTC: OKX {1}; Gate {2} contrato = {3} BTC; Bitget USDT ÷ preço; Deribit USD ÷ preço. Heatmap = estimativa a partir do open interest histórico de Binance, Bybit, OKX, Gate, HTX e Kraken.	Реальные ликвидации = Binance, Bybit, OKX, Gate, Bitget и Deribit (публичные фиды, не гарантируют все события; Binance отправляет не более {0}/с, а Bitget агрегирует по секундам). Пересчёт в BTC: OKX {1}; Gate {2} контракт = {3} BTC; Bitget USDT ÷ цена; Deribit USD ÷ цена. Тепловая карта = оценка по исторического открытому интересу Binance, Bybit, OKX, Gate, HTX и Kraken.
+Aparecem aqui assim que alguma das {0} corretoras reportar	Появляются здесь, как только любая из {0} бирж сообщит
+Conexões e livros	Подключения и стаканы
+Conexões (Ao vivo = conexão + inscrição + dados recentes)	Подключения (Онлайн = соединение + подписка + свежие данные)
+ÚLTIMA MSG	ПОСЛ. СООБЩ.
+ÚLTIMO ERRO	ПОСЛ. ОШИБКА
+Livros	Стаканы
+VÁLIDO	ВАЛИДНО
+NÍVEIS BID/ASK	УРОВНИ BID/ASK
+LATÊNCIA	ЗАДЕРЖКА
+RECONSTRUÇÕES	ПЕРЕСТРОЕНИЯ
+Bybit RPI	Bybit RPI
+NÃO	НЕТ
+{0} ms	{0} мс
+Log ao vivo (também gravado em {0})	Журнал в реальном времени (также записывается в {0})
+Desempenho e log	Производительность и журнал
+Desempenho	Производительность
+Mensagens/s (todas as fontes)	Сообщений/с (все источники)
+Trades recebidos	Получено сделок
+Liquidações recebidas	Получено ликвидаций
+Paredes ativas	Активные стены
+Tempo de execução	Время работы
+Atualização da tela	Обновление экрана
+Histórico (SQLite)	История (SQLite)
+Arquivo	Файл
+Estado	Состояние
+Gravados nesta sessão	Записано в этой сессии
+Na fila	В очереди
+Tabela {0}	Таблица {0}
+{0} linhas	{0} строк
+Nada é apagado automaticamente.	Ничего не удаляется автоматически.
+Fontes e conversões	Источники и пересчёты
+Binance USD-M: /public depth@{0}ms + snapshot REST {1}; /market aggTrade, markPrice@{2}s, forceOrder; OI REST {3} s.	Binance USD-M: /public depth@{0}ms + снимок REST {1}; /market aggTrade, markPrice@{2}s, forceOrder; OI REST {3} с.
+Bybit linear: orderbook.1000 ({0} ms), orderbook.rpi ({1} níveis), publicTrade, tickers, allLiquidation.	Bybit linear: orderbook.1000 ({0} мс), orderbook.rpi ({1} уровней), publicTrade, tickers, allLiquidation.
+OKX: books ({0} níveis, seqId/prevSeqId), trades, open-interest, funding-rate, mark-price, liquidation-orders.	OKX: books ({0} уровней, seqId/prevSeqId), trades, open-interest, funding-rate, mark-price, liquidation-orders.
+OKX: {0}. Binance e Bybit já publicam em BTC.	OKX: {0}. Binance и Bybit уже публикуют в BTC.
+Liquidações extras: Gate (futures.public_liquidates), Bitget (UTA v3 liquidation), Deribit (trades com marca de liquidação).	Дополнительные ликвидации: Gate (futures.public_liquidates), Bitget (UTA v3 liquidation), Deribit (сделки с отметкой ликвидации).
+Alertas · {0}	Оповещения · {0}
+Sem alertas por enquanto	Пока нет оповещений
+Nenhum alerta deste tipo	Нет оповещений этого типа
+Absorção e iceberg em paredes, liquidações ≥ LARGE, execuções muito grandes e divergências preço × CVD aparecem aqui	Поглощение и айсберг на стенах, ликвидации ≥ LARGE, очень крупные исполнения и расхождения цена × CVD отображаются здесь
+Radar macro: {0}	Макро-радар: {0}
+formato inesperado ({0})	неожиданный формат ({0})
+Yahoo Finance · {0}	Yahoo Finance · {0}
+U.S. Treasury · yields oficiais	U.S. Treasury · официальная доходность
+NY Fed · taxa efetiva (EFFR)	NY Fed · эффективная ставка (EFFR)
+BLS · CPI, emprego, salários	BLS · CPI, занятость, зарплаты
+BEA · {0}	BEA · {0}
+Tesouro · saldo do TGA	Казначейство · остаток TGA
+Calendário econômico (Forex Factory)	Экономический календарь (Forex Factory)
+Federal Reserve · reuniões do FOMC	Федеральная резервная система · заседания FOMC
+Google News · tema {0}	Google News · тема {0}
+Federal Reserve · comunicados	Федеральная резервная система · заявления
+GDELT · notícias globais	GDELT · мировые новости
+RSS · {0}	RSS · {0}
+CME/CBOT · futuro de Fed funds {0}	CME/CBOT · фьючерс на фед-фонды {0}
+U.S. Treasury · juros reais (TIPS)	U.S. Treasury · реальные ставки (TIPS)
+{0} YR	{0} ГОД
+NY Fed · SOFR	NY Fed · SOFR
+NY Fed · reverse repo overnight	NY Fed · обратное РЕПО overnight
+Federal Reserve · balanço semanal (H.4.1)	Федеральная резервная система · еженедельный баланс (H.4.1)
+Kalshi · probabilidades da decisão do Fed	Kalshi · вероятности решения ФРС
+Alternative.me · Fear & Greed	Alternative.me · Fear & Greed
+CoinGecko · mercado cripto global	CoinGecko · глобальный крипторынок
+DefiLlama · estoque de stablecoins	DefiLlama · объём стейблкоинов
+mempool.space · hashrate	mempool.space · хешрейт
+mempool.space · taxas da rede	mempool.space · комиссии сети
+BCE · taxa de depósito	ЕЦБ · ставка по депозитам
+Tesouro dos EUA · dívida pública	Минфин США · государственный долг
+macro|{0}	макро|{0}
+ev|{0}	ев|{0}
+Em {0} min: {1} (EUA). Expectativa {2} · anterior {3}. Impacto alto no mercado.	Через {0} мин: {1} (США). Ожидание {2} · предыдущее {3}. Высокое влияние на рынок.
+Evento	Событие
+Calendário	Календарь
+sp|{0}	sp|{0}
+{0}: {1} contra expectativa {2} ({3}). Leitura provável: {4}. {5}	{0}: {1} против ожидания {2} ({3}). Вероятное прочтение: {4}. {5}
+Dado	Данные
+Oficial	Официальный
+fomc|{0}	fomc|{0}
+Decisão de juros do FOMC em {0} min.	Решение по ставке FOMC через {0} мин.
+dxy|{0}|{1}	dxy|{0}|{1}
+Dólar (DXY) {0}% no dia. Dólar {1} costuma {2} o BTC.	Доллар (DXY) {0}% за день. Доллар {1} обычно {2} BTC.
+tnx|{0}|{1}	tnx|{0}|{1}
+Treasury {0} anos {1} bp no dia ({2}%).	Treasury {0} лет {1} б.п. за день ({2}%).
+vix|{0}	vix|{0}
+VIX dispara {0}% no dia ({1}): aversão a risco.	VIX вырос на {0}% за день ({1}): aversion к риску.
+geo|{0}	geo|{0}
+div|{0}	div|{0}
+BTC {0}% e Nasdaq {1} {2}% na última hora: movimento próprio do BTC, não acompanhando o mercado americano.	BTC {0}% и Nasdaq {1} {2}% за последний час: движение самого BTC, без следования за американским рынком.
+sc|{0}|{1}	sc|{0}|{1}
+BTC Macro Sentiment: {0} → {1} ({2}). Confiança {3}%.	BTC Macro Sentiment: {0} → {1} ({2}). Уверенность {3}%.
+Score	Score
+Radar macro	Макрорадар
+há {0} min	{0} мин назад
+há {0} h	{0} ч назад
+há {0} d	{0} д назад
+Coletando dados macro…	Сбор макроданных…
+Mercado americano, juros, inflação, emprego, calendário e notícias. A primeira coleta leva cerca de {0} minuto.	Американский рынок, ставки, инфляция, занятость, календарь и новости. Первый сбор занимает около {0} мин.
+Indicadores	Индикаторы
+Mais dados	Больше данных
+Notícias	Новости
+Ajustes	Настройки
+Fontes	Источники
+BTC Macro Sentiment	BTC Macro Sentiment
+  de {0} a {1}	  от {0} до {1}
+Confiança {0}% (parte dos pesos com dado válido)	Уверенность {0}% (часть весов с валидными данными)
+Sem dado: 	Нет данных: 
+Mede se as condições macro estão favoráveis ou desfavoráveis ao BTC agora. Não é previsão de preço.	Оценивает, благоприятны ли макроусловия для BTC сейчас. Это не прогноз цены.
+Leitura integrada · macro + order flow	Комплексный взгляд · макро + order flow
+Cenário macro	Макросценарий
+Order flow ({0} min)	Order flow ({0} мин)
+Liquidações ({0} h)	Ликвидации ({0} ч)
+Confluência	Конфлюенция
+Delta {0} min {1} BTC · liquidações {2} h: {3} BTC LONG / {4} BTC SHORT · absorções: {5} na compra, {6} na venda	Дельта {0} мин {1} BTC · ликвидации {2} ч: {3} BTC LONG / {4} BTC SHORT · поглощения: {5} на покупке, {6} на продаже
+Próximos eventos de alto impacto	Ближайшие события высокого влияния
+Nenhum evento de alto impacto nesta semana no calendário.	На этой неделе в календаре нет событий высокого влияния.
+{0} (horário local) · faltam {1}	{0} (местное время) · осталось {1}
+Expectativa {0} · anterior {1}	Ожидание {0} · предыдущее {1}
+Próxima decisão do FOMC: {0} (faltam {1})	Следующее решение FOMC: {0} (осталось {1})
+Mercado de previsões (Kalshi)	Рынок прогнозов (Kalshi)
+Sentimento cripto (Fear & Greed)	Крипто-настроения (Fear & Greed)
+Fatores do score	Факторы score
+peso {0}	вес {0}
+{0} pts	{0} пт
+ · ref. {0}	 · ссылка {0}
+Contribuição = leitura do fator ({0} a {1}) × peso ÷ soma dos pesos com dado × {2}. Regras e pesos: aba Ajustes e docs/MACRO.md.	Вклад = значение фактора ({0} до {1}) × вес ÷ сумма весов с данными × {2}. Правила и веса: вкладка Настройки и docs/MACRO.md.
+{0} h {1} min	{0} ч {1} мин
+Mercado americano	Американский рынок
+Ativo	Актив
+Último	Последний
+Dia	День
+{0} bp	{0} б.п.
+Yahoo Finance (não oficial), barras de {0} h. Cotação de {1}; fora do pregão mostra o último fechamento.	Yahoo Finance (неофициально), бары по {0} ч. Котировка на {1}; вне торгов показывается последнее закрытие.
+Juros	Ставки
+Meta do Fed (intervalo)	Целевой диапазон ФРС
+Taxa efetiva (EFFR) · {0}	Эффективная ставка (EFFR) · {0}
+Taxa do Fed	Ставка ФРС
+Treasuries (oficial)	Treasuries (официально)
+ ({0} bp {1}d)	 ({0} б.п. {1}д)
+Treasury {0} anos (oficial) · {1}	Treasury {0} лет (официально) · {1}
+Treasury {0} anos (oficial)	Treasury {0} лет (официально)
+Inclinação {0}a − {1}a	Наклон {0}л − {1}л
+Fontes: NY Fed (EFFR) e U.S. Treasury (curva diária de fechamento).	Источники: NY Fed (EFFR) и U.S. Treasury (дневная кривая закрытия).
+Inflação e emprego	Инфляция и занятость
+CPI em {0} meses	CPI за {0} мес.
+CPI no mês	CPI за месяц
+Núcleo do CPI em {0} meses	Базовый CPI за {0} мес.
+Núcleo do CPI no mês	Базовый CPI за месяц
+PCE em {0} meses	PCE за {0} мес.
+Núcleo do PCE em {0} meses	Базовый PCE за {0} мес.
+Payroll (vagas no mês)	Payroll (вакансии за месяц)
+{0} mil	{0} тыс.
+Desemprego	Безработица
+Salário/hora em {0} meses	Зарплата/час за {0} мес.
+BLS (CPI, payroll, desemprego, salários) e BEA (PCE), dessazonalizados, calculados do índice oficial. Entre parênteses: mês de referência.	BLS (CPI, payroll, безработица, зарплаты) и BEA (PCE), сезонно скорректированные, рассчитаны по официальному индексу. В скобках: referenced месяц.
+TGA (conta do Tesouro no Fed)	TGA (счёт Казначейства в ФРС)
+TGA · {0}	TGA · {0}
+US$ {0} bi	US$ {0} bi
+Variação em ~{0} semanas	Колебание примерно за ~{0} нед.
+TGA subindo retira dinheiro do sistema; caindo devolve. Fonte: Daily Treasury Statement.	Рост TGA изымает деньги из системы; снижение возвращает их. Источник: Daily Treasury Statement.
+Correlação com o BTC	Корреляция с BTC
+Sem série do BTC para comparar.	Нет ряда BTC для сравнения.
+Pearson dos retornos nos horários em que os dois negociam ({0} h e {1} d: barras de {2} h; {3} d: diário). Mínimo de amostras: {4} / {5} / {6}. Correlação passada não garante a futura.	Пирсон по доходностям в часы, когда торгуют обе стороны ({0} ч и {1} д: бары по {2} ч; {3} д: дневной). Минимум выборок: {4} / {5} / {6}. Прошлая корреляция не гарантирует будущую.
+ · desatualizado	 · устарело
+Medium	Medium
+Calendário econômico dos EUA · esta semana	Экономический календарь США · эта неделя
+Alto e médio impacto	Высокое и среднее влияние
+Sem eventos no calendário	Нет событий в календаре
+O calendário semanal é publicado no domingo à noite (horário de Brasília).	Недельный календарь публикуется в воскресенье вечером (время Бразилии).
+Horários no fuso deste aparelho. Expectativa e anterior: calendário semanal do Forex Factory (não oficial). Resultado só aparece quando a série oficial (BLS/BEA) já traz o mês de referência; nos outros casos fica "aguardando".	Время указано в часовом поясе этого устройства. Ожидание и предыдущее значение: недельный календарь Forex Factory (неофициальный). Результат появляется только тогда, когда официальный ряд (BLS/BEA) уже содержит опорный месяц; в остальных случаях отображается "ожидание".
+Reuniões do FOMC	Заседания FOMC
+Decisão	Решение
+Fonte: federalreserve.gov (decisão no último dia da reunião, {0}h de Nova York).	Источник: federalreserve.gov (решение в последний день заседания, {0} ч по Нью-Йорку).
+Alto	Высокое
+Holiday	Holiday
+Feriado	Праздник
+Baixo	Низкое
+Expectativa {0} · anterior {1} · resultado {2}	Ожидание {0} · предыдущее {1} · результат {2}
+Se vier acima do esperado: 	Если выйдет выше ожидаемого: 
+Notícias com ligação econômica ao BTC	Новости с экономической связью с BTC
+Tema	Тема
+Nenhuma notícia relevante agora	Сейчас нет значимых новостей
+Só entram manchetes das últimas {0} h com ligação econômica clara (juros, dólar, energia, comércio, conflitos, regulação).	Попадают только заголовки за последние {0} ч с понятной экономической связью (ставки, доллар, энергетика, торговля, конфликты, регулирование).
+Classificação automática por regras de palavras-chave sobre a manchete (docs/MACRO.md). Repetições entre veículos são agrupadas; abra o link para ler a matéria completa.	Автоматическая классификация по ключевым словам в заголовке (docs/MACRO.md). Повторы из разных изданий объединяются; откройте ссылку, чтобы прочитать материал полностью.
+Intensidade 	Интенсивность 
+Original	Оригинал
+Horizonte: {0} · relevância {1}%	Горизонт: {0} · релевантность {1}%
+Abrir a matéria	Открыть материал
+Toque no título para ver a cadeia de impacto	Нажмите на заголовок, чтобы увидеть цепочку влияния
+Pesos do score	Веса score
+Restaurar pesos padrão	Восстановить веса по умолчанию
+Peso {0} desliga o fator. O score usa só os fatores com dado; abaixo de {1}% dos pesos com dado ele não é mostrado.	Вес {0} отключает фактор. Score использует только факторы с данными; если доля весов с данными ниже {1}%, он не отображается.
+Alertas macro	Макроалерты
+Avisar eventos de alto impacto com (min) de antecedência	Предупреждать о событиях высокого влияния за (мин) до начала
+Os tipos de alerta macro ligam e desligam na aba Alertas, junto com Telegram, e-mail e notificação. Cada ocorrência é avisada uma vez só.	Типы макроалертов включаются и выключаются на вкладке «Алерты» вместе с Telegram, e-mail и уведомлениями. Каждое событие сообщается только один раз.
+Chave opcional	Необязательный ключ
+Chave da API do BLS (v2, gratuita)	Ключ API BLS (v2, бесплатный)
+Sem chave o BLS permite {0} consultas por dia; o app usa {1}. A chave fica só neste aparelho (ou na variável de ambiente BLS_API_KEY).	Без ключа BLS допускает {0} запросов в день; приложение использует {1}. Ключ хранится только на этом устройстве (или в переменной окружения BLS_API_KEY).
+Fontes dos dados	Источники данных
+Mercado / mídia	Рынок / СМИ
+Nenhum número é inventado: dado ausente aparece como "sem dado". Fontes não oficiais podem mudar sem aviso.	Никакие числа не выдумываются: отсутствующие данные отображаются как "нет данных". Неофициальные источники могут меняться без предупреждения.
+Situação da coleta	Состояние сбора данных
+Atualizar agora	Обновить сейчас
+{0} de {1} fontes em dia	{0} из {1} источников актуальны
+dado de {0}	данные от {0}
+ · falhou: {0}	 · ошибка: {0}
+ · usando cópia salva	 · используется сохранённая копия
+● em dia · ◐ fonte falhou, usando a última cópia salva · ○ sem dado. Após falha o app espera antes de tentar de novo.	● актуально · ◐ источник не сработал, используется последняя сохранённая копия · ○ нет данных. После ошибки приложение ждёт перед повторной попыткой.
+Cut >{0}	Cut >{0}
+Corte maior que {0} pp	Снижение больше {0} п.п.
+Cut {0}	Cut {0}
+Corte de {0} pp	Снижение на {0} п.п.
+Hike >{0}	Hike >{0}
+Alta maior que {0} pp	Повышение больше {0} п.п.
+Hike {0}	Hike {0}
+Alta de {0} pp	Повышение на {0} п.п.
+Juros mantidos	Ставка без изменений
+US$ {0} tri	US$ {0} трлн
+Expectativa de juros do Fed	Ожидания по ставке ФРС
+Sem probabilidades da Kalshi agora.	Вероятностей от Kalshi сейчас нет.
+Próxima reunião ({0}): probabilidades negociadas	Следующее заседание ({0}): вероятности на торговых площадках
+Cut	Cut
+Hike	Hike
+Taxa implícita nos futuros de Fed funds (CBOT)	Подразумеваемая ставка по фьючерсам на Fed funds (CBOT)
+ ({0} bp)	 ({0} бп)
+Kalshi: mercado regulado de previsões (preço do contrato = probabilidade). Futuros: taxa implícita = {0} − preço; entre parênteses, diferença para a taxa efetiva atual. Valores negativos = cortes esperados.	Kalshi: регулируемый рынок прогнозов (цена контракта = вероятность). Фьючерсы: подразумеваемая ставка = {0} − цена; в скобках — разница с текущей фактической ставкой. Отрицательные значения = ожидаемые снижения.
+Juros reais, inflação implícita e financiamento	Реальные ставки, подразумеваемая инфляция и фондирование
+Juro real {0} anos (TIPS)	Реальная ставка {0} лет (TIPS)
+Juro real {0} anos (TIPS) · {1}	Реальная ставка {0} лет (TIPS) · {1}
+Inflação implícita {0} anos (breakeven)	Подразумеваемая инфляция {0} лет (breakeven)
+SOFR · {0}	SOFR · {0}
+Reverse repo overnight · {0}	Overnight reverse repo · {0}
+Juro real alto ou subindo costuma pesar sobre o BTC (custo de oportunidade). Breakeven = Treasury {0} anos − juro real.	Высокая или растущая реальная ставка обычно давит на BTC (альтернативная стоимость). Breakeven = Treasury {0} лет − реальная ставка.
+Balanço do Fed e liquidez	Баланс ФРС и ликвидность
+Balanço do Fed (H.4.1)	Баланс ФРС (H.4.1)
+Ativos totais do Fed · semana até {0}	Всего активов ФРС · неделя до {0}
+Variação na semana	Изменение за неделю
+Variação em {0} meses	Изменение за {0} мес.
+Reservas dos bancos no Fed	Резервы банков в ФРС
+Liquidez líquida estimada (ativos − TGA − RRP)	Оценка чистой ликвидности (активы − TGA − RRP)
+Liquidez líquida é uma estimativa comum no mercado, não um número oficial. Balanço crescendo e TGA caindo = mais dinheiro no sistema.	Чистая ликвидность — распространённая оценка на рынке, а не официальная цифра. Растущий баланс и падающий TGA = больше денег в системе.
+Mercado cripto	Крипторынок
+Fear & Greed	Fear & Greed
+Há {0} dias / há {1} dias	{0} дн. назад / {1} дн. назад
+Valor de mercado cripto	Капитализация крипторынка
+Dominância do BTC	Доминирование BTC
+Dominância do ETH	Доминирование ETH
+Volume {0} h	Объём за {0} ч
+Stablecoins em circulação	Стейблкоины в обращении
+Variação {0} d / {1} d	Изменение за {0} д / {1} д
+Hashrate da rede	Хешрейт сети
+{0} EH/s	{0} EH/s
+Taxas (rápida / {0} min / {1} h)	Комиссии (быстрая / {0} мин / {1} ч)
+{0} / {1} / {2} sat/vB	{0} / {1} / {2} сат/vB
+Fear & Greed é sentimento, não entra no score (evita contar duas vezes o que o order flow já mostra). Stablecoins entram no fator Liquidez.	Fear & Greed — это настроения, в скор не входит (чтобы не считать дважды то, что уже видно в order flow). Стейблкоины входят в фактор Ликвидность.
+Mais mercados	Больше рынков
+Yahoo Finance, barras de {0} h. Dólar subindo contra moedas emergentes e cobre caindo costumam indicar aversão a risco.	Yahoo Finance, свечи по {0} ч. Рост доллара к валютам развивающихся стран и падение меди обычно указывают на aversion к риску.
+Mundo e dívida	Мир и долг
+BCE · taxa de depósito · {0}	ЕЦБ · ставка по депозитам · {0}
+Dívida pública dos EUA · {0}	Госдолг США · {0}
+Variação desde {0}	Изменение с {0}
+Juros do BCE abaixo dos do Fed sustentam o dólar; dívida crescendo rápido pressiona a oferta de Treasuries e os yields.	Ставки ЕЦБ ниже ставок ФРС поддерживают доллар; быстрый рост долга давит на предложение Treasuries и доходности.
+extreme fear	extreme fear
+Medo extremo	Крайний страх
+Medo	Страх
+Ganância	Жадность
+extreme greed	extreme greed
+Ganância extrema	Крайняя жадность
+Motivo desconhecido.	Причина неизвестна.
+A Binance recusou o acesso nesta região (HTTP {0}). As outras abas não dependem disso.	Binance отказала в доступе в этом регионе (HTTP {0}). Другие вкладки от этого не зависят.
+Zonas ímã · mapa estimado de liquidações	Зоны-магниты · оценочная карта ликвидаций
+Calculando o mapa a partir do histórico de posições…	Расчёт карты по истории позиций…
+Leva alguns segundos: velas de {0} min + open interest dos últimos {1} dias.	Занимает несколько секунд: свечи по {0} мин + open interest за последние {1} дн.
+Mapa indisponível no momento	Карта пока недоступна
+O mapa estimado usa velas e histórico de open interest da Binance (REST).	Оценочная карта использует свечи и историю open interest с Binance (REST).
+Mercado e zonas	Рынок и зоны
+Mercado (Binance perp)	Рынок (Binance perp)
+Preço	Цена
+Variação {0}h	Изменение {0}ч
+Funding	Funding
+Open interest	Open interest
+Zonas de atração	Зоны притяжения
+Nenhum aglomerado relevante nesta faixa	Значимых скоплений в этом диапазоне нет
+Amplie a faixa para ±{0}%	Расширьте диапазон до ±{0}%
+ do preço	 от цены
+Como ler	Как читать
+Estimativa, como no CoinGlass: quando o open interest sobe, simulamos posições {0}x/{1}x/{2}x/{3}x e marcamos onde seriam liquidadas; níveis que o preço já atravessou saem do mapa. Quanto mais vivo o vermelho, mais BTC estimado no nível. Liquidações reais ficam no LIQUIDATION RADAR.	Оценка, как на CoinGlass: когда open interest растёт, моделируем позиции {0}x/{1}x/{2}x/{3}x и отмечаем, где они были бы ликвидированы; уровни, которые цена уже пересекла, убираются с карты. Чем ярче красный, тем больше оценочного BTC на уровне. Реальные ликвидации — в LIQUIDATION RADAR.
+Mapa estimado	Оценочная карта
+Mapa de liquidações estimadas	Карта оценочных ликвидаций
+Faixa	Диапазон
+mais BTC estimado	больше оценочного BTC
+Book: 	Стакан: 
+Liquidações estimadas	Оценочные ликвидации
+Paredes do livro	Стенки стакана
+Sem conexão com as corretoras ({0})	Нет связи с биржами ({0})
+Não foi possível carregar os fluxos dos ETFs ({0})	Не удалось загрузить потоки ETF ({0})
+Preço × CVD	Цена × CVD
+Positiva = o preço anda junto com a agressão compradora/vendedora.	Положительная = цена движется вместе с агрессивной покупкой/продажей.
+Preço × open interest	Цена × open interest
+Positiva = alta com abertura de posições; negativa = alta com fechamento.	Положительная = рост с открытием позиций; отрицательная = рост с закрытием.
+Preço × liquidações	Цена × ликвидации
+Positiva = alta acompanhada de shorts liquidados (squeeze).	Положительная = рост вместе с ликвидированными шортами (сквиз).
+CVD × open interest	CVD × open interest
+Positiva = compra agressora abrindo posições.	Положительная = агрессивная покупка открывает позиции.
+CVD × liquidações	CVD × ликвидации
+Positiva = compras forçadas de shorts liquidados entrando no CVD.	Положительная = принудительные покупки ликвидированных шортов попадают в CVD.
+Gráficos	Графики
+Baldes de {0} minuto · preço, CVD, open interest e liquidações lado a lado	Минутные бакеты по {0} мин · цена, CVD, open interest и ликвидации рядом
+Preço, fluxo, posições e liquidações por minuto	Цена, поток, позиции и ликвидации по минутам
+Juntando dados	Собираем данные
+Precisa de alguns minutos de dados desde a abertura do app (guarda até {0} h)	Нужно несколько минут данных с момента открытия приложения (хранится до {0} ч)
+Correlação e resumo	Корреляция и сводка
+Correlação (Pearson) na janela	Корреляция (Пирсон) в окне
+Leitura dos últimos {0} minutos	Показания за последние {0} мин
+Liquidações LONG / SHORT	Ликвидации LONG / SHORT
+{0} / {1} BTC	{0} / {1} BTC
+Leitura automática a partir dos números acima; é inferência, não prova de quem abriu ou fechou posição.	Автоматическая интерпретация по приведённым числам; это вывод, а не доказательство того, кто открыл или закрыл позицию.
+Correlação com menos de {0} minutos de dados aparece como "sem dados". |r| ≥ {1} forte, ≥ {2} moderada, ≥ {3} fraca. OI somado só conta quando Binance, Bybit e OKX reportaram. Liquidações = {4} corretoras (positivo = mais shorts liquidados).	Корреляция при менее чем {0} мин данных отображается как «нет данных». |r| ≥ {1} сильная, ≥ {2} умеренная, ≥ {3} слабая. Суммарный OI учитывается, только если Binance, Bybit и OKX передали данные. Ликвидации = {4} бирж (положительное значение = ликвидировано больше шортов).
+Alta com compra agressora e open interest subindo: compatível com novas posições compradas puxando o preço.	Рост с агрессивными покупками и растущим открытым интересом: совместимо с новыми длинными позициями, толкающими цену вверх.
+Alta com open interest caindo e shorts liquidados: compatível com short squeeze.	Рост при падающем открытом интересе и ликвидации шортов: совместимо с шорт-сквизом.
+Alta com CVD negativo: o preço sobe apesar da venda agressora (compra passiva absorvendo).	Рост при отрицательном CVD: цена растёт несмотря на агрессивные продажи (пассивные покупки поглощают).
+Queda com venda agressora e open interest subindo: compatível com novas posições vendidas.	Падение с агрессивными продажами и растущим открытым интересом: совместимо с новыми короткими позициями.
+Queda com open interest caindo e longs liquidados: compatível com cascata de liquidação de longs.	Падение при падающем открытом интересе и ликвидации лонгов: совместимо с каскадом ликвидаций лонгов.
+Queda com CVD positivo: o preço cai apesar da compra agressora (venda passiva absorvendo).	Падение при положительном CVD: цена падает несмотря на агрессивные покупки (пассивные продажи поглощают).
+Sem regime claro: preço lateral ou sinais misturados.	Чёткого режима нет: боковое движение цены или смешанные сигналы.
+CVD (BTC/min)	CVD (BTC/мин)
+Δ OI (BTC/min)	Δ OI (BTC/мин)
+LIQUIDAÇÕES	ЛИКВИДАЦИИ
+▲ short  ▼ long	▲ шорт  ▼ лонг
+Lado	Сторона
+Ambos	Оба
+Pico ≥ (BTC)	Пик ≥ (BTC)
+{0} paredes encerradas · {1} eventos gravados no período	{0} стен закрыто · {1} событий записано за период
+Mapa do histórico	Карта истории
+Onde as paredes estiveram e como terminaram	Где были стены и как они закончились
+Nenhuma parede encerrada no período com esses filtros	Ни одна стена не закрылась за период с этими фильтрами
+O histórico vem do banco local: paredes que saíram do livro desde que o app foi instalado. Reduza o pico mínimo ou aumente o período.	История берётся из локальной базы: стены, которые ушли из книги с момента установки приложения. Уменьшите минимальный пик или увеличьте период.
+Como terminaram	Чем закончились
+Execução confirmada pelos trades	Исполнение подтверждено сделками
+Preço atravessou (não confirmada)	Цена прошла сквозь (не подтверждено)
+Retirada sem execução	Снята без исполнения
+Níveis onde a liquidez mais aparece (faixas de {0} US$)	Уровни, где ликвидность проявляется чаще всего (диапазоны по {0} US$)
+PICO SOMADO	СУММАРНЫЙ ПИК
+ÚLTIMA	ПОСЛЕДНЯЯ
+Sem níveis no período	Нет уровней за период
+Cada ponto é uma parede que saiu do livro: posição = hora e preço; tamanho = pico em BTC; cor = lado (verde compra, vermelho venda); anel laranja = execução confirmada, anel amarelo = preço atravessou, sem anel = retirada. Níveis que se repetem costumam ser suporte/resistência defendidos.	Каждая точка — стена, ушедшая из книги: положение = время и цена; размер = пик в BTC; цвет = сторона (зелёный покупка, красный продажа); оранжевое кольцо = исполнение подтверждено, жёлтое кольцо = цена прошла сквозь, без кольца = снята. Повторяющиеся уровни обычно являются защищаемыми поддержкой/сопротивлением.
+Configurar avisos	Настроить оповещения
+Notificações {0}	Уведомления {0}
+Mostrar notificação no celular	Показывать уведомление на телефоне
+Mostrar notificação na bandeja do Windows	Показывать уведомление в трее Windows
+Continuar monitorando com o app fechado	Продолжать мониторинг при закрытом приложении
+Mantém as conexões e os alertas ativos em segundo plano, com uma notificação fixa. Usa mais bateria e dados; desligue quando não precisar.	Поддерживает соединения и оповещения в фоновом режиме с постоянным уведомлением. Расходует больше батареи и трафика; выключайте, когда не нужно.
+Permita notificações do Radar BTC nas configurações do Android.	Разрешите уведомления Radar BTC в настройках Android.
+O que avisar	Что сообщать
+Zona: distância ≤ %	Зона: расстояние ≤ %
+Zona: tamanho ≥ BTC	Зона: размер ≥ BTC
+Repetir o mesmo aviso após (min)	Повторять то же оповещение через (мин)
+Liquidação EXTREME usa o limite da aba Radar (Liquidações); parede grande = classe LARGE ou EXTREME da aba Paredes; mudança de sinal = janela de {0} min da aba Long/short. Máximo de {1} envios por minuto.	Экстремальная ликвидация EXTREME использует порог из вкладки Radar (Ликвидации); крупная стена = класс LARGE или EXTREME на вкладке Стены; смена знака = окно {0} мин на вкладке Long/short. Максимум {1} отправок в минуту.
+Telegram	Telegram
+Enviar pelo Telegram	Отправлять через Telegram
+Token do bot	Токен бота
+Chat ID	Chat ID
+Crie um bot com o @BotFather, mande uma mensagem para ele e pegue o chat ID em api.telegram.org/bot<token>/getUpdates.	Создайте бота через @BotFather, отправьте ему сообщение и получите chat ID по адресу api.telegram.org/bot<token>/getUpdates.
+E-mail (SMTP)	E-mail (SMTP)
+Enviar por e-mail	Отправлять по e-mail
+Servidor	Сервер
+Porta	Порт
+Usuário (e-mail de envio)	Пользователь (e-mail отправителя)
+Senha de app	Пароль приложения
+Enviar para	Отправить на
+Gmail: smtp.gmail.com, porta {0}, com uma senha de app (Conta Google → Segurança → Senhas de app). Porta {1} usa STARTTLS.	Gmail: smtp.gmail.com, порт {0}, с паролем приложения (Аккаунт Google → Безопасность → Пароли приложений). Порт {1} использует STARTTLS.
+Salvar alterações	Сохранить изменения
+Salvo	Сохранено
+Enviar teste	Отправить тест
+Token e senha ficam guardados só neste celular (preferências do app), sem criptografia própria.	Токен и пароль хранятся только на этом телефоне (настройки приложения), без собственного шифрования.
+Token e senha ficam guardados só neste computador (registro do usuário do Windows), sem criptografia própria.	Токен и пароль хранятся только на этом компьютере (реестр пользователя Windows), без собственного шифрования.
+Avisos enviados	Отправленные оповещения
+Nenhum aviso enviado nesta sessão	В этом сеансе оповещения не отправлялись
+Ligue um canal de aviso e salve	Включите канал оповещений и сохраните
+Os avisos aparecem aqui com o resultado de cada envio	Оповещения отображаются здесь с результатом каждой отправки
+Uma liquidação real acima do limite EXTREME em qualquer das {0} corretoras	Реальная ликвидация выше лимита EXTREME на любой из {0} бирж
+Parede LARGE/EXTREME saiu do livro (retirada ou executada)	Стена LARGE/EXTREME ушла из стакана (снята или исполнена)
+Parede absorvendo execução ou com reposição tipo iceberg	Стена поглощает исполнение или пополняется по типу айсберг
+Fluxo inferido muda de LONG para SHORT ou o contrário	Выведенный поток меняется с LONG на SHORT или наоборот
+Preço e CVD divergem em {0} min, {1} min ou {2} h	Цена и CVD расходятся за {0} мин, {1} мин или {2} ч
+Preço a até {0}% de uma zona do heatmap com ≥ {1} BTC	Цена в пределах {0}% от зоны тепловой карты с ≥ {1} BTC
+CPI, PCE, payroll, FOMC e outros eventos de alto impacto (antecedência na aba Radar macro)	CPI, PCE, payroll, FOMC и другие события высокого влияния (заблаговременно во вкладке «Макро-радар»)
+Resultado oficial acima ou abaixo da expectativa do calendário	Официальный результат выше или ниже ожиданий календаря
+DXY ±{0}% no dia, Treasury {1} anos ±{2} bp ou VIX {3}%	DXY ±{0}% за день, казначейские {1}-летние ±{2} бп или VIX {3}%
+Notícia de alta intensidade: conflito, tarifas, sanções ou regulação cripto	Новость высокой значимости: конфликт, тарифы, санкции или регулирование крипто
+BTC sobe com Nasdaq em queda (ou o contrário) em {0} hora	BTC растёт при падении Nasdaq (или наоборот) за {0} ч
+BTC Macro Sentiment muda {0} pontos ou troca de faixa	BTC Macro Sentiment изменяется на {0} пунктов или меняет диапазон
+Livro de ofertas	Книга ордеров
+Livro	Стакан
+Agrupar	Группировка
+Exato	Точно
+{0} níveis · mín. {1} · {2}	{0} уровней · мин. {1} · {2}
+Níveis	Уровни
+Mín.	Мин.
+Executado	Исполнено
+Centro	Центр
+Auto (meio {0})	Авто (середина {0})
+Manual	Вручную
+Faixa mín	Мин. диапазон
+Faixa máx	Макс. диапазон
+Fora da consolidação: 	Вне консолидации: 
+ (livro inválido, ver aba Status)	 (стакан недействителен, см. вкладку «Статус»)
+Resumo do livro exibido	Сводка отображаемого стакана
+Maior BID	Лучший BID
+Maior ASK	Лучший ASK
+Profundidade BID	Глубина BID
+Profundidade ASK	Глубина ASK
+Desequilíbrio	Дисбаланс
+Spread consolidado	Сводный спред
+cruzado entre corretoras	перекрёстный между биржами
+ USDT	 USDT
+Bybit RPI (só parte RPI, {0} níveis)	Bybit RPI (только часть RPI, {0} уровней)
+Livro {0}	Стакан {0}
+Conexão	Соединение
+Ao vivo	В реальном времени
+Sequência	Последовательность
+Spread próprio	Собственный спред
+Níveis válidos (bid/ask)	Допустимые уровни (bid/ask)
+Última atualização	Последнее обновление
+ atrás	 назад
+Latência (evento → recebido)	Задержка (событие → получено)
+Último update id	Последний update id
+Reconstruções	Реконструкции
+Quantidade (BTC)	Количество (BTC)
+Qtd. (BTC)	Кол-во (BTC)
+Bin	Бин
+Byb	Byb
+Ordens	Ордера
+Acumulado	Накоплено
+Ex. C	Исп. П
+Ex. V	Исп. Пр
+ACUMULADO = BTC somado do preço atual até a linha · ORDENS = nº de ordens no nível (só a OKX publica) · EX. = BTC executado no nível nos últimos {0}	НАКОПЛЕНО = BTC, суммированные от текущей цены до строки · ОРДЕРА = кол-во ордеров на уровне (публикует только OKX) · ИСП. = BTC, исполненные на уровне за последние {0}
+Celular: colunas por corretora ocultas (veja no PC ou na aba de cada livro) · EX. = executado nos últimos {0}	Телефон: колонки по биржам скрыты (смотрите на ПК или на вкладке каждого стакана) · ИСП. = исполнено за последние {0}
+sem livro válido	нет действительного стакана
+Livros cruzados entre corretoras: melhor compra {0} acima da melhor venda {1} (cada corretora tem preço próprio)	Перекрестные стаканы между биржами: лучшая покупка {0} выше лучшей продажи {1} (у каждой биржи собственная цена)
+spread {0}  ·  meio {1}	спред {0}  ·  середина {1}
+LIQUIDITY WALLS	LIQUIDITY WALLS
+LIQUIDITY HISTORY	LIQUIDITY HISTORY
+MAGNET ZONES	MAGNET ZONES
+LONG & SHORT FLOW	LONG & SHORT FLOW
+MARKET FLOW CORRELATION	MARKET FLOW CORRELATION
+LARGE TRADES	LARGE TRADES
+LIQUIDATION RADAR	LIQUIDATION RADAR
+Histórico de paredes	История стенок
+Zonas ímã	Магнитные зоны
+Correlação	Корреляция
+Grandes negócios	Крупные сделки
+Radar	Радар
+Status	Статус
+Fluxo	Поток
+Mais	Ещё
+Livro de ofertas consolidado e por corretora	Консолидированный и поадресный стакан ордеров
+Compra × venda agressora por faixa de preço	Агрессивные покупки × продажи по ценовым диапазонам
+Paredes grandes no livro agora	Крупные стенки в стакане сейчас
+Mapa estimado de zonas de liquidação	Оценочная карта зон ликвидации
+Fluxo agressor, CVD e sinal	Агрессивный поток, CVD и сигнал
+Preço, CVD, OI e liquidações por minuto	Цена, CVD, OI и ликвидации по минутам
+Maiores execuções e sequências	Крупнейшие исполнения и серии
+Heatmap e liquidações reais	Тепловая карта и реальные ликвидации
+Fluxo diário dos ETFs spot de BTC	Ежедневный поток спотовых ETF на BTC
+Juros, dólar, inflação, notícias e o score macro do BTC	Ставки, доллар, инфляция, новости и макроскор BTC
+Avisos no celular, Telegram e e-mail	Уведомления на телефон, в Telegram и на e-mail
+Conexões, livros e log	Подключения, стаканы и журнал
+{0} de {1}	{0} из {1}
+Abas	Вкладки
+Escolher aba	Выбрать вкладку
+Fechar ✕	Закрыть ✕
+Para esconder abas desta lista, use ⚙ → Abas visíveis.	Чтобы скрыть вкладки из этого списка, используйте ⚙ → Видимые вкладки.
+  Orderflow V8	  Orderflow V8
+{0}/{1} livros ao vivo	{0}/{1} стаканов онлайн
+{0} msg/s	{0} сообщ./с
+Notas	Заметки
+☾ Escuro	☾ Тёмная
+☀ Claro	☀ Светлая
+⚙ Visualização	⚙ Отображение
+Livros {0}/{1}	Стаканы {0}/{1}
+Liquidações:	Ликвидации:
+Visualização	Отображение
+Configurações de visualização	Настройки отображения
+Escuro	Тёмная
+Claro	Светлая
+Cores de compra e venda	Цвета покупки и продажи
+Verde / vermelho	Зелёный / красный
+Azul / laranja	Синий / оранжевый
+Azul / laranja é a opção para daltonismo (vermelho e verde se confundem).	Синий / оранжевый — вариант для дальтоников (красный и зелёный сливаются).
+Tamanho da interface · {0}%	Размер интерфейса · {0}%
+A− diminuir	A− уменьшить
+A+ aumentar	A+ увеличить
+Restaurar {0}%	Сбросить {0}%
+Atalhos: Ctrl + e Ctrl − ajustam, Ctrl {0} volta a {1}%.	Горячие клавиши: Ctrl + и Ctrl − меняют размер, Ctrl {0} возвращает {1}%.
+Traduz abas, menus, alertas e notícias. Textos montados na hora e manchetes usam tradução automática na primeira vez (precisa de internet) e ficam guardados no aparelho.	Переводит вкладки, меню, оповещения и новости. Тексты формируются на лету, а заголовки при первом показе переводятся автоматически (нужен интернет) и сохраняются на устройстве.
+Tamanho da fonte · {0}%	Размер шрифта · {0}%
+Só o texto muda de tamanho. Quando os painéis não cabem mais lado a lado, eles viram páginas com botões no topo (nada fica cortado). Para aumentar tudo junto, use o tamanho da interface.	Меняется только размер текста. Когда панели больше не помещаются рядом, они превращаются в страницы с кнопками наверху (ничего не обрезается). Чтобы увеличить всё сразу, используйте размер интерфейса.
+Densidade	Плотность
+Confortável	Комфортная
+Compacta	Компактная
+Compacta reduz margens e espaçamento entre linhas das tabelas para caber mais dados.	Компактная уменьшает поля и межстрочный интервал в таблицах, чтобы поместилось больше данных.
+Os dados chegam em tempo real de qualquer forma; isto muda só a frequência de redesenho (menor = mais CPU).	Данные всё равно поступают в реальном времени; это меняет только частоту перерисовки (меньше = больше нагрузки на CPU).
+Textos explicativos	Пояснительные тексты
+Mostrar notas de rodapé	Показывать сноски
+Também pelo botão Notas na barra do topo.	Также через кнопку Заметки на верхней панели.
+Abas visíveis	Видимые вкладки
+Status fica sempre visível. Esconder uma aba não para a coleta de dados dela.	Статус всегда виден. Скрытие вкладки не останавливает сбор её данных.
+%,.{0}f BTC	%,.{0}f BTC
+Nova	Новая
+Ativa	Активна
+Aumentou	Выросла
+Reduziu	Снизилась
+Saiu	Ушла
+Talvez executada	Возможно исполнена
+Executada (confirmada)	Исполнена (подтверждено)
+Conectando	Подключение
+Inscrito	Подписан
+Ressincronizando	Пересинхронизация
+Fora do ar	Нет связи
+BLOQUEADO NA REGIÃO (HTTP {0})	БЛОКИРОВКА В РЕГИОНЕ (HTTP {0})
+SNAPSHOT INDISPONÍVEL	SNAPSHOT НЕДОСТУПЕН
+sequência	последовательность
+RECONSTRUINDO (quebra de sequência)	ВОССТАНОВЛЕНИЕ (разрыв последовательности)
+AGUARDANDO SNAPSHOT	ОЖИДАНИЕ SNAPSHOT
+Página	Страница
+◂ ▸ deslize para o lado para ver todas as colunas	◂ ▸ проведите в сторону, чтобы увидеть все столбцы
+Menos filtros ▴	Меньше фильтров ▴
+Mais filtros ▾ · {0}	Больше фильтров ▾ · {0}
+libere "Instalar apps desconhecidos" para o Radar BTC, volte e toque em Atualizar agora de novo	Разрешите «Установка неизвестных приложений» для Радара BTC, вернитесь и снова нажмите «Обновить сейчас»
+Dados públicos não permitem identificar participantes individuais.	Публичные данные не позволяют определить отдельных участников.
+@echo off	@echo off
+timeout /t {0} /nobreak >nul	timeout /t {0} /nobreak >nul
+msiexec /i {0}{1}{2} /passive /norestart	msiexec /i {0}{1}{2} /passive /norestart
+start {0}{1} {2}{3}{4}	start {0}{1} {2}{3}{4}
+resposta vazia	пустой ответ
+Instalação não concluída: 	Установка не завершена: 
+Baixando a versão {0}…	Загрузка версии {0}…
+download vazio	пустая загрузка
+Baixando a versão {0}… {1}%	Загрузка версии {0}… {1}%
+Abrindo a instalação…	Открываем установку…
+Instalando… o app fecha e abre de novo sozinho.	Установка… приложение закроется и откроется снова автоматически.
+Não deu para atualizar: {0}	Не удалось обновить: {0}
+Nova versão disponível ({0}; você está na {1})	Доступна новая версия ({0}; у вас {1})

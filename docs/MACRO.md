@@ -26,6 +26,25 @@ com o BTC, junta tudo num score de −100 a +100 e cruza o resultado com o order
 | Reuniões do FOMC | federalreserve.gov | 24 h | |
 | Notícias | Google News RSS (6 temas, últimas 24 h), Fed press releases (RSS), GDELT DOC 2.0 | 20–30 min | GDELT limita consultas; é complemento |
 
+### Fontes adicionadas na atualização 12
+| Dado | Fonte | Intervalo |
+|---|---|---|
+| Russell 2000, FTSE, DAX, Nikkei, Hang Seng, Xangai, Ibovespa, euro, iene, yuan, real, prata, cobre, gás natural, Treasuries 13 semanas / 5 / 30 anos, MOVE, HYG, ETH, IBIT, MSTR, COIN | Yahoo Finance | 10 min |
+| Futuros de Fed funds dos próximos 8 meses (taxa implícita = 100 − preço) | CBOT via Yahoo Finance | 30 min |
+| Probabilidades da próxima decisão do Fed | Kalshi (API pública) | 30 min |
+| Juro real de 10 anos (TIPS) e inflação implícita | U.S. Treasury (curva real) | 60 min |
+| SOFR e reverse repo overnight | NY Fed | 3 h |
+| Balanço semanal do Fed e reservas bancárias | Federal Reserve H.4.1 | 6 h |
+| Fear & Greed cripto | Alternative.me | 60 min |
+| Valor de mercado cripto, dominância BTC/ETH, volume | CoinGecko | 30 min |
+| Estoque de stablecoins | DefiLlama | 6 h |
+| Hashrate e taxas da rede | mempool.space | 3 h / 15 min |
+| Taxa de depósito do BCE | BCE (Data Portal) | 12 h |
+| Dívida pública dos EUA | Treasury Fiscal Data (Debt to the Penny) | 12 h |
+| Notícias: SEC, CFTC, BCE, CoinDesk, Cointelegraph, Decrypt, The Block, Bitcoin Magazine, CNBC, MarketWatch, WSJ, NYT, BBC, Al Jazeera, FT, Bloomberg, DW, Investing.com, OilPrice | RSS públicos | 30 min |
+
+A última página da aba (Fontes) lista todas as fontes com link e a situação de cada coleta.
+
 Fluxo dos ETFs spot vem da aba ETFs (Farside). Cache em `~/.radarbtc/macro` (Windows) e na pasta interna do app (Android):
 ao abrir o app, os dados salvos aparecem na hora; se uma fonte falha, a última cópia continua em uso e a aba Ajustes e fontes
 mostra "usando cópia salva". Depois de falhar, a fonte espera até 15 min antes de nova tentativa.
@@ -58,14 +77,14 @@ de defasagem são marcados "desatualizado" e ficam fora.
 
 | Fator | Peso | Regra |
 |---|---|---|
-| Política monetária | 15 | EFFR − Treasury 2a: ±0,75 pp = ±1 (2a abaixo do Fed = cortes precificados = favorável) |
+| Política monetária | 15 | Média de: EFFR − Treasury 2a (±0,75 pp = ±1) e futuros de Fed funds ~3 meses − EFFR (−0,5 pp = +1). Cortes precificados = favorável |
 | Inflação | 12 | Núcleo do CPI: 12 meses − 3 meses anualizado; ±1 pp = ±1 (desacelerando = favorável) |
 | Mercado de trabalho | 8 | Desemprego em 6 meses: +0,3 a +0,5 pp → +0,3; acima de +0,5 → −0,5; queda ≥ 0,3 → −0,2; salário > 4% a/a → −0,3 |
 | Dólar (DXY) | 12 | 5 pregões: ±1,5% = ∓1 |
-| Treasury yields | 12 | 10a em 5 dias: ±20 bp = ∓1 |
-| Liquidez | 8 | TGA em ~20 dias úteis: ±US$ 150 bi = ∓1 |
+| Treasury yields | 12 | Média de: 10a nominal em 5 dias (±20 bp = ∓1) e juro real 10a (TIPS) em 5 dias (±15 bp = ∓1) |
+| Liquidez | 8 | Média de: TGA em ~20 dias úteis (±US$ 150 bi = ∓1), balanço do Fed na semana (±US$ 25 bi = ±1), stablecoins em 30 dias (±3% = ±1) |
 | Mercado acionário | 10 | Nasdaq 100 em 5 pregões: ±3% = ±1 |
-| Volatilidade | 8 | VIX < 15 +0,5 · 15–20 0 · 20–30 −0,5 · > 30 −1; salto > 15% no dia −0,3 |
+| Volatilidade | 8 | VIX < 15 +0,5 · 15–20 0 · 20–30 −0,5 · > 30 −1; salto > 15% no dia −0,3; MOVE > 130 −0,3, < 80 +0,2 |
 | Geopolítica | 7 | Notícias das últimas 24 h: Σ(±intensidade × confiabilidade × 0,35), limitado a ±1 |
 | Fluxo institucional | 8 | ETFs spot em 5 pregões: ±US$ 1 bi = ±1 |
 
@@ -100,8 +119,10 @@ Macro (faixa do score) × fluxo agressor de 15 min (delta/volume > +10% comprado
 ## Limitações
 - Yahoo Finance e o calendário do Forex Factory não são APIs oficiais e podem mudar sem aviso.
 - O calendário cobre só a semana atual; a próxima semana aparece quando é publicada (domingo à noite).
-- Não há expectativa de mercado (consenso) fora desse calendário, nem probabilidade de juros por reunião (FedWatch é pago).
-- Balanço do Fed e reservas bancárias (FRED/H.4.1) não entram: o FRED exige chave e não respondeu de forma confiável no teste.
+- Não há consenso de mercado fora desse calendário. A expectativa de juros vem da Kalshi e dos futuros de Fed funds (o FedWatch da CME é pago).
+- O FRED não é usado (exige chave e não respondeu no teste); o balanço do Fed vem direto da página H.4.1, que é semanal.
 - Treasury 2 anos só no fechamento oficial (sem intradiário gratuito confiável).
 - A classificação de notícias é por regras de manchete: ironia, negação e contexto podem enganar; a matéria completa está no link.
 - Correlações usam só horários em que os dois ativos negociam; fora do pregão americano não há dado novo.
+- Fear & Greed é mostrado, mas não entra no score, para não contar duas vezes o sentimento que o order flow já mostra.
+- Kalshi, CoinGecko, DefiLlama, Alternative.me e mempool.space são serviços privados e podem limitar ou mudar o acesso.

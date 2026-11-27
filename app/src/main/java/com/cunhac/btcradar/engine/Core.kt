@@ -1,7 +1,9 @@
 package com.cunhac.btcradar.engine
 
 /** Textos para a tela sempre no padrão brasileiro (vírgula decimal), seja qual for o idioma do aparelho. */
-val PT_BR: java.util.Locale = java.util.Locale.forLanguageTag("pt-BR")
+/** Formato de números do app (segue o idioma escolhido; padrão pt-BR). */
+object NumLocale { @Volatile var current: java.util.Locale = java.util.Locale.forLanguageTag("pt-BR") }
+val PT_BR: java.util.Locale get() = NumLocale.current
 
 /**
  * Corretoras suportadas (perpétuos de BTC).

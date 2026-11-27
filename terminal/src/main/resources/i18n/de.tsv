@@ -1,0 +1,1339 @@
+# Radar BTC · German · gerado do código-fonte (docs/I18N.md)
+Tabela de ETFs não encontrada	ETF-Tabelle nicht gefunden
+th, td	th, td
+Total	Gesamt
+{0}/fapi/v1/depth?symbol=BTCUSDT&limit={1}	{0}/fapi/v1/depth?symbol=BTCUSDT&limit={1}
+{0}/fapi/v1/klines?symbol=BTCUSDT&interval={1}&limit={2}	{0}/fapi/v1/klines?symbol=BTCUSDT&interval={1}&limit={2}
+{0}/futures/data/openInterestHist?symbol=BTCUSDT&period={1}&limit={2}	{0}/futures/data/openInterestHist?symbol=BTCUSDT&period={1}&limit={2}
+{0}/fapi/v1/ticker/{1}hr?symbol=BTCUSDT	{0}/fapi/v1/ticker/{1}hr?symbol=BTCUSDT
+{0}/fapi/v1/premiumIndex?symbol=BTCUSDT	{0}/fapi/v1/premiumIndex?symbol=BTCUSDT
+{0}/fapi/v1/openInterest?symbol=BTCUSDT	{0}/fapi/v1/openInterest?symbol=BTCUSDT
+{0}/v5/market/orderbook?category=linear&symbol=BTCUSDT&limit={1}	{0}/v5/market/orderbook?category=linear&symbol=BTCUSDT&limit={1}
+Bybit: resposta sem 'result'	Bybit: Antwort ohne 'result'
+{0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}	{0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}
+Buy	Kauf
+Conexão encerrada ({0})	Verbindung geschlossen ({0})
+HTTP {0} em {1}	HTTP {0} bei {1}
+Resposta vazia em {0}	Leere Antwort von {0}
+Alertas do mercado	Marktalarme
+Monitoramento em segundo plano	Hintergrundüberwachung
+{0} INFO [app] {1}	{0} INFO [app] {1}
+Memória (usada / máx.)	Speicher (genutzt / max.)
+{0} / {1} MB	{0} / {1} MB
+Threads	Threads
+Aparelho	Gerät
+{0} {1} · Android {2}	{0} {1} · Android {2}
+banco indisponível: {0}	Datenbank nicht verfügbar: {0}
+falha de gravação: {0}	Schreibfehler: {0}
+Histórico: {0}	Verlauf: {0}
+Radar BTC monitorando	BTC-Radar überwacht
+Conexões e alertas ativos em segundo plano	Aktive Verbindungen und Alarme im Hintergrund
+DIVERGÊNCIA DE ALTA	BULLISCHE DIVERGENZ
+DIVERGÊNCIA DE BAIXA	BÄRISCHE DIVERGENZ
+Preço: fundo mais baixo ({0} → {1}). CVD: fundo mais alto ({2} → {3} BTC). Vendas agressoras perdendo força.	Preis: tieferes Tief ({0} → {1}). CVD: höheres Tief ({2} → {3} BTC). Aggressive Verkäufe verlieren an Kraft.
+Preço: topo mais alto ({0} → {1}). CVD: topo mais baixo ({2} → {3} BTC). Compras agressoras perdendo força.	Preis: höheres Hoch ({0} → {1}). CVD: tieferes Hoch ({2} → {3} BTC). Aggressive Käufe verlieren an Kraft.
+sem dados	keine Daten
+forte positiva	stark positiv
+forte negativa	stark negativ
+moderada positiva	mäßig positiv
+moderada negativa	mäßig negativ
+fraca positiva	schwach positiv
+fraca negativa	schwach negativ
+BTCUSDT perp (USD-M)	BTCUSDT Perp (USD-M)
+BTCUSDT linear	BTCUSDT linear
+BTC_USDT perp	BTC_USDT Perp
+BTCUSDT perp (USDT-M)	BTCUSDT Perp (USDT-M)
+BTC-PERPETUAL (inverso, USD)	BTC-PERPETUAL (invers, USD)
+BTC-USDT perp (só open interest)	BTC-USDT Perp (nur Open Interest)
+PF_XBTUSD perp (só open interest)	PF_XBTUSD Perp (nur Open Interest)
+metadados do contrato indisponíveis, usando {0} BTC: {1}	Vertragsmetadaten nicht verfügbar, es wird {0} BTC verwendet: {1}
+Liquidações (futures.public_liquidates)	Liquidationen (futures.public_liquidates)
+Liquidações (UTA v3 liquidation)	Liquidationen (UTA v3 liquidation)
+inscrição recusada: {0}	Abonnement abgelehnt: {0}
+Trades com marca de liquidação	Trades mit Liquidationsmarkierung
+Livro (/public depth@{0}ms + REST {1})	Orderbuch (/public depth@{0}ms + REST {1})
+nova conexão	neue Verbindung
+Trades/mark/liquidações (/market)	Trades/Mark/Liquidationen (/market)
+open interest REST falhou: {0}	Open-Interest-REST fehlgeschlagen: {0}
+quebra de sequência (pu ≠ u anterior)	Sequenzbruch (pu ≠ vorheriges u)
+Livro inválido, reconstruindo: {0}	Orderbuch ungültig, wird neu aufgebaut: {0}
+snapshot REST indisponível: {0}	REST-Snapshot nicht verfügbar: {0}
+nova tentativa de snapshot	erneuter Snapshot-Versuch
+buffer sem continuidade com o snapshot	Puffer ohne Anschluss an den Snapshot
+Livro sincronizado (snapshot {0})	Orderbuch synchronisiert (Snapshot {0})
+@aggTrade	@aggTrade
+@markPrice	@markPrice
+@forceOrder	@forceOrder
+Livro {0} + RPI + trades + tickers + liquidações	Orderbuch {0} + RPI + Trades + Ticker + Liquidationen
+aguardando snapshot	warte auf Snapshot
+quebra de sequência u {0} → {1}	Sequenzbruch u {0} → {1}
+{0}: quebra de sequência, pedindo novo snapshot	{0}: Sequenzbruch, neuer Snapshot wird angefordert
+padrão {0} BTC (metadados ainda não carregados)	Standard {0} BTC (Metadaten noch nicht geladen)
+metadados OKX: {0} contrato = {1} BTC	OKX-Metadaten: {0} Kontrakt = {1} BTC
+metadados inesperados ({0}); usando {1} BTC	unerwartete Metadaten ({0}); es wird {1} BTC verwendet
+metadados do instrumento indisponíveis: {0}	Instrumentenmetadaten nicht verfügbar: {0}
+Livro {0} + trades + OI + funding + mark + liquidações	Orderbuch {0} + Trades + OI + Funding + Mark + Liquidationen
+erro: {0}	Fehler: {0}
+quebra de sequência prevSeqId {0} ≠ {1}	Sequenzbruch prevSeqId {0} ≠ {1}
+books: quebra de sequência, pedindo novo snapshot	books: Sequenzbruch, neuer Snapshot wird angefordert
+Acumulação comprada	Gekaufte Akkumulation
+Fluxo long	Long-Flow
+Recompra de shorts	Short-Deckung
+Pressão compradora	Kaufdruck
+Acumulação vendida	Verkaufte Akkumulation
+Fluxo short	Short-Flow
+Fechamento de longs	Schließung von Longs
+Pressão vendedora	Verkaufsdruck
+Sem viés claro	Keine klare Tendenz
+Inferência. A agressão mostra quem iniciou a execução, não se abriu ou fechou posição. Todo contrato tem comprador e vendedor; OI subindo com compra agressora é compatível com expansão LONG, mas não prova.	Inferenz. Die Aggression zeigt, wer die Ausführung initiiert hat, nicht ob eine Position eröffnet oder geschlossen wurde. Jeder Kontrakt hat einen Käufer und einen Verkäufer; steigendes OI bei aggressiven Käufen ist mit einer LONG-Expansion vereinbar, beweist sie aber nicht.
+Compra agressora: {0} BTC	Aggressiver Kauf: {0} BTC
+Venda agressora: {0} BTC	Aggressiver Verkauf: {0} BTC
+Delta: {0} BTC (desequilíbrio {1}%)	Delta: {0} BTC (Ungleichgewicht {1}%)
+Preço: 	Preis: 
+sem dado	keine Daten
+Open interest: 	Open Interest: 
+Funding médio: 	Durchschnittliche Funding: 
+Fluxo agressor equilibrado na janela.	Aggressiver Flow im Fenster ausgeglichen.
+MÉDIA	DURCHSCHN.
+Compras agressoras com OI subindo: compatível com abertura líquida de LONG.	Aggressive Käufe bei steigendem OI: vereinbar mit netto eröffneten LONGs.
+Compras agressoras com OI caindo: compatível com fechamento de SHORT.	Aggressive Käufe bei fallendem OI: vereinbar mit geschlossenen SHORTs.
+Predomínio comprador sem variação relevante de OI.	Kaufdominanz ohne relevante OI-Veränderung.
+Vendas agressoras com OI subindo: compatível com abertura líquida de SHORT.	Aggressive Verkäufe bei steigendem OI: vereinbar mit netto eröffneten SHORTs.
+Vendas agressoras com OI caindo: compatível com fechamento de LONG.	Aggressive Verkäufe bei fallendem OI: vereinbar mit geschlossenen LONGs.
+Predomínio vendedor sem variação relevante de OI.	Verkaufsdominanz ohne relevante OI-Veränderung.
+{0} dias	{0} Tage
+{0} sem	{0} Wo.
+{0} mês	{0} Monat
+{0} meses	{0} Monate
+{0} ano	{0} Jahr
+{0} anos	{0} Jahre
+bloqueado nesta região	in dieser Region gesperrt
+indisponível: {0}	nicht verfügbar: {0}
+sem dados no período	keine Daten im Zeitraum
+parcial: desde 	teilweise: seit 
+ (API guarda ~{0} dias)	 (API speichert ~{0} Tage)
+ (API guarda {0} pontos)	 (API speichert {0} Punkte)
+completo ({0} pontos)	vollständig ({0} Punkte)
+Liquidação EXTREME	EXTREME Liquidation
+Parede grande saiu do livro	Große Wand aus dem Buch entfernt
+Absorção / iceberg	Absorption / Iceberg
+Mudança de sinal LONG/SHORT	Wechsel des LONG/SHORT-Signals
+Divergência preço × CVD	Divergenz Preis × CVD
+Preço perto de zona do heatmap	Preis nahe Heatmap-Zone
+Macro: evento de alto impacto chegando	Makro: Ereignis mit hoher Wirkung naht
+Macro: dado acima/abaixo do esperado	Makro: Daten über/unter Erwartung
+Macro: DXY, yields ou VIX em movimento forte	Makro: DXY, Renditen oder VIX bewegen sich stark
+Macro: escalada geopolítica, tarifas ou regulação	Makro: geopolitische Eskalation, Zölle oder Regulierung
+Macro: BTC diverge do mercado americano	Makro: BTC weicht vom US-Markt ab
+Macro: mudança forte do BTC Macro Sentiment	Makro: starke Veränderung des BTC Macro Sentiment
+Absorção	Absorption
+Paredes	Wände
+Iceberg	Iceberg
+Liquidação	Liquidation
+Liquidações	Liquidationen
+Execução grande	Große Ausführung
+Execuções	Ausführungen
+Divergência	Divergenz
+Divergências	Divergenzen
+Macro	Makro
+wall|{0}|{1}|{2}	wall|{0}|{1}|{2}
+Parede {0} {1} de {2} BTC em {3} ({4}): {5}	{1}-Wand {0} von {2} BTC bei {3} ({4}): {5}
+de compra	Kauf
+de venda	Verkauf
+{0} em {1} ({2}, {3}): executado {4} BTC, restante {5} BTC	{0} bei {1} ({2}, {3}): {4} BTC ausgeführt, Rest {5} BTC
+Parede de compra	Kaufwand
+Parede de venda	Verkaufswand
+executado {0} BTC · restante {1} BTC	{0} BTC ausgeführt · Rest {1} BTC
+sig|{0}|{1}|{2}	sig|{0}|{1}|{2}
+Iniciando conexões (Binance, Bybit, OKX; liquidações também de Gate, Bitget e Deribit)	Verbindungen werden gestartet (Binance, Bybit, OKX; Liquidationen zusätzlich von Gate, Bitget und Deribit)
+publicação: {0}	Veröffentlichung: {0}
+Conexões encerradas	Verbindungen beendet
+Compra	Kauf
+Venda	Verkauf
+{0} BTC agressor	{0} BTC aggressiv
+Long	Long
+Short	Short
+{0} BTC · {1}	{0} BTC · {1}
+liq|{0}|{1}|{2}	liq|{0}|{1}|{2}
+Liquidação EXTREME: {0} {1} BTC @ {2} ({3})	Liquidation EXTREM: {0} {1} BTC @ {2} ({3})
+side|{0}|{1}	side|{0}|{1}
+Sinal mudou para {0} ({1} min): {2}, confiança {3}	Signal wechselte zu {0} ({1} min): {2}, Konfidenz {3}
+{0} ({1} min)	{0} ({1} min)
+De alta	Bullisch
+De baixa	Bärisch
+janela {0} min	Fenster {0} min
+preço {0} → {1} · CVD {2} → {3} BTC	Kurs {0} → {1} · CVD {2} → {3} BTC
+div|{0}|{1}|{2}	div|{0}|{1}|{2}
+retirada sem execução (provável cancelamento)	Rückzug ohne Ausführung (wahrscheinlich Stornierung)
+preço atravessou, execução não confirmada	Kurs durchbrochen, Ausführung nicht bestätigt
+execução confirmada pelos trades	Ausführung durch Trades bestätigt
+livro cruzado (bid {0} >= ask {1})	Orderbuch gekreuzt (Bid {0} >= Ask {1})
+Favorável ao BTC	Günstig für BTC
+Desfavorável ao BTC	Ungünstig für BTC
+Neutro	Neutral
+Indeterminado	Unbestimmt
+Baixa	Niedrig
+Moderada	Mäßig
+Alta	Hoch
+Crítica	Kritisch
+Imediato (minutos a horas)	Sofort (Minuten bis Stunden)
+Curto prazo ({0} a {1} dias)	Kurzfristig ({0} bis {1} Tage)
+Médio prazo ({0} a {1} semanas)	Mittelfristig ({0} bis {1} Wochen)
+Longo prazo (acima de {0} mês)	Langfristig (über {0} Monat)
+Fonte oficial	Offizielle Quelle
+Média	Mittel
+Conflitos e segurança	Konflikte und Sicherheit
+Comércio internacional	Internationaler Handel
+Energia e commodities	Energie und Rohstoffe
+Federal Reserve	Federal Reserve
+Política fiscal e dívida	Fiskalpolitik und Schulden
+Regulação cripto	Krypto-Regulierung
+Política americana	US-Politik
+Avanço regulatório ou institucional reduz risco jurídico e pode ampliar a demanda por BTC.	Regulatorischer oder institutioneller Fortschritt verringert das rechtliche Risiko und kann die Nachfrage nach BTC erhöhen.
+Decisão regulatória	Regulatorische Entscheidung
+Acesso institucional / segurança jurídica	Institutioneller Zugang / Rechtssicherheit
+Demanda por cripto	Nachfrage nach Krypto
+Possível alta do BTC	Mögliches Plus bei BTC
+Ação restritiva, processo ou incidente no setor aumenta o risco percebido e pode gerar vendas.	Restriktive Maßnahme, Verfahren oder Vorfall im Sektor erhöht das wahrgenommene Risiko und kann Verkäufe auslösen.
+Ação contra o setor	Maßnahme gegen die Branche
+Risco regulatório / de contraparte	Regulatorisches / Kontrahentenrisiko
+Saída de capital de cripto	Kapitalabfluss aus Krypto
+Possível pressão no BTC	Möglicher Druck auf BTC
+Tema regulatório em andamento: o efeito depende do conteúdo final.	Laufendes Regulierungsthema: Die Wirkung hängt vom endgültigen Inhalt ab.
+Debate regulatório	Regulatorische Debatte
+Incerteza sobre regras	Unsicherheit über Regeln
+Posicionamento do mercado	Marktpositionierung
+Efeito no BTC depende do desfecho	Wirkung auf BTC hängt vom Ausgang ab
+Juros menores (ou expectativa de cortes) reduzem o custo do dinheiro e tendem a favorecer ativos de risco.	Niedrigere Zinsen (oder Erwartung von Senkungen) senken die Kosten des Geldes und begünstigen tendenziell Risikoanlagen.
+Corte / sinal de corte de juros	Zinssenkung / Signal für Senkung
+Treasury yields e dólar tendem a cair	Treasury-Renditen und Dollar dürften fallen
+Apetite por risco nas bolsas	Risikoappetit an den Börsen
+Ambiente favorável ao BTC	Für BTC günstiges Umfeld
+Juros mais altos por mais tempo fortalecem o dólar e encarecem o risco.	Länger anhaltend höhere Zinsen stärken den Dollar und verteuern Risiko.
+Sinal de juros altos	Signal für hohe Zinsen
+Yields e dólar sobem	Renditen und Dollar steigen
+Aversão a risco nas bolsas	Risikoaversion an den Börsen
+Pressão sobre o BTC	Druck auf BTC
+Comunicação do Fed muda expectativas de juros; a direção depende do tom.	Kommunikation der Fed verändert Zinserwartungen; die Richtung hängt vom Ton ab.
+Comunicação do Fed	Fed-Kommunikation
+Expectativa de juros	Zinserwartung
+Yields / dólar	Renditen / Dollar
+BTC reage à mudança de expectativa	BTC reagiert auf veränderte Erwartungen
+Alívio comercial reduz risco de inflação e de desaceleração; costuma melhorar o apetite por risco.	Handelsentspannung verringert Inflations- und Konjunkturabschwächungsrisiken; verbessert meist den Risikoappetit.
+Alívio comercial	Handelsentspannung
+Menos pressão em preços e cadeias	Weniger Druck auf Preise und Lieferketten
+Bolsas tendem a subir	Börsen dürften steigen
+Apoio ao BTC	Unterstützung für BTC
+Tarifas e sanções elevam custos e incerteza: pressão inflacionária, dólar mais forte e aversão a risco.	Zölle und Sanktionen erhöhen Kosten und Unsicherheit: Inflationsdruck, stärkerer Dollar und Risikoaversion.
+Tarifa / sanção	Zoll / Sanktion
+Inflação e incerteza sobem	Inflation und Unsicherheit steigen
+Dólar forte, bolsas pressionadas	Starker Dollar, Börsen unter Druck
+Pressão de curto prazo no BTC	Kurzfristiger Druck auf BTC
+Redução de tensão diminui a busca por proteção (dólar/ouro) e alivia petróleo.	Spannungsabbau verringert die Suche nach Absicherung (Dollar/Gold) und entlastet Öl.
+Redução de conflito	Konfliktentspannung
+Petróleo e VIX tendem a cair	Öl und VIX dürften fallen
+Volta do apetite por risco	Rückkehr des Risikoappetits
+Escalada militar gera aversão a risco imediata (dólar, ouro e petróleo sobem). No longo prazo o efeito sobre o BTC é ambíguo.	Eskalation eines Militärkonflikts löst sofort Risikoaversion aus (USD, Gold und Öl steigen). Langfristig ist die Wirkung auf BTC unklar.
+Escalada militar	Militärische Eskalation
+Petróleo, ouro, dólar e VIX sobem	Öl, Gold, USD und VIX steigen
+Venda de ativos de risco	Verkauf von Risikoanlagen
+Pressão imediata no BTC	Sofortiger Druck auf BTC
+Petróleo mais barato alivia a inflação e abre espaço para juros menores.	Günstigeres Öl entlastet die Inflation und schafft Spielraum für niedrigere Zinsen.
+Petróleo em queda	Ölpreis fällt
+Inflação esperada menor	Erwartete Inflation niedriger
+Juros/yields podem cair	Zinsen/Renditen könnten fallen
+Leve apoio ao BTC	Leichte Unterstützung für BTC
+Choque de energia pressiona a inflação e pode adiar cortes de juros.	Energieschock treibt die Inflation und kann Zinssenkungen verschieben.
+Petróleo / gás sobem	Öl / Gas steigen
+Inflação esperada maior	Erwartete Inflation höher
+Pressão no BTC	Druck auf BTC
+Impasse fiscal aumenta volatilidade; pode favorecer ativos fora do sistema, mas no curto prazo costuma haver aversão a risco.	Haushaltspatt erhöht die Volatilität; kann Anlagen außerhalb des Systems begünstigen, kurzfristig folgt aber meist Risikoaversion.
+Impasse fiscal	Haushaltspatt
+Prêmio de risco nos Treasuries	Risikoprämie bei US-Staatsanleihen
+Volatilidade nas bolsas	Volatilität an den Aktienmärkten
+Efeito no BTC incerto	Wirkung auf BTC unklar
+Mais gasto/dívida pode aumentar liquidez e também os yields; o saldo depende da reação dos juros.	Mehr Ausgaben/Schulden können die Liquidität und ebenso die Renditen erhöhen; der Saldo hängt von der Zinsreaktion ab.
+Política fiscal	Fiskalpolitik
+Liquidez × oferta de títulos	Liquidität × Anleiheangebot
+Yields	Renditen
+Efeito no BTC depende dos juros	Wirkung auf BTC hängt von den Zinsen ab
+Inflação acima do esperado reduz a chance de cortes de juros.	Inflation über den Erwartungen verringert die Chance auf Zinssenkungen.
+Inflação acima do esperado	Inflation über den Erwartungen
+Menos cortes de juros	Weniger Zinssenkungen
+Inflação desacelerando aumenta a chance de cortes de juros.	Abkühlende Inflation erhöht die Chance auf Zinssenkungen.
+Inflação abaixo do esperado	Inflation unter den Erwartungen
+Mais cortes de juros precificados	Mehr Zinssenkungen eingepreist
+Yields e dólar caem	Renditen und USD fallen
+Desaceleração aumenta chance de cortes de juros (positivo), mas também o risco de queda das bolsas (negativo).	Konjunkturabkühlung erhöht die Chance auf Zinssenkungen (positiv), aber auch das Risiko fallender Aktienkurse (negativ).
+Sinais de desaceleração	Anzeichen einer Abkühlung
+Expectativa de cortes ↑ / lucros ↓	Erwartung von Zinssenkungen ↑ / Gewinne ↓
+Bolsas oscilam	Aktienmärkte schwanken
+Efeito no BTC ambíguo	Wirkung auf BTC uneindeutig
+High	High
+Menos cortes de juros / yields sobem	Weniger Zinssenkungen / Renditen steigen
+Dólar sobe, bolsas caem	USD steigt, Aktien fallen
+Pressão vendedora no BTC	Verkaufsdruck auf BTC
+O impacto depende do que já estava precificado e da reação dos Treasury yields.	Die Wirkung hängt davon ab, was bereits eingepreist war, und von der Reaktion der US-Treasury-Renditen.
+Mais cortes de juros / yields caem	Mehr Zinssenkungen / Renditen fallen
+Dólar cai, bolsas sobem	USD fällt, Aktien steigen
+Alívio para o BTC	Entlastung für BTC
+Salários acima do esperado	Löhne über den Erwartungen
+Pressão inflacionária	Inflationsdruck
+Yields sobem	Renditen steigen
+Salários fortes mantêm a inflação de serviços.	Starke Löhne halten die Dienstleistungsinflation hoch.
+Salários abaixo do esperado	Löhne unter den Erwartungen
+Menos pressão inflacionária	Weniger Inflationsdruck
+Yields caem	Renditen fallen
+Empregos acima do esperado	Beschäftigung über den Erwartungen
+Economia aquecida: menos cortes	Überhitzte Wirtschaft: weniger Zinssenkungen
+Um número muito fraco também pode assustar (risco de recessão).	Eine sehr schwache Zahl kann ebenfalls verunsichern (Rezessionsrisiko).
+Empregos abaixo do esperado	Beschäftigung unter den Erwartungen
+Esfriamento: mais cortes	Abkühlung: mehr Zinssenkungen
+Alívio para o BTC (se não virar medo de recessão)	Entlastung für BTC (sofern keine Rezessionsangst entsteht)
+Desemprego/pedidos acima do esperado	Arbeitslosigkeit/Erstanträge über den Erwartungen
+Trabalho esfriando: mais cortes	Arbeitsmarkt kühlt ab: mehr Zinssenkungen
+Apoio ao BTC (se não virar medo de recessão)	Unterstützung für BTC (sofern keine Rezessionsangst entsteht)
+Alta forte do desemprego pode virar aversão a risco.	Ein starker Anstieg der Arbeitslosigkeit kann in Risikoaversion umschlagen.
+Desemprego/pedidos abaixo do esperado	Arbeitslosigkeit/Erstanträge unter den Erwartungen
+Trabalho firme: menos cortes	Stabiler Arbeitsmarkt: weniger Zinssenkungen
+Juros acima do esperado	Zinsen über den Erwartungen
+Política mais restritiva	Restriktivere Geldpolitik
+O comunicado e a coletiva costumam pesar mais que a decisão.	Die Mitteilung und die Pressekonferenz wiegen meist schwerer als die Entscheidung.
+Juros abaixo do esperado	Zinsen unter den Erwartungen
+Política mais frouxa	Lockerere Geldpolitik
+Atividade acima do esperado	Aktivität über den Erwartungen
+Lucros melhores, mas juros podem subir	Bessere Gewinne, aber Zinsen könnten steigen
+Bolsas e yields sobem juntos	Aktien und Renditen steigen gemeinsam
+Efeito no BTC depende da reação dos juros	Wirkung auf BTC hängt von der Zinsreaktion ab
+Crescimento forte é bom para risco, mas pode adiar cortes de juros.	Starkes Wachstum ist gut für Risikoanlagen, kann aber Zinssenkungen verschieben.
+Atividade abaixo do esperado	Aktivität unter den Erwartungen
+Mais cortes, mas lucros piores	Mehr Zinssenkungen, aber schlechtere Gewinne
+Yields caem, bolsas oscilam	Renditen fallen, Aktien schwanken
+Em linha com o esperado	Im Rahmen der Erwartungen
+Sem surpresa: o impacto tende a ser pequeno. {0}	Keine Überraschung: die Wirkung dürfte gering sein. {0}
+Acima do esperado	Über den Erwartungen
+Abaixo do esperado	Unter den Erwartungen
+Política monetária	Geldpolitik
+Média de: (a) Treasury {0} anos abaixo da taxa efetiva do Fed = cortes precificados (±{1} pp = ±{2}); (b) taxa implícita nos futuros de Fed funds de ~{3} meses à frente contra a taxa atual ({4} pp = {5}). Cortes esperados = favorável.	Durchschnitt aus: (a) Treasury {0} Jahre unter dem effektiven Fed-Satz = eingepreiste Zinssenkungen (±{1} pp = ±{2}); (b) impliziter Satz aus Fed-Funds-Futures in ~{3} Monaten gegenüber dem aktuellen Satz ({4} pp = {5}). Erwartete Zinssenkungen = günstig.
+Inflação	Inflation
+Núcleo do CPI ({0} meses anualizado) contra a variação em {1} meses: desacelerando = favorável; acelerando = desfavorável. Escala: ±{2} pp = ±{3}.	Core-CPI ({0} Monate annualisiert) gegenüber der Veränderung über {1} Monate: sich abschwächend = günstig; sich beschleunigend = ungünstig. Skala: ±{2} pp = ±{3}.
+Mercado de trabalho	Arbeitsmarkt
+Desemprego subindo {0}–{1} pp em {2} meses = esfriamento (mais cortes, {3}); acima de {4} pp = risco de recessão ({5}); salários > {6}% a/a = {7}.	Arbeitslosigkeit steigt um {0}–{1} pp in {2} Monaten = Abkühlung (mehr Zinssenkungen, {3}); über {4} pp = Rezessionsrisiko ({5}); Löhne > {6}% ggü. Vj. = {7}.
+Dólar (DXY)	US-Dollar (DXY)
+Variação em {0} pregões: dólar caindo = favorável. Escala: ±{1}% = ±{2}.	Veränderung über {0} Handelstage: fallender Dollar = günstig. Skala: ±{1}% = ±{2}.
+Treasury yields	Treasury-Renditen
+Média de: Treasury {0} anos nominal em {1} dias (±{2} bp = ∓{3}) e juro real de {4} anos (TIPS) em {5} dias (±{6} bp = ∓{7}). Juros caindo = favorável.	Durchschnitt aus: nominale Treasury {0} Jahre in {1} Tagen (±{2} bp = ∓{3}) und reale Rendite {4} Jahre (TIPS) in {5} Tagen (±{6} bp = ∓{7}). Fallende Zinsen = günstig.
+Liquidez	Liquidität
+Média de: TGA em ~{0} semanas (caindo devolve liquidez; ±US$ {1} bi = ∓{2}), balanço do Fed na semana (±US$ {3} bi = ±{4}) e estoque de stablecoins em {5} dias (±{6}% = ±{7}, liquidez do mercado cripto).	Durchschnitt aus: TGA in ~{0} Wochen (sinkendes TGA bedeutet mehr Liquidität; ±US$ {1} Mrd. = ∓{2}), Fed-Bilanz in der Woche (±US$ {3} Mrd. = ±{4}) und Stablecoin-Bestand in {5} Tagen (±{6}% = ±{7}, Liquidität des Krypto-Markts).
+Mercado acionário	Aktienmarkt
+Nasdaq {0} em {1} pregões: alta = apetite por risco (favorável). Escala: ±{2}% = ±{3}.	Nasdaq {0} in {1} Handelstagen: Anstieg = Risikobereitschaft (günstig). Skala: ±{2}% = ±{3}.
+Volatilidade (VIX e MOVE)	Volatilität (VIX und MOVE)
+VIX < {0}: {1} · {2}–{3}: {4} · {5}–{6}: {7} · > {8}: {9}; salto > {10}% no dia soma {11}. MOVE (volatilidade dos Treasuries) > {12} soma {13}; < {14} soma {15}.	VIX < {0}: {1} · {2}–{3}: {4} · {5}–{6}: {7} · > {8}: {9}; Tagessprung > {10}% addiert {11}. MOVE (Volatilität der Treasuries) > {12} addiert {13}; < {14} addiert {15}.
+Eventos geopolíticos	Geopolitische Ereignisse
+Soma das notícias classificadas nas últimas {0} h (direção × intensidade × confiabilidade), limitada a ±{1}.	Summe der klassifizierten Nachrichten der letzten {0} h (Richtung × Intensität × Verlässlichkeit), begrenzt auf ±{1}.
+Fluxo institucional (ETFs)	Institutionelle Flüsse (ETFs)
+Soma dos fluxos dos ETFs spot nos últimos {0} pregões: ±US$ {1} bi = ±{2}.	Summe der Flüsse der Spot-ETFs in den letzten {0} Handelstagen: ±US$ {1} Mrd. = ±{2}.
+Sem dados suficientes	Keine ausreichenden Daten
+Extremamente desfavorável	Äußerst ungünstig
+Desfavorável	Ungünstig
+Neutro / misto	Neutral / gemischt
+Favorável	Günstig
+Extremamente favorável	Äußerst günstig
+Fed efetivo {0}% × Treasury {1} anos {2}% ({3})	Effektiver Fed-Satz {0}% × Treasury {1} Jahre {2}% ({3})
+sem mudança precificada	keine Änderung eingepreist
+futuros de Fed funds ~{0} meses: {1}% ({2} bp)	Fed-Funds-Futures ~{0} Monate: {1}% ({2} bp)
+Sem taxa do Fed, Treasury {0} anos ou futuros	Kein Fed-Satz, Treasury {0} Jahre oder Futures
+Núcleo do CPI: {0}% em {1} meses, {2}% anualizado em {3} meses ({4})	Core-CPI: {0}% in {1} Monaten, {2}% annualisiert in {3} Monaten ({4})
+Núcleo do CPI desatualizado ({0})	Core-CPI veraltet ({0})
+Sem núcleo do CPI	Kein Core-CPI
+Desemprego {0}% ({1} pp em {2} meses){3}	Arbeitslosigkeit {0}% ({1} pp in {2} Monaten){3}
+ · salários {0}% a/a	 · Löhne {0}% ggü. Vj.
+Desemprego desatualizado ({0})	Arbeitslosigkeit veraltet ({0})
+Sem dado de desemprego	Keine Arbeitslosigkeitsdaten
+DXY {0}% em {1} pregões	DXY {0}% in {1} Handelstagen
+Sem DXY	Kein DXY
+Treasury {0} anos {1} bp em {2} dias	Treasury {0} Jahre {1} bp in {2} Tagen
+Sem Treasury {0} anos	Kein Treasury {0} Jahre
+TGA US$ {0} bi ({1} bi em ~{2} semanas)	TGA US$ {0} Mrd. ({1} Mrd. in ~{2} Wochen)
+balanço do Fed {0} bi na semana	Fed-Bilanz {0} Mrd. in der Woche
+stablecoins {0}% em {1} dias	Stablecoins {0}% in {1} Tagen
+Sem TGA, balanço do Fed ou stablecoins	Kein TGA, keine Fed-Bilanz oder Stablecoins
+Nasdaq {0} {1}% em {2} pregões	Nasdaq {0} {1}% in {2} Handelstagen
+Sem Nasdaq	Kein Nasdaq
+VIX {0}{1}	VIX {0}{1}
+ ({0}% no dia)	 ({0}% am Tag)
+MOVE {0}	MOVE {0}
+Sem VIX nem MOVE	Weder VIX noch MOVE
+{0} notícias desfavoráveis · {1} favoráveis · {2} indeterminadas ({3} h)	{0} ungünstige Nachrichten · {1} günstige · {2} unbestimmte ({3} h)
+Sem notícias classificadas nas últimas {0} h	Keine klassifizierten Nachrichten in den letzten {0} h
+ETFs spot: US$ {0} mi em {1} pregões	Spot-ETFs: US$ {0} Mio. in {1} Handelstagen
+Sem fluxo dos ETFs (abra a aba ETFs para carregar)	Keine ETF-Flüsse (Tab ETFs öffnen, um zu laden)
+ (desatualizado)	 (veraltet)
+Comprador	Käufer
+Vendedor	Verkäufer
+Equilibrado	Ausgeglichen
+LONG liquidados	LONG liquidiert
+SHORT liquidados	SHORT liquidiert
+Sem evento relevante	Kein relevantes Ereignis
+Cenário A: macro desfavorável + vendas agressoras + liquidações de LONG. Possível queda reforçada por pressão macro e desalavancagem.	Szenario A: ungünstiges Makro + aggressive Verkäufe + Liquidationen von LONG. Mögliche Abwärtsbewegung, verstärkt durch Makrodruck und Deleverage.
+Cenário B: macro desfavorável, mas há absorção de vendas nas paredes de compra e o preço se sustenta. O mercado pode estar absorvendo a pressão vendedora (resistência à queda).	Szenario B: ungünstiges Makro, aber Verkaufsdruck wird an den Kaufwänden absorbiert und der Preis hält sich. Der Markt absorbiert möglicherweise den Verkaufsdruck (Widerstand gegen Abwärtsbewegung).
+Cenário C: macro favorável + compras agressoras. Movimento de alta alinhado com as condições macro e com o fluxo comprador	Szenario C: günstiges Makro + aggressive Käufe. Aufwärtsbewegung im Einklang mit den Makrobedingungen und dem Käuferfluss
+, reforçado por liquidações de SHORT.	, verstärkt durch Liquidationen von SHORT.
+Macro favorável, mas há absorção de compras nas paredes de venda e o preço não avança: oferta segurando a alta.	Günstiges Makro, aber Kaufdruck wird an den Verkaufswänden absorbiert und der Preis steigt nicht: Angebot bremst den Anstieg.
+Macro desfavorável e vendas agressoras na mesma direção, ainda sem desalavancagem forte (liquidações de LONG). Pressão vendedora alinhada ao cenário macro.	Ungünstiges Makro und aggressive Verkäufe in dieselbe Richtung, noch ohne starkes Deleverage (Liquidationen von LONG). Verkaufsdruck im Einklang mit dem Makroszenario.
+Macro favorável e SHORT sendo liquidados, mas sem compra agressora clara: alta puxada por recompra forçada, menos sustentada.	Günstiges Makro und SHORT werden liquidiert, aber ohne klare aggressive Käufe: Anstieg durch erzwungenes Zurückkaufen getrieben, weniger nachhaltig.
+Macro desfavorável e LONG sendo liquidados, mas sem venda agressora clara: queda puxada por desalavancagem.	Ungünstiges Makro und LONG werden liquidiert, aber ohne klare aggressive Verkäufe: Rückgang durch Deleverage getrieben.
+Divergência: o fluxo agressor vai contra o cenário macro. Pode ser movimento técnico local; vale cautela até haver confirmação.	Divergenz: der aggressive Fluss läuft dem Makroszenario entgegen. Kann eine lokale technische Bewegung sein; Vorsicht bis zur Bestätigung.
+Cenário macro neutro/misto: o order flow tende a dominar a leitura de curto prazo.	Makroszenario neutral/gemischt: der Order Flow dürfte die kurzfristige Lesart bestimmen.
+Sem confirmação clara do order flow em relação ao cenário macro.	Keine klare Bestätigung des Order Flow gegenüber dem Makroszenario.
+ Dados públicos não permitem identificar participantes individuais.	 Öffentliche Daten erlauben keine Identifizierung einzelner Teilnehmer.
+Accept	Akzeptieren
+limite de consultas da fonte (HTTP {0})	Abfragelimit der Quelle (HTTP {0})
+HTTP {0}	HTTP {0}
+^GSPC	^GSPC
+Nasdaq {0}	Nasdaq {0}
+^NDX	^NDX
+Dow Jones	Dow Jones
+^DJI	^DJI
+^VIX	^VIX
+Treasury {0} anos (intradiário)	Treasury {0} Jahre (Intraday)
+^TNX	^TNX
+Ouro	Gold
+GC=F	GC=F
+Petróleo WTI	Rohöl WTI
+CL=F	CL=F
+Petróleo Brent	Rohöl Brent
+BZ=F	BZ=F
+Bitcoin	Bitcoin
+sem resultado ({0})	kein Ergebnis ({0})
+{0} Yr	{0} Yr
+colunas {0} Yr/{1} Yr não encontradas	Spalten {0} Yr/{1} Yr nicht gefunden
+CPI (índice, dessaz.)	CPI (Index, saisonbereinigt)
+Núcleo do CPI (índice, dessaz.)	Kern-CPI (Index, saisonbereinigt)
+Nonfarm payrolls (mil)	Nonfarm Payrolls (Tsd.)
+Taxa de desemprego (%)	Arbeitslosenquote (%)
+Salário médio por hora (US$)	Durchschnittlicher Stundenlohn (US$)
+,"registrationkey":"{0}"	,"registrationkey":"{0}"
+{"seriesid":[{0}],"startyear":"{1}","endyear":"{2}"{3}}	{"seriesid":[{0}],"startyear":"{1}","endyear":"{2}"{3}}
+BLS: {0} {1}	BLS: {0} {1}
+Results	Ergebnisse
+PCE (índice de preços)	PCE (Preisindex)
+Núcleo do PCE (índice)	Kern-PCE (Index)
+BEA (via DBnomics)	BEA (via DBnomics)
+Treasury General Account	Treasury General Account
+Closing	Schluss
+Opening	Eröffnung
+(war OR missile OR airstrike OR invasion OR ceasefire OR "military escalation" OR "Strait of Hormuz") (US OR China OR Russia OR Iran OR Israel OR Taiwan OR Ukraine)	(war OR missile OR airstrike OR invasion OR ceasefire OR "military escalation" OR "Strait of Hormuz") (US OR China OR Russia OR Iran OR Israel OR Taiwan OR Ukraine)
+(tariffs OR sanctions OR "export controls" OR "trade deal" OR "trade war")	(tariffs OR sanctions OR "export controls" OR "trade deal" OR "trade war")
+("oil prices" OR OPEC OR "natural gas prices" OR "energy supply")	("oil prices" OR OPEC OR "natural gas prices" OR "energy supply")
+("Federal Reserve" OR Powell OR FOMC OR "rate cut" OR "rate hike" OR "inflation report" OR "jobs report")	("Federal Reserve" OR Powell OR FOMC OR "rate cut" OR "rate hike" OR "inflation report" OR "jobs report")
+("debt ceiling" OR "government shutdown" OR "Treasury yields" OR "credit rating" OR "fiscal deficit")	("debt ceiling" OR "government shutdown" OR "Treasury yields" OR "credit rating" OR "fiscal deficit")
+(bitcoin OR crypto OR stablecoin) (SEC OR regulation OR bill OR ban OR "strategic reserve" OR ETF)	(bitcoin OR crypto OR stablecoin) (SEC OR regulation OR bill OR ban OR "strategic reserve" OR ETF)
+dc|date	dc|date
+ GMT	 GMT
+ UTC	 UTC
+ UT	 UT
+ EST	 EST
+ EDT	 EDT
+ CST	 CST
+ CDT	 CDT
+ PST	 PST
+ PDT	 PDT
+Cointelegraph	Cointelegraph
+Decrypt	Decrypt
+The Block	The Block
+Bitcoin Magazine	Bitcoin Magazine
+CNBC Economy	CNBC Economy
+WSJ Markets	WSJ Markets
+New York Times	New York Times
+New York Times World	New York Times World
+BBC Business	BBC Business
+BBC World	BBC World
+Al Jazeera	Al Jazeera
+Financial Times	Financial Times
+Bloomberg	Bloomberg
+DW Business	DW Business
+Russell {0}	Russell {0}
+^RUT	^RUT
+Bolsas	Börsen
+FTSE {0} (Londres)	FTSE {0} (London)
+^FTSE	^FTSE
+DAX (Alemanha)	DAX (Deutschland)
+^GDAXI	^GDAXI
+Nikkei {0} (Japão)	Nikkei {0} (Japan)
+Hang Seng (Hong Kong)	Hang Seng (Hongkong)
+^HSI	^HSI
+Xangai	Shanghai
+Ibovespa	Ibovespa
+^BVSP	^BVSP
+Euro / dólar	Euro / US-Dollar
+EURUSD=X	EURUSD=X
+Moedas	Währungen
+Dólar / iene	US-Dollar / Yen
+JPY=X	JPY=X
+Dólar / yuan	US-Dollar / Yuan
+CNY=X	CNY=X
+Dólar / real	Dollar / Real
+BRL=X	BRL=X
+Prata	Silber
+SI=F	SI=F
+Commodities	Rohstoffe
+Cobre	Kupfer
+HG=F	HG=F
+Gás natural	Erdgas
+NG=F	NG=F
+Treasury {0} semanas	Treasury {0} Wochen
+^IRX	^IRX
+Juros e crédito	Zinsen und Kredit
+Treasury {0} anos	Treasury {0} Jahre
+^FVX	^FVX
+^TYX	^TYX
+MOVE (volatilidade dos Treasuries)	MOVE (Volatilität der Treasuries)
+^MOVE	^MOVE
+HYG (crédito high yield)	HYG (High-Yield-Kredit)
+Ethereum	Ethereum
+Cripto e ações ligadas	Krypto und verbundene Aktien
+IBIT (ETF de BTC da BlackRock)	IBIT (BTC-ETF von BlackRock)
+Strategy (MSTR)	Strategy (MSTR)
+Coinbase (COIN)	Coinbase (COIN)
+coluna {0} não encontrada	Spalte {0} nicht gefunden
+&#xa0;|&nbsp;|&#{0};	&#xa0;|&nbsp;|&#{0};
+total de ativos não encontrado	Summe der Assets nicht gefunden
+sem dominância	keine Dominanz
+sem observação	keine Beobachtung
+(tariffs OR sanctions OR ceasefire OR airstrike OR "federal reserve" OR "oil prices" OR "debt ceiling") sourcelang:english	(tariffs OR sanctions OR ceasefire OR airstrike OR "federal reserve" OR "oil prices" OR "debt ceiling") sourcelang:english
+&mode=artlist&maxrecords={0}&format=json&timespan={1}h&sort=datedesc	&mode=artlist&maxrecords={0}&format=json&timespan={1}h&sort=datedesc
+Federal Reserve Bank of New York	Federal Reserve Bank of New York
+Taxa efetiva do Fed (EFFR), intervalo-alvo, SOFR e reverse repo overnight	Effektiver Fed-Satz (EFFR), Zielspanne, SOFR und Overnight-Reverse-Repo
+Calendário do FOMC, balanço semanal (H.4.1), reservas bancárias e comunicados	FOMC-Kalender, wöchentliche Bilanz (H.4.1), Bankreserven und Mitteilungen
+U.S. Treasury	U.S. Treasury
+Curva de juros nominal e real (TIPS), saldo do TGA e dívida pública	Zinskurve nominal und real (TIPS), TGA-Saldo und Staatsverschuldung
+Treasury Fiscal Data	Treasury Fiscal Data
+Daily Treasury Statement (TGA) e Debt to the Penny	Daily Treasury Statement (TGA) und Debt to the Penny
+U.S. Bureau of Labor Statistics (BLS)	U.S. Bureau of Labor Statistics (BLS)
+CPI, núcleo do CPI, payroll, desemprego e salário por hora	CPI, Core-CPI, Payrolls, Arbeitslosigkeit und Stundenlohn
+U.S. Bureau of Economic Analysis (BEA) via DBnomics	U.S. Bureau of Economic Analysis (BEA) via DBnomics
+PCE e núcleo do PCE	PCE und Core-PCE
+Banco Central Europeu (BCE)	Europäische Zentralbank (EZB)
+Taxa de depósito e comunicados	Einlagensatz und Mitteilungen
+SEC e CFTC	SEC und CFTC
+Comunicados dos reguladores americanos	Mitteilungen der US-Regulierungsbehörden
+Bolsas (EUA, Europa, Ásia, Brasil), VIX, MOVE, DXY, moedas, commodities, Treasuries intradiários, futuros de Fed funds (CBOT), ETH, IBIT, MSTR, COIN, HYG	Börsen (USA, Europa, Asien, Brasilien), VIX, MOVE, DXY, Währungen, Rohstoffe, intraday Treasuries, Fed-Funds-Futures (CBOT), ETH, IBIT, MSTR, COIN, HYG
+Probabilidades negociadas da próxima decisão de juros do Fed	Gehandelte Wahrscheinlichkeiten der nächsten Zinsentscheidung der Fed
+Forex Factory (faireconomy.media)	Forex Factory (faireconomy.media)
+Calendário econômico semanal: horário, impacto, expectativa e anterior	Wöchentlicher Wirtschaftskalender: Uhrzeit, Auswirkung, Erwartung und Vorwert
+Farside Investors	Farside Investors
+Fluxo diário dos ETFs spot de bitcoin	Tägliche Zu- und Abflüsse der Spot-Bitcoin-ETFs
+Valor de mercado cripto, dominância do BTC e volume	Krypto-Marktkapitalisierung, BTC-Dominanz und Volumen
+Estoque total de stablecoins	Gesamtbestand an Stablecoins
+Índice Fear & Greed do mercado cripto	Krypto Fear & Greed Index
+Hashrate, dificuldade e taxas da rede Bitcoin	Hashrate, Schwierigkeit und Gebühren des Bitcoin-Netzwerks
+Google News	Google News
+Manchetes por tema (conflitos, comércio, energia, Fed, fiscal, regulação cripto)	Schlagzeilen nach Thema (Konflikte, Handel, Energie, Fed, Fiskal, Krypto-Regulierung)
+GDELT Project	GDELT Project
+Monitor global de notícias	Globaler Nachrichtenmonitor
+Veículos (RSS)	Medien (RSS)
+Google Tradutor	Google Translate
+Tradução automática de manchetes e textos sem tradução pronta	Automatische Übersetzung von Schlagzeilen und Texten ohne fertige Übersetzung
+{0} ({1}, calculado do índice oficial)	{0} ({1}, aus dem offiziellen Index berechnet)
+btcusdt@forceOrder	btcusdt@forceOrder
+trades.liquidation={0}	trades.liquidation={0}
+ABSORÇÃO	ABSORPTION
+{0}: reiniciando conexão ({1})	{0}: Verbindung wird neu gestartet ({1})
+{0}: conectado	{0}: verbunden
+{0}: falha na inscrição: {1}	{0}: Abonnement fehlgeschlagen: {1}
+parsing: {0}	Parsing: {0}
+{0}: falha de parsing: {1} | {2}	{0}: Parsing-Fehler: {1} | {2}
+HTTP {0} 	HTTP {0} 
+{0}: desconectado: {1}	{0}: getrennt: {1}
+{0}: fechado pelo servidor ({1} {2})	{0}: vom Server geschlossen ({1} {2})
+Tentar de novo	Erneut versuchen
+CPU do processo	Prozess-CPU
+Radar BTC	BTC-Radar
+Windows	Windows
+O Radar BTC já está aberto.	Der BTC-Radar ist bereits geöffnet.
+Iniciando Radar BTC V8 (Java {0})	BTC-Radar V8 wird gestartet (Java {0})
+Encerrado	Beendet
+BTC Orderflow Terminal V8 — Radar BTC	BTC Orderflow Terminal V8 — BTC-Radar
+[app] {0}	[App] {0}
+acima (shorts a liquidar)	oberhalb (Shorts werden liquidiert)
+abaixo (longs a liquidar)	unterhalb (Longs werden liquidiert)
+zone|{0}	Zone|{0}
+Preço {0} a {1}% da zona {2} {3} com ~{4} BTC estimados ({5})	Preis {0} bei {1}% der Zone {2} {3} mit ~{4} BTC geschätzt ({5})
+Teste de alerta do Radar BTC: canal configurado corretamente.	BTC-Radar-Alarmtest: Kanal ist korrekt konfiguriert.
+Radar BTC · {0}\n{1}\n{2}	BTC-Radar · {0}\n{1}\n{2}
+Radar BTC · {0}	BTC-Radar · {0}
+Celular: 	Handy: 
+Windows: 	Windows: 
+notificações bloqueadas ou indisponíveis	Benachrichtigungen blockiert oder nicht verfügbar
+Telegram: 	Telegram: 
+Radar BTC: {0}	BTC-Radar: {0}
+E-mail: 	E-Mail: 
+nenhum canal configurado	kein Kanal konfiguriert
+alerta {0}: {1}	Alarm {0}: {1}
+token ou chat ID vazio	Token oder Chat-ID leer
+HTTP {0}: {1}	HTTP {0}: {1}
+servidor, usuário ou destinatário vazio	Server, Benutzer oder Empfänger leer
+US$ {0} mi	US$ {0} Mio.
+ETFs spot de BTC (EUA)	Spot-BTC-ETFs (USA)
+Carregando os fluxos dos ETFs…	Lade ETF-Flüsse…
+Fonte: tabela pública diária da Farside Investors	Quelle: tägliche öffentliche Tabelle von Farside Investors
+Fluxos indisponíveis no momento	Flüsse derzeit nicht verfügbar
+Sem dados	Keine Daten
+Fluxo diário	Tagesfluss
+Último pregão · 	Letzter Handelstag · 
+entrada líquida no dia	Nettozufluss am Tag
+saída líquida no dia	Nettoabfluss am Tag
+{0} pregões	{0} Handelstage
+Fluxo diário · últimos {0} pregões	Tagesfluss · letzte {0} Handelstage
+Valores em milhões de dólares, como publicados pela Farside Investors (atualiza depois do fechamento do mercado americano). Barras verdes = entrada líquida no dia; vermelhas = saída.	Werte in Millionen US-Dollar, wie von Farside Investors veröffentlicht (Aktualisierung nach Schluss des US-Marktes). Grüne Balken = Nettozufluss am Tag; rote = Abfluss.
+Por fundo	Nach Fonds
+Por fundo no último pregão	Nach Fonds am letzten Handelstag
+Velas visíveis	Sichtbare Kerzen
+Vela	Kerze
+faixa US$ {0} · {1} velas	Spanne US$ {0} · {1} Kerzen
+Faixa US$	Spanne US$
+Velas	Kerzen
+Corretoras	Börsen
+Todas	Alle
+Dados desde {0}	Daten seit {0}
+Aguardando trades	Warte auf Trades
+Footprint · venda × compra agressora por faixa (BTC)	Footprint · aggressiver Verkauf × aggressiver Kauf je Preisstufe (BTC)
+Montando o footprint	Footprint wird aufgebaut
+Precisa de trades das corretoras principais; cada vela aparece assim que recebe execuções	Benötigt Trades der großen Börsen; jede Kerze erscheint, sobald sie Ausführungen erhält
+Perfil de volume	Volumenprofil
+Sem volume no período	Kein Volumen im Zeitraum
+Resumo	Zusammenfassung
+POC (maior volume)	POC (höchstes Volumen)
+VAH (topo da área de valor)	VAH (oberes Ende des Wertebereichs)
+VAL (base da área de valor)	VAL (unteres Ende des Wertebereichs)
+Volume no perfil	Volumen im Profil
+Delta do perfil	Delta im Profil
+{0} BTC	{0} BTC
+Delta da vela atual	Delta der aktuellen Kerze
+Cada célula mostra venda agressora × compra agressora naquela faixa de preço. Fundo verde = compradores dominaram a faixa; vermelho = vendedores. Número em destaque = desequilíbrio diagonal (um lado ≥ {0}× o outro). Contorno laranja = POC da vela. Área de valor = faixas com {1}% do volume. Trades de Binance, Bybit e OKX, guardados por {2} h em faixas de US$ {3}.	Jede Zelle zeigt aggressiven Verkauf × aggressiven Kauf in dieser Preisstufe. Grüner Hintergrund = Käufer dominierten die Stufe; rot = Verkäufer. Hervorgehobene Zahl = diagonales Ungleichgewicht (eine Seite ≥ {0}× die andere). Orangefarbener Rahmen = POC der Kerze. Wertebereich = Stufen mit {1}% des Volumens. Trades von Binance, Bybit und OKX, gespeichert für {2} h in Stufen von US$ {3}.
+Aumente a faixa US$ ou reduza o nº de velas para ver os números	Spanne US$ erhöhen oder Anzahl der Kerzen verringern, um die Zahlen zu sehen
+Mover	Verschieben
+Linha de preço	Preislinie
+Linha	Linie
+Clique no preço onde a linha deve ficar	Auf den Preis klicken, wo die Linie liegen soll
+Tendência	Trendlinie
+Arraste do ponto inicial até o final	Vom Startpunkt bis zum Endpunkt ziehen
+Zona	Zone
+Arraste de um canto da zona até o canto oposto	Von einer Ecke der Zone zur gegenüberliegenden Ecke ziehen
+Texto	Text
+Clique onde a nota deve ficar	Klicken, wo die Notiz stehen soll
+Ajustar	Anpassen
+Apagar marcação	Markierung löschen
+Apagar todas ({0})	Alle löschen ({0})
+Nota em {0}:	Notiz bei {0}:
+Salvar	Speichern
+Cancelar	Abbrechen
+ BTC	 BTC
+Pinça: zoom · arrastar: mover · toque duplo: voltar	Pinch: Zoom · Ziehen: verschieben · Doppeltippen: zurücksetzen
+Roda: zoom · na escala: zoom no preço · arrastar: mover · duplo clique: voltar	Mausrad: Zoom · auf Skala: Zoom am Preis · Ziehen: verschieben · Doppelklick: zurücksetzen
+baixando velas	lade Kerzen
+open interest {0}	Open Interest {0}
+histórico de preço insuficiente para {0}	unzureichende Kurshistorie für {0}
+news-{0}|{1}	news-{0}|{1}
+US$	US$
+Corretora	Börse
+SMALL ≥	SMALL ≥
+MEDIUM ≥	MEDIUM ≥
+LARGE ≥	LARGE ≥
+EXTREME ≥	EXTREME ≥
+Faixa ±%	Spanne ±%
+BTC · ativas: {0}	BTC · aktiv: {0}
+Paredes de compra	Kaufwände
+Top {0} paredes de compra	Top {0} Kaufwände
+Paredes de venda	Verkaufswände
+Top {0} paredes de venda	Top {0} Verkaufswände
+Histórico de concentrações	Verlauf der Ballungen
+Histórico de concentrações (eventos de saída do livro)	Verlauf der Ballungen (Austrittsereignisse aus dem Buch)
+PREÇO	PREIS
+NEGOCIADO NO NÍVEL	GEHANDELT AUF EBENE
+PERMANÊNCIA	VERWEILDAUER
+Nenhuma concentração saiu do livro ainda	Noch keine Ballung hat das Buch verlassen
+Quando uma parede some, aqui aparece se houve execução corroborada por trades ou só retirada	Wenn eine Wand verschwindet, wird hier angezeigt, ob sie durch von Trades bestätigte Ausführung oder nur durch Zurückziehen verschwand
+Absorção e iceberg	Absorption und Iceberg
+Absorção e iceberg · {0}	Absorption und Iceberg · {0}
+Nenhuma parede absorvendo agora	Gerade keine absorbierende Wand
+Aparece quando um nível recebe execução e não diminui (ou volta a crescer)	Erscheint, wenn eine Ebene Ausführung erhält und nicht abnimmt (oder wieder wächst)
+Identidade = corretora + instrumento + lado + preço. O livro público é agregado por preço: não identificamos ordens individuais nem quem as colocou. Sumir do livro não prova execução: "Executada (confirmada)" exige trades no nível ≥ {0}% da quantidade. EXECUTADO = BTC negociado exatamente no preço da parede desde que ela apareceu; % CONS. = executado ÷ (executado + restante). ABSORÇÃO = recebeu execução ≥ {1}% do tamanho inicial e manteve ≥ {2}% dele. ICEBERG = executou mais do que mostrava e foi reposta {3}+ vezes (REPOSTO = execução que não reduziu o livro). Ambos são inferências.	Identität = Börse + Instrument + Seite + Preis. Das öffentliche Buch ist nach Preis aggregiert: Wir identifizieren weder einzelne Orders noch deren Urheber. Ein Verschwinden aus dem Buch beweist keine Ausführung: „Ausgeführt (bestätigt)“ erfordert Trades auf der Ebene ≥ {0}% der Menge. AUSGEFÜHRT = auf dem Wandpreis gehandeltes BTC, seit die Wand erschien; % BEST. = ausgeführt ÷ (ausgeführt + verbleibend). ABSORPTION = Ausführung ≥ {1}% der Anfangsgröße erhalten und ≥ {2}% davon gehalten. ICEBERG = mehr ausgeführt als angezeigt und {3}+ Mal nachgefüllt (NACHGEFÜLLT = Ausführung, die das Buch nicht verringerte). Beides sind Schlussfolgerungen.
+ATUAL (BTC)	AKTUELL (BTC)
+Δ BTC	Δ BTC
+% CONS.	% BEST.
+Nenhuma parede acima do limite SMALL nesta faixa	Keine Wand über dem SMALL-Limit in dieser Spanne
+Ajuste os limites ou a faixa ±% acima	Limits oder die Spanne ±% oben anpassen
+Fluxo e CVD	Flow und CVD
+Janela	Zeitfenster
+Eventos processados na chegada; a tela agrupa a cada {0} s.	Ereignisse werden bei Eingang verarbeitet; die Anzeige gruppiert alle {0} s.
+Fluxo agressor ({0})	Aggressor-Flow ({0})
+Fonte	Quelle
+Comprado	Gekauft
+Vendido	Verkauft
+Delta	Delta
+Trades	Trades
+Médio	Durchschnitt
+Maior compra	Größter Kauf
+Maior venda	Größter Verkauf
+Consolidado	Gesamt
+CVD e preço · últimos {0} (histórico desde que o app abriu, até {1} h)	CVD und Preis · letzte {0} (Verlauf seit App-Start, bis {1} h)
+Período	Zeitraum
+— Total	— Gesamt
+— Preço BTC (escala à direita)	— BTC-Preis (Skala rechts)
+Total: 	Gesamt: 
+Normalizado: 	Normalisiert: 
+{0}% do OI	{0}% des OI
+Sinal e resumo	Signal und Zusammenfassung
+Sinal de fluxo ({0})	Flow-Signal ({0})
+{0} · confiança {1}	{0} · Konfidenz {1}
+Dados observados	Beobachtete Daten
+Interpretação	Interpretation
+Limitações	Einschränkungen
+Divergências preço × CVD	Divergenzen Preis × CVD
+Nenhuma divergência detectada	Keine Divergenz erkannt
+Checa {0} min, {1} min e {2} h a cada ~{3} s: preço faz novo fundo/topo e o CVD não confirma	Prüft {0} min, {1} min und {2} h alle ~{3} s: Preis macht neues Tief/Hoch und CVD bestätigt nicht
+{0} · {1} min	{0} · {1} min
+Divergência = o preço faz um fundo mais baixo (ou topo mais alto) na {0}ª metade da janela e o CVD não acompanha. Sinal de enfraquecimento, não de reversão garantida.	Divergenz = der Preis macht in der {0}. Fensterhälfte ein tieferes Tief (oder höheres Hoch) und der CVD folgt nicht. Anzeichen für nachlassende Dynamik, keine garantierte Umkehr.
+Derivativos por corretora	Derivate nach Börse
+OI (BTC)	OI (BTC)
+OI somado ({0} corretoras)	OI gesamt ({0} Börsen)
+aguardando as {0} fontes	wartet auf die {0} Quellen
+Variação do OI ({0})	OI-Veränderung ({0})
+Variação do preço ({0})	Preisveränderung ({0})
+OI Binance via REST a cada {0} s (não há WebSocket de OI); Bybit e OKX por WebSocket. CVD normalizado = CVD ÷ OI somado, em %: permite comparar dias com open interest diferente.	OI Binance per REST alle {0} s (kein OI-WebSocket); Bybit und OKX per WebSocket. Normalisierter CVD = CVD ÷ OI gesamt, in %: ermöglicht den Vergleich von Tagen mit unterschiedlichem Open Interest.
+Delta por janela · consolidado	Delta pro Fenster · gesamt
+Barra = desequilíbrio entre compra e venda agressora (verde para a direita = compradores).	Balken = Ungleichgewicht zwischen aggressivem Kauf und Verkauf (grün nach rechts = Käufer).
+{0} min	{0} min
+Aguardando trades para desenhar o CVD	Warte auf Trades, um den CVD zu zeichnen
+Roda: zoom · arrastar: mover · duplo clique: voltar	Mausrad: Zoom · Ziehen: verschieben · Doppelklick: zurücksetzen
+Zoom ativo · duplo clique: voltar ao período todo	Zoom aktiv · Doppelklick: zurück zum Gesamtzeitraum
+Preço BTC	BTC-Preis
+CVD total	CVD gesamt
+Mínimo (BTC)	Tief (BTC)
+Compras {0}: {1} · {2}	Käufe {0}: {1} · {2}
+Vendas {0}: {1} · {2}	Verkäufe {0}: {1} · {2}
+Compras e vendas	Käufe und Verkäufe
+Maiores compras agressoras · {0}	Größte aggressive Käufe · {0}
+Nenhuma compra ≥ {0} BTC em {1}	Keine Käufe ≥ {0} BTC in {1}
+Maiores vendas agressoras · {0}	Größte aggressive Verkäufe · {0}
+Nenhuma venda ≥ {0} BTC em {1}	Keine Verkäufe ≥ {0} BTC in {1}
+Fita e sequências	Tape und Serien
+Fita de grandes execuções (mais recentes primeiro)	Tape großer Ausführungen (neueste zuerst)
+Aguardando execuções ≥ {0} BTC	Warte auf Ausführungen ≥ {0} BTC
+Sequências · {0}+ grandes execuções do mesmo lado em até {1} s	Serien · {0}+ große Ausführungen auf derselben Seite innerhalb von {1} s
+Nenhuma sequência em {0}	Keine Serie in {0}
+Indica agressão concentrada: várias ordens grandes seguidas do mesmo lado	Zeigt konzentrierte Aggression an: mehrere große Orders hintereinander auf derselben Seite
+{0}–{1}  {2}  {3} execuções  {4}  {5}–{6}  	{0}–{1}  {2}  {3} Ausführungen  {4}  {5}–{6}  
+Os eventos aparecem aqui assim que acontecem	Ereignisse erscheinen hier, sobald sie eintreten
+Mapa	Karte
+ · estimado (modelo V8) · 	 · geschätzt (Modell V8) · 
+Mostrar	Anzeigen
+Já executadas	Bereits ausgeführt
+Em aberto	Offen
+Reduzir gráfico	Diagramm verkleinern
+Ampliar gráfico	Diagramm vergrößern
+OI por entrada	OI nach Einstiegspreis
+Longs × shorts	Longs × Shorts
+Alavancagem	Hebel
+Intensidade	Intensität
+Liquidações reais	Reale Liquidationen
+Carregando: {0}…	Lade: {0}…
+Erro: {0}	Fehler: {0}
+Atualizado {0} · {1} colunas	Aktualisiert {0} · {1} Spalten
+Atualizar	Aktualisieren
+Montando o heatmap ({0})…	Heatmap wird erstellt ({0})…
+Heatmap indisponível	Heatmap nicht verfügbar
+Usa velas e open interest históricos públicos das corretoras	Nutzt öffentliche historische Kerzen- und Open-Interest-Daten der Börsen
+Níveis e visão geral	Level und Überblick
+Níveis de liquidação em aberto	Offene Liquidationslevel
+Níveis-chave de liquidação	Wichtige Liquidationslevel
+Principais	Top
+Todos	Alle
+Aguardando o heatmap	Warte auf Heatmap
+{0} faixas acima · {1} abaixo · as mesmas das linhas do gráfico	{0} Bänder oben · {1} unten · dieselben wie in den Diagrammlinien
+● Acima · liquidações de SHORT	● Oben · SHORT-Liquidationen
+● Abaixo · liquidações de LONG	● Unten · LONG-Liquidationen
+Visão geral	Überblick
+Níveis de liquidação em aberto (estimados)	Offene Liquidationslevel (geschätzt)
+Longs (abaixo do preço)	Longs (unter dem Preis)
+Shorts (acima do preço)	Shorts (über dem Preis)
+Cobertura do histórico	Verlaufsabdeckung
+Estimativa: {0}x/{1}x/{2}x/{3}x sobre o aumento de open interest de cada corretora (Binance, Bybit, OKX, Gate, HTX e Kraken, as que publicam histórico; Bitget, Deribit e Hyperliquid só informam o valor atual); níveis atravessados pelo preço somem. OI por entrada = onde o modelo estima que as posições ainda abertas entraram. Longs × shorts: cor de compra = mais longs a liquidar naquele preço, cor de venda = mais shorts. Faixa inferior = total de níveis LONG em aberto menos SHORT. O filtro de alavancagem vale para o mapa e os níveis-chave. Pontos = liquidações REAIS reportadas pelas {4} corretoras (gravadas desde a instalação), na cor de LONG ou de SHORT.	Schätzung: {0}x/{1}x/{2}x/{3}x auf Basis des Open-Interest-Anstiegs jeder Börse (Binance, Bybit, OKX, Gate, HTX und Kraken, die Verlauf veröffentlichen; Bitget, Deribit und Hyperliquid melden nur den aktuellen Wert); Level, die vom Preis durchbrochen werden, verschwinden. OI nach Einstiegspreis = wo das Modell schätzt, dass die noch offenen Positionen eingestiegen sind. Longs × Shorts: Kauffarbe = mehr zu liquidierende Longs bei diesem Preis, Verkaufsfarbe = mehr Shorts. Untere Leiste = Gesamtzahl offener LONG-Level minus SHORT. Der Hebelfilter gilt für die Karte und die wichtigsten Level. Punkte = von den {4} Börsen gemeldete REALE Liquidationen (seit Installation gespeichert), in der Farbe von LONG oder SHORT.
+Escala: longs − shorts a liquidar por faixa (BTC)	Skala: zu liquidierende Longs − Shorts pro Band (BTC)
+Escala: OI aberto por faixa de preço (BTC)	Skala: offenes OI pro Preisband (BTC)
+Escala: BTC a liquidar por faixa de preço	Skala: zu liquidierende BTC pro Preisband
+● LONG liquidado	● LONG liquidiert
+● SHORT liquidado	● SHORT liquidiert
+níveis em aberto (caixas ao lado)	offene Level (Kästen daneben)
+≥ {0} mais shorts	≥ {0} mehr Shorts
+≥ {0} mais longs	≥ {0} mehr Longs
+Mapa de liquidações	Liquidationskarte
+Open interest por preço de entrada	Open Interest nach Einstiegspreis
+Longs × shorts a liquidar	Zu liquidierende Longs × Shorts
+  ·  fechamento 	  ·  Schlusskurs 
+Faixa {0} – {1}	Band {0} – {1}
+Distância do preço atual: 	Abstand zum aktuellen Preis: 
+Longs a liquidar	Zu liquidierende Longs
+Shorts a liquidar	Zu liquidierende Shorts
+Longs − shorts	Longs − Shorts
+OI aberto neste preço	Offenes OI bei diesem Preis
+Mapa e níveis	Karte und Level
+Liquidações reais e alertas	Reale Liquidationen und Alarme
+LONG {0} ({1})	LONG {0} ({1})
+SHORT {0} ({1})	SHORT {0} ({1})
+Top LONG	Top LONG
+Top LONG liquidadas · {0}	Top LONG liquidiert · {0}
+Nenhuma liquidação LONG de BTC em {0} · {1} eventos desde a abertura	Keine BTC-LONG-Liquidation in {0} · {1} Ereignisse seit Start
+Top SHORT	Top SHORT
+Top SHORT liquidadas · {0}	Top SHORT liquidiert · {0}
+Nenhuma liquidação SHORT de BTC em {0} · {1} eventos desde a abertura	Keine BTC-SHORT-Liquidation in {0} · {1} Ereignisse seit Start
+Top geral	Top gesamt
+Top geral · {0}	Gesamt-Top · {0}
+Nenhuma liquidação de BTC em {0}	Keine BTC-Liquidationen auf {0}
+Alertas	Warnungen
+Liquidações reais = Binance, Bybit, OKX, Gate, Bitget e Deribit (feeds públicos, não garantem todos os eventos; Binance envia no máximo {0}/s e a Bitget agrupa por segundo). Conversões para BTC: OKX {1}; Gate {2} contrato = {3} BTC; Bitget USDT ÷ preço; Deribit USD ÷ preço. Heatmap = estimativa a partir do open interest histórico de Binance, Bybit, OKX, Gate, HTX e Kraken.	Echte Liquidationen = Binance, Bybit, OKX, Gate, Bitget und Deribit (öffentliche Feeds, decken nicht zwingend alle Ereignisse ab; Binance sendet höchstens {0}/s und Bitget aggregiert pro Sekunde). Umrechnung in BTC: OKX {1}; Gate {2} Kontrakt = {3} BTC; Bitget USDT ÷ Kurs; Deribit USD ÷ Kurs. Heatmap = Schätzung auf Basis des historischen Open Interest von Binance, Bybit, OKX, Gate, HTX und Kraken.
+Aparecem aqui assim que alguma das {0} corretoras reportar	Erscheinen hier, sobald eine der {0} Börsen meldet
+Conexões e livros	Verbindungen und Orderbücher
+Conexões (Ao vivo = conexão + inscrição + dados recentes)	Verbindungen (Live = Verbindung + Abo + aktuelle Daten)
+ÚLTIMA MSG	LETZTE NACHR.
+ÚLTIMO ERRO	LETZTER FEHLER
+Livros	Orderbücher
+VÁLIDO	GÜLTIG
+NÍVEIS BID/ASK	BID/ASK-STUFEN
+LATÊNCIA	LATENZ
+RECONSTRUÇÕES	REKONSTRUKTIONEN
+Bybit RPI	Bybit RPI
+NÃO	NEIN
+{0} ms	{0} ms
+Log ao vivo (também gravado em {0})	Live-Log (auch gespeichert in {0})
+Desempenho e log	Leistung und Log
+Desempenho	Leistung
+Mensagens/s (todas as fontes)	Nachrichten/s (alle Quellen)
+Trades recebidos	Empfangene Trades
+Liquidações recebidas	Empfangene Liquidationen
+Paredes ativas	Aktive Wände
+Tempo de execução	Laufzeit
+Atualização da tela	Bildschirmaktualisierung
+Histórico (SQLite)	Verlauf (SQLite)
+Arquivo	Datei
+Estado	Status
+Gravados nesta sessão	In dieser Sitzung gespeichert
+Na fila	In der Warteschlange
+Tabela {0}	Tabelle {0}
+{0} linhas	{0} Zeilen
+Nada é apagado automaticamente.	Nichts wird automatisch gelöscht.
+Fontes e conversões	Quellen und Umrechnungen
+Binance USD-M: /public depth@{0}ms + snapshot REST {1}; /market aggTrade, markPrice@{2}s, forceOrder; OI REST {3} s.	Binance USD-M: /public depth@{0}ms + REST-Snapshot {1}; /market aggTrade, markPrice@{2}s, forceOrder; OI REST {3} s.
+Bybit linear: orderbook.1000 ({0} ms), orderbook.rpi ({1} níveis), publicTrade, tickers, allLiquidation.	Bybit linear: orderbook.1000 ({0} ms), orderbook.rpi ({1} Stufen), publicTrade, tickers, allLiquidation.
+OKX: books ({0} níveis, seqId/prevSeqId), trades, open-interest, funding-rate, mark-price, liquidation-orders.	OKX: books ({0} Stufen, seqId/prevSeqId), trades, open-interest, funding-rate, mark-price, liquidation-orders.
+OKX: {0}. Binance e Bybit já publicam em BTC.	OKX: {0}. Binance und Bybit veröffentlichen bereits in BTC.
+Liquidações extras: Gate (futures.public_liquidates), Bitget (UTA v3 liquidation), Deribit (trades com marca de liquidação).	Zusätzliche Liquidationen: Gate (futures.public_liquidates), Bitget (UTA v3 liquidation), Deribit (Trades mit Liquidationsmarkierung).
+Alertas · {0}	Warnungen · {0}
+Sem alertas por enquanto	Vorerst keine Warnungen
+Nenhum alerta deste tipo	Keine Warnungen dieser Art
+Absorção e iceberg em paredes, liquidações ≥ LARGE, execuções muito grandes e divergências preço × CVD aparecem aqui	Absorption und Iceberg an Wänden, Liquidationen ≥ LARGE, sehr große Ausführungen und Divergenzen Preis × CVD erscheinen hier
+Radar macro: {0}	Makro-Radar: {0}
+formato inesperado ({0})	unerwartetes Format ({0})
+Yahoo Finance · {0}	Yahoo Finance · {0}
+U.S. Treasury · yields oficiais	U.S. Treasury · offizielle Renditen
+NY Fed · taxa efetiva (EFFR)	NY Fed · effektiver Zinssatz (EFFR)
+BLS · CPI, emprego, salários	BLS · CPI, Beschäftigung, Löhne
+BEA · {0}	BEA · {0}
+Tesouro · saldo do TGA	Finanzministerium · TGA-Saldo
+Calendário econômico (Forex Factory)	Wirtschaftskalender (Forex Factory)
+Federal Reserve · reuniões do FOMC	Federal Reserve · FOMC-Sitzungen
+Google News · tema {0}	Google News · Thema {0}
+Federal Reserve · comunicados	Federal Reserve · Mitteilungen
+GDELT · notícias globais	GDELT · globale Nachrichten
+RSS · {0}	RSS · {0}
+CME/CBOT · futuro de Fed funds {0}	CME/CBOT · Fed-Funds-Future {0}
+U.S. Treasury · juros reais (TIPS)	U.S. Treasury · reale Renditen (TIPS)
+{0} YR	{0} J.
+NY Fed · SOFR	NY Fed · SOFR
+NY Fed · reverse repo overnight	NY Fed · Overnight-Reverse-Repo
+Federal Reserve · balanço semanal (H.4.1)	Federal Reserve · Wochenbilanz (H.4.1)
+Kalshi · probabilidades da decisão do Fed	Kalshi · Wahrscheinlichkeiten der Fed-Entscheidung
+Alternative.me · Fear & Greed	Alternative.me · Fear & Greed
+CoinGecko · mercado cripto global	CoinGecko · globaler Krypto-Markt
+DefiLlama · estoque de stablecoins	DefiLlama · Stablecoin-Bestand
+mempool.space · hashrate	mempool.space · Hashrate
+mempool.space · taxas da rede	mempool.space · Netzwerkgebühren
+BCE · taxa de depósito	EZB · Einlagesatz
+Tesouro dos EUA · dívida pública	US-Finanzministerium · Staatsverschuldung
+macro|{0}	makro|{0}
+ev|{0}	ereignis|{0}
+Em {0} min: {1} (EUA). Expectativa {2} · anterior {3}. Impacto alto no mercado.	In {0} Min.: {1} (USA). Erwartung {2} · vorher {3}. Hohe Marktauswirkung.
+Evento	Ereignis
+Calendário	Kalender
+sp|{0}	sp|{0}
+{0}: {1} contra expectativa {2} ({3}). Leitura provável: {4}. {5}	{0}: {1} gegenüber Erwartung {2} ({3}). Wahrscheinliche Lesart: {4}. {5}
+Dado	Wert
+Oficial	Offiziell
+fomc|{0}	FOMC|{0}
+Decisão de juros do FOMC em {0} min.	FOMC-Zinsentscheid in {0} Min.
+dxy|{0}|{1}	DXY|{0}|{1}
+Dólar (DXY) {0}% no dia. Dólar {1} costuma {2} o BTC.	Dollar (DXY) {0}% am Tag. Stärkerer Dollar {1} BTC meist {2}.
+tnx|{0}|{1}	TNX|{0}|{1}
+Treasury {0} anos {1} bp no dia ({2}%).	Treasury {0} Jahre {1} bp am Tag ({2}%).
+vix|{0}	VIX|{0}
+VIX dispara {0}% no dia ({1}): aversão a risco.	VIX steigt am Tag um {0}% ({1}): Risikoaversion.
+geo|{0}	Geo|{0}
+div|{0}	Div|{0}
+BTC {0}% e Nasdaq {1} {2}% na última hora: movimento próprio do BTC, não acompanhando o mercado americano.	BTC {0}% und Nasdaq {1} {2}% in der letzten Stunde: eigenständige BTC-Bewegung, ohne Folge des US-Marktes.
+sc|{0}|{1}	SC|{0}|{1}
+BTC Macro Sentiment: {0} → {1} ({2}). Confiança {3}%.	BTC Macro Sentiment: {0} → {1} ({2}). Konfidenz {3}%.
+Score	Score
+Radar macro	Makro-Radar
+há {0} min	vor {0} Min.
+há {0} h	vor {0} h
+há {0} d	vor {0} d
+Coletando dados macro…	Makrodaten werden erfasst…
+Mercado americano, juros, inflação, emprego, calendário e notícias. A primeira coleta leva cerca de {0} minuto.	US-Markt, Zinsen, Inflation, Beschäftigung, Kalender und Nachrichten. Die erste Erfassung dauert etwa {0} Minute.
+Indicadores	Indikatoren
+Mais dados	Weitere Daten
+Notícias	Nachrichten
+Ajustes	Einstellungen
+Fontes	Quellen
+BTC Macro Sentiment	BTC Macro Sentiment
+  de {0} a {1}	  von {0} bis {1}
+Confiança {0}% (parte dos pesos com dado válido)	Konfidenz {0}% (Anteil der Gewichte mit gültigen Daten)
+Sem dado: 	Keine Daten: 
+Mede se as condições macro estão favoráveis ou desfavoráveis ao BTC agora. Não é previsão de preço.	Misst, ob die Makrobedingungen für BTC jetzt günstig oder ungünstig sind. Keine Kursprognose.
+Leitura integrada · macro + order flow	Integrierte Lesart · Makro + Order Flow
+Cenário macro	Makroszenario
+Order flow ({0} min)	Order Flow ({0} Min.)
+Liquidações ({0} h)	Liquidationen ({0} h)
+Confluência	Konfluenz
+Delta {0} min {1} BTC · liquidações {2} h: {3} BTC LONG / {4} BTC SHORT · absorções: {5} na compra, {6} na venda	Delta {0} Min. {1} BTC · Liquidationen {2} h: {3} BTC LONG / {4} BTC SHORT · Absorptionen: {5} beim Kauf, {6} beim Verkauf
+Próximos eventos de alto impacto	Nächste Ereignisse mit hoher Wirkung
+Nenhum evento de alto impacto nesta semana no calendário.	Keine Ereignisse mit hoher Wirkung in dieser Woche im Kalender.
+{0} (horário local) · faltam {1}	{0} (Ortszeit) · noch {1}
+Expectativa {0} · anterior {1}	Erwartung {0} · vorher {1}
+Próxima decisão do FOMC: {0} (faltam {1})	Nächste FOMC-Entscheidung: {0} (noch {1})
+Mercado de previsões (Kalshi)	Prognosemarkt (Kalshi)
+Sentimento cripto (Fear & Greed)	Krypto-Stimmung (Fear & Greed)
+Fatores do score	Score-Faktoren
+peso {0}	Gewicht {0}
+{0} pts	{0} Pkt.
+ · ref. {0}	 · Ref. {0}
+Contribuição = leitura do fator ({0} a {1}) × peso ÷ soma dos pesos com dado × {2}. Regras e pesos: aba Ajustes e docs/MACRO.md.	Beitrag = Faktorwert ({0} bis {1}) × Gewicht ÷ Summe der Gewichte mit Daten × {2}. Regeln und Gewichte: Reiter Einstellungen und docs/MACRO.md.
+{0} h {1} min	{0} h {1} Min.
+Mercado americano	US-Markt
+Ativo	Asset
+Último	Letzter
+Dia	Tag
+{0} bp	{0} bp
+Yahoo Finance (não oficial), barras de {0} h. Cotação de {1}; fora do pregão mostra o último fechamento.	Yahoo Finance (inoffiziell), Kerzen von {0} h. Kurs von {1}; außerhalb der Handelszeit wird der letzte Schlusskurs angezeigt.
+Juros	Zinsen
+Meta do Fed (intervalo)	Fed-Ziel (Spanne)
+Taxa efetiva (EFFR) · {0}	Effektiver Satz (EFFR) · {0}
+Taxa do Fed	Fed-Zinssatz
+Treasuries (oficial)	Treasuries (offiziell)
+ ({0} bp {1}d)	 ({0} bp {1}T)
+Treasury {0} anos (oficial) · {1}	Treasury {0} Jahre (offiziell) · {1}
+Treasury {0} anos (oficial)	Treasury {0} Jahre (offiziell)
+Inclinação {0}a − {1}a	Steilheit {0}J − {1}J
+Fontes: NY Fed (EFFR) e U.S. Treasury (curva diária de fechamento).	Quellen: NY Fed (EFFR) und U.S. Treasury (tägliche Schlussrendite-Kurve).
+Inflação e emprego	Inflation und Beschäftigung
+CPI em {0} meses	CPI in {0} Monaten
+CPI no mês	CPI im Monat
+Núcleo do CPI em {0} meses	Kern-CPI in {0} Monaten
+Núcleo do CPI no mês	Kern-CPI im Monat
+PCE em {0} meses	PCE in {0} Monaten
+Núcleo do PCE em {0} meses	Kern-PCE in {0} Monaten
+Payroll (vagas no mês)	Payroll (Stellen im Monat)
+{0} mil	{0} Tsd.
+Desemprego	Arbeitslosigkeit
+Salário/hora em {0} meses	Stundenlohn in {0} Monaten
+BLS (CPI, payroll, desemprego, salários) e BEA (PCE), dessazonalizados, calculados do índice oficial. Entre parênteses: mês de referência.	BLS (CPI, Payroll, Arbeitslosigkeit, Löhne) und BEA (PCE), saisonbereinigt, berechnet aus dem offiziellen Index. In Klammern: Referenzmonat.
+TGA (conta do Tesouro no Fed)	TGA (Konto des Schatzamts bei der Fed)
+TGA · {0}	TGA · {0}
+US$ {0} bi	US$ {0} Mrd.
+Variação em ~{0} semanas	Veränderung in ~{0} Wochen
+TGA subindo retira dinheiro do sistema; caindo devolve. Fonte: Daily Treasury Statement.	Steigender TGA entzieht dem System Liquidität; fallender gibt sie zurück. Quelle: Daily Treasury Statement.
+Correlação com o BTC	Korrelation mit BTC
+Sem série do BTC para comparar.	Keine BTC-Reihe zum Vergleich.
+Pearson dos retornos nos horários em que os dois negociam ({0} h e {1} d: barras de {2} h; {3} d: diário). Mínimo de amostras: {4} / {5} / {6}. Correlação passada não garante a futura.	Pearson der Renditen in den Zeitfenstern, in denen beide handeln ({0} h und {1} d: {2}-h-Kerzen; {3} d: täglich). Mindestanzahl Stichproben: {4} / {5} / {6}. Vergangene Korrelation garantiert keine künftige.
+ · desatualizado	 · veraltet
+Medium	Medium
+Calendário econômico dos EUA · esta semana	US-Wirtschaftskalender · diese Woche
+Alto e médio impacto	Hohe und mittlere Wirkung
+Sem eventos no calendário	Keine Termine im Kalender
+O calendário semanal é publicado no domingo à noite (horário de Brasília).	Der Wochenkalender wird sonntagabends veröffentlicht (Brasília-Zeit).
+Horários no fuso deste aparelho. Expectativa e anterior: calendário semanal do Forex Factory (não oficial). Resultado só aparece quando a série oficial (BLS/BEA) já traz o mês de referência; nos outros casos fica "aguardando".	Zeiten in der Zeitzone dieses Geräts. Erwartung und Vorwert: Wochenkalender von Forex Factory (inoffiziell). Das Ergebnis erscheint erst, wenn die offizielle Reihe (BLS/BEA) den Referenzmonat enthält; andernfalls steht „ausstehend“.
+Reuniões do FOMC	FOMC-Sitzungen
+Decisão	Entscheidung
+Fonte: federalreserve.gov (decisão no último dia da reunião, {0}h de Nova York).	Quelle: federalreserve.gov (Entscheidung am letzten Sitzungstag, {0} Uhr New Yorker Zeit).
+Alto	Hoch
+Holiday	Feiertag
+Feriado	Feiertag
+Baixo	Niedrig
+Expectativa {0} · anterior {1} · resultado {2}	Erwartung {0} · Vorwert {1} · Ergebnis {2}
+Se vier acima do esperado: 	Falls über den Erwartungen: 
+Notícias com ligação econômica ao BTC	Nachrichten mit wirtschaftlichem Bezug zu BTC
+Tema	Design
+Nenhuma notícia relevante agora	Gerade keine relevanten Nachrichten
+Só entram manchetes das últimas {0} h com ligação econômica clara (juros, dólar, energia, comércio, conflitos, regulação).	Es werden nur Schlagzeilen der letzten {0} h mit klarem wirtschaftlichem Bezug angezeigt (Zinsen, Dollar, Energie, Handel, Konflikte, Regulierung).
+Classificação automática por regras de palavras-chave sobre a manchete (docs/MACRO.md). Repetições entre veículos são agrupadas; abra o link para ler a matéria completa.	Automatische Einstufung über Schlüsselwortregeln für die Schlagzeile (docs/MACRO.md). Wiederholungen aus verschiedenen Medien werden gebündelt; öffnen Sie den Link für den vollständigen Artikel.
+Intensidade 	Intensität 
+Original	Original
+Horizonte: {0} · relevância {1}%	Horizont: {0} · Relevanz {1}%
+Abrir a matéria	Artikel öffnen
+Toque no título para ver a cadeia de impacto	Auf den Titel tippen, um die Wirkungskette zu sehen
+Pesos do score	Score-Gewichte
+Restaurar pesos padrão	Standardgewichte wiederherstellen
+Peso {0} desliga o fator. O score usa só os fatores com dado; abaixo de {1}% dos pesos com dado ele não é mostrado.	Gewicht {0} schaltet den Faktor ab. Der Score nutzt nur Faktoren mit Daten; liegt der Anteil der Gewichte mit Daten unter {1}%, wird er nicht angezeigt.
+Alertas macro	Makro-Alarme
+Avisar eventos de alto impacto com (min) de antecedência	Hochwirksame Ereignisse (Min.) im Voraus melden
+Os tipos de alerta macro ligam e desligam na aba Alertas, junto com Telegram, e-mail e notificação. Cada ocorrência é avisada uma vez só.	Die Makro-Alarmtypen werden im Tab Alarme zusammen mit Telegram, E-Mail und Benachrichtigung ein- und ausgeschaltet. Jedes Ereignis wird nur einmal gemeldet.
+Chave opcional	Optionaler Schlüssel
+Chave da API do BLS (v2, gratuita)	BLS-API-Schlüssel (v2, kostenlos)
+Sem chave o BLS permite {0} consultas por dia; o app usa {1}. A chave fica só neste aparelho (ou na variável de ambiente BLS_API_KEY).	Ohne Schlüssel erlaubt BLS {0} Abfragen pro Tag; die App nutzt {1}. Der Schlüssel bleibt nur auf diesem Gerät (oder in der Umgebungsvariable BLS_API_KEY).
+Fontes dos dados	Datenquellen
+Mercado / mídia	Markt / Medien
+Nenhum número é inventado: dado ausente aparece como "sem dado". Fontes não oficiais podem mudar sem aviso.	Keine Zahl wird erfunden: fehlende Daten erscheinen als „keine Daten“. Inoffizielle Quellen können sich ohne Ankündigung ändern.
+Situação da coleta	Status der Datenerfassung
+Atualizar agora	Jetzt aktualisieren
+{0} de {1} fontes em dia	{0} von {1} Quellen aktuell
+dado de {0}	Daten von {0}
+ · falhou: {0}	 · fehlgeschlagen: {0}
+ · usando cópia salva	 · gespeicherte Kopie wird verwendet
+● em dia · ◐ fonte falhou, usando a última cópia salva · ○ sem dado. Após falha o app espera antes de tentar de novo.	● aktuell · ◐ Quelle fehlgeschlagen, letzte gespeicherte Kopie wird verwendet · ○ keine Daten. Nach einem Fehler wartet die App, bevor sie es erneut versucht.
+Cut >{0}	Cut >{0}
+Corte maior que {0} pp	Kürzung größer als {0} Pp
+Cut {0}	Cut {0}
+Corte de {0} pp	Kürzung um {0} Pp
+Hike >{0}	Hike >{0}
+Alta maior que {0} pp	Erhöhung größer als {0} Pp
+Hike {0}	Hike {0}
+Alta de {0} pp	Erhöhung um {0} Pp
+Juros mantidos	Zinsen unverändert
+US$ {0} tri	US$ {0} Bio.
+Expectativa de juros do Fed	Zinserwartung der Fed
+Sem probabilidades da Kalshi agora.	Derzeit keine Kalshi-Wahrscheinlichkeiten.
+Próxima reunião ({0}): probabilidades negociadas	Nächste Sitzung ({0}): gehandelte Wahrscheinlichkeiten
+Cut	Cut
+Hike	Hike
+Taxa implícita nos futuros de Fed funds (CBOT)	Implizierter Satz aus Fed-Funds-Futures (CBOT)
+ ({0} bp)	 ({0} bp)
+Kalshi: mercado regulado de previsões (preço do contrato = probabilidade). Futuros: taxa implícita = {0} − preço; entre parênteses, diferença para a taxa efetiva atual. Valores negativos = cortes esperados.	Kalshi: regulierter Prognosemarkt (Vertragspreis = Wahrscheinlichkeit). Futures: impliziter Satz = {0} − Preis; in Klammern die Differenz zum aktuellen effektiven Satz. Negative Werte = erwartete Kürzungen.
+Juros reais, inflação implícita e financiamento	Reale Zinsen, implizite Inflation und Refinanzierung
+Juro real {0} anos (TIPS)	Realzins {0} Jahre (TIPS)
+Juro real {0} anos (TIPS) · {1}	Realzins {0} Jahre (TIPS) · {1}
+Inflação implícita {0} anos (breakeven)	Implizite Inflation {0} Jahre (Breakeven)
+SOFR · {0}	SOFR · {0}
+Reverse repo overnight · {0}	Overnight-Reverse-Repo · {0}
+Juro real alto ou subindo costuma pesar sobre o BTC (custo de oportunidade). Breakeven = Treasury {0} anos − juro real.	Ein hoher oder steigender Realzins belastet BTC meist (Opportunitätskosten). Breakeven = Treasury {0} Jahre − Realzins.
+Balanço do Fed e liquidez	Fed-Bilanz und Liquidität
+Balanço do Fed (H.4.1)	Fed-Bilanz (H.4.1)
+Ativos totais do Fed · semana até {0}	Gesamtaktiva der Fed · Woche bis {0}
+Variação na semana	Veränderung in der Woche
+Variação em {0} meses	Veränderung über {0} Monate
+Reservas dos bancos no Fed	Reserven der Banken bei der Fed
+Liquidez líquida estimada (ativos − TGA − RRP)	Geschätzte Nettoliquidität (Aktiva − TGA − RRP)
+Liquidez líquida é uma estimativa comum no mercado, não um número oficial. Balanço crescendo e TGA caindo = mais dinheiro no sistema.	Nettoliquidität ist eine im Markt übliche Schätzung, keine offizielle Zahl. Wachsende Bilanz und sinkendes TGA = mehr Geld im System.
+Mercado cripto	Krypto-Markt
+Fear & Greed	Fear & Greed
+Há {0} dias / há {1} dias	Vor {0} Tagen / vor {1} Tagen
+Valor de mercado cripto	Krypto-Marktkapitalisierung
+Dominância do BTC	BTC-Dominanz
+Dominância do ETH	ETH-Dominanz
+Volume {0} h	Volumen {0} h
+Stablecoins em circulação	Im Umlauf befindliche Stablecoins
+Variação {0} d / {1} d	Veränderung {0} d / {1} d
+Hashrate da rede	Netzwerk-Hashrate
+{0} EH/s	{0} EH/s
+Taxas (rápida / {0} min / {1} h)	Gebühren (schnell / {0} min / {1} h)
+{0} / {1} / {2} sat/vB	{0} / {1} / {2} sat/vB
+Fear & Greed é sentimento, não entra no score (evita contar duas vezes o que o order flow já mostra). Stablecoins entram no fator Liquidez.	Fear & Greed ist Stimmung und fließt nicht in den Score ein (vermeidet doppeltes Zählen dessen, was der Order Flow bereits zeigt). Stablecoins fließen in den Faktor Liquidität ein.
+Mais mercados	Weitere Märkte
+Yahoo Finance, barras de {0} h. Dólar subindo contra moedas emergentes e cobre caindo costumam indicar aversão a risco.	Yahoo Finance, Kerzen von {0} h. Steigender Dollar gegenüber Schwellenländerwährungen und fallendes Kupfer deuten meist auf Risikoaversion hin.
+Mundo e dívida	Welt und Staatsschulden
+BCE · taxa de depósito · {0}	EZB · Einlagesatz · {0}
+Dívida pública dos EUA · {0}	US-Staatsschulden · {0}
+Variação desde {0}	Veränderung seit {0}
+Juros do BCE abaixo dos do Fed sustentam o dólar; dívida crescendo rápido pressiona a oferta de Treasuries e os yields.	Ein EZB-Leitzins unter dem der Fed stützt den Dollar; schnell wachsende Schulden belasten das Angebot an Treasuries und die Renditen.
+extreme fear	extreme fear
+Medo extremo	Extreme Angst
+Medo	Angst
+Ganância	Gier
+extreme greed	extreme greed
+Ganância extrema	Extreme Gier
+Motivo desconhecido.	Unbekannter Grund.
+A Binance recusou o acesso nesta região (HTTP {0}). As outras abas não dependem disso.	Binance hat den Zugriff in dieser Region verweigert (HTTP {0}). Die übrigen Tabs sind davon nicht abhängig.
+Zonas ímã · mapa estimado de liquidações	Magnetzonen · geschätzte Liquidationskarte
+Calculando o mapa a partir do histórico de posições…	Karte wird aus dem Positionsverlauf berechnet…
+Leva alguns segundos: velas de {0} min + open interest dos últimos {1} dias.	Dauert einige Sekunden: {0}-Minuten-Kerzen + Open Interest der letzten {1} Tage.
+Mapa indisponível no momento	Karte momentan nicht verfügbar
+O mapa estimado usa velas e histórico de open interest da Binance (REST).	Die geschätzte Karte nutzt Kerzen und den Open-Interest-Verlauf von Binance (REST).
+Mercado e zonas	Markt und Zonen
+Mercado (Binance perp)	Markt (Binance Perp)
+Preço	Preis
+Variação {0}h	Veränderung {0}h
+Funding	Funding
+Open interest	Open Interest
+Zonas de atração	Anziehungszonen
+Nenhum aglomerado relevante nesta faixa	Kein relevantes Cluster in diesem Bereich
+Amplie a faixa para ±{0}%	Bereich auf ±{0}% erweitern
+ do preço	 vom Preis
+Como ler	So liest man es
+Estimativa, como no CoinGlass: quando o open interest sobe, simulamos posições {0}x/{1}x/{2}x/{3}x e marcamos onde seriam liquidadas; níveis que o preço já atravessou saem do mapa. Quanto mais vivo o vermelho, mais BTC estimado no nível. Liquidações reais ficam no LIQUIDATION RADAR.	Schätzung, wie bei CoinGlass: Steigt das Open Interest, simulieren wir Positionen mit {0}x/{1}x/{2}x/{3}x und markieren, wo sie liquidiert würden; bereits durchschrittene Niveaus verschwinden aus der Karte. Je intensiver das Rot, desto mehr geschätztes BTC auf diesem Niveau. Echte Liquidationen finden Sie im LIQUIDATION RADAR.
+Mapa estimado	Geschätzte Karte
+Mapa de liquidações estimadas	Karte geschätzter Liquidationen
+Faixa	Bereich
+mais BTC estimado	mehr geschätztes BTC
+Book: 	Book: 
+Liquidações estimadas	Geschätzte Liquidationen
+Paredes do livro	Wände im Orderbuch
+Sem conexão com as corretoras ({0})	Keine Verbindung zu den Börsen ({0})
+Não foi possível carregar os fluxos dos ETFs ({0})	ETF-Flüsse konnten nicht geladen werden ({0})
+Preço × CVD	Preis × CVD
+Positiva = o preço anda junto com a agressão compradora/vendedora.	Positiv = Preis bewegt sich mit der aggressiven Käufer-/Verkäuferaktivität.
+Preço × open interest	Preis × Open Interest
+Positiva = alta com abertura de posições; negativa = alta com fechamento.	Positiv = Anstieg mit Positionsaufbau; negativ = Anstieg mit Positionsabbau.
+Preço × liquidações	Preis × Liquidationen
+Positiva = alta acompanhada de shorts liquidados (squeeze).	Positiv = Anstieg begleitet von liquidierten Shorts (Short Squeeze).
+CVD × open interest	CVD × Open Interest
+Positiva = compra agressora abrindo posições.	Positiv = aggressiver Kauf baut Positionen auf.
+CVD × liquidações	CVD × Liquidationen
+Positiva = compras forçadas de shorts liquidados entrando no CVD.	Positiv = erzwungene Käufe liquidierter Shorts fließen in das CVD ein.
+Gráficos	Charts
+Baldes de {0} minuto · preço, CVD, open interest e liquidações lado a lado	{0}-Minuten-Bins · Preis, CVD, Open Interest und Liquidationen nebeneinander
+Preço, fluxo, posições e liquidações por minuto	Preis, Flow, Positionen und Liquidationen pro Minute
+Juntando dados	Daten werden gesammelt
+Precisa de alguns minutos de dados desde a abertura do app (guarda até {0} h)	Es werden einige Minuten Daten seit dem Start der App benötigt (gespeichert bis zu {0} h)
+Correlação e resumo	Korrelation und Zusammenfassung
+Correlação (Pearson) na janela	Korrelation (Pearson) im Fenster
+Leitura dos últimos {0} minutos	Auswertung der letzten {0} Minuten
+Liquidações LONG / SHORT	Liquidationen LONG / SHORT
+{0} / {1} BTC	{0} / {1} BTC
+Leitura automática a partir dos números acima; é inferência, não prova de quem abriu ou fechou posição.	Automatische Auswertung auf Basis der obigen Zahlen; es ist eine Schlussfolgerung, kein Beweis, wer eine Position eröffnet oder geschlossen hat.
+Correlação com menos de {0} minutos de dados aparece como "sem dados". |r| ≥ {1} forte, ≥ {2} moderada, ≥ {3} fraca. OI somado só conta quando Binance, Bybit e OKX reportaram. Liquidações = {4} corretoras (positivo = mais shorts liquidados).	Correlação com menos de {0} minutos de dados aparece como "sem dados". |r| ≥ {1} forte, ≥ {2} moderada, ≥ {3} fraca. OI somado só conta quando Binance, Bybit e OKX reportaram. Liquidações = {4} Börsen (positiv = mehr Shorts liquidiert).
+Alta com compra agressora e open interest subindo: compatível com novas posições compradas puxando o preço.	Anstieg mit aggressivem Kauf und steigendem Open Interest: vereinbar mit neuen Long-Positionen, die den Kurs antreiben.
+Alta com open interest caindo e shorts liquidados: compatível com short squeeze.	Anstieg mit fallendem Open Interest und liquidierten Shorts: vereinbar mit einem Short Squeeze.
+Alta com CVD negativo: o preço sobe apesar da venda agressora (compra passiva absorvendo).	Anstieg mit negativem CVD: Der Kurs steigt trotz aggressivem Verkauf (passiver Kauf absorbiert).
+Queda com venda agressora e open interest subindo: compatível com novas posições vendidas.	Rückgang mit aggressivem Verkauf und steigendem Open Interest: vereinbar mit neuen Short-Positionen.
+Queda com open interest caindo e longs liquidados: compatível com cascata de liquidação de longs.	Rückgang mit fallendem Open Interest und liquidierten Longs: vereinbar mit einer Liquidationskaskade bei Longs.
+Queda com CVD positivo: o preço cai apesar da compra agressora (venda passiva absorvendo).	Rückgang mit positivem CVD: Der Kurs fällt trotz aggressivem Kauf (passiver Verkauf absorbiert).
+Sem regime claro: preço lateral ou sinais misturados.	Kein klares Regime: Seitwärtskurs oder gemischte Signale.
+CVD (BTC/min)	CVD (BTC/min)
+Δ OI (BTC/min)	Δ OI (BTC/min)
+LIQUIDAÇÕES	LIQUIDATIONEN
+▲ short  ▼ long	▲ Short  ▼ Long
+Lado	Seite
+Ambos	Beide
+Pico ≥ (BTC)	Spitze ≥ (BTC)
+{0} paredes encerradas · {1} eventos gravados no período	{0} beendete Wände · {1} aufgezeichnete Ereignisse im Zeitraum
+Mapa do histórico	Verlaufskarte
+Onde as paredes estiveram e como terminaram	Wo die Wände standen und wie sie endeten
+Nenhuma parede encerrada no período com esses filtros	Keine beendete Wand im Zeitraum mit diesen Filtern
+O histórico vem do banco local: paredes que saíram do livro desde que o app foi instalado. Reduza o pico mínimo ou aumente o período.	Der Verlauf stammt aus der lokalen Datenbank: Wände, die seit der Installation der App aus dem Buch verschwunden sind. Verringere die Mindestspitze oder verlängere den Zeitraum.
+Como terminaram	Wie sie endeten
+Execução confirmada pelos trades	Ausführung durch Trades bestätigt
+Preço atravessou (não confirmada)	Preis durchbrochen (nicht bestätigt)
+Retirada sem execução	Zurückgezogen ohne Ausführung
+Níveis onde a liquidez mais aparece (faixas de {0} US$)	Preisniveaus mit der meisten Liquidität (Bänder von {0} US$)
+PICO SOMADO	SUMMIERTE SPITZE
+ÚLTIMA	LETZTE
+Sem níveis no período	Keine Niveaus im Zeitraum
+Cada ponto é uma parede que saiu do livro: posição = hora e preço; tamanho = pico em BTC; cor = lado (verde compra, vermelho venda); anel laranja = execução confirmada, anel amarelo = preço atravessou, sem anel = retirada. Níveis que se repetem costumam ser suporte/resistência defendidos.	Jeder Punkt ist eine Wand, die aus dem Buch verschwunden ist: Position = Uhrzeit und Preis; Größe = Spitze in BTC; Farbe = Seite (grün Kauf, rot Verkauf); orangefarbener Ring = bestätigte Ausführung, gelber Ring = Preis durchbrochen, ohne Ring = Rückzug. Wiederkehrende Niveaus sind meist verteidigte Unterstützungen/Widerstände.
+Configurar avisos	Warnungen konfigurieren
+Notificações {0}	Benachrichtigungen {0}
+Mostrar notificação no celular	Benachrichtigung auf dem Handy anzeigen
+Mostrar notificação na bandeja do Windows	Benachrichtigung in der Windows-Taskleiste anzeigen
+Continuar monitorando com o app fechado	Überwachung auch bei geschlossener App fortsetzen
+Mantém as conexões e os alertas ativos em segundo plano, com uma notificação fixa. Usa mais bateria e dados; desligue quando não precisar.	Hält Verbindungen und Warnungen im Hintergrund aktiv, mit einer dauerhaften Benachrichtigung. Verbraucht mehr Akku und Daten; schalte es aus, wenn du es nicht brauchst.
+Permita notificações do Radar BTC nas configurações do Android.	Erlaube Benachrichtigungen von Radar BTC in den Android-Einstellungen.
+O que avisar	Was gemeldet wird
+Zona: distância ≤ %	Zone: Abstand ≤ %
+Zona: tamanho ≥ BTC	Zone: Größe ≥ BTC
+Repetir o mesmo aviso após (min)	Gleiche Warnung wiederholen nach (min)
+Liquidação EXTREME usa o limite da aba Radar (Liquidações); parede grande = classe LARGE ou EXTREME da aba Paredes; mudança de sinal = janela de {0} min da aba Long/short. Máximo de {1} envios por minuto.	Eine EXTREME-Liquidation nutzt den Schwellenwert aus dem Tab Radar (Liquidationen); große Wand = Klasse LARGE oder EXTREME im Tab Wände; Signalwechsel = Fenster von {0} min im Tab Long/Short. Maximal {1} Sendungen pro Minute.
+Telegram	Telegram
+Enviar pelo Telegram	Über Telegram senden
+Token do bot	Bot-Token
+Chat ID	Chat-ID
+Crie um bot com o @BotFather, mande uma mensagem para ele e pegue o chat ID em api.telegram.org/bot<token>/getUpdates.	Erstelle einen Bot mit @BotFather, sende ihm eine Nachricht und hole die Chat-ID über api.telegram.org/bot<token>/getUpdates.
+E-mail (SMTP)	E-Mail (SMTP)
+Enviar por e-mail	Per E-Mail senden
+Servidor	Server
+Porta	Port
+Usuário (e-mail de envio)	Benutzer (Absender-E-Mail)
+Senha de app	App-Passwort
+Enviar para	Senden an
+Gmail: smtp.gmail.com, porta {0}, com uma senha de app (Conta Google → Segurança → Senhas de app). Porta {1} usa STARTTLS.	Gmail: smtp.gmail.com, Port {0}, mit einem App-Passwort (Google-Konto → Sicherheit → App-Passwörter). Port {1} verwendet STARTTLS.
+Salvar alterações	Änderungen speichern
+Salvo	Gespeichert
+Enviar teste	Testnachricht senden
+Token e senha ficam guardados só neste celular (preferências do app), sem criptografia própria.	Token und Passwort werden nur auf diesem Handy gespeichert (App-Einstellungen), ohne eigene Verschlüsselung.
+Token e senha ficam guardados só neste computador (registro do usuário do Windows), sem criptografia própria.	Token und Passwort werden nur auf diesem Computer gespeichert (Windows-Benutzerregistrierung), ohne eigene Verschlüsselung.
+Avisos enviados	Gesendete Warnungen
+Nenhum aviso enviado nesta sessão	In dieser Sitzung wurden keine Warnungen gesendet
+Ligue um canal de aviso e salve	Aktiviere einen Warnkanal und speichere
+Os avisos aparecem aqui com o resultado de cada envio	Die Warnungen erscheinen hier mit dem Ergebnis jeder Sendung
+Uma liquidação real acima do limite EXTREME em qualquer das {0} corretoras	Eine reale Liquidation über dem EXTREME-Schwellenwert an einer der {0} Börsen
+Parede LARGE/EXTREME saiu do livro (retirada ou executada)	Wand LARGE/EXTREME ist aus dem Buch verschwunden (zurückgezogen oder ausgeführt)
+Parede absorvendo execução ou com reposição tipo iceberg	Wand absorbiert Ausführung oder wird eisbergartig nachgefüllt
+Fluxo inferido muda de LONG para SHORT ou o contrário	Abgeleiteter Fluss wechselt von LONG zu SHORT oder umgekehrt
+Preço e CVD divergem em {0} min, {1} min ou {2} h	Preis und CVD divergieren über {0} min, {1} min oder {2} h
+Preço a até {0}% de uma zona do heatmap com ≥ {1} BTC	Preis bis zu {0}% von einer Heatmap-Zone mit ≥ {1} BTC entfernt
+CPI, PCE, payroll, FOMC e outros eventos de alto impacto (antecedência na aba Radar macro)	CPI, PCE, Payroll, FOMC und andere hochwirksame Ereignisse (Vorlauf im Tab Makro-Radar)
+Resultado oficial acima ou abaixo da expectativa do calendário	Offizielles Ergebnis über oder unter der Erwartung des Kalenders
+DXY ±{0}% no dia, Treasury {1} anos ±{2} bp ou VIX {3}%	DXY ±{0}% am Tag, Treasury {1} Jahre ±{2} bp oder VIX {3}%
+Notícia de alta intensidade: conflito, tarifas, sanções ou regulação cripto	Nachricht mit hoher Intensität: Konflikt, Zölle, Sanktionen oder Krypto-Regulierung
+BTC sobe com Nasdaq em queda (ou o contrário) em {0} hora	BTC steigt, während der Nasdaq fällt (oder umgekehrt) innerhalb von {0} h
+BTC Macro Sentiment muda {0} pontos ou troca de faixa	BTC Macro Sentiment ändert sich um {0} Punkte oder wechselt die Stufe
+Livro de ofertas	Orderbuch
+Livro	Buch
+Agrupar	Gruppieren
+Exato	Exakt
+{0} níveis · mín. {1} · {2}	{0} Niveaus · Min. {1} · {2}
+Níveis	Stufen
+Mín.	Min.
+Executado	Ausgeführt
+Centro	Mitte
+Auto (meio {0})	Auto (Mitte {0})
+Manual	Manuell
+Faixa mín	Bereich min
+Faixa máx	Bereich max
+Fora da consolidação: 	Außerhalb der Konsolidierung: 
+ (livro inválido, ver aba Status)	 (Orderbuch ungültig, siehe Tab Status)
+Resumo do livro exibido	Orderbuch-Zusammenfassung angezeigt
+Maior BID	Größter BID
+Maior ASK	Größter ASK
+Profundidade BID	Tiefe BID
+Profundidade ASK	Tiefe ASK
+Desequilíbrio	Ungleichgewicht
+Spread consolidado	Konsolidierter Spread
+cruzado entre corretoras	gekreuzt zwischen Börsen
+ USDT	 USDT
+Bybit RPI (só parte RPI, {0} níveis)	Bybit RPI (nur RPI-Anteil, {0} Stufen)
+Livro {0}	Orderbuch {0}
+Conexão	Verbindung
+Ao vivo	Live
+Sequência	Sequenz
+Spread próprio	Eigener Spread
+Níveis válidos (bid/ask)	Gültige Stufen (Bid/Ask)
+Última atualização	Letzte Aktualisierung
+ atrás	 her
+Latência (evento → recebido)	Latenz (Ereignis → empfangen)
+Último update id	Letzte Update-ID
+Reconstruções	Rekonstruktionen
+Quantidade (BTC)	Menge (BTC)
+Qtd. (BTC)	Menge (BTC)
+Bin	Bin
+Byb	Byb
+Ordens	Orders
+Acumulado	Kumuliert
+Ex. C	Bö. K
+Ex. V	Bö. V
+ACUMULADO = BTC somado do preço atual até a linha · ORDENS = nº de ordens no nível (só a OKX publica) · EX. = BTC executado no nível nos últimos {0}	KUMULIERT = BTC summiert vom aktuellen Preis bis zur Zeile · ORDERS = Anzahl der Orders auf der Stufe (nur OKX veröffentlicht) · BÖ. = auf der Stufe ausgeführter BTC in den letzten {0}
+Celular: colunas por corretora ocultas (veja no PC ou na aba de cada livro) · EX. = executado nos últimos {0}	Handy: Spalten pro Börse ausgeblendet (siehe am PC oder im Tab des jeweiligen Orderbuchs) · BÖ. = ausgeführt in den letzten {0}
+sem livro válido	kein gültiges Orderbuch
+Livros cruzados entre corretoras: melhor compra {0} acima da melhor venda {1} (cada corretora tem preço próprio)	Gekreuzte Orderbücher zwischen Börsen: bester Kauf {0} über bestem Verkauf {1} (jede Börse hat einen eigenen Preis)
+spread {0}  ·  meio {1}	Spread {0}  ·  Mitte {1}
+LIQUIDITY WALLS	LIQUIDITY WALLS
+LIQUIDITY HISTORY	LIQUIDITY HISTORY
+MAGNET ZONES	MAGNET ZONES
+LONG & SHORT FLOW	LONG & SHORT FLOW
+MARKET FLOW CORRELATION	MARKET FLOW CORRELATION
+LARGE TRADES	LARGE TRADES
+LIQUIDATION RADAR	LIQUIDATION RADAR
+Histórico de paredes	Wandverlauf
+Zonas ímã	Magnetzonen
+Correlação	Korrelation
+Grandes negócios	Große Trades
+Radar	Radar
+Status	Status
+Fluxo	Fluss
+Mais	Mehr
+Livro de ofertas consolidado e por corretora	Konsolidiertes und börsenspezifisches Orderbuch
+Compra × venda agressora por faixa de preço	Aggressiver Kauf × Verkauf nach Preisbereich
+Paredes grandes no livro agora	Große Orderbuch-Wände jetzt
+Mapa estimado de zonas de liquidação	Geschätzte Karte der Liquidationszonen
+Fluxo agressor, CVD e sinal	Aggressiver Fluss, CVD und Signal
+Preço, CVD, OI e liquidações por minuto	Preis, CVD, OI und Liquidationen pro Minute
+Maiores execuções e sequências	Größte Ausführungen und Sequenzen
+Heatmap e liquidações reais	Heatmap und reale Liquidationen
+Fluxo diário dos ETFs spot de BTC	Tägliche Zuflüsse der spotbasierten BTC-ETFs
+Juros, dólar, inflação, notícias e o score macro do BTC	Zinsen, Dollar, Inflation, Nachrichten und BTC-Makro-Score
+Avisos no celular, Telegram e e-mail	Benachrichtigungen auf dem Handy, Telegram und E-Mail
+Conexões, livros e log	Verbindungen, Orderbücher und Log
+{0} de {1}	{0} von {1}
+Abas	Tabs
+Escolher aba	Tab auswählen
+Fechar ✕	Schließen ✕
+Para esconder abas desta lista, use ⚙ → Abas visíveis.	Um Tabs aus dieser Liste auszublenden, nutze ⚙ → Sichtbare Tabs.
+  Orderflow V8	  Orderflow V8
+{0}/{1} livros ao vivo	{0}/{1} Orderbücher live
+{0} msg/s	{0} Nachr./s
+Notas	Notizen
+☾ Escuro	☾ Dunkel
+☀ Claro	☀ Hell
+⚙ Visualização	⚙ Ansicht
+Livros {0}/{1}	Bücher {0}/{1}
+Liquidações:	Liquidationen:
+Visualização	Ansicht
+Configurações de visualização	Anzeigeeinstellungen
+Escuro	Dunkel
+Claro	Hell
+Cores de compra e venda	Kauf- und Verkaufsfarben
+Verde / vermelho	Grün / Rot
+Azul / laranja	Blau / Orange
+Azul / laranja é a opção para daltonismo (vermelho e verde se confundem).	Blau / Orange ist die Option für Farbenblindheit (Rot und Grün werden verwechselt).
+Tamanho da interface · {0}%	Oberflächengröße · {0}%
+A− diminuir	A− verkleinern
+A+ aumentar	A+ vergrößern
+Restaurar {0}%	{0}% zurücksetzen
+Atalhos: Ctrl + e Ctrl − ajustam, Ctrl {0} volta a {1}%.	Tastenkürzel: Strg + und Strg − passen an, Strg {0} setzt auf {1}% zurück.
+Traduz abas, menus, alertas e notícias. Textos montados na hora e manchetes usam tradução automática na primeira vez (precisa de internet) e ficam guardados no aparelho.	Übersetzt Tabs, Menüs, Warnungen und Nachrichten. Dynamisch zusammengesetzte Texte und Schlagzeilen werden beim ersten Mal automatisch übersetzt (benötigt Internet) und auf dem Gerät gespeichert.
+Tamanho da fonte · {0}%	Schriftgröße · {0}%
+Só o texto muda de tamanho. Quando os painéis não cabem mais lado a lado, eles viram páginas com botões no topo (nada fica cortado). Para aumentar tudo junto, use o tamanho da interface.	Nur der Text ändert seine Größe. Wenn die Bereiche nicht mehr nebeneinander passen, werden sie zu Seiten mit Schaltflächen oben (nichts wird abgeschnitten). Um alles gemeinsam zu vergrößern, nutze die Oberflächengröße.
+Densidade	Dichte
+Confortável	Komfortabel
+Compacta	Kompakt
+Compacta reduz margens e espaçamento entre linhas das tabelas para caber mais dados.	Kompakt reduziert die Ränder und den Zeilenabstand der Tabellen, damit mehr Daten hineinpassen.
+Os dados chegam em tempo real de qualquer forma; isto muda só a frequência de redesenho (menor = mais CPU).	Die Daten kommen ohnehin in Echtzeit an; dies ändert nur die Häufigkeit der Neuzeichnung (niedriger = mehr CPU).
+Textos explicativos	Erklärende Texte
+Mostrar notas de rodapé	Fußnoten anzeigen
+Também pelo botão Notas na barra do topo.	Auch über die Schaltfläche Notizen in der oberen Leiste.
+Abas visíveis	Sichtbare Tabs
+Status fica sempre visível. Esconder uma aba não para a coleta de dados dela.	Der Status bleibt immer sichtbar. Einen Tab zu verbergen stoppt nicht die Datenerfassung dafür.
+%,.{0}f BTC	%,.{0}f BTC
+Nova	Neu
+Ativa	Aktiv
+Aumentou	Erhöht
+Reduziu	Verringert
+Saiu	Entfernt
+Talvez executada	Möglicherweise ausgeführt
+Executada (confirmada)	Ausgeführt (bestätigt)
+Conectando	Verbindung wird hergestellt
+Inscrito	Abonniert
+Ressincronizando	Wird neu synchronisiert
+Fora do ar	Offline
+BLOQUEADO NA REGIÃO (HTTP {0})	IN DER REGION GESPERRT (HTTP {0})
+SNAPSHOT INDISPONÍVEL	SNAPSHOT NICHT VERFÜGBAR
+sequência	Sequenz
+RECONSTRUINDO (quebra de sequência)	WIRD NEU AUFGEBAUT (Sequenzbruch)
+AGUARDANDO SNAPSHOT	WARTET AUF SNAPSHOT
+Página	Seite
+◂ ▸ deslize para o lado para ver todas as colunas	◂ ▸ zur Seite wischen, um alle Spalten zu sehen
+Menos filtros ▴	Weniger Filter ▴
+Mais filtros ▾ · {0}	Mehr Filter ▾ · {0}
+libere "Instalar apps desconhecidos" para o Radar BTC, volte e toque em Atualizar agora de novo	Aktivieren Sie "Unbekannte Apps installieren" für den BTC-Radar, kehren Sie zurück und tippen Sie erneut auf „Jetzt aktualisieren“
+Dados públicos não permitem identificar participantes individuais.	Öffentliche Daten erlauben keine Identifizierung einzelner Teilnehmer.
+@echo off	@echo off
+timeout /t {0} /nobreak >nul	timeout /t {0} /nobreak >nul
+msiexec /i {0}{1}{2} /passive /norestart	msiexec /i {0}{1}{2} /passive /norestart
+start {0}{1} {2}{3}{4}	start {0}{1} {2}{3}{4}
+resposta vazia	leere Antwort
+Instalação não concluída: 	Installation nicht abgeschlossen: 
+Baixando a versão {0}…	Version {0} wird heruntergeladen…
+download vazio	leerer Download
+Baixando a versão {0}… {1}%	Version {0} wird heruntergeladen… {1}%
+Abrindo a instalação…	Installation wird geöffnet…
+Instalando… o app fecha e abre de novo sozinho.	Wird installiert… Die App wird automatisch geschlossen und neu geöffnet.
+Não deu para atualizar: {0}	Aktualisierung nicht möglich: {0}
+Nova versão disponível ({0}; você está na {1})	Neue Version verfügbar ({0}; Sie verwenden {1})

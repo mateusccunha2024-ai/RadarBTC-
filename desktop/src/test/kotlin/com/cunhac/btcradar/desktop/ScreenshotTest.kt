@@ -72,6 +72,12 @@ class ScreenshotTest {
         shot("phone-font130-12", 12, w = 618, h = 3600, density = 1.5f)
         UiScale.useFont(1.0f); shot("tablet-12", 12, w = 1280, h = 800)
         Look.useDark(true); UiScale.set(1.0f)
+        // Outros idiomas (tabelas prontas; o que faltar chega pela tradução automática — espera um pouco por ela).
+        for (code in listOf("en", "es", "zh", "ja")) { I18n.use(code); shot("$code-12", 12) }
+        Thread.sleep(8000)
+        for (code in listOf("en", "es", "zh", "ja")) { I18n.use(code); shot("$code-12", 12); shot("$code-00", 0); shot("$code-settings", 0, settings = true) }
+        I18n.use("en"); shot("phone-en-12", 12, w = 618, h = 3600, density = 1.5f); shot("en-08", 8)
+        I18n.use("pt")
         hub.stop()
     }
 }

@@ -54,4 +54,19 @@ object Platform {
     val backgroundOn: Boolean get() = false
     fun setBackground(on: Boolean) {}
     val deviceLabel = "Windows"
+
+    /** Build instalado: o jpackage grava a versão 1.0.N do instalador; N = número do build (0 fora do app instalado). */
+    fun buildNumber(): Int = System.getProperty("jpackage.app-version")?.substringAfterLast('.')?.toIntOrNull() ?: 0
+    fun updateDir(): java.io.File = java.io.File(System.getProperty("java.io.tmpdir"), "RadarBTC-update")
+    /** Instala o .msi novo (por usuário, sem admin) só com barra de progresso, reabre o app e fecha este processo. */
+    fun installUpdate(msi: java.io.File) {
+        val exe = System.getProperty("jpackage.app-path")
+        val q = '"'
+        val bat = java.io.File(updateDir(), "atualizar.cmd")
+        val lines = mutableListOf("@echo off", "timeout /t 2 /nobreak >nul", "msiexec /i $q${msi.absolutePath}$q /passive /norestart")
+        if (exe != null) lines += "start $q$q $q$exe$q"
+        bat.writeText(lines.joinToString("\r\n") + "\r\n")
+        ProcessBuilder("cmd.exe", "/c", bat.absolutePath).start()
+        kotlin.system.exitProcess(0)
+    }
 }
