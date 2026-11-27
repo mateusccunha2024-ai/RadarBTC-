@@ -16,6 +16,7 @@ kotlin {
         kotlin.srcDir("$shared/ui/components")
         kotlin.srcDir("$shared/engine")
         kotlin.srcDir("../terminal/src/main/kotlin")
+        resources.srcDir("../terminal/src/main/resources")   // traduções (i18n/*.tsv)
     }
 }
 

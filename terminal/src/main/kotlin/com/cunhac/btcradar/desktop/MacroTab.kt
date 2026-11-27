@@ -45,7 +45,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 private val DT = SimpleDateFormat("dd/MM HH:mm")
-private val WD = SimpleDateFormat("EEE dd/MM HH:mm", BR)
+private val WD: SimpleDateFormat get() = SimpleDateFormat("EEE dd/MM HH:mm", BR)
 
 private fun dirColor(d: MacroDir) = when (d) { MacroDir.FAVORABLE -> Q.Buy; MacroDir.UNFAVORABLE -> Q.Sell; MacroDir.NEUTRAL -> Q.Text; MacroDir.UNDETERMINED -> Q.Muted }
 private fun ageTxt(now: Long, t: Long): String { val m = (now - t) / 60_000; return when { m < 1 -> "agora"; m < 60 -> "há $m min"; m < 1440 -> "há ${m / 60} h"; else -> "há ${m / 1440} d" } }
@@ -69,9 +69,11 @@ fun MacroTab(ctx: AppContext) {
     Panes(Modifier.fillMaxSize(),
         Pane(1.1f, null, "Visão geral", 400.dp) { pm -> Column(scroll(pm, c), verticalArrangement = Arrangement.spacedBy(8.dp)) { Overview(s) } },
         Pane(1f, null, "Indicadores", 400.dp) { pm -> Column(scroll(pm, c), verticalArrangement = Arrangement.spacedBy(8.dp)) { Indicators(s) } },
+        Pane(1f, null, "Mais dados", 400.dp) { pm -> Column(scroll(pm, c), verticalArrangement = Arrangement.spacedBy(8.dp)) { MoreData(s) } },
         Pane(1f, null, "Calendário", 380.dp) { pm -> Column(scroll(pm, c), verticalArrangement = Arrangement.spacedBy(8.dp)) { Calendar(s) } },
         Pane(1.1f, null, "Notícias", 400.dp) { pm -> Column(scroll(pm, c), verticalArrangement = Arrangement.spacedBy(8.dp)) { News(s) } },
-        Pane(0.9f, null, "Ajustes e fontes", 360.dp) { pm -> Column(scroll(pm, c), verticalArrangement = Arrangement.spacedBy(8.dp)) { Settings(m, s) } },
+        Pane(0.9f, null, "Ajustes", 360.dp) { pm -> Column(scroll(pm, c), verticalArrangement = Arrangement.spacedBy(8.dp)) { Settings(m, s) } },
+        Pane(1f, null, "Fontes", 380.dp) { pm -> Column(scroll(pm, c), verticalArrangement = Arrangement.spacedBy(8.dp)) { Sources(m, s) } },
     )
 }
 
@@ -122,6 +124,10 @@ private fun Overview(s: MacroState) {
                 T("Expectativa ${e.forecast.ifBlank { "—" }} · anterior ${e.previous.ifBlank { "—" }}", Q.Muted, 11, wrap = true)
             }
             fomc?.let { T("Próxima decisão do FOMC: ${WD.format(Date(it))} (faltam ${until(it - now)})", Q.Text, 12, wrap = true, modifier = Modifier.padding(top = 6.dp)) }
+            s.fedOdds.firstOrNull()?.outcomes?.firstOrNull()?.let { (n, p) ->
+                T(L("Mercado de previsões (Kalshi)") + ": " + L(fedOutcome(n)) + String.format(BR, " · %.0f%%", p * 100), Q.Muted, 12, wrap = true, tr = false)
+            }
+            s.fearGreed?.let { g -> T(L("Sentimento cripto (Fear & Greed)") + ": ${g.value} · " + L(fngLabel(g.label)), Q.Muted, 12, wrap = true, tr = false) }
         }
     }
     Section("Fatores do score", Modifier.fillMaxWidth()) {
@@ -324,7 +330,8 @@ private fun NewsRow(n: MacroNews, now: Long) {
     val uri = LocalUriHandler.current
     var open by remember(n.id) { mutableStateOf(false) }
     Column(Modifier.fillMaxWidth().background(Q.Panel2).padding(6.dp)) {
-        Tap({ open = !open }) { T(n.title, Q.Text, 12, bold = n.intensity.weight >= MacroIntensity.HIGH.weight, wrap = true) }
+        val shown = I18n.news(n.title)
+        Tap({ open = !open }) { T(shown, Q.Text, 12, bold = n.intensity.weight >= MacroIntensity.HIGH.weight, wrap = true, tr = false) }
         T("${n.source} · ${n.reliability.label} · ${ageTxt(now, n.timeMs)} · ${DT.format(Date(n.timeMs))}", Q.Muted, 11, wrap = true)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.padding(top = 3.dp)) {
             Badge(n.dir.label, dirColor(n.dir))
@@ -332,6 +339,7 @@ private fun NewsRow(n: MacroNews, now: Long) {
             Badge(n.category.label, Q.Muted)
         }
         if (open) {
+            if (shown != n.title) T(L("Original") + ": " + n.title, Q.Muted, 11, wrap = true, tr = false, modifier = Modifier.padding(top = 4.dp))
             T(n.rationale, Q.Text, 11, wrap = true, modifier = Modifier.padding(top = 4.dp))
             T(n.chain.joinToString(" → "), Q.Muted, 11, wrap = true)
             T("Horizonte: ${n.horizon.label} · relevância ${(n.relevance * 100).toInt()}%", Q.Muted, 11, wrap = true)
@@ -374,10 +382,32 @@ private fun Settings(m: MacroEngine, s: MacroState) {
             Footnote("Sem chave o BLS permite 25 consultas por dia; o app usa 2. A chave fica só neste aparelho (ou na variável de ambiente BLS_API_KEY).")
         }
     }
-    Section("Fontes", Modifier.fillMaxWidth()) {
+}
+
+/** Última página: todas as fontes com link, e a situação de cada coleta. */
+@Composable
+private fun Sources(m: MacroEngine, s: MacroState) {
+    val uri = LocalUriHandler.current
+    Section("Fontes dos dados", Modifier.fillMaxWidth()) {
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            com.cunhac.btcradar.engine.MacroCatalog.ALL.forEach { src ->
+                Column(Modifier.fillMaxWidth().background(Q.Panel2).padding(6.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        T(src.name, Q.Text, 12, bold = true, wrap = true, modifier = Modifier.weight(1f))
+                        Badge(if (src.official) "Oficial" else "Mercado / mídia", if (src.official) Q.Accent else Q.Muted)
+                    }
+                    T(src.provides, Q.Muted, 11, wrap = true)
+                    Tap({ runCatching { uri.openUri(src.url) } }) { T(src.url, Q.Accent, 11, tr = false) }
+                }
+            }
+            Footnote("Nenhum número é inventado: dado ausente aparece como \"sem dado\". Fontes não oficiais podem mudar sem aviso.")
+        }
+    }
+    Section("Situação da coleta", Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
             Box(Modifier.padding(bottom = 4.dp)) { OutlineButton("Atualizar agora") { m.refreshNow() } }
-            s.sources.forEach { st ->
+            T(String.format(BR, "%d de %d fontes em dia", s.sources.count { it.ok }, s.sources.size), Q.Text, 12)
+            s.sources.sortedBy { it.ok }.forEach { st ->
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     T(if (st.ok) "●" else if (st.fromCache) "◐" else "○", if (st.ok) Q.Buy else if (st.fromCache) Q.Warn else Q.Sell, 12, modifier = Modifier.width(18.dp))
                     Column(Modifier.weight(1f)) {
@@ -393,3 +423,144 @@ private fun Settings(m: MacroEngine, s: MacroState) {
 }
 
 @Composable private fun key(v: Int, content: @Composable () -> Unit) = androidx.compose.runtime.key(v) { content() }
+
+// ------------------------------------------------------------------ mais dados
+
+private fun fedOutcome(name: String): String = when {
+    name.startsWith("Cut >25") -> "Corte maior que 0,25 pp"
+    name.startsWith("Cut 25") -> "Corte de 0,25 pp"
+    name.startsWith("Hike >25") -> "Alta maior que 0,25 pp"
+    name.startsWith("Hike 25") -> "Alta de 0,25 pp"
+    name.contains("maintain", true) || name.contains("hold", true) -> "Juros mantidos"
+    else -> name
+}
+
+private fun usd(v: Double): String = when {
+    kotlin.math.abs(v) >= 1e12 -> String.format(BR, "US$ %,.2f tri", v / 1e12)
+    kotlin.math.abs(v) >= 1e9 -> String.format(BR, "US$ %,.1f bi", v / 1e9)
+    else -> String.format(BR, "US$ %,.0f mi", v / 1e6)
+}
+
+@Composable
+private fun MoreData(s: MacroState) {
+    val now = s.updatedMs
+    Section("Expectativa de juros do Fed", Modifier.fillMaxWidth()) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            val next = s.fedOdds.firstOrNull()
+            if (next == null) T("Sem probabilidades da Kalshi agora.", Q.Muted, 12, wrap = true)
+            else {
+                T("Próxima reunião (${WD.format(Date(next.closeMs))}): probabilidades negociadas", Q.Text, 12, bold = true, wrap = true)
+                next.outcomes.forEach { (name, p) ->
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        T(fedOutcome(name), Q.Text, 12, wrap = true, modifier = Modifier.weight(1f))
+                        Box(Modifier.width(80.dp).height(8.dp).background(Q.Line)) {
+                            Box(Modifier.fillMaxWidth(p.toFloat().coerceIn(0f, 1f)).height(8.dp).background(if (name.startsWith("Cut")) Q.Buy else if (name.startsWith("Hike")) Q.Sell else Q.Muted))
+                        }
+                        T(String.format(BR, "%.0f%%", p * 100), Q.Text, 12, monoFont = true, modifier = Modifier.width(48.dp).padding(start = 6.dp))
+                    }
+                }
+            }
+            if (s.futures.isNotEmpty()) {
+                T("Taxa implícita nos futuros de Fed funds (CBOT)", Q.Text, 12, bold = true, wrap = true, modifier = Modifier.padding(top = 6.dp))
+                val effr = s.fed?.effr
+                s.futures.forEach { (month, r) ->
+                    KV(month, String.format(BR, "%.2f%%", r) + (effr?.let { String.format(BR, " (%+.0f bp)", (r - it) * 100) } ?: ""),
+                        if (effr == null) Q.Text else if (r < effr - 0.05) Q.Buy else if (r > effr + 0.05) Q.Sell else Q.Text)
+                }
+            }
+            Footnote("Kalshi: mercado regulado de previsões (preço do contrato = probabilidade). Futuros: taxa implícita = 100 − preço; entre parênteses, " +
+                "diferença para a taxa efetiva atual. Valores negativos = cortes esperados.")
+        }
+    }
+    Section("Juros reais, inflação implícita e financiamento", Modifier.fillMaxWidth()) {
+        Column {
+            val real = s.real10y.firstOrNull()
+            if (real == null) KV("Juro real 10 anos (TIPS)", "sem dado", Q.Muted)
+            else {
+                KV("Juro real 10 anos (TIPS) · ${real.first}", String.format(BR, "%.2f%%", real.second) + (s.real10yChange(5)?.let { String.format(BR, " (%+.0f bp 5d)", it * 100) } ?: ""))
+                val nom = s.curve?.last10y
+                if (nom != null) KV("Inflação implícita 10 anos (breakeven)", String.format(BR, "%.2f%%", nom - real.second))
+            }
+            s.sofr?.let { KV("SOFR · ${it.first}", String.format(BR, "%.2f%%", it.second)) }
+            s.rrp.firstOrNull()?.let { KV("Reverse repo overnight · ${it.first}", String.format(BR, "US$ %,.1f bi", it.second / 1000)) }
+            Footnote("Juro real alto ou subindo costuma pesar sobre o BTC (custo de oportunidade). Breakeven = Treasury 10 anos − juro real.")
+        }
+    }
+    Section("Balanço do Fed e liquidez", Modifier.fillMaxWidth()) {
+        Column {
+            val b = s.fedBalance
+            if (b == null) KV("Balanço do Fed (H.4.1)", "sem dado", Q.Muted)
+            else {
+                KV("Ativos totais do Fed · semana até ${b.week}", String.format(BR, "US$ %,.2f tri", b.totalAssets / 1e6))
+                KV("Variação na semana", String.format(BR, "US$ %+,.1f bi", b.weekChange / 1000), if (b.weekChange >= 0) Q.Buy else Q.Sell)
+                b.yearChange?.let { KV("Variação em 12 meses", String.format(BR, "US$ %+,.0f bi", it / 1000), if (it >= 0) Q.Buy else Q.Sell) }
+                b.reserves?.let { KV("Reservas dos bancos no Fed", String.format(BR, "US$ %,.2f tri", it / 1e6)) }
+                val tga = s.tga?.last
+                val rrp = s.rrp.firstOrNull()?.second
+                if (tga != null) KV("Liquidez líquida estimada (ativos − TGA − RRP)", String.format(BR, "US$ %,.2f tri", (b.totalAssets - tga - (rrp ?: 0.0)) / 1e6))
+            }
+            Footnote("Liquidez líquida é uma estimativa comum no mercado, não um número oficial. Balanço crescendo e TGA caindo = mais dinheiro no sistema.")
+        }
+    }
+    Section("Mercado cripto", Modifier.fillMaxWidth()) {
+        Column {
+            s.fearGreed?.let { g ->
+                val c = when { g.value <= 25 -> Q.Sell; g.value >= 75 -> Q.Buy; else -> Q.Text }
+                KV("Fear & Greed", "${g.value} · ${fngLabel(g.label)}", c)
+                KV("Há 7 dias / há 30 dias", "${g.weekAgo ?: "—"} / ${g.monthAgo ?: "—"}")
+            } ?: KV("Fear & Greed", "sem dado", Q.Muted)
+            s.cryptoGlobal?.let { g ->
+                KV("Valor de mercado cripto", usd(g.totalCapUsd) + (g.cap24hPct?.let { String.format(BR, " (%+.1f%% 24 h)", it) } ?: ""), chg(g.cap24hPct))
+                KV("Dominância do BTC", String.format(BR, "%.1f%%", g.btcDominance))
+                g.ethDominance?.let { KV("Dominância do ETH", String.format(BR, "%.1f%%", it)) }
+                g.volumeUsd?.let { KV("Volume 24 h", usd(it)) }
+            }
+            s.stablecoins.firstOrNull()?.let { (_, v) ->
+                KV("Stablecoins em circulação", usd(v))
+                KV("Variação 7 d / 30 d", listOf(s.stablePct(7), s.stablePct(30)).joinToString(" / ") { it?.let { x -> String.format(BR, "%+.1f%%", x) } ?: "—" }, chg(s.stablePct(30)))
+            }
+            s.network?.let { n ->
+                KV("Hashrate da rede", String.format(BR, "%,.0f EH/s", n.hashrateEh) + (n.hashrate30dChangePct?.let { String.format(BR, " (%+.1f%% 30 d)", it) } ?: ""))
+            }
+            s.fees?.let { (f, h, o) -> KV("Taxas (rápida / 30 min / 1 h)", "$f / $h / $o sat/vB") }
+            Footnote("Fear & Greed é sentimento, não entra no score (evita contar duas vezes o que o order flow já mostra). Stablecoins entram no fator Liquidez.")
+        }
+    }
+    Section("Mais mercados", Modifier.fillMaxWidth(), minWidth = 360.dp) {
+        Column {
+            Row { H("Ativo", 1.2f); H("Último", 0.8f); H("Dia", 0.6f); H("5 pregões", 0.7f) }
+            com.cunhac.btcradar.engine.MacroSources.EXTRA_MARKETS.groupBy { it[3] }.forEach { (group, items) ->
+                T(L(group).uppercase(BR), Q.Muted, 10, bold = true, tr = false, modifier = Modifier.padding(top = 6.dp, bottom = 2.dp))
+                items.forEach { item ->
+                    val k = item[0]; val ms = s.markets[k]
+                    val y = k in setOf("IRX", "FVX", "TYX")
+                    Row(Modifier.fillMaxWidth().padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+                        T(item[1], Q.Text, 12, wrap = true, modifier = Modifier.weight(1.2f))
+                        T(ms?.last?.let { f2(it, if (y) 3 else if (it < 20) 4 else 2) + if (y) "%" else "" } ?: "—", Q.Text, 12, monoFont = true, modifier = Modifier.weight(0.8f))
+                        val d = if (y) ms?.dayChange?.let { it * 100 } else ms?.dayPct
+                        T(if (d == null) "—" else if (y) String.format(BR, "%+.0f bp", d) else pct(d), chg(d), 12, monoFont = true, modifier = Modifier.weight(0.6f))
+                        val w = if (y) ms?.changeOverSessions(5)?.let { it * 100 } else ms?.pctOverSessions(5)
+                        T(if (w == null) "—" else if (y) String.format(BR, "%+.0f bp", w) else pct(w), chg(w), 12, monoFont = true, modifier = Modifier.weight(0.7f))
+                    }
+                }
+            }
+            Footnote("Yahoo Finance, barras de 1 h. Dólar subindo contra moedas emergentes e cobre caindo costumam indicar aversão a risco.")
+        }
+    }
+    Section("Mundo e dívida", Modifier.fillMaxWidth()) {
+        Column {
+            s.ecb?.let { KV("BCE · taxa de depósito · ${it.first}", String.format(BR, "%.2f%%", it.second)) } ?: KV("BCE · taxa de depósito", "sem dado", Q.Muted)
+            s.debt.firstOrNull()?.let { (d, v) ->
+                KV("Dívida pública dos EUA · $d", usd(v))
+                s.debt.getOrNull(minOf(20, s.debt.size - 1))?.takeIf { it.first != d }?.let { (d0, v0) -> KV("Variação desde $d0", usd(v - v0)) }
+            }
+            Footnote("Juros do BCE abaixo dos do Fed sustentam o dólar; dívida crescendo rápido pressiona a oferta de Treasuries e os yields.")
+        }
+    }
+    @Suppress("UNUSED_VARIABLE") val unused = now
+}
+
+private fun fngLabel(s: String) = when (s.lowercase()) {
+    "extreme fear" -> "Medo extremo"; "fear" -> "Medo"; "neutral" -> "Neutro"; "greed" -> "Ganância"; "extreme greed" -> "Ganância extrema"; else -> s
+}
+

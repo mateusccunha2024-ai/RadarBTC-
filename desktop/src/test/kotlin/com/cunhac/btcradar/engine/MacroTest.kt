@@ -174,4 +174,63 @@ class MacroTest {
         assertEquals(Confluence.HIGH, e.confluence)
         assertFalse(e.reading.startsWith("Sem confirmação"))
     }
+
+    @Test fun parsesNewMacroSources() {
+        val k = MacroSources.parseKalshi("""{"markets":[
+            {"event_ticker":"KXFEDDECISION-26DEC","close_time":"2099-12-09T18:59:00Z","yes_sub_title":"Hike 25bps","last_price_dollars":"0.9300"},
+            {"event_ticker":"KXFEDDECISION-26DEC","close_time":"2099-12-09T18:59:00Z","yes_sub_title":"Fed maintains rate","last_price_dollars":"0.0500"},
+            {"event_ticker":"KXFEDDECISION-27JAN","close_time":"2100-01-27T18:59:00Z","yes_sub_title":"Cut 25bps","last_price_dollars":"0.2"}]}""", now)
+        assertEquals(2, k.size); assertEquals("KXFEDDECISION-26DEC", k[0].event); assertEquals(0.93, k[0].outcomes[0].second, 1e-9)
+
+        val h = MacroSources.parseH41("<p>Week ended Nov 18, 2026</p><td>Reserve balances with Federal Reserve Banks &#xa0; 2,979,656</td><td>+ 19,053</td><td>+ 91,013</td>" +
+            "<td>Total assets (0)</td><td>6,741,452</td><td>- 17,415</td><td>+ 186,169</td>")
+        assertEquals("2026-11-18", h.week); assertEquals(6_741_452.0, h.totalAssets, 1e-9); assertEquals(-17_415.0, h.weekChange, 1e-9)
+        assertEquals(186_169.0, h.yearChange!!, 1e-9); assertEquals(2_979_656.0, h.reserves!!, 1e-9)
+
+        val g = MacroSources.parseFng("""{"data":[{"value":"12","value_classification":"Extreme Fear","timestamp":"1795737600"},{"value":"11"},{"value":"10"},{"value":"9"},{"value":"8"},{"value":"7"},{"value":"6"},{"value":"30"}]}""")
+        assertEquals(12, g.value); assertEquals(30, g.weekAgo); assertNull(g.monthAgo)
+
+        val cg = MacroSources.parseCgGlobal("""{"data":{"total_market_cap":{"usd":2.1e12},"market_cap_percentage":{"btc":58.2,"eth":9.1},"market_cap_change_percentage_24h_usd":-1.5,"total_volume":{"usd":8e10},"updated_at":1795800000}}""")
+        assertEquals(58.2, cg.btcDominance, 1e-9)
+
+        val st = MacroSources.parseStablecoins("""[{"date":"1700000000","totalCirculatingUSD":{"peggedUSD":100.0}},{"date":"1700086400","totalCirculatingUSD":{"peggedUSD":110.0}}]""")
+        assertEquals(110.0, st[0].second, 1e-9)
+        val ms = com.cunhac.btcradar.desktop.MacroState(stablecoins = (0..40).map { (now - it * D) to 200.0 - it })
+        assertEquals((200.0 - 170.0) / 170.0 * 100, ms.stablePct(30)!!, 1e-6)
+
+        val real = MacroSources.parseTreasuryColumn("Date,\"5 YR\",\"10 YR\"\n11/25/2026,2.52,2.73\n11/24/2026,2.58,2.79\n", "10 YR")
+        assertEquals("2026-11-25" to 2.73, real[0])
+
+        val rrp = MacroSources.parseRrp("""{"repo":{"operations":[{"operationDate":"2026-11-25","totalAmtAccepted":300000000},{"operationDate":"2026-11-24","totalAmtAccepted":5000000000}]}}""")
+        assertEquals(300.0, rrp[0].second, 1e-9)
+
+        val ecb = MacroSources.parseEcb("""{"dataSets":[{"series":{"0:0:0:0:0:0:0":{"observations":{"0":[2.0]}}}}],"structure":{"dimensions":{"observation":[{"values":[{"id":"2026-11-26"}]}]}}}""")
+        assertEquals("2026-11-26" to 2.0, ecb)
+
+        val debt = MacroSources.parseDebt("""{"data":[{"record_date":"2026-11-24","tot_pub_debt_out_amt":"40793305704796.70"}]}""")
+        assertEquals(4.07933057047967e13, debt[0].second, 1.0)
+
+        val syms = MacroSources.fedFuturesSymbols(java.time.ZonedDateTime.of(2026, 11, 27, 12, 0, 0, 0, ZoneOffset.UTC).toInstant().toEpochMilli(), 3)
+        assertEquals(listOf("2026-11" to "ZQX26.CBT", "2026-12" to "ZQZ26.CBT", "2027-01" to "ZQF27.CBT"), syms)
+
+        assertNotNull(MacroSources.parseDate("Thu, 26 Nov 2026 10:00:00 GMT"))
+        assertNotNull(MacroSources.parseDate("Thu, 26 Nov 2026 10:00:00 EST"))
+        assertNotNull(MacroSources.parseDate("2026-11-26T10:00:00Z"))
+        assertEquals(MacroSources.parseDate("Thu, 26 Nov 2026 10:00:00 +0000"), MacroSources.parseDate("2026-11-26T10:00:00Z"))
+    }
+
+    @Test fun newSubSignalsEnterTheScore() {
+        val w = MacroFactor.entries.associateWith { it.defaultWeight }
+        val fed = FedRate("2026-11-25", 3.88, 3.75, 4.0, now)
+        val base = MacroScoring.compute(MacroInputs(fed = fed, futures3m = 3.88), w, now)
+        val cuts = MacroScoring.compute(MacroInputs(fed = fed, futures3m = 3.38), w, now)
+        val mb = base.factors.first { it.factor == MacroFactor.MONETARY }.value!!
+        val mc = cuts.factors.first { it.factor == MacroFactor.MONETARY }.value!!
+        assertTrue(mc > mb)
+        val liq = MacroScoring.compute(MacroInputs(stable30dPct = 3.0, fedAssetsWeekChg = 25_000.0), w, now).factors.first { it.factor == MacroFactor.LIQUIDITY }
+        assertEquals(1.0, liq.value!!, 1e-9)
+        val vol = MacroScoring.compute(MacroInputs(move = 140.0), w, now).factors.first { it.factor == MacroFactor.VOLATILITY }
+        assertTrue(vol.value!! < 0)
+    }
 }
+

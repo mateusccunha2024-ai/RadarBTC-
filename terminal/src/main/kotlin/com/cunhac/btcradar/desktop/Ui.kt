@@ -116,7 +116,8 @@ val FONT_SIZES = listOf(0.85f, 1.0f, 1.15f, 1.3f, 1.5f)
 /** Largura que acompanha o tamanho da fonte (colunas de tabela, painéis laterais). */
 val Dp.f: Dp get() = this * UiScale.font
 
-val BR: Locale = Locale.forLanguageTag("pt-BR")
+/** Formato de números: segue o idioma do app (I18n). */
+val BR: Locale get() = com.cunhac.btcradar.engine.NumLocale.current
 val mono: TextStyle get() = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 13.sp, color = Q.Text)
 fun btc(v: Double, d: Int = 2) = String.format(BR, "%,.${d}f BTC", v)
 fun num(v: Double, d: Int = 2) = String.format(BR, "%,.${d}f", v)
@@ -163,9 +164,9 @@ fun readable(size: Int, monoFont: Boolean = false) = when {
 
 @Composable
 fun T(text: String, color: Color = Q.Text, size: Int = 12, bold: Boolean = false, monoFont: Boolean = false,
-      modifier: Modifier = Modifier, wrap: Boolean = false, align: TextAlign? = null) {
+      modifier: Modifier = Modifier, wrap: Boolean = false, align: TextAlign? = null, tr: Boolean = true) {
     val fs = readable(size, monoFont)
-    Text(text, color = color, fontSize = fs.sp, lineHeight = (fs + 4).sp,
+    Text(if (tr) L(text) else text, color = color, fontSize = fs.sp, lineHeight = (fs + 4).sp,
         fontWeight = if (bold) FontWeight.SemiBold else FontWeight.Normal,
         fontFamily = if (monoFont) FontFamily.Monospace else FontFamily.Default, modifier = modifier,
         maxLines = if (wrap) Int.MAX_VALUE else 1, overflow = TextOverflow.Ellipsis, softWrap = wrap, textAlign = align)
@@ -281,7 +282,7 @@ fun ColumnScope.grow(weight: Float = 1f, mobile: Dp? = null): Modifier =
 @Composable
 fun Section(title: String, modifier: Modifier = Modifier, minWidth: Dp? = null, content: @Composable () -> Unit) {
     Column(modifier.background(Q.Panel).border(1.dp, Q.Line).padding(if (Look.compact) 6.dp else 10.dp)) {
-        T(title.uppercase(), Q.Muted, 11, bold = true, wrap = true)
+        T(L(title).uppercase(BR), Q.Muted, 11, bold = true, wrap = true, tr = false)
         // Título de painel = único texto em caixa alta; o resto da tela usa caixa normal.
         if (minWidth == null) Box(Modifier.padding(top = 6.dp)) { content() }
         else BoxWithConstraints(Modifier.padding(top = 6.dp)) {
@@ -334,7 +335,7 @@ fun Empty(title: String, hint: String? = null) {
 
 @Composable
 fun Badge(text: String, color: Color) =
-    Text(text, color = color, fontSize = 11.sp, lineHeight = 14.sp, maxLines = 1,
+    Text(L(text), color = color, fontSize = 11.sp, lineHeight = 14.sp, maxLines = 1,
         modifier = Modifier.border(1.dp, color.copy(alpha = 0.55f)).padding(horizontal = 5.dp, vertical = 1.dp))
 
 @Composable
@@ -355,13 +356,13 @@ fun Tap(onClick: () -> Unit, enabled: Boolean = true, content: @Composable () ->
 @Composable
 fun OutlineButton(label: String, color: Color = Q.Accent, border: Color = color, enabled: Boolean = true, size: Int = 12, onClick: () -> Unit) =
     Tap(onClick, enabled) {
-        Text(label, color = color, fontSize = size.sp, lineHeight = (size + 4).sp, maxLines = 1,
+        Text(L(label), color = color, fontSize = size.sp, lineHeight = (size + 4).sp, maxLines = 1,
             modifier = Modifier.border(1.dp, border).padding(horizontal = if (compact) 14.dp else 10.dp, vertical = if (compact) 9.dp else 5.dp))
     }
 
 @Composable
 private fun ChipItem(s: String, on: Boolean, onClick: () -> Unit) = Tap(onClick) {
-    Text(s, color = if (on) Q.Accent else Q.Muted, fontSize = 12.sp, lineHeight = 16.sp, maxLines = 1,
+    Text(L(s), color = if (on) Q.Accent else Q.Muted, fontSize = 12.sp, lineHeight = 16.sp, maxLines = 1,
         modifier = Modifier.background(if (on) Q.Panel2 else Q.Panel).border(1.dp, if (on) Q.Accent else Q.Line)
             .padding(horizontal = if (compact) 11.dp else 8.dp, vertical = if (compact) 8.dp else 4.dp))
 }
@@ -393,7 +394,7 @@ fun NumField(label: String, value: Double?, width: Dp = 90.dp, onValue: (Double?
             value = text,
             onValueChange = { t ->
                 text = t
-                val v = t.replace(".", "").replace(",", ".").trim()
+                val v = (if (t.contains(',')) t.replace(".", "").replace(",", ".") else t).trim()
                 if (v.isEmpty()) onValue(null) else v.toDoubleOrNull()?.let(onValue)
             },
             singleLine = true,

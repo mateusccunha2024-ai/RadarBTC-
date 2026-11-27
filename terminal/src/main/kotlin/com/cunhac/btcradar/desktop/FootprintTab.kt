@@ -190,7 +190,7 @@ private fun FootprintChart(candles: List<FootCandle>, step: Double, price: Doubl
             drawRect(accent, Offset(w, cur - 8f * u), Size(axisW, 16f * u))
             right(px(p), cur, axis.copy(color = panel2))
         } }
-        if (!showText) drawText(tm, "Aumente a faixa US$ ou reduza o nº de velas para ver os números", Offset(10f * u, headH + h - 16f * u), axis)
+        if (!showText) drawText(tm, L("Aumente a faixa US$ ou reduza o nº de velas para ver os números"), Offset(10f * u, headH + h - 16f * u), axis)
     }
 }
 
@@ -223,7 +223,7 @@ private fun ProfileChart(p: VolumeProfile, price: Double?, modifier: Modifier) {
             v ?: return
             val yy = y(v + step / 2)
             drawLine(c, Offset(0f, yy), Offset(w, yy), 1f)
-            drawText(tm, "$label ${px(v)}", Offset(w + 2f, yy - 7.dp.toPx()), axis.copy(color = c))
+            drawText(tm, L(label) + " " + px(v), Offset(w + 2f, yy - 7.dp.toPx()), axis.copy(color = c))
         }
         // Rótulos que caem no mesmo preço do POC não são repetidos (evita texto sobreposto).
         if (p.vah != p.poc) mark("VAH", p.vah, muted)

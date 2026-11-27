@@ -60,7 +60,32 @@ data class MacroState(
     val integrated: IntegratedView? = null,
     val sources: List<SourceStatus> = emptyList(),
     val updatedMs: Long = 0,
-)
+    /** Futuros de Fed funds: (AAAA-MM, taxa implícita %). */
+    val futures: List<Pair<String, Double>> = emptyList(),
+    /** Juro real de 10 anos (TIPS): (data, %), mais recente primeiro. */
+    val real10y: List<Pair<String, Double>> = emptyList(),
+    val sofr: Pair<String, Double>? = null,
+    val rrp: List<Pair<String, Double>> = emptyList(),
+    val fedBalance: MacroSources.FedBalance? = null,
+    val fedOdds: List<MacroSources.FedOdds> = emptyList(),
+    val fearGreed: MacroSources.FearGreed? = null,
+    val cryptoGlobal: MacroSources.CryptoGlobal? = null,
+    val stablecoins: List<Pair<Long, Double>> = emptyList(),
+    val network: MacroSources.Network? = null,
+    val fees: Triple<Int, Int, Int>? = null,
+    val ecb: Pair<String, Double>? = null,
+    val debt: List<Pair<String, Double>> = emptyList(),
+) {
+    /** Variação do estoque de stablecoins em [days] dias (%). */
+    fun stablePct(days: Int): Double? {
+        val now = stablecoins.firstOrNull() ?: return null
+        val old = stablecoins.firstOrNull { it.first <= now.first - days * 86_400_000L } ?: return null
+        return if (old.second > 0) (now.second - old.second) / old.second * 100 else null
+    }
+    /** Taxa implícita nos futuros de ~3 meses à frente. */
+    val futures3m: Double? get() = futures.getOrNull(3)?.second ?: futures.lastOrNull()?.second
+    fun real10yChange(back: Int): Double? { val a = real10y.getOrNull(0)?.second; val b = real10y.getOrNull(back)?.second; return if (a != null && b != null) a - b else null }
+}
 
 /** Configuração do Radar Macro (guardada só neste aparelho). */
 object MacroSettings {
@@ -97,6 +122,19 @@ class MacroEngine(private val hub: Hub, private val etf: () -> EtfModel?) {
     private var calendar: List<CalEvent> = emptyList()
     private var fomc: List<Long> = emptyList()
     private val rawNews = HashMap<String, List<MacroSources.RawNews>>()
+    private val futures = java.util.TreeMap<String, Double>()
+    private var real10y: List<Pair<String, Double>> = emptyList()
+    private var sofr: Pair<String, Double>? = null
+    private var rrp: List<Pair<String, Double>> = emptyList()
+    private var fedBalance: MacroSources.FedBalance? = null
+    private var fedOdds: List<MacroSources.FedOdds> = emptyList()
+    private var fearGreed: MacroSources.FearGreed? = null
+    private var cryptoGlobal: MacroSources.CryptoGlobal? = null
+    private var stablecoins: List<Pair<Long, Double>> = emptyList()
+    private var network: MacroSources.Network? = null
+    private var fees: Triple<Int, Int, Int>? = null
+    private var ecb: Pair<String, Double>? = null
+    private var debt: List<Pair<String, Double>> = emptyList()
 
     private val loaded = HashMap<String, Long>()
     private val failUntil = HashMap<String, Long>()
@@ -177,6 +215,38 @@ class MacroEngine(private val hub: Hub, private val etf: () -> EtfModel?) {
             rawNews["fedrss"] = MacroSources.parseRss(it, "Federal Reserve", "Federal Reserve")
         }
         src("gdelt", "GDELT · notícias globais", 30 * 60_000L, { MacroSources.get(MacroSources.gdeltUrl()) }) { rawNews["gdelt"] = MacroSources.parseGdelt(it) }
+        publish(System.currentTimeMillis())   // o principal aparece antes; o resto chega em seguida
+        MacroSources.FEEDS.forEachIndexed { i, (name, url) ->
+            src("rss_$i", "RSS · $name", 30 * 60_000L, { MacroSources.get(url) }) { rawNews["rss_$i"] = MacroSources.parseRss(it, name, name) }
+        }
+        for (m in MacroSources.EXTRA_MARKETS) {
+            val (k, label, sym, _) = m
+            src("yh_$k", "Yahoo Finance · $label", 10 * 60_000L, { MacroSources.get(MacroSources.yahooUrl(sym)) }) {
+                markets[k] = MacroSources.parseYahoo(k, label, if (k in setOf("IRX", "FVX", "TYX")) "%" else "", it, System.currentTimeMillis())
+            }
+        }
+        for ((month, sym) in MacroSources.fedFuturesSymbols(now)) {
+            src("zq_$month", "CME/CBOT · futuro de Fed funds $month", 30 * 60_000L, { MacroSources.get(MacroSources.yahooUrl(sym)) }) {
+                MacroSources.parseYahoo(sym, sym, "", it, System.currentTimeMillis()).last?.let { p -> futures[month] = 100 - p }
+            }
+        }
+        futures.keys.filter { it < MacroSources.fedFuturesSymbols(now).first().first }.forEach { futures.remove(it) }
+        src("ust_real", "U.S. Treasury · juros reais (TIPS)", 60 * 60_000L, {
+            MacroSources.get(MacroSources.treasuryRealUrl(year)) + "\n" + runCatching { MacroSources.get(MacroSources.treasuryRealUrl(year - 1)) }.getOrDefault("")
+        }) { real10y = MacroSources.parseTreasuryColumn(it, "10 YR") }
+        src("sofr", "NY Fed · SOFR", 3 * 3_600_000L, { MacroSources.get(MacroSources.SOFR_URL) }) { sofr = MacroSources.parseRefRate(it) }
+        src("rrp", "NY Fed · reverse repo overnight", 3 * 3_600_000L, { MacroSources.get(MacroSources.rrpUrl(now)) }) { rrp = MacroSources.parseRrp(it) }
+        src("h41", "Federal Reserve · balanço semanal (H.4.1)", 6 * 3_600_000L, { MacroSources.get(MacroSources.H41_URL) }) { fedBalance = MacroSources.parseH41(it) }
+        src("kalshi", "Kalshi · probabilidades da decisão do Fed", 30 * 60_000L, { MacroSources.get(MacroSources.KALSHI_URL) }) {
+            fedOdds = MacroSources.parseKalshi(it, System.currentTimeMillis())
+        }
+        src("fng", "Alternative.me · Fear & Greed", 60 * 60_000L, { MacroSources.get(MacroSources.FNG_URL) }) { fearGreed = MacroSources.parseFng(it) }
+        src("cg", "CoinGecko · mercado cripto global", 30 * 60_000L, { MacroSources.get(MacroSources.CG_GLOBAL_URL) }) { cryptoGlobal = MacroSources.parseCgGlobal(it) }
+        src("stable", "DefiLlama · estoque de stablecoins", 6 * 3_600_000L, { MacroSources.get(MacroSources.STABLE_URL) }) { stablecoins = MacroSources.parseStablecoins(it) }
+        src("hash", "mempool.space · hashrate", 3 * 3_600_000L, { MacroSources.get(MacroSources.HASHRATE_URL) }) { network = MacroSources.parseHashrate(it) }
+        src("fees", "mempool.space · taxas da rede", 15 * 60_000L, { MacroSources.get(MacroSources.FEES_URL) }) { fees = MacroSources.parseFees(it) }
+        src("ecb", "BCE · taxa de depósito", 12 * 3_600_000L, { MacroSources.get(MacroSources.ECB_URL) }) { ecb = MacroSources.parseEcb(it) }
+        src("debt", "Tesouro dos EUA · dívida pública", 12 * 3_600_000L, { MacroSources.get(MacroSources.DEBT_URL) }) { debt = MacroSources.parseDebt(it) }
         publish(System.currentTimeMillis())
     }
 
@@ -198,14 +268,17 @@ class MacroEngine(private val hub: Hub, private val etf: () -> EtfModel?) {
         val cal = MacroActuals.fill(calendar, econ, now)
         val e = etf()?.state?.value
         val etfNet = e?.takeIf { it.days.size >= 5 }?.sum(5)
+        val partial = MacroState(futures = futures.toList(), real10y = real10y, stablecoins = stablecoins)
         val inp = MacroInputs(fed, curve, markets["TNX"], econ["CORE_CPI"], econ["UNEMP"], econ["AHE"], markets["DXY"], markets["NDX"], markets["VIX"], tga, news,
-            etfNet, e?.latest?.date?.toString())
+            etfNet, e?.latest?.date?.toString(), futures3m = partial.futures3m, real10y5d = partial.real10yChange(5),
+            fedAssetsWeekChg = fedBalance?.weekChange, stable30dPct = partial.stablePct(30), move = markets["MOVE"]?.last)
         val score = MacroScoring.compute(inp, MacroSettings.weights(), now)
         val btc = markets["BTC"]
-        val corr = if (btc == null) emptyList() else MacroCorr.all(btc, listOfNotNull(markets["SPX"], markets["NDX"], markets["DXY"], markets["GOLD"], markets["TNX"], markets["VIX"]), now)
+        val corr = if (btc == null) emptyList() else MacroCorr.all(btc, listOfNotNull(markets["SPX"], markets["NDX"], markets["RUT"], markets["DXY"], markets["GOLD"], markets["TNX"], markets["VIX"], markets["ETH"], markets["HYG"], markets["N225"]), now)
         val flow = flowSnapshot(now)
         val integ = flow?.let { MacroConfluence.evaluate(score.state, it) }
-        val st = MacroState(HashMap(markets), curve, fed, HashMap(econ), tga, cal, fomc, news, score, corr, flow, integ, status.values.toList(), now)
+        val st = MacroState(HashMap(markets), curve, fed, HashMap(econ), tga, cal, fomc, news, score, corr, flow, integ, status.values.toList(), now,
+            futures.toList(), real10y, sofr, rrp, fedBalance, fedOdds, fearGreed, cryptoGlobal, stablecoins, network, fees, ecb, debt)
         state.value = st
         runCatching { alerts(st, now) }
     }

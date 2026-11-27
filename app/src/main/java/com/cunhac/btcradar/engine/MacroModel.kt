@@ -319,14 +319,17 @@ object MacroEvents {
  * (BTC negociado como ativo de risco de alta beta). São uma escolha documentada, não um modelo estimado.
  */
 enum class MacroFactor(val label: String, val defaultWeight: Int, val rule: String) {
-    MONETARY("Política monetária", 15, "Treasury 2 anos abaixo da taxa efetiva do Fed = mercado precificando cortes (favorável). Escala: ±0,75 pp = ±1."),
+    MONETARY("Política monetária", 15, "Média de: (a) Treasury 2 anos abaixo da taxa efetiva do Fed = cortes precificados (±0,75 pp = ±1); " +
+        "(b) taxa implícita nos futuros de Fed funds de ~3 meses à frente contra a taxa atual (−0,5 pp = +1). Cortes esperados = favorável."),
     INFLATION("Inflação", 12, "Núcleo do CPI (3 meses anualizado) contra a variação em 12 meses: desacelerando = favorável; acelerando = desfavorável. Escala: ±1 pp = ±1."),
     LABOR("Mercado de trabalho", 8, "Desemprego subindo 0,3–0,5 pp em 6 meses = esfriamento (mais cortes, +0,3); acima de 0,5 pp = risco de recessão (−0,5); salários > 4% a/a = −0,3."),
     DOLLAR("Dólar (DXY)", 12, "Variação em 5 pregões: dólar caindo = favorável. Escala: ±1,5% = ±1."),
-    YIELDS("Treasury yields", 12, "Variação do Treasury 10 anos em 5 dias: yields caindo = favorável. Escala: ±20 bp = ±1."),
-    LIQUIDITY("Liquidez", 8, "Saldo do TGA (conta do Tesouro no Fed) em ~4 semanas: TGA caindo devolve liquidez ao sistema (favorável). Escala: ±US$ 150 bi = ±1."),
+    YIELDS("Treasury yields", 12, "Média de: Treasury 10 anos nominal em 5 dias (±20 bp = ∓1) e juro real de 10 anos (TIPS) em 5 dias (±15 bp = ∓1). Juros caindo = favorável."),
+    LIQUIDITY("Liquidez", 8, "Média de: TGA em ~4 semanas (caindo devolve liquidez; ±US$ 150 bi = ∓1), balanço do Fed na semana (±US$ 25 bi = ±1) " +
+        "e estoque de stablecoins em 30 dias (±3% = ±1, liquidez do mercado cripto)."),
     EQUITIES("Mercado acionário", 10, "Nasdaq 100 em 5 pregões: alta = apetite por risco (favorável). Escala: ±3% = ±1."),
-    VOLATILITY("Volatilidade (VIX)", 8, "VIX < 15: +0,5 · 15–20: 0 · 20–30: −0,5 · > 30: −1; salto > 15% no dia soma −0,3."),
+    VOLATILITY("Volatilidade (VIX e MOVE)", 8, "VIX < 15: +0,5 · 15–20: 0 · 20–30: −0,5 · > 30: −1; salto > 15% no dia soma −0,3. " +
+        "MOVE (volatilidade dos Treasuries) > 130 soma −0,3; < 80 soma +0,2."),
     GEOPOLITICS("Eventos geopolíticos", 7, "Soma das notícias classificadas nas últimas 24 h (direção × intensidade × confiabilidade), limitada a ±1."),
     INSTITUTIONAL("Fluxo institucional (ETFs)", 8, "Soma dos fluxos dos ETFs spot nos últimos 5 pregões: ±US$ 1 bi = ±1."),
 }
@@ -354,6 +357,16 @@ data class MacroInputs(
     val coreCpi: EconSeries? = null, val unemployment: EconSeries? = null, val wages: EconSeries? = null,
     val dxy: MarketSeries? = null, val ndx: MarketSeries? = null, val vix: MarketSeries? = null,
     val tga: TgaSeries? = null, val news: List<MacroNews> = emptyList(), val etfNet5d: Double? = null, val etfAsOf: String? = null,
+    /** Taxa implícita (%) no futuro de Fed funds de ~3 meses à frente. */
+    val futures3m: Double? = null,
+    /** Variação do juro real de 10 anos (TIPS) em 5 dias, em pontos percentuais. */
+    val real10y5d: Double? = null,
+    /** Variação semanal do balanço do Fed (US$ milhões). */
+    val fedAssetsWeekChg: Double? = null,
+    /** Variação do estoque de stablecoins em 30 dias (%). */
+    val stable30dPct: Double? = null,
+    /** Índice MOVE (volatilidade implícita dos Treasuries). */
+    val move: Double? = null,
 )
 
 object MacroScoring {
@@ -365,12 +378,23 @@ object MacroScoring {
 
         // 1. Política monetária
         val two = inp.curve?.last2y
-        f += if (inp.fed != null && two != null) {
-            val gap = inp.fed!!.effr - two
-            FactorScore(MacroFactor.MONETARY, clamp(gap / 0.75), w(MacroFactor.MONETARY),
-                String.format(PT_BR, "Fed efetivo %.2f%% × Treasury 2 anos %.2f%% → %s", inp.fed!!.effr, two,
-                    if (gap > 0.1) "mercado espera cortes" else if (gap < -0.1) "mercado espera altas" else "sem mudança precificada"), inp.fed!!.date)
-        } else FactorScore(MacroFactor.MONETARY, null, w(MacroFactor.MONETARY), "Sem taxa do Fed ou Treasury 2 anos", null)
+        val fedR = inp.fed
+        run {
+            val subs = ArrayList<Double>(); val why = ArrayList<String>()
+            if (fedR != null && two != null) {
+                val gap = fedR.effr - two
+                subs += clamp(gap / 0.75)
+                why += String.format(PT_BR, "Fed efetivo %.2f%% × Treasury 2 anos %.2f%% (%s)", fedR.effr, two,
+                    if (gap > 0.1) "mercado espera cortes" else if (gap < -0.1) "mercado espera altas" else "sem mudança precificada")
+            }
+            val fut = inp.futures3m
+            if (fedR != null && fut != null) {
+                subs += clamp(-(fut - fedR.effr) / 0.5)
+                why += String.format(PT_BR, "futuros de Fed funds ~3 meses: %.2f%% (%+.0f bp)", fut, (fut - fedR.effr) * 100)
+            }
+            f += if (subs.isNotEmpty()) FactorScore(MacroFactor.MONETARY, subs.average(), w(MacroFactor.MONETARY), why.joinToString(" · "), fedR?.date)
+            else FactorScore(MacroFactor.MONETARY, null, w(MacroFactor.MONETARY), "Sem taxa do Fed, Treasury 2 anos ou futuros", null)
+        }
 
         // 2. Inflação (núcleo)
         val c = inp.coreCpi
@@ -396,30 +420,51 @@ object MacroScoring {
         f += if (d5 != null) FactorScore(MacroFactor.DOLLAR, clamp(-d5 / 1.5), w(MacroFactor.DOLLAR), String.format(PT_BR, "DXY %+.2f%% em 5 pregões", d5), isoDay(inp.dxy!!.lastTimeMs))
         else FactorScore(MacroFactor.DOLLAR, null, w(MacroFactor.DOLLAR), "Sem DXY", null)
 
-        // 5. Yields (oficial; se faltar, Yahoo ^TNX)
+        // 5. Yields (oficial; se faltar, Yahoo ^TNX) + juro real
         val y5 = inp.curve?.change10y(5) ?: inp.tnx?.changeOverSessions(5)
-        f += if (y5 != null) FactorScore(MacroFactor.YIELDS, clamp(-y5 * 100 / 20), w(MacroFactor.YIELDS), String.format(PT_BR, "Treasury 10 anos %+.0f bp em 5 dias", y5 * 100), inp.curve?.date ?: isoDay(inp.tnx?.lastTimeMs ?: 0L))
-        else FactorScore(MacroFactor.YIELDS, null, w(MacroFactor.YIELDS), "Sem Treasury 10 anos", null)
+        run {
+            val subs = ArrayList<Double>(); val why = ArrayList<String>()
+            if (y5 != null) { subs += clamp(-y5 * 100 / 20); why += String.format(PT_BR, "Treasury 10 anos %+.0f bp em 5 dias", y5 * 100) }
+            val r5 = inp.real10y5d
+            if (r5 != null) { subs += clamp(-r5 * 100 / 15); why += String.format(PT_BR, "juro real 10 anos %+.0f bp", r5 * 100) }
+            f += if (subs.isNotEmpty()) FactorScore(MacroFactor.YIELDS, subs.average(), w(MacroFactor.YIELDS), why.joinToString(" · "),
+                inp.curve?.date ?: isoDay(inp.tnx?.lastTimeMs ?: 0L))
+            else FactorScore(MacroFactor.YIELDS, null, w(MacroFactor.YIELDS), "Sem Treasury 10 anos", null)
+        }
 
         // 6. Liquidez
         val dt = inp.tga?.change(20)
-        f += if (dt != null) FactorScore(MacroFactor.LIQUIDITY, clamp(-dt / 150_000.0), w(MacroFactor.LIQUIDITY),
-            String.format(PT_BR, "TGA US$ %,.0f bi (%+,.0f bi em ~4 semanas)", inp.tga!!.last!! / 1000, dt / 1000), inp.tga!!.rows.firstOrNull()?.first)
-        else FactorScore(MacroFactor.LIQUIDITY, null, w(MacroFactor.LIQUIDITY), "Sem saldo do TGA", null)
+        run {
+            val subs = ArrayList<Double>(); val why = ArrayList<String>()
+            val tg = inp.tga
+            if (dt != null && tg?.last != null) { subs += clamp(-dt / 150_000.0); why += String.format(PT_BR, "TGA US$ %,.0f bi (%+,.0f bi em ~4 semanas)", tg.last!! / 1000, dt / 1000) }
+            val fw = inp.fedAssetsWeekChg
+            if (fw != null) { subs += clamp(fw / 25_000.0); why += String.format(PT_BR, "balanço do Fed %+,.0f bi na semana", fw / 1000) }
+            val st = inp.stable30dPct
+            if (st != null) { subs += clamp(st / 3.0); why += String.format(PT_BR, "stablecoins %+.1f%% em 30 dias", st) }
+            f += if (subs.isNotEmpty()) FactorScore(MacroFactor.LIQUIDITY, subs.average(), w(MacroFactor.LIQUIDITY), why.joinToString(" · "), tg?.rows?.firstOrNull()?.first)
+            else FactorScore(MacroFactor.LIQUIDITY, null, w(MacroFactor.LIQUIDITY), "Sem TGA, balanço do Fed ou stablecoins", null)
+        }
 
         // 7. Ações
         val n5 = inp.ndx?.pctOverSessions(5)
         f += if (n5 != null) FactorScore(MacroFactor.EQUITIES, clamp(n5 / 3.0), w(MacroFactor.EQUITIES), String.format(PT_BR, "Nasdaq 100 %+.2f%% em 5 pregões", n5), isoDay(inp.ndx!!.lastTimeMs))
         else FactorScore(MacroFactor.EQUITIES, null, w(MacroFactor.EQUITIES), "Sem Nasdaq", null)
 
-        // 8. VIX
+        // 8. VIX + MOVE
         val vx = inp.vix?.last
-        f += if (vx != null) {
-            var v = when { vx < 15 -> 0.5; vx < 20 -> 0.0; vx < 30 -> -0.5; else -> -1.0 }
-            val jump = inp.vix!!.dayPct
-            if (jump != null && jump > 15) v -= 0.3
-            FactorScore(MacroFactor.VOLATILITY, clamp(v), w(MacroFactor.VOLATILITY), String.format(PT_BR, "VIX %.1f%s", vx, jump?.let { String.format(PT_BR, " (%+.1f%% no dia)", it) } ?: ""), isoDay(inp.vix!!.lastTimeMs))
-        } else FactorScore(MacroFactor.VOLATILITY, null, w(MacroFactor.VOLATILITY), "Sem VIX", null)
+        val mv = inp.move
+        f += if (vx != null || mv != null) {
+            var v = 0.0; val why = ArrayList<String>()
+            if (vx != null) {
+                v = when { vx < 15 -> 0.5; vx < 20 -> 0.0; vx < 30 -> -0.5; else -> -1.0 }
+                val jump = inp.vix?.dayPct
+                if (jump != null && jump > 15) v -= 0.3
+                why += String.format(PT_BR, "VIX %.1f%s", vx, jump?.let { String.format(PT_BR, " (%+.1f%% no dia)", it) } ?: "")
+            } else if (mv != null) v = when { mv < 80 -> 0.3; mv < 110 -> 0.0; mv < 130 -> -0.3; else -> -0.6 }
+            if (mv != null) { if (vx != null) { if (mv > 130) v -= 0.3 else if (mv < 80) v += 0.2 }; why += String.format(PT_BR, "MOVE %.0f", mv) }
+            FactorScore(MacroFactor.VOLATILITY, clamp(v), w(MacroFactor.VOLATILITY), why.joinToString(" · "), inp.vix?.let { isoDay(it.lastTimeMs) })
+        } else FactorScore(MacroFactor.VOLATILITY, null, w(MacroFactor.VOLATILITY), "Sem VIX nem MOVE", null)
 
         // 9. Geopolítica (últimas 24 h)
         val recent = inp.news.filter { nowMs - it.timeMs <= 24 * 3_600_000L }

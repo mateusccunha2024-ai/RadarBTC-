@@ -46,6 +46,7 @@ android {
     buildFeatures { compose = true }
     // Telas do terminal compartilhadas com o app do Windows
     sourceSets["main"].java.srcDir("../terminal/src/main/kotlin")
+    sourceSets["main"].resources.srcDir("../terminal/src/main/resources")   // traduções (i18n/*.tsv)
     // O lint de release não deve impedir a geração do APK (avisos ficam no relatório)
     lint { checkReleaseBuilds = false; abortOnError = false }
     packaging {

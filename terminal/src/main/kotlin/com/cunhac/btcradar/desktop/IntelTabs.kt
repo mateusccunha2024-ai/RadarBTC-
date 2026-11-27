@@ -494,7 +494,7 @@ private fun CvdChart(series: List<Pair<Long, DoubleArray>>, prices: List<Pair<Lo
             drawLine(line.copy(alpha = 0.5f), Offset(x(t), pad), Offset(x(t), pad + h + 3.dp.toPx()), 1f)
             drawText(tm, s, Offset(lx, axisY), st)
         }
-        drawText(tm, if (vw == null) "Roda: zoom · arrastar: mover · duplo clique: voltar" else "Zoom ativo · duplo clique: voltar ao período todo",
+        drawText(tm, L(if (vw == null) "Roda: zoom · arrastar: mover · duplo clique: voltar" else "Zoom ativo · duplo clique: voltar ao período todo"),
             Offset(left + 4.dp.toPx(), pad), st.copy(color = zero.copy(alpha = 0.8f)))
 
         // Leitura no ponto do cursor/toque: linha vertical, pontos em cada linha, etiquetas nos eixos e quadro com os valores.
@@ -528,8 +528,8 @@ private fun CvdChart(series: List<Pair<Long, DoubleArray>>, prices: List<Pair<Lo
 
             val rows = ArrayList<Pair<String, androidx.compose.ui.graphics.Color>>()
             rows += cvdTime(ts, CVD_DAY) to text
-            pAt?.let { rows += ("Preço BTC " + String.format(BR, "%,.1f", it)) to accent }
-            rows += ("CVD total " + String.format(BR, "%+,.2f BTC", totals[idx])) to text
+            pAt?.let { rows += (L("Preço BTC") + " " + String.format(BR, "%,.1f", it)) to accent }
+            rows += (L("CVD total") + " " + String.format(BR, "%+,.2f BTC", totals[idx])) to text
             CORE_VENUES.forEach { v -> rows += (v.label + " " + String.format(BR, "%+,.2f BTC", dv[v.ordinal])) to colors[v.ordinal] }
             val lh = 14.dp.toPx(); val bp = 6.dp.toPx()
             val bw = rows.maxOf { tm.measure(it.first, st).size.width }.toFloat() + 2 * bp

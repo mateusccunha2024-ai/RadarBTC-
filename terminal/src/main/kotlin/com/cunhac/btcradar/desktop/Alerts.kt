@@ -129,11 +129,11 @@ class AlertEngine(private val hub: Hub, private val heat: HeatLoader) {
     }
 
     private fun dispatch(a: MarketAlert, c: AlertConfig, force: Boolean = false) {
-        val text = "Radar BTC · ${a.kind.label}\n${a.text}\n${hhmmss(a.timeMs)}"
+        val text = "Radar BTC · ${L(a.kind.label)}\n${L(a.text)}\n${hhmmss(a.timeMs)}"
         val results = ArrayList<String>()
         var ok = true
         if (c.deviceOn || force) {
-            val ok = runCatching { Platform.notify("Radar BTC · ${a.kind.label}", a.text) }.getOrDefault(false)
+            val ok = runCatching { Platform.notify("Radar BTC · ${L(a.kind.label)}", L(a.text)) }.getOrDefault(false)
             results += (if (Platform.isMobile) "Celular: " else "Windows: ") + if (ok) "notificado" else "notificações bloqueadas ou indisponíveis"
         }
         if (c.telegramOn || (force && c.telegramToken.isNotBlank())) {

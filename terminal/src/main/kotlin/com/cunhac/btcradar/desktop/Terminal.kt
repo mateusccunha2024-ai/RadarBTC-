@@ -134,10 +134,10 @@ private fun TerminalBody(ctx: AppContext, initialTab: Int?, showSettings: Boolea
                     if (shown.isEmpty()) return@forEachIndexed
                     Row(verticalAlignment = Alignment.CenterVertically) {
                     if (gi > 0) Box(Modifier.padding(horizontal = 8.dp).width(1.dp).height(20.dp).background(Q.Line))
-                    T(group.uppercase(), Q.Muted, 10, bold = true, modifier = Modifier.padding(start = 4.dp, end = 2.dp))
+                    T(L(group).uppercase(BR), Q.Muted, 10, bold = true, tr = false, modifier = Modifier.padding(start = 4.dp, end = 2.dp))
                     shown.forEach { t ->
                         val on = t == current
-                        Text(tabLabel(t), color = if (on) Q.Text else Q.Muted, fontSize = 13.sp, lineHeight = 17.sp, maxLines = 1,
+                        Text(L(tabLabel(t)), color = if (on) Q.Text else Q.Muted, fontSize = 13.sp, lineHeight = 17.sp, maxLines = 1,
                             fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal,
                             modifier = Modifier
                                 .background(if (on) Q.Panel2 else Q.Panel)
@@ -187,7 +187,7 @@ private fun TerminalBody(ctx: AppContext, initialTab: Int?, showSettings: Boolea
 
 @Composable
 private fun SmallButton(label: String, on: Boolean = false, onClick: () -> Unit) = Tap(onClick) {
-    Text(label, color = if (on) Q.Accent else Q.Text, fontSize = 12.sp, lineHeight = 16.sp, maxLines = 1,
+    Text(L(label), color = if (on) Q.Accent else Q.Text, fontSize = 12.sp, lineHeight = 16.sp, maxLines = 1,
         modifier = Modifier.background(if (on) Q.Panel2 else Q.Bg).border(1.dp, if (on) Q.Accent else Q.Line)
             .padding(horizontal = if (compact) 12.dp else 9.dp, vertical = if (compact) 8.dp else 3.dp))
 }
@@ -221,7 +221,7 @@ private fun TabPickerBar(current: String, tabs: List<String>, onOpen: () -> Unit
         Spacer(Modifier.width(10.dp))
         T(tabLabel(current), Q.Text, 15, bold = true, modifier = Modifier.weight(1f))
         T("${tabs.indexOf(current) + 1} de ${tabs.size}", Q.Muted, 11, modifier = Modifier.padding(end = 10.dp))
-        Text("Abas ▾", color = Q.Accent, fontSize = 13.sp, lineHeight = 17.sp, maxLines = 1,
+        Text(L("Abas") + " ▾", color = Q.Accent, fontSize = 13.sp, lineHeight = 17.sp, maxLines = 1,
             modifier = Modifier.border(1.dp, Q.Accent).padding(horizontal = 12.dp, vertical = 7.dp))
     }
 }
@@ -238,7 +238,7 @@ private fun TabSheet(current: String, tabs: List<String>, onPick: (String) -> Un
         Spacer(Modifier.height(6.dp))
         tabs.forEach { t ->
             val firstOf = TAB_GROUPS.firstOrNull { (_, ids) -> ids.firstOrNull { it in tabs } == t }?.first
-            if (firstOf != null) T(firstOf.uppercase(), Q.Muted, 11, bold = true, modifier = Modifier.padding(top = 12.dp, bottom = 4.dp))
+            if (firstOf != null) T(L(firstOf).uppercase(BR), Q.Muted, 11, bold = true, tr = false, modifier = Modifier.padding(top = 12.dp, bottom = 4.dp))
             val on = t == current
             Row(Modifier.fillMaxWidth().background(if (on) Q.Panel2 else Q.Panel).clickable { onPick(t) }.heightIn(min = 56.dp)
                 .drawBehind { if (on) drawRect(Q.Accent, Offset(0f, 0f), Size(3.dp.toPx(), size.height)) }
@@ -370,6 +370,11 @@ private fun ViewSettingsPanel(ctx: AppContext, onClose: () -> Unit) {
             Chips(null, SCALES.map { "${(it * 100).roundToInt()}%" }, SCALES.indexOfFirst { kotlin.math.abs(it - UiScale.scale) < 0.01f }) { UiScale.set(SCALES[it]) }
             if (!Platform.isMobile) Footnote("Atalhos: Ctrl + e Ctrl − ajustam, Ctrl 0 volta a 100%.")
         }
+        SettingGroup(I18n.LANG_TITLE) {
+            Chips(null, I18n.LANGS.map { it.label }, I18n.LANGS.indexOf(I18n.lang)) { I18n.use(I18n.LANGS[it].code) }
+            Footnote("Traduz abas, menus, alertas e notícias. Textos montados na hora e manchetes usam tradução automática " +
+                "na primeira vez (precisa de internet) e ficam guardados no aparelho.")
+        }
         SettingGroup("Tamanho da fonte · ${(UiScale.font * 100).roundToInt()}%") {
             Chips(null, FONT_SIZES.map { "${(it * 100).roundToInt()}%" }, FONT_SIZES.indexOfFirst { kotlin.math.abs(it - UiScale.font) < 0.01f }) { UiScale.useFont(FONT_SIZES[it]) }
             Footnote("Só o texto muda de tamanho. Quando os painéis não cabem mais lado a lado, eles viram páginas com botões no topo " +
@@ -405,7 +410,7 @@ private fun ViewSettingsPanel(ctx: AppContext, onClose: () -> Unit) {
 @Composable
 private fun SettingGroup(title: String, content: @Composable () -> Unit) {
     Column(Modifier.fillMaxWidth()) {
-        T(title.uppercase(), Q.Muted, 11, bold = true, modifier = Modifier.padding(bottom = 6.dp))
+        T(L(title).uppercase(BR), Q.Muted, 11, bold = true, tr = false, modifier = Modifier.padding(bottom = 6.dp))
         content()
     }
 }
