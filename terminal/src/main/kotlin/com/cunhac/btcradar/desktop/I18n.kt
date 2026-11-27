@@ -43,7 +43,12 @@ object I18n {
 
     /** Título fixo do seletor (legível em qualquer idioma, para achar o caminho de volta). */
     const val LANG_TITLE = "Idioma · Language · 语言"
-    private val PASS by lazy { LANGS.map { it.label }.toSet() + LANG_TITLE }
+    private val PASS by lazy {
+        LANGS.map { it.label }.toSet() + LANG_TITLE + setOf("Binance", "Bybit", "OKX", "Gate", "Bitget", "Deribit", "HTX", "Kraken", "Coinbase",
+            "Hyperliquid", "Kalshi", "CoinGecko", "DefiLlama", "Farside", "Footprint", "Yahoo Finance", "mempool.space")
+    }
+    /** Siglas (SOFR, TGA, CPI, BTC…) nunca vão para a tradução automática. */
+    private val ACRONYM = Regex("^[A-Z0-9&/.+\\- ]{2,8}$")
 
     private var code by mutableStateOf(runCatching { SettingsStore.s("ui.lang", "pt") }.getOrDefault("pt"))
     /** Aumenta quando chegam traduções automáticas: quem desenha texto relê. */
@@ -149,6 +154,7 @@ object I18n {
      * Frases montadas com " · " são traduzidas por partes, e o que entra nas lacunas de um molde também.
      */
     private fun trm(c: String, m: String, depth: Int): String? {
+        if (ACRONYM.matches(m.trim()) || m.trim() in PASS) return m
         val key = "$c|$m"
         memo[key]?.let { return it.ifEmpty { null } }
         val found = lookup(c, m, depth) ?: mtCache[key]
@@ -176,7 +182,7 @@ object I18n {
         val cands = (if (m.length >= 3) t.prefixed[m.take(3)] else null).orEmpty() + t.loose
         for (tp in cands) {
             // Moldes genéricos ("{0} de {1}") não podem engolir frases longas: o texto fixo precisa cobrir ≥ 40% do original.
-            if (tp.fixed * 5 < m.length * 2) continue
+            if (tp.fixed * 5 < TOK.replace(m, "#").length * 2) continue
             val r = tp.regex.matchEntire(m) ?: continue
             return PH.replace(tp.out) { g ->
                 val v = runCatching { r.groups["g" + g.groupValues[1]]?.value }.getOrNull() ?: return@replace g.value
