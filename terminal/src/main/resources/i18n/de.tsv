@@ -1331,3 +1331,18 @@ Página	Seite
 ◂ ▸ deslize para o lado para ver todas as colunas	◂ ▸ zur Seite wischen, um alle Spalten zu sehen
 Menos filtros ▴	Weniger Filter ▴
 Mais filtros ▾ · {0}	Mehr Filter ▾ · {0}
+libere "Instalar apps desconhecidos" para o Radar BTC, volte e toque em Atualizar agora de novo	Aktivieren Sie "Unbekannte Apps installieren" für den BTC-Radar, kehren Sie zurück und tippen Sie erneut auf „Jetzt aktualisieren“
+Dados públicos não permitem identificar participantes individuais.	Öffentliche Daten erlauben keine Identifizierung einzelner Teilnehmer.
+@echo off	@echo off
+timeout /t {0} /nobreak >nul	timeout /t {0} /nobreak >nul
+msiexec /i {0}{1}{2} /passive /norestart	msiexec /i {0}{1}{2} /passive /norestart
+start {0}{1} {2}{3}{4}	start {0}{1} {2}{3}{4}
+resposta vazia	leere Antwort
+Instalação não concluída: 	Installation nicht abgeschlossen: 
+Baixando a versão {0}…	Version {0} wird heruntergeladen…
+download vazio	leerer Download
+Baixando a versão {0}… {1}%	Version {0} wird heruntergeladen… {1}%
+Abrindo a instalação…	Installation wird geöffnet…
+Instalando… o app fecha e abre de novo sozinho.	Wird installiert… Die App wird automatisch geschlossen und neu geöffnet.
+Não deu para atualizar: {0}	Aktualisierung nicht möglich: {0}
+Nova versão disponível ({0}; você está na {1})	Neue Version verfügbar ({0}; Sie verwenden {1})

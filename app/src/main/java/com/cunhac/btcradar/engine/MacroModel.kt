@@ -545,6 +545,9 @@ data class FlowSnapshot(
 data class IntegratedView(val macro: MacroDir, val flow: FlowState, val liq: LiqState, val confluence: Confluence, val reading: String)
 
 object MacroConfluence {
+    /** Aviso mostrado junto da leitura integrada. */
+    const val NOTE = "Dados públicos não permitem identificar participantes individuais."
+
     fun flowState(f: FlowSnapshot): FlowState {
         val d = f.deltaBtc15m ?: return FlowState.BALANCED
         val v = f.volumeBtc15m ?: return FlowState.BALANCED
@@ -592,6 +595,6 @@ object MacroConfluence {
                 "Cenário macro neutro/misto: o order flow tende a dominar a leitura de curto prazo."
             else -> "Sem confirmação clara do order flow em relação ao cenário macro."
         }
-        return IntegratedView(macro, flow, liq, conf, reading + " Dados públicos não permitem identificar participantes individuais.")
+        return IntegratedView(macro, flow, liq, conf, reading)
     }
 }

@@ -109,6 +109,7 @@ private fun Overview(s: MacroState) {
                         Q.Muted, 11, wrap = true, modifier = Modifier.padding(top = 4.dp))
                 }
                 T(iv.reading, Q.Text, 12, wrap = true, modifier = Modifier.padding(top = 6.dp))
+                T(com.cunhac.btcradar.engine.MacroConfluence.NOTE, Q.Muted, 11, wrap = true)
             }
         }
     }
@@ -427,10 +428,10 @@ private fun Sources(m: MacroEngine, s: MacroState) {
 // ------------------------------------------------------------------ mais dados
 
 private fun fedOutcome(name: String): String = when {
-    name.startsWith("Cut >25") -> "Corte maior que 0,25 pp"
-    name.startsWith("Cut 25") -> "Corte de 0,25 pp"
-    name.startsWith("Hike >25") -> "Alta maior que 0,25 pp"
-    name.startsWith("Hike 25") -> "Alta de 0,25 pp"
+    name.startsWith("Cut >25") -> String.format(BR, "Corte maior que %.2f pp", 0.25)
+    name.startsWith("Cut 25") -> String.format(BR, "Corte de %.2f pp", 0.25)
+    name.startsWith("Hike >25") -> String.format(BR, "Alta maior que %.2f pp", 0.25)
+    name.startsWith("Hike 25") -> String.format(BR, "Alta de %.2f pp", 0.25)
     name.contains("maintain", true) || name.contains("hold", true) -> "Juros mantidos"
     else -> name
 }

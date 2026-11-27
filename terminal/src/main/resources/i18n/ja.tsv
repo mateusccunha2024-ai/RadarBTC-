@@ -1330,3 +1330,18 @@ Página	ページ
 ◂ ▸ deslize para o lado para ver todas as colunas	◂ ▸ 横にスワイプしてすべての列を表示
 Menos filtros ▴	フィルターを減らす ▴
 Mais filtros ▾ · {0}	フィルターを追加 ▾ · {0}
+libere "Instalar apps desconhecidos" para o Radar BTC, volte e toque em Atualizar agora de novo	「不明なアプリのインストール」を BTC Radar に許可してから戻り、「今すぐ更新」をもう一度タップしてください
+Dados públicos não permitem identificar participantes individuais.	公開データでは個々の参加者を特定することはできません。
+@echo off	@echo off
+timeout /t {0} /nobreak >nul	timeout /t {0} /nobreak >nul
+msiexec /i {0}{1}{2} /passive /norestart	msiexec /i {0}{1}{2} /passive /norestart
+start {0}{1} {2}{3}{4}	start {0}{1} {2}{3}{4}
+resposta vazia	空の応答
+Instalação não concluída: 	インストールが完了していません: 
+Baixando a versão {0}…	バージョン {0} をダウンロード中…
+download vazio	ダウンロードが空です
+Baixando a versão {0}… {1}%	バージョン {0} をダウンロード中… {1}%
+Abrindo a instalação…	インストーラーを開いています…
+Instalando… o app fecha e abre de novo sozinho.	インストール中… アプリは自動的に閉じてから再び開きます。
+Não deu para atualizar: {0}	更新できませんでした: {0}
+Nova versão disponível ({0}; você está na {1})	新しいバージョンがあります（{0}; 現在 {1}）

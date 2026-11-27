@@ -87,6 +87,7 @@ object I18n {
     private fun build(rows: List<Pair<String, String>>): Table {
         val exact = HashMap<String, String>(); val pre = HashMap<String, MutableList<Tpl>>(); val loose = ArrayList<Tpl>()
         for ((k, v) in rows) {
+            if (!hasWords(PH.replace(k, ""))) continue   // molde sem texto fixo ("{0} · {1}") casaria com tudo
             if (!PH.containsMatchIn(k)) { exact[k] = v; continue }
             // Lacunas numeradas viram grupos; o texto fixo entre elas precisa bater exatamente.
             val parts = PH.split(k)
@@ -114,7 +115,7 @@ object I18n {
 
     // ------------------------------------------------------------------ máscara de números
 
-    private val NUM = Regex("(?<![\\p{L}\\d{.,])[-+−]?\\d+(?:[.,\\u00A0\\u202F]\\d+)*")
+    private val NUM = Regex("(?<![\\p{L}\\d{.,⟦])[-+−]?\\d+(?:[.,\\u00A0\\u202F]\\d+)*")
 
     /** "Delta 15 min -117,3 BTC" → ("Delta ⟦0⟧ min ⟦1⟧ BTC", ["15", "-117,3"]). */
     fun mask(s: String): Pair<String, List<String>> {
@@ -139,17 +140,32 @@ object I18n {
         @Suppress("UNUSED_VARIABLE") val v = version   // relê quando chegam traduções automáticas
         if (c == "pt" || s.isEmpty() || !hasWords(s) || s in PASS) return s
         val (m, nums) = mask(s)
-        val key = "$c|$m"
-        val hit = memo[key]
-        if (hit != null) return if (hit.isEmpty()) s else unmask(hit, nums)
-        val found = lookup(c, m) ?: mtCache[key]
-        if (found != null) { memo[key] = found; return unmask(found, nums) }
-        memo[key] = ""
-        request(c, m)
-        return s
+        val out = trm(c, m, 0) ?: return s
+        return unmask(out, nums)
     }
 
-    private fun lookup(c: String, m: String): String? {
+    /**
+     * Texto já mascarado → tradução mascarada, ou null se ainda não há (pedida à tradução automática).
+     * Frases montadas com " · " são traduzidas por partes, e o que entra nas lacunas de um molde também.
+     */
+    private fun trm(c: String, m: String, depth: Int): String? {
+        val key = "$c|$m"
+        memo[key]?.let { return it.ifEmpty { null } }
+        val found = lookup(c, m, depth) ?: mtCache[key]
+        if (found != null) { memo[key] = found; return found }
+        if (depth < 3 && m.contains(" · ")) {
+            val parts = m.split(" · ")
+            var all = true
+            val joined = parts.joinToString(" · ") { p -> if (!hasWords(p)) p else trm(c, p, depth + 1) ?: run { all = false; p } }
+            if (all) memo[key] = joined
+            return joined
+        }
+        memo[key] = ""
+        request(c, m)
+        return null
+    }
+
+    private fun lookup(c: String, m: String, depth: Int = 0): String? {
         val t = table(c)
         t.exact[m]?.let { return it }
         // Texto em maiúsculas (títulos de seção): traduz a forma normal e devolve em maiúsculas.
@@ -160,7 +176,10 @@ object I18n {
         val cands = (if (m.length >= 3) t.prefixed[m.take(3)] else null).orEmpty() + t.loose
         for (tp in cands) {
             val r = tp.regex.matchEntire(m) ?: continue
-            return PH.replace(tp.out) { g -> runCatching { r.groups["g" + g.groupValues[1]]?.value }.getOrNull() ?: g.value }
+            return PH.replace(tp.out) { g ->
+                val v = runCatching { r.groups["g" + g.groupValues[1]]?.value }.getOrNull() ?: return@replace g.value
+                if (depth < 3 && hasWords(v)) trm(c, v, depth + 1) ?: v else v
+            }
         }
         return null
     }

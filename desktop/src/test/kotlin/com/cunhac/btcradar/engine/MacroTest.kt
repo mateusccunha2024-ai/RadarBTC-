@@ -168,7 +168,7 @@ class MacroTest {
         assertTrue(c.reading.startsWith("Cenário C")); assertEquals(LiqState.SHORT, c.liq)
         val d = MacroConfluence.evaluate(MacroDir.FAVORABLE, FlowSnapshot(-300.0, 1000.0, 0.0, 0.0, 0, 0, -0.5))
         assertEquals(Confluence.LOW, d.confluence)
-        assertTrue(d.reading.contains("não permitem identificar participantes individuais"))
+        assertTrue(MacroConfluence.NOTE.contains("não permitem identificar participantes individuais"))
         assertFalse(a.reading.contains("baleia"))
         val e = MacroConfluence.evaluate(MacroDir.UNFAVORABLE, FlowSnapshot(-300.0, 1000.0, 0.0, 0.0, 0, 0, -0.5))
         assertEquals(Confluence.HIGH, e.confluence)

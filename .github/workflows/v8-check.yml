@@ -43,6 +43,8 @@ jobs:
         continue-on-error: true
         env: { SHOTS: "1" }
         run: |
+          # Fontes de chinês, japonês e coreano para as capturas dos idiomas asiáticos (Windows e Android já têm).
+          sudo apt-get install -y -qq fonts-noto-cjk > /dev/null 2>&1 || true
           gradle :desktop:test --tests '*ScreenshotTest*' --rerun-tasks --no-daemon -q 2>&1 | tail -n 20 || true
           cd desktop/build/screens
           git init -q && git checkout -q -b screens

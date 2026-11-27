@@ -1331,3 +1331,18 @@ Página	Page
 ◂ ▸ deslize para o lado para ver todas as colunas	◂ ▸ swipe sideways to see all columns
 Menos filtros ▴	Fewer filters ▴
 Mais filtros ▾ · {0}	More filters ▾ · {0}
+libere "Instalar apps desconhecidos" para o Radar BTC, volte e toque em Atualizar agora de novo	allow "Install unknown apps" for BTC Radar, go back and tap Update now again
+Dados públicos não permitem identificar participantes individuais.	Public data doesn't allow identifying individual participants.
+@echo off	@echo off
+timeout /t {0} /nobreak >nul	timeout /t {0} /nobreak >nul
+msiexec /i {0}{1}{2} /passive /norestart	msiexec /i {0}{1}{2} /passive /norestart
+start {0}{1} {2}{3}{4}	start {0}{1} {2}{3}{4}
+resposta vazia	empty response
+Instalação não concluída: 	Installation not completed: 
+Baixando a versão {0}…	Downloading version {0}…
+download vazio	empty download
+Baixando a versão {0}… {1}%	Downloading version {0}… {1}%
+Abrindo a instalação…	Opening installer…
+Instalando… o app fecha e abre de novo sozinho.	Installing… the app will close and reopen on its own.
+Não deu para atualizar: {0}	Couldn't update: {0}
+Nova versão disponível ({0}; você está na {1})	New version available ({0}; you're on {1})

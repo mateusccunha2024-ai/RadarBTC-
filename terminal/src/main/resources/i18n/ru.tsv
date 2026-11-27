@@ -1331,3 +1331,18 @@ Página	Страница
 ◂ ▸ deslize para o lado para ver todas as colunas	◂ ▸ проведите в сторону, чтобы увидеть все столбцы
 Menos filtros ▴	Меньше фильтров ▴
 Mais filtros ▾ · {0}	Больше фильтров ▾ · {0}
+libere "Instalar apps desconhecidos" para o Radar BTC, volte e toque em Atualizar agora de novo	Разрешите «Установка неизвестных приложений» для Радара BTC, вернитесь и снова нажмите «Обновить сейчас»
+Dados públicos não permitem identificar participantes individuais.	Публичные данные не позволяют определить отдельных участников.
+@echo off	@echo off
+timeout /t {0} /nobreak >nul	timeout /t {0} /nobreak >nul
+msiexec /i {0}{1}{2} /passive /norestart	msiexec /i {0}{1}{2} /passive /norestart
+start {0}{1} {2}{3}{4}	start {0}{1} {2}{3}{4}
+resposta vazia	пустой ответ
+Instalação não concluída: 	Установка не завершена: 
+Baixando a versão {0}…	Загрузка версии {0}…
+download vazio	пустая загрузка
+Baixando a versão {0}… {1}%	Загрузка версии {0}… {1}%
+Abrindo a instalação…	Открываем установку…
+Instalando… o app fecha e abre de novo sozinho.	Установка… приложение закроется и откроется снова автоматически.
+Não deu para atualizar: {0}	Не удалось обновить: {0}
+Nova versão disponível ({0}; você está na {1})	Доступна новая версия ({0}; у вас {1})

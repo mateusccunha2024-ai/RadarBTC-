@@ -21,6 +21,7 @@ class I18nTest {
         assertEquals("FOMC in 3 h", L("Faltam 3 h para FOMC"))          // lacunas podem trocar de ordem
         assertEquals("WALLS", L("PAREDES"))                                // títulos em maiúsculas
         assertEquals("12.345,6", L("12.345,6"))                          // só número: não traduz
+        assertEquals("Walls · Order book", L("Paredes · Livro de ofertas"))  // frases montadas com " · " vão por partes
         I18n.use("pt")
         assertEquals("Livro de ofertas", L("Livro de ofertas"))          // português = original
     }
