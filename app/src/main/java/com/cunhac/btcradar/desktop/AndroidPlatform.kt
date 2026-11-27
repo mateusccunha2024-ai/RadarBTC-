@@ -70,6 +70,29 @@ object Platform {
         if (on) app.startForegroundService(i) else app.stopService(i)
     }
     val deviceLabel = "celular"
+
+    /** Build instalado (versionCode = número do build do GitHub). */
+    fun buildNumber(): Int = runCatching {
+        val pi = app.packageManager.getPackageInfo(app.packageName, 0)
+        if (Build.VERSION.SDK_INT >= 28) pi.longVersionCode.toInt() else @Suppress("DEPRECATION") pi.versionCode
+    }.getOrDefault(0)
+    fun updateDir(): File = File(app.cacheDir, "update")
+    /** Entrega o APK novo ao instalador do Android (mesma assinatura = atualização); o sistema pede a confirmação. */
+    fun installUpdate(apk: File) {
+        if (!app.packageManager.canRequestPackageInstalls()) {
+            app.startActivity(Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, android.net.Uri.parse("package:" + app.packageName))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            throw IllegalStateException("libere \"Instalar apps desconhecidos\" para o Radar BTC, volte e toque em Atualizar agora de novo")
+        }
+        val pi = app.packageManager.packageInstaller
+        val id = pi.createSession(android.content.pm.PackageInstaller.SessionParams(android.content.pm.PackageInstaller.SessionParams.MODE_FULL_INSTALL))
+        pi.openSession(id).use { s ->
+            apk.inputStream().use { input -> s.openWrite("radarbtc.apk", 0, apk.length()).use { out -> input.copyTo(out); s.fsync(out) } }
+            val flags = PendingIntent.FLAG_UPDATE_CURRENT or (if (Build.VERSION.SDK_INT >= 31) PendingIntent.FLAG_MUTABLE else 0)
+            val done = PendingIntent.getBroadcast(app, id, Intent(app, UpdateReceiver::class.java), flags)
+            s.commit(done.intentSender)
+        }
+    }
 }
 
 object AppDirs {

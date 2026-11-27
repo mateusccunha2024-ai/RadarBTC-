@@ -126,6 +126,7 @@ private fun TerminalBody(ctx: AppContext, initialTab: Int?, showSettings: Boolea
     Box(Modifier.fillMaxSize().background(Q.Bg)) {
         Column(Modifier.fillMaxSize()) {
             if (compact) CompactTopBar(s, onSettings = { settingsOpen = !settingsOpen }) else TopBar(s, onSettings = { settingsOpen = !settingsOpen })
+            UpdateBar() // "Nova versão disponível · Atualizar agora" (só aparece quando há versão nova)
             if (compact) TabPickerBar(current, orderedTabs(tabs)) { tabsOpen = true }
             // PC: as abas quebram linha quando não cabem (nenhuma fica escondida fora da tela); cada grupo fica junto.
             else FlowRow(Modifier.fillMaxWidth().background(Q.Panel).padding(horizontal = 8.dp)) {

@@ -1,5 +1,13 @@
 # Changelog
 
+## V8 — atualização pelo próprio app (2026-11-27)
+- Faixa no topo "Nova versão disponível · Atualizar agora": o app consulta as versões publicadas (a cada 3 h e ao abrir),
+  baixa o instalador e instala sem passar pelo GitHub.
+- Windows: instala o .msi em modo silencioso (só barra de progresso), fecha e reabre o app sozinho.
+- Android: entrega o APK ao instalador do sistema, que pede a confirmação. Na primeira vez o Android pede para liberar
+  "Instalar apps desconhecidos" para o Radar BTC.
+- Vale a partir desta versão: quem está numa versão anterior instala esta pelo GitHub uma última vez.
+
 ## V8 — atualização 11 (2026-11-27) · Radar macro-geopolítico do BTC
 - Aba nova **Radar macro** (grupo Macro, junto com ETFs): mercado americano (S&P 500, Nasdaq 100, Dow, VIX, DXY, Treasury
   10 anos, ouro, petróleo), juros (meta e taxa efetiva do Fed, Treasuries 2 e 10 anos oficiais), inflação e emprego (CPI, núcleo,
