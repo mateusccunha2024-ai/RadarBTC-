@@ -143,7 +143,7 @@ Divergência	乖離
 Divergências	乖離
 Macro	マクロ
 wall|{0}|{1}|{2}	壁|{0}|{1}|{2}
-Parede {0} {1} de {2} BTC em {3} ({4}): {5}	{0} {1} de {2} BTC em {3} ({4}): {5}
+Parede {0} {1} de {2} BTC em {3} ({4}): {5}	{0}ウォール {1} {2} BTC、{3}（{4}）：{5}
 de compra	買い
 de venda	売り
 {0} em {1} ({2}, {3}): executado {4} BTC, restante {5} BTC	{0} {1}の{2} ({3}): 約定 {4} BTC、残り {5} BTC
@@ -239,7 +239,7 @@ Redução de tensão diminui a busca por proteção (dólar/ouro) e alivia petr�
 Redução de conflito	紛争の緩和
 Petróleo e VIX tendem a cair	原油とVIXは低下傾向
 Volta do apetite por risco	リスク選好の回復
-Escalada militar gera aversão a risco imediata (dólar, ouro e petróleo sobem). No longo prazo o efeito sobre o BTC é ambíguo.	Escalada militar gera aversão a risco imediata (dólar, ouro e petróleo sobem). No longo prazo, o efeito sobre o BTC é ambíguo.
+Escalada militar gera aversão a risco imediata (dólar, ouro e petróleo sobem). No longo prazo o efeito sobre o BTC é ambíguo.	軍事的緊張の高まりは即座にリスク回避を招く（ドル、金、原油が上昇）。長期的にはBTCへの影響は不透明。
 Escalada militar	Escalada militar
 Petróleo, ouro, dólar e VIX sobem	原油・金・ドル・VIX 上昇
 Venda de ativos de risco	リスク資産の売り
@@ -253,12 +253,12 @@ Choque de energia pressiona a inflação e pode adiar cortes de juros.	エネル
 Petróleo / gás sobem	原油・ガス 上昇
 Inflação esperada maior	期待インフレ率の上昇
 Pressão no BTC	BTCへの圧力
-Impasse fiscal aumenta volatilidade; pode favorecer ativos fora do sistema, mas no curto prazo costuma haver aversão a risco.	Impasse fiscal aumenta a volatilidade; pode favorecer ativos fora do sistema, mas no curto prazo costuma haver aversão a risco.
+Impasse fiscal aumenta volatilidade; pode favorecer ativos fora do sistema, mas no curto prazo costuma haver aversão a risco.	財政の行き詰まりはボラティリティを高める。システム外資産に有利に働く可能性もあるが、短期的にはリスク回避になりやすい。
 Impasse fiscal	Impasse fiscal
 Prêmio de risco nos Treasuries	米国債のリスクプレミアム
 Volatilidade nas bolsas	Volatilidade nas bolsas
 Efeito no BTC incerto	BTCへの影響は不透明
-Mais gasto/dívida pode aumentar liquidez e também os yields; o saldo depende da reação dos juros.	Mais gasto/dívida pode aumentar a liquidez e também os yields; o saldo depende da reação dos juros.
+Mais gasto/dívida pode aumentar liquidez e também os yields; o saldo depende da reação dos juros.	支出や債務の増加は流動性を高める一方で利回りも押し上げる。結果は金利の反応次第。
 Política fiscal	財政政策
 Liquidez × oferta de títulos	流動性 × 国債供給
 Yields	Yields
@@ -270,7 +270,7 @@ Inflação desacelerando aumenta a chance de cortes de juros.	電脳の減速は
 Inflação abaixo do esperado	インフレ予想を下回る
 Mais cortes de juros precificados	織り込まれる利下げが増加
 Yields e dólar caem	利回りとドルが下落
-Desaceleração aumenta chance de cortes de juros (positivo), mas também o risco de queda das bolsas (negativo).	Desaceleração aumenta a chance de cortes de juros (positivo), mas também o risco de queda das bolsas (negativo).
+Desaceleração aumenta chance de cortes de juros (positivo), mas também o risco de queda das bolsas (negativo).	景気減速は利下げの可能性を高める（プラス）が、株式市場の下落リスクも高める（マイナス）。
 Sinais de desaceleração	減速のシグナル
 Expectativa de cortes ↑ / lucros ↓	利下げ期待 ↑ / 利益 ↓
 Bolsas oscilam	Bolsas oscilam
@@ -1021,63 +1021,63 @@ Juros mantidos	金利据え置き
 US$ {0} tri	US$ {0} tri
 Expectativa de juros do Fed	FRBの金利見通し
 Sem probabilidades da Kalshi agora.	現在、Kalshiの確率データはありません。
-Próxima reunião ({0}): probabilidades negociadas	próxima reunião ({0}): probabilidades negociadas
+Próxima reunião ({0}): probabilidades negociadas	次回会合（{0}）：取引されている確率
 Cut	Cut
 Hike	Hike
 Taxa implícita nos futuros de Fed funds (CBOT)	CBOT フェデラルファンド先物から算出した金利織り込み
  ({0} bp)	 ({0} bp)
-Kalshi: mercado regulado de previsões (preço do contrato = probabilidade). Futuros: taxa implícita = {0} − preço; entre parênteses, diferença para a taxa efetiva atual. Valores negativos = cortes esperados.	Kalshi: 거래소 규제 예측 시장 (계약 가격 = 확률). 선물: 내재 금리 = {0} − 가격; 괄호 안은 현재 실효금리와의 차이. 음수 값 = 금리 인하 기대.
-Juros reais, inflação implícita e financiamento	실질금리, 내재 인플레이션 및 펀딩
-Juro real {0} anos (TIPS)	{0}년 실질금리 (TIPS)
-Juro real {0} anos (TIPS) · {1}	{0}년 실질금리 (TIPS) · {1}
-Inflação implícita {0} anos (breakeven)	{0}년 내재 인플레이션 (브레이크이븐)
+Kalshi: mercado regulado de previsões (preço do contrato = probabilidade). Futuros: taxa implícita = {0} − preço; entre parênteses, diferença para a taxa efetiva atual. Valores negativos = cortes esperados.	Kalshi：規制された予測市場（契約価格＝確率）。先物：暗黙の金利＝{0}－価格。括弧内は現在の実効金利との差。マイナス値は利下げが織り込まれていることを示す。
+Juros reais, inflação implícita e financiamento	実質金利、期待インフレ率、資金調達
+Juro real {0} anos (TIPS)	{0}年実質金利（TIPS）
+Juro real {0} anos (TIPS) · {1}	{0}年実質金利（TIPS）· {1}
+Inflação implícita {0} anos (breakeven)	{0}年期待インフレ率（ブレークイーブン）
 SOFR · {0}	SOFR · {0}
-Reverse repo overnight · {0}	역레포 오버나이트 · {0}
-Juro real alto ou subindo costuma pesar sobre o BTC (custo de oportunidade). Breakeven = Treasury {0} anos − juro real.	실질금리가 높거나 상승하면 BTC에 부담이 되는 경향이 있음 (기회비용). 브레이크이븐 = {0}년 Treasury − 실질금리.
-Balanço do Fed e liquidez	연준 대차대조표 및 유동성
-Balanço do Fed (H.4.1)	연준 대차대조표 (H.4.1)
-Ativos totais do Fed · semana até {0}	연준 총자산 · {0}까지 주간
-Variação na semana	주간 변동
-Variação em {0} meses	{0}개월 변동
-Reservas dos bancos no Fed	연준 내 은행 지준금
-Liquidez líquida estimada (ativos − TGA − RRP)	추정 순유동성 (자산 − TGA − RRP)
-Liquidez líquida é uma estimativa comum no mercado, não um número oficial. Balanço crescendo e TGA caindo = mais dinheiro no sistema.	순유동성은 시장에서 흔히 쓰는 추정치이며 공식 수치가 아님. 대차대조표 증가와 TGA 감소 = 시스템 내 자금 증가.
-Mercado cripto	암호화폐 시장
-Fear & Greed	공포·탐욕 지수
-Há {0} dias / há {1} dias	{0}일 전 / {1}일 전
-Valor de mercado cripto	암호화폐 시가총액
-Dominância do BTC	BTC 도미넌스
-Dominância do ETH	ETH 도미넌스
-Volume {0} h	{0}시간 거래량
-Stablecoins em circulação	유통 중인 스테이블코인
-Variação {0} d / {1} d	{0}일 / {1}일 변동
-Hashrate da rede	네트워크 해시레이트
+Reverse repo overnight · {0}	翌日物リバースレポ · {0}
+Juro real alto ou subindo costuma pesar sobre o BTC (custo de oportunidade). Breakeven = Treasury {0} anos − juro real.	実質金利が高い、または上昇している場合、BTCには通常逆風となる（機会費用）。ブレークイーブン＝{0}年国債利回り－実質金利。
+Balanço do Fed e liquidez	FRBのバランスシートと流動性
+Balanço do Fed (H.4.1)	FRBバランスシート（H.4.1）
+Ativos totais do Fed · semana até {0}	FRB総資産 · {0}までの週
+Variação na semana	週間変動
+Variação em {0} meses	{0}か月間の変動
+Reservas dos bancos no Fed	FRBにおける銀行準備金
+Liquidez líquida estimada (ativos − TGA − RRP)	推定純流動性（資産 − TGA − RRP）
+Liquidez líquida é uma estimativa comum no mercado, não um número oficial. Balanço crescendo e TGA caindo = mais dinheiro no sistema.	純流動性は市場でよく使われる推定値であり、公式な数字ではありません。バランスシートの拡大とTGAの減少 = システム内の資金増加を意味します。
+Mercado cripto	暗号資産市場
+Fear & Greed	Fear & Greed
+Há {0} dias / há {1} dias	{0}日前 / {1}日前
+Valor de mercado cripto	暗号資産の時価総額
+Dominância do BTC	BTC支配率
+Dominância do ETH	ETH支配率
+Volume {0} h	{0}h 出来高
+Stablecoins em circulação	流通中のステーブルコイン
+Variação {0} d / {1} d	変化 {0}d / {1}d
+Hashrate da rede	ネットワークハッシュレート
 {0} EH/s	{0} EH/s
-Taxas (rápida / {0} min / {1} h)	수수료 (빠름 / {0}분 / {1}시간)
+Taxas (rápida / {0} min / {1} h)	手数料（高速 / {0}分 / {1}h）
 {0} / {1} / {2} sat/vB	{0} / {1} / {2} sat/vB
-Fear & Greed é sentimento, não entra no score (evita contar duas vezes o que o order flow já mostra). Stablecoins entram no fator Liquidez.	공포·탐욕 지수는 심리 지표이며 점수에 포함되지 않음 (오더 플로우가 이미 보여주는 내용을 두 번 세지 않기 위함). 스테이블코인은 유동성 요인에 반영됨.
-Mais mercados	더 많은 시장
-Yahoo Finance, barras de {0} h. Dólar subindo contra moedas emergentes e cobre caindo costumam indicar aversão a risco.	Yahoo Finance, {0}시간 봉. 달러가 신흥국 통화 대비 강세이고 구리가 약세이면 위험 회피 신호인 경우가 많음.
-Mundo e dívida	세계 및 부채
-BCE · taxa de depósito · {0}	ECB · 예금금리 · {0}
-Dívida pública dos EUA · {0}	미국 공공부채 · {0}
-Variação desde {0}	{0} 이후 변동
-Juros do BCE abaixo dos do Fed sustentam o dólar; dívida crescendo rápido pressiona a oferta de Treasuries e os yields.	ECB 금리가 연준보다 낮으면 달러를 뒷받침함; 부채가 빠르게 늘면 Treasury 공급과 금리에 압력을 가함.
-extreme fear	극도의 공포
-Medo extremo	극도의 공포
-Medo	공포
-Ganância	탐욕
-extreme greed	극도의 탐욕
-Ganância extrema	극도의 탐욕
-Motivo desconhecido.	알 수 없는 이유.
-A Binance recusou o acesso nesta região (HTTP {0}). As outras abas não dependem disso.	바이낸스가 이 지역의 접근을 거부함 (HTTP {0}). 다른 탭은 이에 의존하지 않음.
-Zonas ímã · mapa estimado de liquidações	자석 구간 · 추정 청산 맵
-Calculando o mapa a partir do histórico de posições…	과거 포지션 기록으로 맵을 계산 중…
-Leva alguns segundos: velas de {0} min + open interest dos últimos {1} dias.	몇 초 걸림: {0}분 봉 + 최근 {1}일 미결제약정 기록.
-Mapa indisponível no momento	현재 맵을 사용할 수 없음
-O mapa estimado usa velas e histórico de open interest da Binance (REST).	추정 맵은 바이낸스(REST)의 봉 데이터와 미결제약정 기록을 사용함.
-Mercado e zonas	시장 및 구간
-Mercado (Binance perp)	시장 (Binance perp)
+Fear & Greed é sentimento, não entra no score (evita contar duas vezes o que o order flow já mostra). Stablecoins entram no fator Liquidez.	Fear & Greedはセンチメントであり、スコアには含めません（オーダーフローで既に示されている内容の二重計上を避けるため）。ステーブルコインは流動性ファクターに含まれます。
+Mais mercados	その他の市場
+Yahoo Finance, barras de {0} h. Dólar subindo contra moedas emergentes e cobre caindo costumam indicar aversão a risco.	Yahoo Finance、{0}hバー。新興国通貨に対するドル高と銅安は、通常リスク回避の兆候を示します。
+Mundo e dívida	世界と債務
+BCE · taxa de depósito · {0}	ECB · 預金金利 · {0}
+Dívida pública dos EUA · {0}	米国公的債務 · {0}
+Variação desde {0}	{0}以降の変化
+Juros do BCE abaixo dos do Fed sustentam o dólar; dívida crescendo rápido pressiona a oferta de Treasuries e os yields.	ECBの金利がFedを下回り、ドルを支えている。債務の急速な増加はUSトレジャリーの供給と利回りを圧迫している。
+extreme fear	極度の恐怖
+Medo extremo	極度の恐怖
+Medo	恐怖
+Ganância	強欲
+extreme greed	極度の強欲
+Ganância extrema	極度の強欲
+Motivo desconhecido.	原因不明。
+A Binance recusou o acesso nesta região (HTTP {0}). As outras abas não dependem disso.	この地域では Binance によるアクセスが拒否されました（HTTP {0}）。他のタブはこれに依存していません。
+Zonas ímã · mapa estimado de liquidações	マグネットゾーン · 推定清算マップ
+Calculando o mapa a partir do histórico de posições…	ポジション履歴からマップを計算中…
+Leva alguns segundos: velas de {0} min + open interest dos últimos {1} dias.	数秒かかります：{0}分足のローソク足と過去{1}日間の建玉（オープンインタレスト）。
+Mapa indisponível no momento	現在マップは利用できません
+O mapa estimado usa velas e histórico de open interest da Binance (REST).	推定マップは Binance（REST）のローソク足と建玉履歴を使用しています。
+Mercado e zonas	市場とゾーン
+Mercado (Binance perp)	市場（Binance 無期限先物）
 Preço	価格
 Variação {0}h	変動 {0}h
 Funding	Funding

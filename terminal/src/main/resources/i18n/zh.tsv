@@ -239,7 +239,7 @@ Redução de tensão diminui a busca por proteção (dólar/ouro) e alivia petr�
 Redução de conflito	冲突缓和
 Petróleo e VIX tendem a cair	石油与VIX可能下跌
 Volta do apetite por risco	风险偏好回升
-Escalada militar gera aversão a risco imediata (dólar, ouro e petróleo sobem). No longo prazo o efeito sobre o BTC é ambíguo.	Escalada militar gera aversão a risco imediata (dólar, ouro e petróleo sobem). No longo prazo, o efeito sobre o BTC é ambíguo.
+Escalada militar gera aversão a risco imediata (dólar, ouro e petróleo sobem). No longo prazo o efeito sobre o BTC é ambíguo.	市场避险情绪立即升温（美元、黄金和原油上涨）。长期来看，对BTC的影响不确定。
 Escalada militar	Escalada militar
 Petróleo, ouro, dólar e VIX sobem	石油、黄金、美元和VIX上涨
 Venda de ativos de risco	抛售风险资产
@@ -253,12 +253,12 @@ Choque de energia pressiona a inflação e pode adiar cortes de juros.	能源冲
 Petróleo / gás sobem	石油 / 天然气上涨
 Inflação esperada maior	预期通胀升高
 Pressão no BTC	BTC承压
-Impasse fiscal aumenta volatilidade; pode favorecer ativos fora do sistema, mas no curto prazo costuma haver aversão a risco.	Impasse fiscal aumenta a volatilidade; pode favorecer ativos fora do sistema, mas no curto prazo costuma haver aversão a risco.
+Impasse fiscal aumenta volatilidade; pode favorecer ativos fora do sistema, mas no curto prazo costuma haver aversão a risco.	财政僵局加剧波动；可能有利于体系外资产，但短期内通常伴随避险情绪。
 Impasse fiscal	Impasse fiscal
 Prêmio de risco nos Treasuries	美债风险溢价
 Volatilidade nas bolsas	Volatilidade nas bolsas
 Efeito no BTC incerto	对BTC的影响不确定
-Mais gasto/dívida pode aumentar liquidez e também os yields; o saldo depende da reação dos juros.	Mais gastos/dívida podem aumentar a liquidez e também os yields; o saldo depende da reação dos juros.
+Mais gasto/dívida pode aumentar liquidez e também os yields; o saldo depende da reação dos juros.	更多支出/债务可能增加流动性，也可能推高收益率；最终影响取决于利率的反应。
 Política fiscal	财政政策
 Liquidez × oferta de títulos	流动性 × 国债供给
 Yields	Yields
@@ -270,7 +270,7 @@ Inflação desacelerando aumenta a chance de cortes de juros.	通胀放缓，增
 Inflação abaixo do esperado	通胀低于预期
 Mais cortes de juros precificados	市场定价的降息增加
 Yields e dólar caem	收益率和美元下跌
-Desaceleração aumenta chance de cortes de juros (positivo), mas também o risco de queda das bolsas (negativo).	Desaceleração aumenta a chance de cortes de juros (positivo), mas também o risco de queda das bolsas (negativo).
+Desaceleração aumenta chance de cortes de juros (positivo), mas também o risco de queda das bolsas (negativo).	经济放缓提高降息概率（利好），但也增加股市下跌风险（利空）。
 Sinais de desaceleração	经济放缓迹象
 Expectativa de cortes ↑ / lucros ↓	降息预期 ↑ / 利润 ↓
 Bolsas oscilam	Bolsas oscilam
@@ -1098,7 +1098,7 @@ Paredes do livro	订单簿墙
 Sem conexão com as corretoras ({0})	与交易所断开连接（{0}）
 Não foi possível carregar os fluxos dos ETFs ({0})	无法加载 ETF 资金流（{0}）
 Preço × CVD	价格 × CVD
-Positiva = o preço anda junto com a agressão compradora/vendedora.	Positiva = o preço acompanha a agressão compradora/vendedora.
+Positiva = o preço anda junto com a agressão compradora/vendedora.	正值 = 价格与买方或卖方主动成交同向运行。
 Preço × open interest	价格 × 未平仓合约
 Positiva = alta com abertura de posições; negativa = alta com fechamento.	正值 = 上涨且开仓；负值 = 上涨且平仓。
 Preço × liquidações	价格 × 清算
@@ -1110,14 +1110,14 @@ Positiva = compras forçadas de shorts liquidados entrando no CVD.	正值 = 被�
 Gráficos	图表
 Baldes de {0} minuto · preço, CVD, open interest e liquidações lado a lado	{0} 分钟周期 · 价格、CVD、未平仓合约和清算并列显示
 Preço, fluxo, posições e liquidações por minuto	每分钟价格、资金流、持仓与清算
-Juntando dados	Coletando dados
-Precisa de alguns minutos de dados desde a abertura do app (guarda até {0} h)	São necessários alguns minutos de dados desde a abertura do app (armazena até {0} h)
+Juntando dados	正在汇总数据
+Precisa de alguns minutos de dados desde a abertura do app (guarda até {0} h)	需要应用打开后的几分钟数据（最多保存{0}小时）
 Correlação e resumo	相关性与摘要
 Correlação (Pearson) na janela	窗口内相关系数（Pearson）
 Leitura dos últimos {0} minutos	最近{0}分钟读数
 Liquidações LONG / SHORT	多头 / 空头清算
 {0} / {1} BTC	{0} / {1} BTC
-Leitura automática a partir dos números acima; é inferência, não prova de quem abriu ou fechou posição.	Leitura automática com base nos números acima; é uma inferência, não prova de quem abriu ou fechou posição.
+Leitura automática a partir dos números acima; é inferência, não prova de quem abriu ou fechou posição.	根据上述数字自动解读；这是推断，并非证明谁开仓或平仓。
 Correlação com menos de {0} minutos de dados aparece como "sem dados". |r| ≥ {1} forte, ≥ {2} moderada, ≥ {3} fraca. OI somado só conta quando Binance, Bybit e OKX reportaram. Liquidações = {4} corretoras (positivo = mais shorts liquidados).	数据不足{0}分钟的相关性显示为“无数据”。|r| ≥ {1} 为强，≥ {2} 为中等，≥ {3} 为弱。合计OI仅在Binance、Bybit和OKX均已上报时计算。清算 = {4}家交易所（正值 = 空头清算更多）。
 Alta com compra agressora e open interest subindo: compatível com novas posições compradas puxando o preço.	主动买入且未平仓合约(OI)上升的上涨：符合新多头头寸推动价格上涨。
 Alta com open interest caindo e shorts liquidados: compatível com short squeeze.	未平仓合约(OI)下降且空头被清算的上涨：符合空头挤压（short squeeze）。
@@ -1133,11 +1133,11 @@ LIQUIDAÇÕES	清算
 Lado	Lado
 Ambos	Ambos
 Pico ≥ (BTC)	Pico ≥ (BTC)
-{0} paredes encerradas · {1} eventos gravados no período	{0} paredes encerradas · {1} eventos registrados no período
+{0} paredes encerradas · {1} eventos gravados no período	已结束{0}个挂单墙 · 本期间记录{1}个事件
 Mapa do histórico	历史地图
 Onde as paredes estiveram e como terminaram	Onde as paredes estiveram e como terminaram
 Nenhuma parede encerrada no período com esses filtros	在当前筛选条件下，该时段内没有已结束的挂单墙
-O histórico vem do banco local: paredes que saíram do livro desde que o app foi instalado. Reduza o pico mínimo ou aumente o período.	O histórico vem do banco local: paredes que saíram do livro desde a instalação do app. Reduza o pico mínimo ou aumente o período.
+O histórico vem do banco local: paredes que saíram do livro desde que o app foi instalado. Reduza o pico mínimo ou aumente o período.	历史记录来自本地数据库：自安装应用以来已从订单簿中撤出的挂单墙。请降低最小峰值或延长时间范围。
 Como terminaram	Como terminaram
 Execução confirmada pelos trades	成交记录已确认执行
 Preço atravessou (não confirmada)	价格穿越（未确认）
@@ -1146,7 +1146,7 @@ Níveis onde a liquidez mais aparece (faixas de {0} US$)	流动性最集中的�
 PICO SOMADO	PICO SOMADO
 ÚLTIMA	最新
 Sem níveis no período	该时段内无价位
-Cada ponto é uma parede que saiu do livro: posição = hora e preço; tamanho = pico em BTC; cor = lado (verde compra, vermelho venda); anel laranja = execução confirmada, anel amarelo = preço atravessou, sem anel = retirada. Níveis que se repetem costumam ser suporte/resistência defendidos.	Cada ponto é uma parede que saiu do livro: posição = hora e preço; tamanho = pico em BTC; cor = lado (verde compra, vermelho venda); anel laranja = execução confirmada, anel amarelo = preço atravessou, sem anel = retirada. Níveis que se repetem costumam indicar suporte/resistência defendidos.
+Cada ponto é uma parede que saiu do livro: posição = hora e preço; tamanho = pico em BTC; cor = lado (verde compra, vermelho venda); anel laranja = execução confirmada, anel amarelo = preço atravessou, sem anel = retirada. Níveis que se repetem costumam ser suporte/resistência defendidos.	每个点代表一个已从订单簿撤出的挂单墙：位置 = 时间和价格；大小 = BTC峰值；颜色 = 方向（绿色为买入，红色为卖出）；橙色圆环 = 已确认成交，黄色圆环 = 价格穿越，无圆环 = 撤单。重复出现的价位通常是被守住的支撑/阻力。
 Configurar avisos	Configurar alertas
 Notificações {0}	通知{0}
 Mostrar notificação no celular	在手机上显示通知

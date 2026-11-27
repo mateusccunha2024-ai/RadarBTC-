@@ -245,7 +245,7 @@ Petróleo, ouro, dólar e VIX sobem	Нефть, золото, доллар и VI
 Venda de ativos de risco	Распродажа рисковых активов
 Pressão imediata no BTC	Немедленное давление на BTC
 Petróleo mais barato alivia a inflação e abre espaço para juros menores.	Более дешёвая нефть снижает инфляцию и открывает пространство для более низких ставок.
-Petróleo em queda	Петróleo em queda
+Petróleo em queda	Нефть падает
 Inflação esperada menor	Ожидаемая инфляция ниже
 Juros/yields podem cair	Juros/yields podem cair
 Leve apoio ao BTC	Умеренная поддержка BTC
@@ -961,7 +961,7 @@ TGA (conta do Tesouro no Fed)	TGA (счёт Казначейства в ФРС)
 TGA · {0}	TGA · {0}
 US$ {0} bi	US$ {0} bi
 Variação em ~{0} semanas	Колебание примерно за ~{0} нед.
-TGA subindo retira dinheiro do sistema; caindo devolve. Fonte: Daily Treasury Statement.	Com o TGA subindo, dinheiro sai do sistema; caindo, ele volta. Fonte: Daily Treasury Statement.
+TGA subindo retira dinheiro do sistema; caindo devolve. Fonte: Daily Treasury Statement.	Рост TGA изымает деньги из системы; снижение возвращает их. Источник: Daily Treasury Statement.
 Correlação com o BTC	Корреляция с BTC
 Sem série do BTC para comparar.	Нет ряда BTC для сравнения.
 Pearson dos retornos nos horários em que os dois negociam ({0} h e {1} d: barras de {2} h; {3} d: diário). Mínimo de amostras: {4} / {5} / {6}. Correlação passada não garante a futura.	Пирсон по доходностям в часы, когда торгуют обе стороны ({0} ч и {1} д: бары по {2} ч; {3} д: дневной). Минимум выборок: {4} / {5} / {6}. Прошлая корреляция не гарантирует будущую.
