@@ -230,7 +230,7 @@ class Hub(@Volatile var refreshMs: Long = 1_500) : FeedSink {
     private fun sample() = synchronized(lock) {
         val now = System.currentTimeMillis()
         samples.addLast(Sample(now, price(), totalOiBtc()))
-        while (samples.isNotEmpty() && now - samples.first().tMs > 3_700_000) samples.removeFirst()
+        while (samples.isNotEmpty() && now - samples.first().tMs > 14_500_000) samples.removeFirst() // 4 h de preço/OI (1 por segundo)
     }
 
     private fun changePct(windowMs: Long, sel: (Sample) -> Double?): Double? = synchronized(lock) {
