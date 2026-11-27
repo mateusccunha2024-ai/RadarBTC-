@@ -20,6 +20,12 @@ enum class AlertKind(val label: String) {
     SIGNAL_CHANGE("Mudança de sinal LONG/SHORT"),
     DIVERGENCE("Divergência preço × CVD"),
     HEAT_ZONE("Preço perto de zona do heatmap"),
+    MACRO_EVENT("Macro: evento de alto impacto chegando"),
+    MACRO_SURPRISE("Macro: dado acima/abaixo do esperado"),
+    MACRO_MARKET("Macro: DXY, yields ou VIX em movimento forte"),
+    MACRO_GEO("Macro: escalada geopolítica, tarifas ou regulação"),
+    MACRO_DIVERGENCE("Macro: BTC diverge do mercado americano"),
+    MACRO_SCORE("Macro: mudança forte do BTC Macro Sentiment"),
 }
 
 data class MarketAlert(val kind: AlertKind, val key: String, val text: String, val timeMs: Long = System.currentTimeMillis())
@@ -42,7 +48,7 @@ data class Sample(val tMs: Long, val price: Double?, val oiBtc: Double?)
 enum class FeedKind(val label: String, val group: String) {
     ABSORPTION("Absorção", "Paredes"), ICEBERG("Iceberg", "Paredes"),
     LIQUIDATION("Liquidação", "Liquidações"), BIG_TRADE("Execução grande", "Execuções"),
-    DIVERGENCE("Divergência", "Divergências"),
+    DIVERGENCE("Divergência", "Divergências"), MACRO("Macro", "Macro"),
 }
 
 /**
@@ -205,6 +211,9 @@ class Hub(@Volatile var refreshMs: Long = 1_500) : FeedSink {
             while (alerts.size > 100) alerts.removeLast()
         }
     }
+
+    /** Alerta vindo de fora do order flow (Radar Macro) no painel de alertas. */
+    fun feed(a: FeedAlert) = alert(a)
 
     fun emit(kind: AlertKind, key: String, text: String) {
         val a = MarketAlert(kind, key, text)

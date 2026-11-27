@@ -1,5 +1,20 @@
 # Changelog
 
+## V8 — atualização 11 (2026-11-27) · Radar macro-geopolítico do BTC
+- Aba nova **Radar macro** (grupo Macro, junto com ETFs): mercado americano (S&P 500, Nasdaq 100, Dow, VIX, DXY, Treasury
+  10 anos, ouro, petróleo), juros (meta e taxa efetiva do Fed, Treasuries 2 e 10 anos oficiais), inflação e emprego (CPI, núcleo,
+  PCE, payroll, desemprego, salários, com mês de referência), liquidez (TGA) e correlação com o BTC em 24 h, 7 dias e 30 dias.
+- **BTC Macro Sentiment** de −100 a +100 com 10 fatores, pesos configuráveis, contribuição de cada um, confiança e dados ausentes
+  ou desatualizados. Não é previsão de preço.
+- Calendário econômico dos EUA da semana (horário local, impacto, expectativa, anterior) e reuniões do FOMC. Resultado comparado
+  com a expectativa só quando a série oficial do BLS/BEA traz o mês certo.
+- Notícias geopolíticas, de comércio, energia, Fed, fiscal e regulação cripto, filtradas por ligação econômica, sem repetidas,
+  com direção, intensidade, horizonte, cadeia de impacto e link para a matéria.
+- Leitura integrada com o order flow do app (cenários A/B/C, confluência alta/média/baixa).
+- 6 alertas novos na aba Alertas (evento chegando, dado fora do esperado, DXY/yields/VIX, geopolítica, divergência BTC × EUA,
+  mudança do score), cada ocorrência avisada uma vez. Também aparecem no painel de alertas (filtro Macro).
+- Cache em disco, intervalo próprio por fonte, espera após falha e situação de cada fonte na aba. Detalhes em docs/MACRO.md.
+
 ## V8 — atualização 10 (2026-11-27) · layout auto ajustável, páginas e tamanho da fonte
 - Tamanho da fonte separado do zoom (Visualização → Tamanho da fonte: 85% a 150%), no PC e no celular. Só o texto muda; colunas de
   tabela, linhas dos níveis-chave e larguras mínimas dos painéis acompanham a fonte.
