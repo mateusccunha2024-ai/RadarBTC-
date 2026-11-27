@@ -22,6 +22,10 @@ class I18nTest {
         assertEquals("WALLS", L("PAREDES"))                                // títulos em maiúsculas
         assertEquals("12.345,6", L("12.345,6"))                          // só número: não traduz
         assertEquals("Walls · Order book", L("Paredes · Livro de ofertas"))  // frases montadas com " · " vão por partes
+        I18n.loadForTest("en", "{0} de {1}\t{0} of {1}\nParedes\tWalls")
+        I18n.use("en")
+        assertEquals("Macro desfavorável e vendas agressoras na mesma direção, sem liquidações de LONG",
+            L("Macro desfavorável e vendas agressoras na mesma direção, sem liquidações de LONG"))  // molde genérico não traduz pela metade
         I18n.use("pt")
         assertEquals("Livro de ofertas", L("Livro de ofertas"))          // português = original
     }

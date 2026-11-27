@@ -65,7 +65,7 @@ object I18n {
     // ------------------------------------------------------------------ tabelas
 
     private class Table(val exact: HashMap<String, String>, val prefixed: HashMap<String, MutableList<Tpl>>, val loose: List<Tpl>)
-    private class Tpl(val regex: Regex, val out: String)
+    private class Tpl(val regex: Regex, val out: String, val fixed: Int)
 
     private val tables = ConcurrentHashMap<String, Table>()
     private val memo = ConcurrentHashMap<String, String>()      // "<lang>|<texto mascarado>" → tradução mascarada ("" = sem tradução)
@@ -95,7 +95,7 @@ object I18n {
             val sb = StringBuilder("^")
             parts.forEachIndexed { i, p -> sb.append(Regex.escape(p)); if (i < idx.size) sb.append("(?<g").append(idx[i]).append(">.+?)") }
             sb.append("$")
-            val tpl = runCatching { Tpl(Regex(sb.toString(), RegexOption.DOT_MATCHES_ALL), v) }.getOrNull() ?: continue
+            val tpl = runCatching { Tpl(Regex(sb.toString(), RegexOption.DOT_MATCHES_ALL), v, parts.sumOf { it.length }) }.getOrNull() ?: continue
             val head = parts[0]
             if (head.length >= 3) pre.getOrPut(head.take(3)) { ArrayList() }.add(tpl) else loose.add(tpl)
         }
@@ -175,6 +175,8 @@ object I18n {
         }
         val cands = (if (m.length >= 3) t.prefixed[m.take(3)] else null).orEmpty() + t.loose
         for (tp in cands) {
+            // Moldes genéricos ("{0} de {1}") não podem engolir frases longas: o texto fixo precisa cobrir ≥ 40% do original.
+            if (tp.fixed * 5 < m.length * 2) continue
             val r = tp.regex.matchEntire(m) ?: continue
             return PH.replace(tp.out) { g ->
                 val v = runCatching { r.groups["g" + g.groupValues[1]]?.value }.getOrNull() ?: return@replace g.value
