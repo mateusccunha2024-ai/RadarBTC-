@@ -178,7 +178,7 @@ fun HeatChart(d: HeatData, img: ImageBitmap, real: List<LiqEvent>, price: Double
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.padding(bottom = 4.dp)) {
                 T("Nota em ${px(p)}:", Q.Muted, 11)
                 BasicTextField(noteText, { noteText = it.take(80) }, singleLine = true, textStyle = mono, cursorBrush = SolidColor(Q.Accent),
-                    modifier = Modifier.width(240.dp).background(Q.Panel2).border(1.dp, Q.Line).padding(horizontal = 6.dp, vertical = if (compact) 12.dp else 5.dp))
+                    modifier = Modifier.width(240.dp.f).background(Q.Panel2).border(1.dp, Q.Line).padding(horizontal = 6.dp, vertical = if (compact) 12.dp else 5.dp))
                 OutlineButton("Salvar", color = Q.Accent, border = Q.Accent, size = 12) {
                     if (noteText.isNotBlank()) Drawings.add(Drawing(DrawTool.TEXT, t, p, t, p, noteText.trim()))
                     pendingText = null; noteText = ""; tool = DrawTool.NONE
@@ -188,7 +188,7 @@ fun HeatChart(d: HeatData, img: ImageBitmap, real: List<LiqEvent>, price: Double
         }
 
         BoxWithConstraints(Modifier.fillMaxWidth().weight(1f).background(HEAT[0])) {
-            val u = LocalDensity.current.density
+            val u = LocalDensity.current.let { it.density * it.fontScale }
             val axisWpx = AXIS_W.value * u; val axisHpx = AXIS_H.value * u
             val cw = constraints.maxWidth - axisWpx; val chh = constraints.maxHeight - axisHpx
             fun tAt(v: View, x: Float, w: Float) = v.tA + (x / w) * (v.tB - v.tA)

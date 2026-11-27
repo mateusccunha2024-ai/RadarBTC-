@@ -1,5 +1,15 @@
 # Changelog
 
+## V8 — atualização 10 (2026-11-27) · layout auto ajustável, páginas e tamanho da fonte
+- Tamanho da fonte separado do zoom (Visualização → Tamanho da fonte: 85% a 150%), no PC e no celular. Só o texto muda; colunas de
+  tabela, linhas dos níveis-chave e larguras mínimas dos painéis acompanham a fonte.
+- Painéis lado a lado só enquanto cabem com a largura mínima de cada um. Quando não cabem (janela estreita, tablet, fonte grande),
+  viram páginas com botões no topo ("Página: …"); cada página leva os painéis que cabem juntos. Nenhum painel é espremido.
+- Celular: cada painel com título é uma página (ex.: Mapa | Níveis e visão geral; Top LONG | Top SHORT | Top geral | Alertas).
+- Radar: com pouca altura (tablet deitado, fonte grande) ou no celular, "Mapa e níveis" e "Liquidações reais e alertas" viram duas páginas.
+- Barra do topo e barra de abas do PC quebram linha em vez de cortar ou esconder abas fora da tela; títulos de painel e pares
+  rótulo/valor também quebram linha.
+
 ## V8 — atualização 9 (2026-11-27) · gráfico de CVD com preço, horário e histórico
 - Long/short: gráfico de CVD com períodos 5 min, 15 min, 1 h e 4 h (histórico desde que o app abriu; antes só 15 min).
 - Preço do BTC sobreposto (linha laranja) com escala à direita (máximo, meio, mínimo e etiqueta do último preço); escala do CVD

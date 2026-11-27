@@ -34,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -155,7 +156,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier, expan
     val tm = rememberTextMeasurer()
     val axis = TextStyle(color = Q.Muted, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
 
-    Panes(modifier, Pane(1f) { hm ->
+    Panes(modifier, Pane(1f, null, "Mapa", 520.dp) { hm ->
         Section(HEAT_MODES[mode] + " · estimado (modelo V8) · " + (venueSel?.label ?: HEAT_VENUES.joinToString(" + ") { it.label }),
             hm) {
             Column {
@@ -194,7 +195,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier, expan
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Chips("Corretoras", listOf("Todas") + HEAT_VENUES.map { it.label }, venueIdx) { venueIdx = it; SettingsStore.put("hm.venue", it) }
                     T("Intensidade", Q.Muted, 11)
-                    Slider(intensity, { intensity = it; SettingsStore.put("hm.int", it.toDouble()) }, Modifier.width(150.dp).height(20.dp),
+                    Slider(intensity, { intensity = it; SettingsStore.put("hm.int", it.toDouble()) }, Modifier.width(150.dp.f).height(20.dp),
                         colors = SliderDefaults.colors(thumbColor = Q.Accent, activeTrackColor = Q.Accent, inactiveTrackColor = Q.Line))
                     Toggle("Liquidações reais", showReal) { showReal = it; SettingsStore.put("hm.real", it) }
                     T(when {
@@ -224,8 +225,8 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier, expan
                 }
             }
         }
-    }, Pane(0.25f) { pm ->
-        Column(if (compact) pm else Modifier.width(320.dp).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    }, Pane(0.25f, null, "Níveis e visão geral", 320.dp) { pm ->
+        Column(if (compact) pm else pm.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section(if (keyAll) "Níveis de liquidação em aberto" else "Níveis-chave de liquidação", Modifier.fillMaxWidth()) {
                 Column {
                     Chips(null, listOf("Principais", "Todos"), if (keyAll) 1 else 0) { keyAll = it == 1; SettingsStore.put("hm.keyall", keyAll) }
@@ -285,14 +286,25 @@ private fun HeatLegend(mode: Int, k: Float, showReal: Boolean, showLines: Boolea
         if (showLines) { T("Linhas:", Q.Muted, 10); T("níveis em aberto (caixas ao lado)", Q.Muted, 10) }
     }
     // No PC tudo numa linha (rótulo · barra · pontos/linhas) para sobrar altura ao mapa; no celular, empilhado.
-    if (compact) Column(modifier) {
+    // Com largura média (tablet, fonte grande) a barra de cores não pode ser espremida a zero: rótulo e barra
+    // numa linha e pontos/linhas na de baixo.
+    BoxWithConstraints(modifier) {
+    val wide = !compact && maxWidth >= 1150.dp * UiScale.font
+    if (compact) Column(Modifier.fillMaxWidth()) {
         T(label, Q.Muted, 10, wrap = true)
         LegendBar(mode, k, stops, fmt)
         FlowRow(Modifier.padding(top = 2.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) { marks() }
-    } else Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+    } else if (!wide) Column(Modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            T(label, Q.Muted, 10)
+            Column(Modifier.weight(1f)) { LegendBar(mode, k, stops, fmt) }
+        }
+        FlowRow(Modifier.padding(top = 2.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) { marks() }
+    } else Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         T(label, Q.Muted, 10)
         Column(Modifier.weight(1f)) { LegendBar(mode, k, stops, fmt) }
         marks()
+    }
     }
 }
 
@@ -325,7 +337,7 @@ private fun DeltaStrip(delta: FloatArray, modifier: Modifier) {
     val tm = rememberTextMeasurer()
     val st = TextStyle(color = Q.Muted, fontSize = 10.sp)
     Canvas(modifier.background(Q.Panel2)) {
-        val axisW = 64.dp.toPx()
+        val axisW = 64.dp.toPx() * fontScale
         val w = size.width - axisW
         val mx = (delta.maxOfOrNull { kotlin.math.abs(it) } ?: 0f).takeIf { it > 0 } ?: 1f
         val mid = size.height / 2
@@ -343,13 +355,14 @@ private fun DeltaStrip(delta: FloatArray, modifier: Modifier) {
 
 @Composable
 private fun KeyRow(k: KeyLevel, mx: Double, c: Color) {
-    Row(Modifier.fillMaxWidth().height(20.dp), verticalAlignment = Alignment.CenterVertically) {
-        T(px(k.price), Q.Text, 11, monoFont = true, modifier = Modifier.width(76.dp))
-        Box(Modifier.weight(1f).fillMaxHeight().padding(vertical = 6.dp)) {
+    // Altura e larguras acompanham o tamanho da fonte (antes a altura fixa cortava os números com fonte maior).
+    Row(Modifier.fillMaxWidth().heightIn(min = 20.dp.f), verticalAlignment = Alignment.CenterVertically) {
+        T(px(k.price), Q.Text, 11, monoFont = true, modifier = Modifier.width(76.dp.f))
+        Box(Modifier.weight(1f).height(8.dp)) {
             Box(Modifier.fillMaxHeight().fillMaxWidth((k.btc / mx).toFloat().coerceIn(0.03f, 1f)).background(c.copy(alpha = 0.7f)))
         }
-        T(num(k.btc, if (k.btc < 10) 1 else 0), Q.Text, 11, monoFont = true, modifier = Modifier.width(54.dp).padding(start = 6.dp))
-        T(pct(k.distancePct), Q.Muted, 10, monoFont = true, modifier = Modifier.width(62.dp))
+        T(num(k.btc, if (k.btc < 10) 1 else 0), Q.Text, 11, monoFont = true, modifier = Modifier.width(54.dp.f).padding(start = 6.dp), align = TextAlign.End)
+        T(pct(k.distancePct), Q.Muted, 10, monoFont = true, modifier = Modifier.width(66.dp.f), align = TextAlign.End)
     }
 }
 
@@ -360,7 +373,7 @@ private fun HeatTooltip(d: HeatData, g: Pair<Array<FloatArray>, Array<FloatArray
     val lo = d.pMin + d.pStep * row
     val longs = g.first[row][col]; val shorts = g.second[row][col]
     val close = d.candles.getOrNull(col)?.close
-    Column(modifier.width(290.dp).background(Q.Tip).border(1.dp, Q.Line).padding(10.dp)) {
+    Column(modifier.width(290.dp.f).background(Q.Tip).border(1.dp, Q.Line).padding(10.dp)) {
         T(SimpleDateFormat("dd/MM HH:mm").format(Date(t)) + "  ·  fechamento " + px(close), Q.Text, 11, bold = true)
         T("Faixa ${px(lo)} – ${px(lo + d.pStep)}", Q.Muted, 11)
         price?.let { T("Distância do preço atual: " + pct((lo + d.pStep / 2) / it * 100 - 100), Q.Muted, 11) }

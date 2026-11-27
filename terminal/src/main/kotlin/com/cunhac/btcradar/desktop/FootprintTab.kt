@@ -82,13 +82,13 @@ fun FootprintTab(ctx: AppContext, s: TerminalState) {
             T(oldest?.let { "Dados desde ${hhmmss(it)}" } ?: "Aguardando trades", Q.Muted, 11)
         }
         // No celular o footprint rola para o lado (cada vela precisa de largura para os números).
-        Panes(grow(1f), Pane(3f, 560.dp) { m ->
+        Panes(grow(1f), Pane(3f, 560.dp, "Footprint", 520.dp) { m ->
             Section("Footprint · venda × compra agressora por faixa (BTC)", m, minWidth = if (compact) (110 * candles.size.coerceAtLeast(3) + 80).dp else null) {
                 if (candles.isEmpty()) Empty("Montando o footprint", "Precisa de trades das corretoras principais; cada vela aparece assim que recebe execuções")
                 else FootprintChart(candles, step, s.price, Modifier.fillMaxSize())
             }
-        }, Pane(1f) { pm ->
-            Column((if (compact) pm else Modifier.width(330.dp).fillMaxHeight()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        }, Pane(1f, null, "Perfil de volume", 330.dp) { pm ->
+            Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Section("Perfil de volume", Modifier.fillMaxWidth().then(grow(1f, 420.dp))) {
                     Column {
                         Chips(null, FP_PROFILE.map { it.first }, pIdx) { pIdx = it; SettingsStore.put("fp.p", it) }
@@ -121,7 +121,7 @@ private fun FootprintChart(candles: List<FootCandle>, step: Double, price: Doubl
     val tm = rememberTextMeasurer()
     val buyC = Q.Buy; val sellC = Q.Sell; val text = Q.Text; val muted = Q.Muted; val line = Q.Line; val accent = Q.Accent; val panel2 = Q.Panel2
     Canvas(modifier) {
-        val u = density
+        val u = density * fontScale
         val axisW = 66f * u; val footH = 34f * u; val headH = 16f * u
         val w = size.width - axisW; val h = size.height - footH - headH
         val lo = candles.minOf { it.low }.let { kotlin.math.floor(it / step) * step }

@@ -31,6 +31,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -96,14 +98,17 @@ object TabPrefs {
 fun Terminal(ctx: AppContext, initialTab: Int? = null, showSettings: Boolean = false, showTabs: Boolean = false) {
     val base = LocalDensity.current
     // Zoom da interface: multiplica a densidade (tudo cresce junto, sem quebrar o layout).
-    CompositionLocalProvider(LocalDensity provides Density(base.density * UiScale.scale, base.fontScale)) {
-        // Abaixo de 760 dp (celular em pé, já contando o zoom) o layout vira coluna única.
+    // Tamanho da fonte: multiplica só a escala do texto (o resto do layout se reorganiza para caber).
+    CompositionLocalProvider(LocalDensity provides Density(base.density * UiScale.scale, base.fontScale * UiScale.font)) {
+        // Abaixo de 760 dp (celular em pé, já contando o zoom) o layout vira coluna única; com fonte maior
+        // o limite sobe junto, para o texto maior não ser espremido em colunas.
         BoxWithConstraints(Modifier.fillMaxSize()) {
-            CompositionLocalProvider(LocalCompact provides (maxWidth < 760.dp)) { TerminalBody(ctx, initialTab, showSettings, showTabs) }
+            CompositionLocalProvider(LocalCompact provides (maxWidth < 760.dp * UiScale.font)) { TerminalBody(ctx, initialTab, showSettings, showTabs) }
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TerminalBody(ctx: AppContext, initialTab: Int?, showSettings: Boolean, showTabs: Boolean) {
     val s by ctx.hub.stateFlow.collectAsState()
@@ -117,11 +122,12 @@ private fun TerminalBody(ctx: AppContext, initialTab: Int?, showSettings: Boolea
         Column(Modifier.fillMaxSize()) {
             if (compact) CompactTopBar(s, onSettings = { settingsOpen = !settingsOpen }) else TopBar(s, onSettings = { settingsOpen = !settingsOpen })
             if (compact) TabPickerBar(current, orderedTabs(tabs)) { tabsOpen = true }
-            else Row(Modifier.fillMaxWidth().background(Q.Panel).horizontalScroll(rememberScrollState()).padding(horizontal = 8.dp),
-                verticalAlignment = Alignment.CenterVertically) {
+            // PC: as abas quebram linha quando não cabem (nenhuma fica escondida fora da tela); cada grupo fica junto.
+            else FlowRow(Modifier.fillMaxWidth().background(Q.Panel).padding(horizontal = 8.dp)) {
                 TAB_GROUPS.forEachIndexed { gi, (group, ids) ->
                     val shown = ids.filter { it in tabs }
                     if (shown.isEmpty()) return@forEachIndexed
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                     if (gi > 0) Box(Modifier.padding(horizontal = 8.dp).width(1.dp).height(20.dp).background(Q.Line))
                     T(group.uppercase(), Q.Muted, 10, bold = true, modifier = Modifier.padding(start = 4.dp, end = 2.dp))
                     shown.forEach { t ->
@@ -133,6 +139,7 @@ private fun TerminalBody(ctx: AppContext, initialTab: Int?, showSettings: Boolea
                                 .drawBehind { if (on) drawRect(Q.Accent, Offset(0f, size.height - 2.dp.toPx()), Size(size.width, 2.dp.toPx())) }
                                 .clickable { pick(t) }
                                 .padding(horizontal = 11.dp, vertical = 10.dp))
+                    }
                     }
                 }
             }
@@ -241,16 +248,20 @@ private fun TabSheet(current: String, tabs: List<String>, onPick: (String) -> Un
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TopBar(s: TerminalState, onSettings: () -> Unit) {
-    Row(Modifier.fillMaxWidth().background(Q.Bg).padding(horizontal = 14.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+    // Blocos que quebram linha quando a janela fica estreita ou a fonte cresce (em vez de cortar com "…").
+    FlowRow(Modifier.fillMaxWidth().background(Q.Bg).padding(horizontal = 14.dp, vertical = 6.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(Modifier.heightIn(min = 34.dp), verticalAlignment = Alignment.CenterVertically) {
         T("Radar BTC", Q.Text, 14, bold = true)
         T("  Orderflow V8", Q.Muted, 11)
         Spacer(Modifier.width(20.dp))
         // O preço é o dado mais importante do app: maior que qualquer título.
         T(px(s.price), Q.Text, 24, bold = true, monoFont = true)
-        Spacer(Modifier.width(20.dp))
-        Row(Modifier.weight(1f).clipToBounds(), verticalAlignment = Alignment.CenterVertically) {
+        }
+        Row(Modifier.heightIn(min = 34.dp), verticalAlignment = Alignment.CenterVertically) {
         val live = s.liveCount()
         T("$live/3 livros ao vivo", if (live == 3) Q.Buy else if (live > 0) Q.Warn else Q.Sell, 12, bold = true)
         Spacer(Modifier.width(10.dp))
@@ -259,12 +270,14 @@ private fun TopBar(s: TerminalState, onSettings: () -> Unit) {
             val down = s.statuses.filter { it.venue == v }.let { l -> l.isNotEmpty() && l.all { it.state == ConnState.DOWN } }
             T("● ${v.label}", if (ok) Q.Buy else if (down) Q.Sell else Q.Warn, 12, modifier = Modifier.padding(end = 8.dp))
         }
-        T("Liq.:", Q.Muted, 11, modifier = Modifier.padding(start = 4.dp, end = 4.dp))
+        }
+        Row(Modifier.heightIn(min = 34.dp), verticalAlignment = Alignment.CenterVertically) {
+        T("Liq.:", Q.Muted, 11, modifier = Modifier.padding(end = 4.dp))
         LIQ_VENUES.filter { !it.core }.forEach { v -> T("● ${v.label}", venueDot(s, v), 11, modifier = Modifier.padding(end = 6.dp)) }
         // Contadores detalhados (trades, liquidações) ficam na aba Status; aqui só o ritmo de mensagens.
-        T(String.format(BR, "%,.0f msg/s", s.msgsPerSec), Q.Muted, 11,
-            modifier = Modifier.weight(1f).padding(horizontal = 12.dp), align = TextAlign.End)
+        T(String.format(BR, "%,.0f msg/s", s.msgsPerSec), Q.Muted, 11, modifier = Modifier.padding(start = 6.dp))
         }
+        Row(Modifier.heightIn(min = 34.dp), verticalAlignment = Alignment.CenterVertically) {
         SmallButton("Notas", on = Look.footnotes) { Look.useFootnotes(!Look.footnotes) }
         Spacer(Modifier.width(8.dp))
         SmallButton("A−") { UiScale.dec() }
@@ -274,6 +287,7 @@ private fun TopBar(s: TerminalState, onSettings: () -> Unit) {
         SmallButton(if (Look.dark) "☾ Escuro" else "☀ Claro") { Look.useDark(!Look.dark) }
         Spacer(Modifier.width(8.dp))
         SmallButton("⚙ Visualização", onClick = onSettings)
+        }
     }
     Box(Modifier.fillMaxWidth().height(1.dp).background(Q.Line))
 }
@@ -283,12 +297,12 @@ private fun TopBar(s: TerminalState, onSettings: () -> Unit) {
 private fun CompactTopBar(s: TerminalState, onSettings: () -> Unit) {
     BoxWithConstraints(Modifier.fillMaxWidth()) {
     // Telas muito estreitas (ou zoom alto): some o nome do app para o preço e os botões caberem.
-    val roomy = maxWidth >= 380.dp
+    val roomy = maxWidth >= 380.dp * UiScale.font
     Column(Modifier.fillMaxWidth().background(Q.Bg).padding(horizontal = 10.dp, vertical = 6.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (roomy) { T("Radar BTC", Q.Text, 14, bold = true); Spacer(Modifier.width(10.dp)) }
-            T(px(s.price), Q.Text, 18, bold = true, monoFont = true)
-            Spacer(Modifier.weight(1f).widthIn(min = 8.dp))
+            T(px(s.price), Q.Text, 18, bold = true, monoFont = true, modifier = Modifier.padding(end = 8.dp))
+            Spacer(Modifier.weight(1f))
             val live = s.liveCount()
             T("Livros $live/3", if (live == 3) Q.Buy else if (live > 0) Q.Warn else Q.Sell, 12, bold = true, modifier = Modifier.padding(end = 4.dp))
             SmallButton(if (Look.dark) "☾" else "☀") { Look.useDark(!Look.dark) }
@@ -325,11 +339,11 @@ private val SCALES = listOf(0.8f, 0.9f, 1.0f, 1.1f, 1.25f, 1.5f)
 @Composable
 private fun ViewSettingsPanel(ctx: AppContext, onClose: () -> Unit) {
     var refresh by remember { mutableStateOf(ctx.hub.refreshMs) }
-    Column((if (compact) Modifier.fillMaxWidth() else Modifier.width(440.dp)).fillMaxHeight(0.92f).background(Q.Panel).border(1.dp, Q.Line)
+    Column((if (compact) Modifier.fillMaxWidth() else Modifier.width(440.dp.f)).fillMaxHeight(0.92f).background(Q.Panel).border(1.dp, Q.Line)
         .clickable(remember { MutableInteractionSource() }, null) {}  // não fecha ao clicar dentro
         .verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            T(if (compact) "Visualização" else "Configurações de visualização", Q.Text, 15, bold = true, modifier = Modifier.weight(1f))
+            T(if (compact) "Visualização" else "Configurações de visualização", Q.Text, 15, bold = true, wrap = true, modifier = Modifier.weight(1f))
             SmallButton("Fechar ✕", onClick = onClose)
         }
         SettingGroup("Tema") {
@@ -348,6 +362,11 @@ private fun ViewSettingsPanel(ctx: AppContext, onClose: () -> Unit) {
             Spacer(Modifier.height(6.dp))
             Chips(null, SCALES.map { "${(it * 100).roundToInt()}%" }, SCALES.indexOfFirst { kotlin.math.abs(it - UiScale.scale) < 0.01f }) { UiScale.set(SCALES[it]) }
             if (!Platform.isMobile) Footnote("Atalhos: Ctrl + e Ctrl − ajustam, Ctrl 0 volta a 100%.")
+        }
+        SettingGroup("Tamanho da fonte · ${(UiScale.font * 100).roundToInt()}%") {
+            Chips(null, FONT_SIZES.map { "${(it * 100).roundToInt()}%" }, FONT_SIZES.indexOfFirst { kotlin.math.abs(it - UiScale.font) < 0.01f }) { UiScale.useFont(FONT_SIZES[it]) }
+            Footnote("Só o texto muda de tamanho. Quando os painéis não cabem mais lado a lado, eles viram páginas com botões no topo " +
+                "(nada fica cortado). Para aumentar tudo junto, use o tamanho da interface.")
         }
         SettingGroup("Densidade") {
             Chips(null, listOf("Confortável", "Compacta"), if (Look.compact) 1 else 0) { Look.useCompact(it == 1) }

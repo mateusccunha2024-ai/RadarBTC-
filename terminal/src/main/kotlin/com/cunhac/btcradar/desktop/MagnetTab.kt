@@ -66,8 +66,8 @@ fun MagnetTab(m: MapModel) {
         return
     }
     val price = stats.price
-    Panes(Modifier.fillMaxSize(), Pane(0.4f) { pm ->
-        Column(if (compact) pm else Modifier.width(380.dp).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Panes(Modifier.fillMaxSize(), Pane(0.4f, null, "Mercado e zonas", 380.dp) { pm ->
+        Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section("Mercado (Binance perp)", Modifier.fillMaxWidth()) {
                 Column {
                     KV("Preço", px(price))
@@ -96,7 +96,7 @@ fun MagnetTab(m: MapModel) {
                     "níveis que o preço já atravessou saem do mapa. Quanto mais vivo o vermelho, mais BTC estimado no nível. Liquidações reais ficam no LIQUIDATION RADAR.")
             }
         }
-    }, Pane(1f, 620.dp) { m2 ->
+    }, Pane(1f, 620.dp, "Mapa estimado", 480.dp) { m2 ->
         Section("Mapa de liquidações estimadas", m2) {
             Column {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -108,11 +108,11 @@ fun MagnetTab(m: MapModel) {
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(Modifier.fillMaxWidth().padding(bottom = 2.dp)) {
-                    T("Preço", Q.Muted, 10, modifier = Modifier.width(96.dp))
+                    T("Preço", Q.Muted, 10, modifier = Modifier.width(96.dp.f))
                     T("Liquidações estimadas", Q.Muted, 10, modifier = Modifier.weight(1.4f))
-                    T("BTC", Q.Muted, 10, modifier = Modifier.width(78.dp))
+                    T("BTC", Q.Muted, 10, modifier = Modifier.width(78.dp.f))
                     T("Paredes do livro", Q.Muted, 10, modifier = Modifier.weight(1f))
-                    T("BTC", Q.Muted, 10, modifier = Modifier.width(70.dp))
+                    T("BTC", Q.Muted, 10, modifier = Modifier.width(70.dp.f))
                 }
                 MagnetLadder(s.bins, price)
             }
@@ -132,17 +132,17 @@ private fun MagnetLadder(bins: List<PriceBin>, price: Double) {
             val now = b.contains(price)
             val f = (b.liqUsd / maxLiq).toFloat()
             Row(Modifier.fillMaxWidth().height(20.dp).background(if (now) Q.Panel2 else Q.Panel), verticalAlignment = Alignment.CenterVertically) {
-                T((if (now) "▶ " else "") + px(b.low), if (now) Q.Accent else Q.Muted, 11, monoFont = true, modifier = Modifier.width(96.dp))
+                T((if (now) "▶ " else "") + px(b.low), if (now) Q.Accent else Q.Muted, 11, monoFont = true, modifier = Modifier.width(96.dp.f))
                 Box(Modifier.weight(1.4f).fillMaxHeight().padding(vertical = 2.dp)) {
                     if (f > 0.004f) Box(Modifier.fillMaxHeight().fillMaxWidth(f).background(heat(0.15f + 0.85f * f)))
                 }
                 T(if (b.liqUsd > 0) num(b.liqUsd / price, 1) else "·", if (f > 0.5f) Q.HeatHigh else Q.Muted, 11, monoFont = true,
-                    modifier = Modifier.width(78.dp).padding(start = 6.dp))
+                    modifier = Modifier.width(78.dp.f).padding(start = 6.dp))
                 Box(Modifier.weight(1f).fillMaxHeight().padding(vertical = 5.dp)) {
                     val fb = (b.bookUsd / maxBook).toFloat()
                     if (fb > 0.004f) Box(Modifier.fillMaxHeight().fillMaxWidth(fb).background(Q.Sell.copy(alpha = 0.35f)))
                 }
-                T(if (b.bookUsd > 0) num(b.bookUsd / price, 1) else "·", Q.Muted, 11, monoFont = true, modifier = Modifier.width(70.dp).padding(start = 6.dp))
+                T(if (b.bookUsd > 0) num(b.bookUsd / price, 1) else "·", Q.Muted, 11, monoFont = true, modifier = Modifier.width(70.dp.f).padding(start = 6.dp))
             }
         }
     }

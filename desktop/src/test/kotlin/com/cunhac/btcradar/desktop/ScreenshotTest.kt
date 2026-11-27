@@ -53,6 +53,18 @@ class ScreenshotTest {
         listOf(0, 5, 8).forEach { i -> shot("phone-light-%02d".format(i), i, w = 618, h = 3600, density = 1.5f) }
         Look.useDark(true); UiScale.set(1.25f)
         listOf(0, 8).forEach { i -> shot("phone-zoom125-%02d".format(i), i, w = 618, h = 3600, density = 1.5f) }
+        // Layout auto ajustável: fonte 130% no PC, tablet deitado (1280 × 800, a 100% e a 70% como no aparelho
+        // do usuário) e celular com fonte grande. Painéis que não cabem viram páginas com botões.
+        Look.useDark(true); UiScale.set(1.0f); UiScale.useFont(1.3f)
+        listOf(0, 2, 5, 8, 11).forEach { i -> shot("font130-%02d".format(i), i) }
+        shot("font130-menu", 0, settings = true)
+        UiScale.useFont(1.0f)
+        listOf(0, 8).forEach { i -> shot("tablet-%02d".format(i), i, w = 1280, h = 800) }
+        UiScale.set(0.7f)
+        shot("tablet-zoom70-08", 8, w = 1280, h = 800)
+        UiScale.set(1.0f); UiScale.useFont(1.3f)
+        listOf(0, 8).forEach { i -> shot("phone-font130-%02d".format(i), i, w = 618, h = 3600, density = 1.5f) }
+        UiScale.useFont(1.0f)
         Look.useDark(true); UiScale.set(1.0f)
         hub.stop()
     }

@@ -85,7 +85,7 @@ fun CorrelationTab(ctx: AppContext, s: TerminalState) {
         Triple("CVD × open interest", Analytics.pearson(cvd, oi), "Positiva = compra agressora abrindo posições."),
         Triple("CVD × liquidações", Analytics.pearson(cvd, liq), "Positiva = compras forçadas de shorts liquidados entrando no CVD."),
     )
-    Panes(Modifier.fillMaxSize(), Pane(1.6f) { pm ->
+    Panes(Modifier.fillMaxSize(), Pane(1.6f, null, "Gráficos", 520.dp) { pm ->
         Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Controls {
                 Chips("Janela", CORR_WINDOWS.map { it.first }, wIdx) { wIdx = it; SettingsStore.put("co.w", it) }
@@ -96,7 +96,7 @@ fun CorrelationTab(ctx: AppContext, s: TerminalState) {
                 else CorrelationChart(buckets, Modifier.fillMaxSize())
             }
         }
-    }, Pane(1f) { pm ->
+    }, Pane(1f, null, "Correlação e resumo", 320.dp) { pm ->
         Column(pm.then(if (compact) Modifier else Modifier.verticalScroll(rememberScrollState())), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section("Correlação (Pearson) na janela", Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -145,8 +145,8 @@ private fun CorrRow(name: String, r: Double?, hint: String) {
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             T(name, Q.Text, 12, modifier = Modifier.weight(1f))
-            T(r?.let { String.format(BR, "%+.2f", it) } ?: "—", c, 13, bold = true, monoFont = true, modifier = Modifier.width(56.dp))
-            T(Analytics.corrLabel(r), c, 11, modifier = Modifier.width(120.dp))
+            T(r?.let { String.format(BR, "%+.2f", it) } ?: "—", c, 13, bold = true, monoFont = true, modifier = Modifier.width(56.dp.f))
+            T(Analytics.corrLabel(r), c, 11, modifier = Modifier.width(120.dp.f))
         }
         Canvas(Modifier.fillMaxWidth().height(6.dp)) {
             val mid = size.width / 2
@@ -163,7 +163,7 @@ private fun CorrelationChart(b: List<FlowBucket>, modifier: Modifier) {
     val tm = rememberTextMeasurer()
     val buy = Q.Buy; val sell = Q.Sell; val text = Q.Text; val muted = Q.Muted; val line = Q.Line; val liqL = Q.LiqLong; val liqS = Q.LiqShort; val accent = Q.Accent
     Canvas(modifier) {
-        val u = density
+        val u = density * fontScale
         val labelW = 110f * u
         val w = size.width - labelW
         val gap = 10f * u
@@ -255,13 +255,13 @@ fun LiquidityHistoryTab(ctx: AppContext, s: TerminalState) {
             NumField("Pico ≥ (BTC)", minPeak, 56.dp) { it?.let { v -> minPeak = v; SettingsStore.put("lh.min", v) } }
             T(String.format(BR, "%,d paredes encerradas · %,d eventos gravados no período", ev.size, all.size), Q.Muted, 11, wrap = true)
         }
-        Panes(grow(1f), Pane(1.5f, 420.dp) { m ->
+        Panes(grow(1f), Pane(1.5f, 420.dp, "Mapa do histórico", 480.dp) { m ->
             Section("Onde as paredes estiveram e como terminaram", m) {
                 if (ev.isEmpty()) Empty("Nenhuma parede encerrada no período com esses filtros",
                     "O histórico vem do banco local: paredes que saíram do livro desde que o app foi instalado. Reduza o pico mínimo ou aumente o período.")
                 else WallScatter(ev, period, price, Modifier.fillMaxSize())
             }
-        }, Pane(1f) { pm ->
+        }, Pane(1f, null, "Como terminaram", 320.dp) { pm ->
             Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Section("Como terminaram", Modifier.fillMaxWidth()) {
                     Column {
@@ -271,11 +271,11 @@ fun LiquidityHistoryTab(ctx: AppContext, s: TerminalState) {
                             val n = ev.count { it.status == k }
                             val c = when (k) { "EXECUTION_CORROBORATED" -> Q.Accent; "POSSIBLY_EXECUTED" -> Q.Warn; else -> Q.Muted }
                             Row(Modifier.fillMaxWidth().height(22.dp), verticalAlignment = Alignment.CenterVertically) {
-                                T(lbl, Q.Text, 11, modifier = Modifier.width(210.dp))
+                                T(lbl, Q.Text, 11, modifier = Modifier.width(210.dp.f))
                                 Box(Modifier.weight(1f).fillMaxHeight().padding(vertical = 5.dp)) {
                                     Box(Modifier.fillMaxHeight().fillMaxWidth((n.toFloat() / tot).coerceIn(0.01f, 1f)).background(c))
                                 }
-                                T("$n · ${num(n * 100.0 / tot, 0)}%", Q.Text, 11, monoFont = true, modifier = Modifier.width(80.dp).padding(start = 6.dp))
+                                T("$n · ${num(n * 100.0 / tot, 0)}%", Q.Text, 11, monoFont = true, modifier = Modifier.width(80.dp.f).padding(start = 6.dp))
                             }
                         }
                     }
@@ -307,7 +307,7 @@ private fun WallScatter(ev: List<WallRecord>, period: Long, price: Double?, modi
     val tm = rememberTextMeasurer()
     val buy = Q.Buy; val sell = Q.Sell; val muted = Q.Muted; val accent = Q.Accent; val warn = Q.Warn; val line = Q.Line; val panel2 = Q.Panel2
     Canvas(modifier) {
-        val u = density
+        val u = density * fontScale
         val axisW = 66f * u; val axisH = 18f * u
         val w = size.width - axisW; val h = size.height - axisH
         val now = System.currentTimeMillis(); val t0 = now - period
@@ -346,7 +346,7 @@ fun AlertsTab(ctx: AppContext, s: TerminalState) {
     val sent by ctx.alerts.sent.collectAsState()
     var c by remember { mutableStateOf(cfg) }
     val dirty = c != cfg
-    Panes(Modifier.fillMaxSize(), Pane(1f) { pm ->
+    Panes(Modifier.fillMaxSize(), Pane(1f, null, "Configurar avisos", 420.dp) { pm ->
         Column(pm.then(if (compact) Modifier else Modifier.verticalScroll(rememberScrollState())), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section("Notificações ${if (Platform.isMobile) "neste celular" else "do Windows"}", Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -366,7 +366,7 @@ fun AlertsTab(ctx: AppContext, s: TerminalState) {
                             Toggle(k.label, k in c.kinds) { on -> c = c.copy(kinds = if (on) c.kinds + k else c.kinds - k) }
                             T(kindHint(k, c), Q.Muted, 11, wrap = true, modifier = Modifier.padding(start = 4.dp, top = 2.dp))
                         } else Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(Modifier.width(260.dp)) { Toggle(k.label, k in c.kinds) { on -> c = c.copy(kinds = if (on) c.kinds + k else c.kinds - k) } }
+                            Box(Modifier.width(260.dp.f)) { Toggle(k.label, k in c.kinds) { on -> c = c.copy(kinds = if (on) c.kinds + k else c.kinds - k) } }
                             T(kindHint(k, c), Q.Muted, 11, modifier = Modifier.weight(1f))
                         }
                     }
@@ -407,7 +407,7 @@ fun AlertsTab(ctx: AppContext, s: TerminalState) {
             T(if (Platform.isMobile) "Token e senha ficam guardados só neste celular (preferências do app), sem criptografia própria."
               else "Token e senha ficam guardados só neste computador (registro do usuário do Windows), sem criptografia própria.", Q.Muted, 11, wrap = true)
         }
-    }, Pane(0.9f, 420.dp) { m ->
+    }, Pane(0.9f, 420.dp, "Avisos enviados", 360.dp) { m ->
         Section("Avisos enviados", m) {
             Column {
                 if (sent.isEmpty()) Empty("Nenhum aviso enviado nesta sessão", if (!cfg.telegramOn && !cfg.mailOn && !cfg.deviceOn) "Ligue um canal de aviso e salve" else "Os avisos aparecem aqui com o resultado de cada envio")
