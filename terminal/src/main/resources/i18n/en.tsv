@@ -982,7 +982,7 @@ Baixo	Low
 Expectativa {0} · anterior {1} · resultado {2}	Forecast {0} · previous {1} · actual {2}
 Se vier acima do esperado: 	If it comes in above expectations: 
 Notícias com ligação econômica ao BTC	News with an economic link to BTC
-Tema	Topic
+Tema	Theme
 Nenhuma notícia relevante agora	No relevant news right now
 Só entram manchetes das últimas {0} h com ligação econômica clara (juros, dólar, energia, comércio, conflitos, regulação).	Only headlines from the last {0} h with a clear economic link are shown (rates, dollar, energy, trade, conflicts, regulation).
 Classificação automática por regras de palavras-chave sobre a manchete (docs/MACRO.md). Repetições entre veículos são agrupadas; abra o link para ler a matéria completa.	Automatic classification by keyword rules applied to the headline (docs/MACRO.md). Repeats across outlets are grouped; open the link to read the full article.

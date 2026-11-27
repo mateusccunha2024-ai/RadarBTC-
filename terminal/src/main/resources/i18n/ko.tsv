@@ -981,7 +981,7 @@ Baixo	낮음
 Expectativa {0} · anterior {1} · resultado {2}	예상 {0} · 이전 {1} · 결과 {2}
 Se vier acima do esperado: 	예상치를 웃돌 경우: 
 Notícias com ligação econômica ao BTC	BTC와 경제적으로 연관된 뉴스
-Tema	주제
+Tema	테마
 Nenhuma notícia relevante agora	지금 중요한 뉴스가 없습니다
 Só entram manchetes das últimas {0} h com ligação econômica clara (juros, dólar, energia, comércio, conflitos, regulação).	최근 {0}시간 내 경제적 연관성이 명확한 헤드라인만 표시됩니다 (금리, 달러, 에너지, 무역, 분쟁, 규제).
 Classificação automática por regras de palavras-chave sobre a manchete (docs/MACRO.md). Repetições entre veículos são agrupadas; abra o link para ler a matéria completa.	헤드라인의 키워드 규칙에 따른 자동 분류 (docs/MACRO.md). 여러 매체의 중복 기사는 묶어서 표시되며, 전체 기사는 링크를 열어 확인하세요.

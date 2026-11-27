@@ -361,8 +361,8 @@ fun OutlineButton(label: String, color: Color = Q.Accent, border: Color = color,
     }
 
 @Composable
-private fun ChipItem(s: String, on: Boolean, onClick: () -> Unit) = Tap(onClick) {
-    Text(L(s), color = if (on) Q.Accent else Q.Muted, fontSize = 12.sp, lineHeight = 16.sp, maxLines = 1,
+private fun ChipItem(s: String, on: Boolean, tr: Boolean = true, onClick: () -> Unit) = Tap(onClick) {
+    Text(if (tr) L(s) else s, color = if (on) Q.Accent else Q.Muted, fontSize = 12.sp, lineHeight = 16.sp, maxLines = 1,
         modifier = Modifier.background(if (on) Q.Panel2 else Q.Panel).border(1.dp, if (on) Q.Accent else Q.Line)
             .padding(horizontal = if (compact) 11.dp else 8.dp, vertical = if (compact) 8.dp else 4.dp))
 }
@@ -382,7 +382,7 @@ fun Chips(label: String?, options: List<String>, selected: Int, onSelect: (Int) 
 }
 
 @Composable
-fun Toggle(label: String, on: Boolean, onChange: (Boolean) -> Unit) = ChipItem((if (on) "■ " else "□ ") + label, on) { onChange(!on) }
+fun Toggle(label: String, on: Boolean, onChange: (Boolean) -> Unit) = ChipItem((if (on) "■ " else "□ ") + L(label), on, tr = false) { onChange(!on) }
 
 /** Campo numérico; aplica o valor quando o texto vira um número válido (aceita vírgula). */
 @Composable

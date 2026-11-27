@@ -982,7 +982,7 @@ Baixo	Niedrig
 Expectativa {0} · anterior {1} · resultado {2}	Erwartung {0} · Vorwert {1} · Ergebnis {2}
 Se vier acima do esperado: 	Falls über den Erwartungen: 
 Notícias com ligação econômica ao BTC	Nachrichten mit wirtschaftlichem Bezug zu BTC
-Tema	Thema
+Tema	Design
 Nenhuma notícia relevante agora	Gerade keine relevanten Nachrichten
 Só entram manchetes das últimas {0} h com ligação econômica clara (juros, dólar, energia, comércio, conflitos, regulação).	Es werden nur Schlagzeilen der letzten {0} h mit klarem wirtschaftlichem Bezug angezeigt (Zinsen, Dollar, Energie, Handel, Konflikte, Regulierung).
 Classificação automática por regras de palavras-chave sobre a manchete (docs/MACRO.md). Repetições entre veículos são agrupadas; abra o link para ler a matéria completa.	Automatische Einstufung über Schlüsselwortregeln für die Schlagzeile (docs/MACRO.md). Wiederholungen aus verschiedenen Medien werden gebündelt; öffnen Sie den Link für den vollständigen Artikel.
