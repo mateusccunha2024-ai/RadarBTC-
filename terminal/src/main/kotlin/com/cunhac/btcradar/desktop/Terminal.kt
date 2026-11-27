@@ -297,12 +297,12 @@ private fun TopBar(s: TerminalState, onSettings: () -> Unit) {
 private fun CompactTopBar(s: TerminalState, onSettings: () -> Unit) {
     BoxWithConstraints(Modifier.fillMaxWidth()) {
     // Telas muito estreitas (ou zoom alto): some o nome do app para o preço e os botões caberem.
-    val roomy = maxWidth >= 380.dp
+    val roomy = maxWidth >= 380.dp * UiScale.font
     Column(Modifier.fillMaxWidth().background(Q.Bg).padding(horizontal = 10.dp, vertical = 6.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (roomy) { T("Radar BTC", Q.Text, 14, bold = true); Spacer(Modifier.width(10.dp)) }
-            T(px(s.price), Q.Text, 18, bold = true, monoFont = true)
-            Spacer(Modifier.weight(1f).widthIn(min = 8.dp))
+            T(px(s.price), Q.Text, 18, bold = true, monoFont = true, modifier = Modifier.padding(end = 8.dp))
+            Spacer(Modifier.weight(1f))
             val live = s.liveCount()
             T("Livros $live/3", if (live == 3) Q.Buy else if (live > 0) Q.Warn else Q.Sell, 12, bold = true, modifier = Modifier.padding(end = 4.dp))
             SmallButton(if (Look.dark) "☾" else "☀") { Look.useDark(!Look.dark) }

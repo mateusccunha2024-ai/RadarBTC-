@@ -77,9 +77,9 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
             LIQ_VENUES.forEach { v -> T("${v.label} ${num(tot.byVenue[v] ?: 0.0, 3)}", Q.Muted, 11) }
         }
         Panes(grow(1f),
-            Pane(1f, 360.dp, "Top LONG", 340.dp) { m -> LiqTable("Top LONG liquidadas · $pl", topL, r.thresholds::classify, m, "Nenhuma liquidação LONG de BTC em $pl · ${r.received} eventos desde a abertura") },
-            Pane(1f, 360.dp, "Top SHORT", 340.dp) { m -> LiqTable("Top SHORT liquidadas · $pl", topS, r.thresholds::classify, m, "Nenhuma liquidação SHORT de BTC em $pl · ${r.received} eventos desde a abertura") },
-            Pane(1f, 360.dp, "Top geral", 340.dp) { m -> LiqTable("Top geral · $pl", topAll, r.thresholds::classify, m, "Nenhuma liquidação de BTC em $pl") },
+            Pane(1f, 360.dp, "Top LONG", 360.dp) { m -> LiqTable("Top LONG liquidadas · $pl", topL, r.thresholds::classify, m, "Nenhuma liquidação LONG de BTC em $pl · ${r.received} eventos desde a abertura") },
+            Pane(1f, 360.dp, "Top SHORT", 360.dp) { m -> LiqTable("Top SHORT liquidadas · $pl", topS, r.thresholds::classify, m, "Nenhuma liquidação SHORT de BTC em $pl · ${r.received} eventos desde a abertura") },
+            Pane(1f, 360.dp, "Top geral", 360.dp) { m -> LiqTable("Top geral · $pl", topAll, r.thresholds::classify, m, "Nenhuma liquidação de BTC em $pl") },
             Pane(1.1f, 480.dp, "Alertas", 360.dp) { m ->
             AlertFeed(s, m)
             })
@@ -94,15 +94,15 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
 @Composable
 private fun LiqTable(title: String, list: List<LiqEvent>, cls: (Double) -> LiqClass, modifier: Modifier, empty: String) {
     // Compacta para caber no painel do PC sem rolar para o lado; a coluna ORIGINAL quebra linha se precisar.
-    Section(title, modifier.fillMaxHeight(), minWidth = 340.dp) {
+    Section(title, modifier.fillMaxHeight(), minWidth = 360.dp) {
         Column {
-            Th("HORA" to 60, "CORR." to 58, "LADO" to 48, "PREÇO" to 72, "BTC" to 58, "ORIGINAL" to 0)
+            Th("HORA" to 68, "CORR." to 60, "LADO" to 48, "PREÇO" to 72, "BTC" to 58, "ORIGINAL" to 0)
             if (list.isEmpty()) Empty(empty, "Aparecem aqui assim que alguma das 6 corretoras reportar")
             LazyColumn {
                 items(list) { e ->
                     val c = if (e.side == LiqSide.LONG) Q.LiqLong else Q.LiqShort
                     val k = cls(e.qtyBtc)
-                    Td(Triple(hhmmss(e.timeMs), 60, Q.Muted), Triple(e.venue.label, 58, Q.Text), Triple(e.side.name, 48, c), Triple(px(e.price), 72, Q.Text),
+                    Td(Triple(hhmmss(e.timeMs), 68, Q.Muted), Triple(e.venue.label, 60, Q.Text), Triple(e.side.name, 48, c), Triple(px(e.price), 72, Q.Text),
                         Triple(num(e.qtyBtc, 3) + if (k == LiqClass.EXTREME) " !!" else if (k == LiqClass.LARGE) " !" else "", 58, c),
                         Triple("${num(e.origQty, 3)} ${e.origUnit}", 0, Q.Muted))
                 }
