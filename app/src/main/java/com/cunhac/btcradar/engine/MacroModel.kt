@@ -522,12 +522,6 @@ object MacroConfluence {
         val heldDown = (f.priceChange1hPct ?: 0.0) < 0.3
         val conf = when {
             macroSign != 0 && macroSign == flowSign && (liqSign == 0 || liqSign == macroSign) -> Confluence.HIGH
-            macroSign < 0 && flowSign < 0 ->
-                "Macro desfavorável e vendas agressoras na mesma direção, ainda sem desalavancagem forte (liquidações de LONG). Pressão vendedora alinhada ao cenário macro."
-            macroSign > 0 && flowSign == 0 && liqSign > 0 ->
-                "Macro favorável e SHORT sendo liquidados, mas sem compra agressora clara: alta puxada por recompra forçada, menos sustentada."
-            macroSign < 0 && flowSign == 0 && liqSign < 0 ->
-                "Macro desfavorável e LONG sendo liquidados, mas sem venda agressora clara: queda puxada por desalavancagem."
             macroSign != 0 && flowSign != 0 && macroSign != flowSign -> Confluence.LOW
             else -> Confluence.MEDIUM
         }
@@ -541,6 +535,12 @@ object MacroConfluence {
                     (if (liqSign > 0) ", reforçado por liquidações de SHORT." else ".")
             macroSign > 0 && f.askAbsorptions > f.bidAbsorptions && heldDown ->
                 "Macro favorável, mas há absorção de compras nas paredes de venda e o preço não avança: oferta segurando a alta."
+            macroSign < 0 && flowSign < 0 ->
+                "Macro desfavorável e vendas agressoras na mesma direção, ainda sem desalavancagem forte (liquidações de LONG). Pressão vendedora alinhada ao cenário macro."
+            macroSign > 0 && flowSign == 0 && liqSign > 0 ->
+                "Macro favorável e SHORT sendo liquidados, mas sem compra agressora clara: alta puxada por recompra forçada, menos sustentada."
+            macroSign < 0 && flowSign == 0 && liqSign < 0 ->
+                "Macro desfavorável e LONG sendo liquidados, mas sem venda agressora clara: queda puxada por desalavancagem."
             macroSign != 0 && flowSign != 0 && macroSign != flowSign ->
                 "Divergência: o fluxo agressor vai contra o cenário macro. Pode ser movimento técnico local; vale cautela até haver confirmação."
             macroSign == 0 ->
