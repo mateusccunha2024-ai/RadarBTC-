@@ -88,14 +88,14 @@ fun EtfTab(ctx: AppContext) {
             LazyColumn {
                 items(funds, key = { it.first }) { (name, v) ->
                     Row(Modifier.fillMaxWidth().height(26.dp)) {
-                        T(name, Q.Text, 13, monoFont = true, modifier = Modifier.width(90.dp))
+                        T(name, Q.Text, 13, monoFont = true, modifier = Modifier.width(90.dp.f))
                         Box(Modifier.weight(1f).padding(vertical = 8.dp)) {
                             val mx = (funds.maxOfOrNull { abs(it.second) } ?: 0.0).coerceAtLeast(1e-9)
                             if (v != 0.0) Box(Modifier.fillMaxWidth((abs(v) / mx).toFloat().coerceIn(0.02f, 1f)).height(10.dp)
                                 .background((if (v >= 0) Q.Buy else Q.Sell).copy(alpha = 0.6f)))
                         }
                         T(if (v == 0.0) "—" else mi(v), if (v == 0.0) Q.Muted else if (v > 0) Q.Buy else Q.Sell, 12, monoFont = true,
-                            modifier = Modifier.width(120.dp).padding(start = 8.dp))
+                            modifier = Modifier.width(120.dp.f).padding(start = 8.dp))
                     }
                 }
             }
@@ -110,7 +110,7 @@ private fun FlowBars(days: List<EtfDay>, modifier: Modifier) {
     val st = TextStyle(color = Q.Muted, fontSize = 10.sp)
     Canvas(modifier) {
         if (days.isEmpty()) return@Canvas
-        val axisH = 18.dp.toPx()
+        val axisH = 18.dp.toPx() * fontScale
         val h = size.height - axisH
         val max = (days.maxOfOrNull { abs(it.total) } ?: 0.0).coerceAtLeast(1.0)
         val mid = h / 2

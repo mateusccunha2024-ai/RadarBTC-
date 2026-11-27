@@ -195,7 +195,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier, expan
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Chips("Corretoras", listOf("Todas") + HEAT_VENUES.map { it.label }, venueIdx) { venueIdx = it; SettingsStore.put("hm.venue", it) }
                     T("Intensidade", Q.Muted, 11)
-                    Slider(intensity, { intensity = it; SettingsStore.put("hm.int", it.toDouble()) }, Modifier.width(150.dp).height(20.dp),
+                    Slider(intensity, { intensity = it; SettingsStore.put("hm.int", it.toDouble()) }, Modifier.width(150.dp.f).height(20.dp),
                         colors = SliderDefaults.colors(thumbColor = Q.Accent, activeTrackColor = Q.Accent, inactiveTrackColor = Q.Line))
                     Toggle("Liquidações reais", showReal) { showReal = it; SettingsStore.put("hm.real", it) }
                     T(when {
@@ -286,14 +286,25 @@ private fun HeatLegend(mode: Int, k: Float, showReal: Boolean, showLines: Boolea
         if (showLines) { T("Linhas:", Q.Muted, 10); T("níveis em aberto (caixas ao lado)", Q.Muted, 10) }
     }
     // No PC tudo numa linha (rótulo · barra · pontos/linhas) para sobrar altura ao mapa; no celular, empilhado.
-    if (compact) Column(modifier) {
+    // Com largura média (tablet, fonte grande) a barra de cores não pode ser espremida a zero: rótulo e barra
+    // numa linha e pontos/linhas na de baixo.
+    BoxWithConstraints(modifier) {
+    val wide = !compact && maxWidth >= 1150.dp * UiScale.font
+    if (compact) Column(Modifier.fillMaxWidth()) {
         T(label, Q.Muted, 10, wrap = true)
         LegendBar(mode, k, stops, fmt)
         FlowRow(Modifier.padding(top = 2.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) { marks() }
-    } else Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+    } else if (!wide) Column(Modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            T(label, Q.Muted, 10)
+            Column(Modifier.weight(1f)) { LegendBar(mode, k, stops, fmt) }
+        }
+        FlowRow(Modifier.padding(top = 2.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) { marks() }
+    } else Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         T(label, Q.Muted, 10)
         Column(Modifier.weight(1f)) { LegendBar(mode, k, stops, fmt) }
         marks()
+    }
     }
 }
 
@@ -326,7 +337,7 @@ private fun DeltaStrip(delta: FloatArray, modifier: Modifier) {
     val tm = rememberTextMeasurer()
     val st = TextStyle(color = Q.Muted, fontSize = 10.sp)
     Canvas(modifier.background(Q.Panel2)) {
-        val axisW = 64.dp.toPx()
+        val axisW = 64.dp.toPx() * fontScale
         val w = size.width - axisW
         val mx = (delta.maxOfOrNull { kotlin.math.abs(it) } ?: 0f).takeIf { it > 0 } ?: 1f
         val mid = size.height / 2
@@ -362,7 +373,7 @@ private fun HeatTooltip(d: HeatData, g: Pair<Array<FloatArray>, Array<FloatArray
     val lo = d.pMin + d.pStep * row
     val longs = g.first[row][col]; val shorts = g.second[row][col]
     val close = d.candles.getOrNull(col)?.close
-    Column(modifier.width(290.dp).background(Q.Tip).border(1.dp, Q.Line).padding(10.dp)) {
+    Column(modifier.width(290.dp.f).background(Q.Tip).border(1.dp, Q.Line).padding(10.dp)) {
         T(SimpleDateFormat("dd/MM HH:mm").format(Date(t)) + "  ·  fechamento " + px(close), Q.Text, 11, bold = true)
         T("Faixa ${px(lo)} – ${px(lo + d.pStep)}", Q.Muted, 11)
         price?.let { T("Distância do preço atual: " + pct((lo + d.pStep / 2) / it * 100 - 100), Q.Muted, 11) }

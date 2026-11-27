@@ -339,11 +339,11 @@ private val SCALES = listOf(0.8f, 0.9f, 1.0f, 1.1f, 1.25f, 1.5f)
 @Composable
 private fun ViewSettingsPanel(ctx: AppContext, onClose: () -> Unit) {
     var refresh by remember { mutableStateOf(ctx.hub.refreshMs) }
-    Column((if (compact) Modifier.fillMaxWidth() else Modifier.width(440.dp)).fillMaxHeight(0.92f).background(Q.Panel).border(1.dp, Q.Line)
+    Column((if (compact) Modifier.fillMaxWidth() else Modifier.width(440.dp.f)).fillMaxHeight(0.92f).background(Q.Panel).border(1.dp, Q.Line)
         .clickable(remember { MutableInteractionSource() }, null) {}  // não fecha ao clicar dentro
         .verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            T(if (compact) "Visualização" else "Configurações de visualização", Q.Text, 15, bold = true, modifier = Modifier.weight(1f))
+            T(if (compact) "Visualização" else "Configurações de visualização", Q.Text, 15, bold = true, wrap = true, modifier = Modifier.weight(1f))
             SmallButton("Fechar ✕", onClick = onClose)
         }
         SettingGroup("Tema") {

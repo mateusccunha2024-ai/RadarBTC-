@@ -145,8 +145,8 @@ private fun CorrRow(name: String, r: Double?, hint: String) {
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             T(name, Q.Text, 12, modifier = Modifier.weight(1f))
-            T(r?.let { String.format(BR, "%+.2f", it) } ?: "—", c, 13, bold = true, monoFont = true, modifier = Modifier.width(56.dp))
-            T(Analytics.corrLabel(r), c, 11, modifier = Modifier.width(120.dp))
+            T(r?.let { String.format(BR, "%+.2f", it) } ?: "—", c, 13, bold = true, monoFont = true, modifier = Modifier.width(56.dp.f))
+            T(Analytics.corrLabel(r), c, 11, modifier = Modifier.width(120.dp.f))
         }
         Canvas(Modifier.fillMaxWidth().height(6.dp)) {
             val mid = size.width / 2
@@ -163,7 +163,7 @@ private fun CorrelationChart(b: List<FlowBucket>, modifier: Modifier) {
     val tm = rememberTextMeasurer()
     val buy = Q.Buy; val sell = Q.Sell; val text = Q.Text; val muted = Q.Muted; val line = Q.Line; val liqL = Q.LiqLong; val liqS = Q.LiqShort; val accent = Q.Accent
     Canvas(modifier) {
-        val u = density
+        val u = density * fontScale
         val labelW = 110f * u
         val w = size.width - labelW
         val gap = 10f * u
@@ -271,11 +271,11 @@ fun LiquidityHistoryTab(ctx: AppContext, s: TerminalState) {
                             val n = ev.count { it.status == k }
                             val c = when (k) { "EXECUTION_CORROBORATED" -> Q.Accent; "POSSIBLY_EXECUTED" -> Q.Warn; else -> Q.Muted }
                             Row(Modifier.fillMaxWidth().height(22.dp), verticalAlignment = Alignment.CenterVertically) {
-                                T(lbl, Q.Text, 11, modifier = Modifier.width(210.dp))
+                                T(lbl, Q.Text, 11, modifier = Modifier.width(210.dp.f))
                                 Box(Modifier.weight(1f).fillMaxHeight().padding(vertical = 5.dp)) {
                                     Box(Modifier.fillMaxHeight().fillMaxWidth((n.toFloat() / tot).coerceIn(0.01f, 1f)).background(c))
                                 }
-                                T("$n · ${num(n * 100.0 / tot, 0)}%", Q.Text, 11, monoFont = true, modifier = Modifier.width(80.dp).padding(start = 6.dp))
+                                T("$n · ${num(n * 100.0 / tot, 0)}%", Q.Text, 11, monoFont = true, modifier = Modifier.width(80.dp.f).padding(start = 6.dp))
                             }
                         }
                     }
@@ -307,7 +307,7 @@ private fun WallScatter(ev: List<WallRecord>, period: Long, price: Double?, modi
     val tm = rememberTextMeasurer()
     val buy = Q.Buy; val sell = Q.Sell; val muted = Q.Muted; val accent = Q.Accent; val warn = Q.Warn; val line = Q.Line; val panel2 = Q.Panel2
     Canvas(modifier) {
-        val u = density
+        val u = density * fontScale
         val axisW = 66f * u; val axisH = 18f * u
         val w = size.width - axisW; val h = size.height - axisH
         val now = System.currentTimeMillis(); val t0 = now - period
@@ -366,7 +366,7 @@ fun AlertsTab(ctx: AppContext, s: TerminalState) {
                             Toggle(k.label, k in c.kinds) { on -> c = c.copy(kinds = if (on) c.kinds + k else c.kinds - k) }
                             T(kindHint(k, c), Q.Muted, 11, wrap = true, modifier = Modifier.padding(start = 4.dp, top = 2.dp))
                         } else Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(Modifier.width(260.dp)) { Toggle(k.label, k in c.kinds) { on -> c = c.copy(kinds = if (on) c.kinds + k else c.kinds - k) } }
+                            Box(Modifier.width(260.dp.f)) { Toggle(k.label, k in c.kinds) { on -> c = c.copy(kinds = if (on) c.kinds + k else c.kinds - k) } }
                             T(kindHint(k, c), Q.Muted, 11, modifier = Modifier.weight(1f))
                         }
                     }

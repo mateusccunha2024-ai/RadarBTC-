@@ -144,15 +144,15 @@ private fun Ladder(asks: List<ConsRow>, bids: List<ConsRow>, showRpi: Boolean, i
     val max = ((asks + bids).maxOfOrNull { it.total } ?: 0.0).coerceAtLeast(1e-9)
     fun ex(r: ConsRow): DoubleArray? = exec[if (g > 0 && r.side == BookSide.ASK) r.price - g else r.price]
     Row(Modifier.fillMaxWidth().padding(bottom = 2.dp)) {
-        T("Preço", Q.Muted, 10, modifier = Modifier.width(88.dp))
+        T("Preço", Q.Muted, 10, modifier = Modifier.width(88.dp.f))
         T(if (full) "Quantidade (BTC)" else "Qtd. (BTC)", Q.Muted, 10, modifier = Modifier.weight(1f))
         if (full) {
-            listOf("Bin", "Byb", "OKX").forEach { T(it, Q.Muted, 10, modifier = Modifier.width(60.dp)) }
-            if (showRpi) T("RPI", Q.Muted, 10, modifier = Modifier.width(52.dp))
-            T("Ordens", Q.Muted, 10, modifier = Modifier.width(52.dp))
+            listOf("Bin", "Byb", "OKX").forEach { T(it, Q.Muted, 10, modifier = Modifier.width(60.dp.f)) }
+            if (showRpi) T("RPI", Q.Muted, 10, modifier = Modifier.width(52.dp.f))
+            T("Ordens", Q.Muted, 10, modifier = Modifier.width(52.dp.f))
         }
-        T("Total", Q.Muted, 10, modifier = Modifier.width(70.dp).padding(start = 4.dp))
-        if (full) T("Acumulado", Q.Muted, 10, modifier = Modifier.width(78.dp))
+        T("Total", Q.Muted, 10, modifier = Modifier.width(70.dp.f).padding(start = 4.dp))
+        if (full) T("Acumulado", Q.Muted, 10, modifier = Modifier.width(78.dp.f))
         T("Ex. C", Q.Muted, 10, modifier = Modifier.width(if (full) 74.dp else 56.dp))
         T("Ex. V", Q.Muted, 10, modifier = Modifier.width(if (full) 70.dp else 56.dp))
     }
@@ -186,18 +186,18 @@ private fun LadderRow(r: ConsRow, max: Double, showRpi: Boolean, intensity: Floa
     val base = if (buy) Q.Buy else Q.Sell
     val frac = ((r.total / max).toFloat() * intensity).coerceIn(0f, 1f)
     Row(Modifier.fillMaxWidth().height(20.dp), verticalAlignment = Alignment.CenterVertically) {
-        T(px(r.price), base, 11, monoFont = true, modifier = Modifier.width(88.dp))
+        T(px(r.price), base, 11, monoFont = true, modifier = Modifier.width(88.dp.f))
         Box(Modifier.weight(1f).fillMaxHeight().padding(vertical = 2.dp)) {
             if (frac > 0.003f) Box(Modifier.fillMaxHeight().fillMaxWidth(frac).background(base.copy(alpha = 0.25f + 0.6f * frac)))
         }
         // Zero = célula vazia; poeira (< 0,001 BTC) em cinza: só os níveis com volume de verdade chamam atenção.
         if (full) {
-            for (i in 0..2) T(cell(r.byVenue[i]), tint(r.byVenue[i], Q.Text), 11, monoFont = true, modifier = Modifier.width(60.dp))
-            if (showRpi) T(cell(r.byVenue[3]), Q.Muted, 11, monoFont = true, modifier = Modifier.width(52.dp))
-            T(if (r.okxOrders > 0) r.okxOrders.toString() else "", Q.Muted, 11, monoFont = true, modifier = Modifier.width(52.dp))
+            for (i in 0..2) T(cell(r.byVenue[i]), tint(r.byVenue[i], Q.Text), 11, monoFont = true, modifier = Modifier.width(60.dp.f))
+            if (showRpi) T(cell(r.byVenue[3]), Q.Muted, 11, monoFont = true, modifier = Modifier.width(52.dp.f))
+            T(if (r.okxOrders > 0) r.okxOrders.toString() else "", Q.Muted, 11, monoFont = true, modifier = Modifier.width(52.dp.f))
         }
-        T(qty(r.total), tint(r.total, Q.Text), 11, bold = frac > 0.5f, monoFont = true, modifier = Modifier.width(70.dp).padding(start = 4.dp))
-        if (full) T(num(r.cumulative, 2), Q.Muted, 11, monoFont = true, modifier = Modifier.width(78.dp))
+        T(qty(r.total), tint(r.total, Q.Text), 11, bold = frac > 0.5f, monoFont = true, modifier = Modifier.width(70.dp.f).padding(start = 4.dp))
+        if (full) T(num(r.cumulative, 2), Q.Muted, 11, monoFont = true, modifier = Modifier.width(78.dp.f))
         val eb = ex?.get(0) ?: 0.0; val es = ex?.get(1) ?: 0.0
         T(cell(eb), tint(eb, Q.Buy), 11, monoFont = true, modifier = Modifier.width(if (full) 74.dp else 56.dp))
         T(cell(es), tint(es, Q.Sell), 11, monoFont = true, modifier = Modifier.width(if (full) 70.dp else 56.dp))

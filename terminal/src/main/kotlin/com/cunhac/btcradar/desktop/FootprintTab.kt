@@ -121,7 +121,7 @@ private fun FootprintChart(candles: List<FootCandle>, step: Double, price: Doubl
     val tm = rememberTextMeasurer()
     val buyC = Q.Buy; val sellC = Q.Sell; val text = Q.Text; val muted = Q.Muted; val line = Q.Line; val accent = Q.Accent; val panel2 = Q.Panel2
     Canvas(modifier) {
-        val u = density
+        val u = density * fontScale
         val axisW = 66f * u; val footH = 34f * u; val headH = 16f * u
         val w = size.width - axisW; val h = size.height - footH - headH
         val lo = candles.minOf { it.low }.let { kotlin.math.floor(it / step) * step }

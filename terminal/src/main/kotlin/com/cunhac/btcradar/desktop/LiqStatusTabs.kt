@@ -119,7 +119,7 @@ fun StatusTab(ctx: AppContext, s: TerminalState) {
     val logs = remember(s.tick) { ctx.hub.logs(250) }
     val counts = remember(s.tick / 7) { ctx.db.counts() }
     val stats = remember(s.tick / 2) { processStats() }
-    Panes(Modifier.fillMaxSize(), Pane(1.4f, null, "Conexões e livros", 520.dp) { pm ->
+    Panes(Modifier.fillMaxSize(), Pane(1.4f, null, "Conexões e livros", 600.dp) { pm ->
         Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section("Conexões (Ao vivo = conexão + inscrição + dados recentes)", Modifier.fillMaxWidth(), minWidth = 900.dp) {
                 Column {
