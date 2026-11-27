@@ -13,8 +13,6 @@ Bybit: resposta sem 'result'	Bybit: 'result' のない応答
 {0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}	{0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}
 Buy	買い
 Conexão encerrada ({0})	接続が終了しました ({0})
-Binance	Binance
-Bybit	Bybit
 HTTP {0} em {1}	{1}でHTTP {0}
 Resposta vazia em {0}	{0}で応答が空です
 Alertas do mercado	市場アラート
@@ -43,14 +41,10 @@ fraca positiva	弱い正
 fraca negativa	弱い負
 BTCUSDT perp (USD-M)	BTCUSDT perp (USD-M)
 BTCUSDT linear	BTCUSDT linear
-Gate	Gate
 BTC_USDT perp	BTC_USDT perp
-Bitget	Bitget
 BTCUSDT perp (USDT-M)	BTCUSDT perp (USDT-M)
-Deribit	Deribit
 BTC-PERPETUAL (inverso, USD)	BTC-PERPETUAL (逆、USD)
 BTC-USDT perp (só open interest)	BTC-USDT perp (建玉のみ)
-Kraken	Kraken
 PF_XBTUSD perp (só open interest)	PF_XBTUSD perp (建玉のみ)
 metadados do contrato indisponíveis, usando {0} BTC: {1}	メタデータを取得できません。{0} BTCを使用: {1}
 Liquidações (futures.public_liquidates)	清算 (futures.public_liquidates)
@@ -524,9 +518,7 @@ Banco Central Europeu (BCE)	欧州中央銀行（ECB）
 Taxa de depósito e comunicados	預金金利・声明
 SEC e CFTC	SECおよびCFTC
 Comunicados dos reguladores americanos	米国規制当局の声明
-Yahoo Finance	Yahoo Finance
 Bolsas (EUA, Europa, Ásia, Brasil), VIX, MOVE, DXY, moedas, commodities, Treasuries intradiários, futuros de Fed funds (CBOT), ETH, IBIT, MSTR, COIN, HYG	株式市場（米国、欧州、アジア、ブラジル）、VIX、MOVE、DXY、通貨、コモディティ、日中のトレジャリー、CBOT FF金利先物、ETH、IBIT、MSTR、COIN、HYG
-Kalshi	Kalshi
 Probabilidades negociadas da próxima decisão de juros do Fed	FOMC次回金利決定の取引されている確率
 Forex Factory (faireconomy.media)	Forex Factory（faireconomy.media）
 Calendário econômico semanal: horário, impacto, expectativa e anterior	週間経済指標カレンダー：時刻、影響度、予想、前回値
@@ -606,7 +598,6 @@ Corretoras	取引所
 Todas	すべて
 Dados desde {0}	{0} からのデータ
 Aguardando trades	トレードを待機中
-Footprint	フットプリント
 Footprint · venda × compra agressora por faixa (BTC)	フットプリント · 価格帯ごとの投げ売り × 成行買い (BTC)
 Montando o footprint	フットプリントを構築中
 Precisa de trades das corretoras principais; cada vela aparece assim que recebe execuções	主要取引所のトレードが必要です。各ローソク足は約定を受信するとすぐに表示されます

@@ -13,8 +13,6 @@ Bybit: resposta sem 'result'	Bybit: respuesta sin 'result'
 {0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}	{0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}
 Buy	Buy
 Conexão encerrada ({0})	Conexión cerrada ({0})
-Binance	Binance
-Bybit	Bybit
 HTTP {0} em {1}	HTTP {0} en {1}
 Resposta vazia em {0}	Respuesta vacía en {0}
 Alertas do mercado	Alertas del mercado
@@ -43,14 +41,10 @@ fraca positiva	débil positiva
 fraca negativa	débil negativa
 BTCUSDT perp (USD-M)	BTCUSDT perp (USD-M)
 BTCUSDT linear	BTCUSDT lineal
-Gate	Gate
 BTC_USDT perp	BTC_USDT perp
-Bitget	Bitget
 BTCUSDT perp (USDT-M)	BTCUSDT perp (USDT-M)
-Deribit	Deribit
 BTC-PERPETUAL (inverso, USD)	BTC-PERPETUAL (inverso, USD)
 BTC-USDT perp (só open interest)	BTC-USDT perp (solo open interest)
-Kraken	Kraken
 PF_XBTUSD perp (só open interest)	PF_XBTUSD perp (solo open interest)
 metadados do contrato indisponíveis, usando {0} BTC: {1}	metadatos del contrato no disponibles, usando {0} BTC: {1}
 Liquidações (futures.public_liquidates)	Liquidaciones (futures.public_liquidates)
@@ -524,9 +518,7 @@ Banco Central Europeu (BCE)	Banco Central Europeo (BCE)
 Taxa de depósito e comunicados	Tasa de depósito y comunicados
 SEC e CFTC	SEC y CFTC
 Comunicados dos reguladores americanos	Comunicados de los reguladores estadounidenses
-Yahoo Finance	Yahoo Finance
 Bolsas (EUA, Europa, Ásia, Brasil), VIX, MOVE, DXY, moedas, commodities, Treasuries intradiários, futuros de Fed funds (CBOT), ETH, IBIT, MSTR, COIN, HYG	Bolsas (EE. UU., Europa, Asia, Brasil), VIX, MOVE, DXY, monedas, commodities, Treasuries intradía, futuros de fed funds (CBOT), ETH, IBIT, MSTR, COIN, HYG
-Kalshi	Kalshi
 Probabilidades negociadas da próxima decisão de juros do Fed	Probabilidades negociadas de la próxima decisión de tasas del Fed
 Forex Factory (faireconomy.media)	Forex Factory (faireconomy.media)
 Calendário econômico semanal: horário, impacto, expectativa e anterior	Calendario económico semanal: hora, impacto, previsión y anterior
@@ -606,7 +598,6 @@ Corretoras	Exchanges
 Todas	Todas
 Dados desde {0}	Datos desde {0}
 Aguardando trades	Esperando trades
-Footprint	Footprint
 Footprint · venda × compra agressora por faixa (BTC)	Footprint · venta × compra agresora por rango (BTC)
 Montando o footprint	Armando el footprint
 Precisa de trades das corretoras principais; cada vela aparece assim que recebe execuções	Necesita trades de los exchanges principales; cada vela aparece en cuanto recibe ejecuciones

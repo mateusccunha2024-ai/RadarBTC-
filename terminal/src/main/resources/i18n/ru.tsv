@@ -13,8 +13,6 @@ Bybit: resposta sem 'result'	Bybit: ответ без 'result'
 {0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}	{0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}
 Buy	Покупка
 Conexão encerrada ({0})	Соединение закрыто ({0})
-Binance	Binance
-Bybit	Bybit
 HTTP {0} em {1}	HTTP {0} на {1}
 Resposta vazia em {0}	Пустой ответ от {0}
 Alertas do mercado	Рыночные оповещения
@@ -43,14 +41,10 @@ fraca positiva	слабая положительная
 fraca negativa	слабая отрицательная
 BTCUSDT perp (USD-M)	BTCUSDT perp (USD-M)
 BTCUSDT linear	BTCUSDT linear
-Gate	Gate
 BTC_USDT perp	BTC_USDT perp
-Bitget	Bitget
 BTCUSDT perp (USDT-M)	BTCUSDT perp (USDT-M)
-Deribit	Deribit
 BTC-PERPETUAL (inverso, USD)	BTC-PERPETUAL (инверсный, USD)
 BTC-USDT perp (só open interest)	BTC-USDT perp (только open interest)
-Kraken	Kraken
 PF_XBTUSD perp (só open interest)	PF_XBTUSD perp (только open interest)
 metadados do contrato indisponíveis, usando {0} BTC: {1}	метаданные контракта недоступны, используется {0} BTC: {1}
 Liquidações (futures.public_liquidates)	Ликвидации (futures.public_liquidates)
@@ -524,9 +518,7 @@ Banco Central Europeu (BCE)	Европейский центральный бан
 Taxa de depósito e comunicados	Ставка депозита и заявления
 SEC e CFTC	SEC и CFTC
 Comunicados dos reguladores americanos	Заявления американских регуляторов
-Yahoo Finance	Yahoo Finance
 Bolsas (EUA, Europa, Ásia, Brasil), VIX, MOVE, DXY, moedas, commodities, Treasuries intradiários, futuros de Fed funds (CBOT), ETH, IBIT, MSTR, COIN, HYG	Биржи (США, Европа, Азия, Бразилия), VIX, MOVE, DXY, валюты, сырьё, внутридневные Treasuries, фьючерсы на ставки фондов ФРС (CBOT), ETH, IBIT, MSTR, COIN, HYG
-Kalshi	Kalshi
 Probabilidades negociadas da próxima decisão de juros do Fed	Согласованные вероятности следующего решения ФРС по ставке
 Forex Factory (faireconomy.media)	Forex Factory (faireconomy.media)
 Calendário econômico semanal: horário, impacto, expectativa e anterior	Экономический календарь на неделю: время, влияние, прогноз и предыдущее значение
@@ -606,7 +598,6 @@ Corretoras	Биржи
 Todas	Все
 Dados desde {0}	Данные с {0}
 Aguardando trades	Ожидание сделок
-Footprint	Footprint
 Footprint · venda × compra agressora por faixa (BTC)	Footprint · агрессивная продажа × агрессивная покупка по уровням (BTC)
 Montando o footprint	Формирование footprint
 Precisa de trades das corretoras principais; cada vela aparece assim que recebe execuções	Нужны сделки основных бирж; каждая свеча появляется, как только получает исполнения

@@ -13,8 +13,6 @@ Bybit: resposta sem 'result'	Bybit: Antwort ohne 'result'
 {0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}	{0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}
 Buy	Kauf
 Conexão encerrada ({0})	Verbindung geschlossen ({0})
-Binance	Binance
-Bybit	Bybit
 HTTP {0} em {1}	HTTP {0} bei {1}
 Resposta vazia em {0}	Leere Antwort von {0}
 Alertas do mercado	Marktalarme
@@ -43,14 +41,10 @@ fraca positiva	schwach positiv
 fraca negativa	schwach negativ
 BTCUSDT perp (USD-M)	BTCUSDT Perp (USD-M)
 BTCUSDT linear	BTCUSDT linear
-Gate	Gate
 BTC_USDT perp	BTC_USDT Perp
-Bitget	Bitget
 BTCUSDT perp (USDT-M)	BTCUSDT Perp (USDT-M)
-Deribit	Deribit
 BTC-PERPETUAL (inverso, USD)	BTC-PERPETUAL (invers, USD)
 BTC-USDT perp (só open interest)	BTC-USDT Perp (nur Open Interest)
-Kraken	Kraken
 PF_XBTUSD perp (só open interest)	PF_XBTUSD Perp (nur Open Interest)
 metadados do contrato indisponíveis, usando {0} BTC: {1}	Vertragsmetadaten nicht verfügbar, es wird {0} BTC verwendet: {1}
 Liquidações (futures.public_liquidates)	Liquidationen (futures.public_liquidates)
@@ -524,9 +518,7 @@ Banco Central Europeu (BCE)	Europäische Zentralbank (EZB)
 Taxa de depósito e comunicados	Einlagensatz und Mitteilungen
 SEC e CFTC	SEC und CFTC
 Comunicados dos reguladores americanos	Mitteilungen der US-Regulierungsbehörden
-Yahoo Finance	Yahoo Finance
 Bolsas (EUA, Europa, Ásia, Brasil), VIX, MOVE, DXY, moedas, commodities, Treasuries intradiários, futuros de Fed funds (CBOT), ETH, IBIT, MSTR, COIN, HYG	Börsen (USA, Europa, Asien, Brasilien), VIX, MOVE, DXY, Währungen, Rohstoffe, intraday Treasuries, Fed-Funds-Futures (CBOT), ETH, IBIT, MSTR, COIN, HYG
-Kalshi	Kalshi
 Probabilidades negociadas da próxima decisão de juros do Fed	Gehandelte Wahrscheinlichkeiten der nächsten Zinsentscheidung der Fed
 Forex Factory (faireconomy.media)	Forex Factory (faireconomy.media)
 Calendário econômico semanal: horário, impacto, expectativa e anterior	Wöchentlicher Wirtschaftskalender: Uhrzeit, Auswirkung, Erwartung und Vorwert
@@ -606,7 +598,6 @@ Corretoras	Börsen
 Todas	Alle
 Dados desde {0}	Daten seit {0}
 Aguardando trades	Warte auf Trades
-Footprint	Footprint
 Footprint · venda × compra agressora por faixa (BTC)	Footprint · aggressiver Verkauf × aggressiver Kauf je Preisstufe (BTC)
 Montando o footprint	Footprint wird aufgebaut
 Precisa de trades das corretoras principais; cada vela aparece assim que recebe execuções	Benötigt Trades der großen Börsen; jede Kerze erscheint, sobald sie Ausführungen erhält

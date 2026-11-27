@@ -154,6 +154,7 @@ object I18n {
      * Frases montadas com " · " são traduzidas por partes, e o que entra nas lacunas de um molde também.
      */
     private fun trm(c: String, m: String, depth: Int): String? {
+        if (m.trim() in PASS) return m   // nomes de corretoras e serviços nunca são traduzidos
         val key = "$c|$m"
         memo[key]?.let { return it.ifEmpty { null } }
         val found = lookup(c, m, depth) ?: mtCache[key]

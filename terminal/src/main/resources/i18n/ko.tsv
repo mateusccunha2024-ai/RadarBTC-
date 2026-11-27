@@ -13,8 +13,6 @@ Bybit: resposta sem 'result'	Bybit: 'result' 없는 응답
 {0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}	{0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}
 Buy	매수
 Conexão encerrada ({0})	연결 종료됨 ({0})
-Binance	Binance
-Bybit	Bybit
 HTTP {0} em {1}	{1}에서 HTTP {0}
 Resposta vazia em {0}	{0}에서 빈 응답
 Alertas do mercado	시장 알림
@@ -43,14 +41,10 @@ fraca positiva	약한 양(+)
 fraca negativa	약한 음(-)
 BTCUSDT perp (USD-M)	BTCUSDT 무기한 (USD-M)
 BTCUSDT linear	BTCUSDT 선형
-Gate	Gate
 BTC_USDT perp	BTC_USDT 무기한
-Bitget	Bitget
 BTCUSDT perp (USDT-M)	BTCUSDT 무기한 (USDT-M)
-Deribit	Deribit
 BTC-PERPETUAL (inverso, USD)	BTC-PERPETUAL (역방향, USD)
 BTC-USDT perp (só open interest)	BTC-USDT 무기한 (미결제약정만)
-Kraken	Kraken
 PF_XBTUSD perp (só open interest)	PF_XBTUSD 무기한 (미결제약정만)
 metadados do contrato indisponíveis, usando {0} BTC: {1}	계약 메타데이터를 사용할 수 없어 {0} BTC 사용: {1}
 Liquidações (futures.public_liquidates)	청산 (futures.public_liquidates)
@@ -523,9 +517,7 @@ Banco Central Europeu (BCE)	유럽중앙은행(ECB)
 Taxa de depósito e comunicados	예금 금리 및 성명서
 SEC e CFTC	SEC 및 CFTC
 Comunicados dos reguladores americanos	미국 규제 당국 발표문
-Yahoo Finance	Yahoo Finance
 Bolsas (EUA, Europa, Ásia, Brasil), VIX, MOVE, DXY, moedas, commodities, Treasuries intradiários, futuros de Fed funds (CBOT), ETH, IBIT, MSTR, COIN, HYG	증시(미국, 유럽, 아시아, 브라질), VIX, MOVE, DXY, 통화, 원자재, 장중 Treasury, Fed funds 선물(CBOT), ETH, IBIT, MSTR, COIN, HYG
-Kalshi	Kalshi
 Probabilidades negociadas da próxima decisão de juros do Fed	Fed 다음 금리 결정에 대한 거래된 확률
 Forex Factory (faireconomy.media)	Forex Factory (faireconomy.media)
 Calendário econômico semanal: horário, impacto, expectativa e anterior	주간 경제 캘린더: 시각, 영향도, 예상치 및 이전 값
@@ -605,7 +597,6 @@ Corretoras	거래소
 Todas	전체
 Dados desde {0}	{0} 이후 데이터
 Aguardando trades	체결 대기 중
-Footprint	풋프린트
 Footprint · venda × compra agressora por faixa (BTC)	풋프린트 · 구간별 공격적 매도 × 공격적 매수 (BTC)
 Montando o footprint	풋프린트 구성 중
 Precisa de trades das corretoras principais; cada vela aparece assim que recebe execuções	주요 거래소의 체결 데이터가 필요합니다. 각 캔들은 체결을 받는 즉시 표시됩니다

@@ -13,8 +13,6 @@ Bybit: resposta sem 'result'	Bybit: 响应中无 'result'
 {0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}	{0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}
 Buy	买入
 Conexão encerrada ({0})	连接已关闭 ({0})
-Binance	Binance
-Bybit	Bybit
 HTTP {0} em {1}	HTTP {0} 于 {1}
 Resposta vazia em {0}	{0} 返回空响应
 Alertas do mercado	市场提醒
@@ -43,14 +41,10 @@ fraca positiva	弱正
 fraca negativa	弱负
 BTCUSDT perp (USD-M)	BTCUSDT 永续 (USD-M)
 BTCUSDT linear	BTCUSDT 线性
-Gate	Gate
 BTC_USDT perp	BTC_USDT 永续
-Bitget	Bitget
 BTCUSDT perp (USDT-M)	BTCUSDT 永续 (USDT-M)
-Deribit	Deribit
 BTC-PERPETUAL (inverso, USD)	BTC-PERPETUAL (反向, USD)
 BTC-USDT perp (só open interest)	BTC-USDT 永续 (仅未平仓合约)
-Kraken	Kraken
 PF_XBTUSD perp (só open interest)	PF_XBTUSD 永续 (仅未平仓合约)
 metadados do contrato indisponíveis, usando {0} BTC: {1}	合约元数据不可用，使用 {0} BTC: {1}
 Liquidações (futures.public_liquidates)	清算 (futures.public_liquidates)
@@ -524,9 +518,7 @@ Banco Central Europeu (BCE)	欧洲央行 (ECB)
 Taxa de depósito e comunicados	存款利率与声明
 SEC e CFTC	SEC 与 CFTC
 Comunicados dos reguladores americanos	美国监管机构声明
-Yahoo Finance	Yahoo Finance
 Bolsas (EUA, Europa, Ásia, Brasil), VIX, MOVE, DXY, moedas, commodities, Treasuries intradiários, futuros de Fed funds (CBOT), ETH, IBIT, MSTR, COIN, HYG	股市（美国、欧洲、亚洲、巴西）、VIX、MOVE、DXY、货币、大宗商品、国债盘中数据、联邦基金期货 (CBOT)、ETH、IBIT、MSTR、COIN、HYG
-Kalshi	Kalshi
 Probabilidades negociadas da próxima decisão de juros do Fed	下一次美联储利率决议的成交概率
 Forex Factory (faireconomy.media)	Forex Factory (faireconomy.media)
 Calendário econômico semanal: horário, impacto, expectativa e anterior	每周经济日历：时间、影响、预期与前值
@@ -606,7 +598,6 @@ Corretoras	交易所
 Todas	全部
 Dados desde {0}	数据起始于 {0}
 Aguardando trades	等待成交数据
-Footprint	Footprint
 Footprint · venda × compra agressora por faixa (BTC)	Footprint · 每个价位的主动卖 × 主动买（BTC）
 Montando o footprint	正在构建 Footprint
 Precisa de trades das corretoras principais; cada vela aparece assim que recebe execuções	需要主要交易所的成交数据；每根K线收到成交后即会显示
