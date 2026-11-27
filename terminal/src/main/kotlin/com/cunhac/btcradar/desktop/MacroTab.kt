@@ -292,7 +292,7 @@ private fun CalRow(e: CalEvent, now: Long) {
             Q.Muted, 11, wrap = true)
         if (sp != null) {
             T("${sp.label} → ${sp.dir.label}", dirColor(sp.dir), 12, bold = true, wrap = true)
-            T(sp.chain.joinToString(" → "), Q.Muted, 11, wrap = true)
+            if (sp.dir != MacroDir.NEUTRAL) T(sp.chain.joinToString(" → "), Q.Muted, 11, wrap = true)
             T(sp.note, Q.Muted, 11, wrap = true)
         } else MacroEvents.profile(e.title)?.let { p ->
             if (!past && e.high) T("Se vier acima do esperado: " + p.chain.last().lowercase(), Q.Muted, 11, wrap = true)

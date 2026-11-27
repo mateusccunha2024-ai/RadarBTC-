@@ -170,5 +170,8 @@ class MacroTest {
         assertEquals(Confluence.LOW, d.confluence)
         assertTrue(d.reading.contains("não permitem identificar participantes individuais"))
         assertFalse(a.reading.contains("baleia"))
+        val e = MacroConfluence.evaluate(MacroDir.UNFAVORABLE, FlowSnapshot(-300.0, 1000.0, 0.0, 0.0, 0, 0, -0.5))
+        assertEquals(Confluence.HIGH, e.confluence)
+        assertFalse(e.reading.startsWith("Sem confirmação"))
     }
 }
