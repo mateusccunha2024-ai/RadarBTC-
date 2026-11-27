@@ -107,7 +107,7 @@ object UiScale {
      */
     var font by mutableFloatStateOf(SettingsStore.d("ui.font", 1.0).toFloat().coerceIn(0.8f, 1.6f))
         private set
-    fun setFont(v: Float) { font = ((v * 100).roundToInt() / 100f).coerceIn(0.8f, 1.6f); SettingsStore.put("ui.font", font.toDouble()) }
+    fun useFont(v: Float) { font = ((v * 100).roundToInt() / 100f).coerceIn(0.8f, 1.6f); SettingsStore.put("ui.font", font.toDouble()) }
 }
 
 /** Opções de tamanho da fonte no menu Visualização. */

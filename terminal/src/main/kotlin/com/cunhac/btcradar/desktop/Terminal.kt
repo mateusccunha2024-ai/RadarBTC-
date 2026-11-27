@@ -364,7 +364,7 @@ private fun ViewSettingsPanel(ctx: AppContext, onClose: () -> Unit) {
             if (!Platform.isMobile) Footnote("Atalhos: Ctrl + e Ctrl − ajustam, Ctrl 0 volta a 100%.")
         }
         SettingGroup("Tamanho da fonte · ${(UiScale.font * 100).roundToInt()}%") {
-            Chips(null, FONT_SIZES.map { "${(it * 100).roundToInt()}%" }, FONT_SIZES.indexOfFirst { kotlin.math.abs(it - UiScale.font) < 0.01f }) { UiScale.setFont(FONT_SIZES[it]) }
+            Chips(null, FONT_SIZES.map { "${(it * 100).roundToInt()}%" }, FONT_SIZES.indexOfFirst { kotlin.math.abs(it - UiScale.font) < 0.01f }) { UiScale.useFont(FONT_SIZES[it]) }
             Footnote("Só o texto muda de tamanho. Quando os painéis não cabem mais lado a lado, eles viram páginas com botões no topo " +
                 "(nada fica cortado). Para aumentar tudo junto, use o tamanho da interface.")
         }
