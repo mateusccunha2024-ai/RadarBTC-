@@ -1,0 +1,1331 @@
+# Radar BTC · Korean · gerado do código-fonte (docs/I18N.md)
+Tabela de ETFs não encontrada	ETF 표를 찾을 수 없음
+th, td	th, td
+Total	합계
+{0}/fapi/v1/depth?symbol=BTCUSDT&limit={1}	{0}/fapi/v1/depth?symbol=BTCUSDT&limit={1}
+{0}/fapi/v1/klines?symbol=BTCUSDT&interval={1}&limit={2}	{0}/fapi/v1/klines?symbol=BTCUSDT&interval={1}&limit={2}
+{0}/futures/data/openInterestHist?symbol=BTCUSDT&period={1}&limit={2}	{0}/futures/data/openInterestHist?symbol=BTCUSDT&period={1}&limit={2}
+{0}/fapi/v1/ticker/{1}hr?symbol=BTCUSDT	{0}/fapi/v1/ticker/{1}hr?symbol=BTCUSDT
+{0}/fapi/v1/premiumIndex?symbol=BTCUSDT	{0}/fapi/v1/premiumIndex?symbol=BTCUSDT
+{0}/fapi/v1/openInterest?symbol=BTCUSDT	{0}/fapi/v1/openInterest?symbol=BTCUSDT
+{0}/v5/market/orderbook?category=linear&symbol=BTCUSDT&limit={1}	{0}/v5/market/orderbook?category=linear&symbol=BTCUSDT&limit={1}
+Bybit: resposta sem 'result'	Bybit: 'result' 없는 응답
+{0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}	{0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}
+Buy	매수
+Conexão encerrada ({0})	연결 종료됨 ({0})
+Binance	Binance
+Bybit	Bybit
+HTTP {0} em {1}	{1}에서 HTTP {0}
+Resposta vazia em {0}	{0}에서 빈 응답
+Alertas do mercado	시장 알림
+Monitoramento em segundo plano	백그라운드 모니터링
+{0} INFO [app] {1}	{0} INFO [app] {1}
+Memória (usada / máx.)	메모리 (사용 / 최대)
+{0} / {1} MB	{0} / {1} MB
+Threads	스레드
+Aparelho	기기
+{0} {1} · Android {2}	{0} {1} · Android {2}
+banco indisponível: {0}	데이터베이스 사용 불가: {0}
+falha de gravação: {0}	쓰기 실패: {0}
+Histórico: {0}	기록: {0}
+Radar BTC monitorando	BTC 레이더 모니터링 중
+Conexões e alertas ativos em segundo plano	백그라운드에서 활성 연결 및 알림
+DIVERGÊNCIA DE ALTA	상승 다이버전스
+DIVERGÊNCIA DE BAIXA	하락 다이버전스
+Preço: fundo mais baixo ({0} → {1}). CVD: fundo mais alto ({2} → {3} BTC). Vendas agressoras perdendo força.	가격: 더 낮은 저점 ({0} → {1}). CVD: 더 높은 저점 ({2} → {3} BTC). 공격적 매도 세력 약화.
+Preço: topo mais alto ({0} → {1}). CVD: topo mais baixo ({2} → {3} BTC). Compras agressoras perdendo força.	가격: 더 높은 고점 ({0} → {1}). CVD: 더 낮은 고점 ({2} → {3} BTC). 공격적 매수 세력 약화.
+sem dados	데이터 없음
+forte positiva	강한 양(+)
+forte negativa	강한 음(-)
+moderada positiva	보통 양(+)
+moderada negativa	보통 음(-)
+fraca positiva	약한 양(+)
+fraca negativa	약한 음(-)
+BTCUSDT perp (USD-M)	BTCUSDT 무기한 (USD-M)
+BTCUSDT linear	BTCUSDT 선형
+Gate	Gate
+BTC_USDT perp	BTC_USDT 무기한
+Bitget	Bitget
+BTCUSDT perp (USDT-M)	BTCUSDT 무기한 (USDT-M)
+Deribit	Deribit
+BTC-PERPETUAL (inverso, USD)	BTC-PERPETUAL (역방향, USD)
+BTC-USDT perp (só open interest)	BTC-USDT 무기한 (미결제약정만)
+Kraken	Kraken
+PF_XBTUSD perp (só open interest)	PF_XBTUSD 무기한 (미결제약정만)
+metadados do contrato indisponíveis, usando {0} BTC: {1}	계약 메타데이터를 사용할 수 없어 {0} BTC 사용: {1}
+Liquidações (futures.public_liquidates)	청산 (futures.public_liquidates)
+Liquidações (UTA v3 liquidation)	청산 (UTA v3 liquidation)
+inscrição recusada: {0}	구독 거부됨: {0}
+Trades com marca de liquidação	청산 표시가 있는 체결
+Livro (/public depth@{0}ms + REST {1})	호가창 (/public depth@{0}ms + REST {1})
+nova conexão	새 연결
+Trades/mark/liquidações (/market)	Trades/mark/청산 (/market)
+open interest REST falhou: {0}	open interest REST 실패: {0}
+quebra de sequência (pu ≠ u anterior)	시퀀스 끊김 (이전 pu ≠ u)
+Livro inválido, reconstruindo: {0}	호가창 무효, 재구성 중: {0}
+snapshot REST indisponível: {0}	snapshot REST 사용 불가: {0}
+nova tentativa de snapshot	snapshot 재시도
+buffer sem continuidade com o snapshot	버퍼가 snapshot과 연속되지 않음
+Livro sincronizado (snapshot {0})	호가창 동기화됨 (snapshot {0})
+@aggTrade	@aggTrade
+@markPrice	@markPrice
+@forceOrder	@forceOrder
+Livro {0} + RPI + trades + tickers + liquidações	호가창 {0} + RPI + 체결 + 티커 + 청산
+aguardando snapshot	snapshot 대기 중
+quebra de sequência u {0} → {1}	시퀀스 끊김 u {0} → {1}
+{0}: quebra de sequência, pedindo novo snapshot	{0}: 시퀀스 끊김, 새 snapshot 요청
+padrão {0} BTC (metadados ainda não carregados)	기본값 {0} BTC (메타데이터 아직 미로드)
+metadados inesperados ({0}); usando {1} BTC	예상치 못한 메타데이터 ({0}); {1} BTC 사용
+metadados do instrumento indisponíveis: {0}	상품 메타데이터 사용 불가: {0}
+Livro {0} + trades + OI + funding + mark + liquidações	호가창 {0} + 체결 + OI + 펀딩 + mark + 청산
+erro: {0}	오류: {0}
+quebra de sequência prevSeqId {0} ≠ {1}	시퀀스 끊김 prevSeqId {0} ≠ {1}
+books: quebra de sequência, pedindo novo snapshot	books: 시퀀스 끊김, 새 snapshot 요청
+Acumulação comprada	매수 누적
+Fluxo long	롱 유입
+Recompra de shorts	숏 환매
+Pressão compradora	매수 압력
+Acumulação vendida	매도 누적
+Fluxo short	숏 유입
+Fechamento de longs	롱 청산
+Pressão vendedora	매도 압력
+Sem viés claro	뚜렷한 방향성 없음
+Inferência. A agressão mostra quem iniciou a execução, não se abriu ou fechou posição. Todo contrato tem comprador e vendedor; OI subindo com compra agressora é compatível com expansão LONG, mas não prova.	추정. 공격적 체결은 누가 체결을 주도했는지만 보여주며, 포지션이 열렸는지 닫혔는지는 보여주지 않습니다. 모든 계약에는 매수자와 매도자가 있습니다. OI 상승과 공격적 매수가 함께 나타나면 LONG 확장과 부합하지만 이를 증명하지는 않습니다.
+Compra agressora: {0} BTC	공격적 매수: {0} BTC
+Venda agressora: {0} BTC	공격적 매도: {0} BTC
+Delta: {0} BTC (desequilíbrio {1}%)	델타: {0} BTC (불균형 {1}%)
+Preço: 	가격: 
+sem dado	데이터 없음
+Open interest: 	미결제약정: 
+Funding médio: 	평균 펀딩: 
+Fluxo agressor equilibrado na janela.	구간 내 공격적 체결 균형.
+MÉDIA	평균
+Compras agressoras com OI subindo: compatível com abertura líquida de LONG.	OI 상승과 함께 공격적 매수: 순 LONG 개설과 부합.
+Compras agressoras com OI caindo: compatível com fechamento de SHORT.	OI 하락과 함께 공격적 매수: SHORT 청산과 부합.
+Predomínio comprador sem variação relevante de OI.	의미 있는 OI 변화 없이 매수 우위.
+Vendas agressoras com OI subindo: compatível com abertura líquida de SHORT.	OI 상승과 함께 공격적 매도: 순 SHORT 개설과 부합.
+Vendas agressoras com OI caindo: compatível com fechamento de LONG.	OI 하락과 함께 공격적 매도: LONG 청산과 부합.
+Predomínio vendedor sem variação relevante de OI.	의미 있는 OI 변화 없이 매도 우위.
+{0} dias	{0}일
+{0} sem	{0}주
+{0} mês	{0}개월
+{0} meses	{0}개월
+{0} ano	{0}년
+{0} anos	{0}년
+bloqueado nesta região	이 지역에서 차단됨
+indisponível: {0}	사용 불가: {0}
+sem dados no período	기간 내 데이터 없음
+parcial: desde 	부분: 시작 
+ (API guarda ~{0} dias)	 (API 보관 ~{0}일)
+ (API guarda {0} pontos)	 (API 보관 {0}개 포인트)
+completo ({0} pontos)	완료 ({0}점)
+Liquidação EXTREME	EXTREME 청산
+Parede grande saiu do livro	대형 매수벽이 호가창에서 사라짐
+Absorção / iceberg	흡수 / 아이스버그
+Mudança de sinal LONG/SHORT	LONG/SHORT 신호 전환
+Divergência preço × CVD	가격 × CVD 다이버전스
+Preço perto de zona do heatmap	가격이 히트맵 구간 근처
+Macro: evento de alto impacto chegando	매크로: 고영향 이벤트 임박
+Macro: dado acima/abaixo do esperado	매크로: 지표 예상치 상회/하회
+Macro: DXY, yields ou VIX em movimento forte	매크로: DXY, 금리 또는 VIX 급변
+Macro: escalada geopolítica, tarifas ou regulação	매크로: 지정학적 긴장 고조, 관세 또는 규제
+Macro: BTC diverge do mercado americano	매크로: BTC가 미국 시장과 디버전스
+Macro: mudança forte do BTC Macro Sentiment	매크로: BTC 매크로 센티먼트 급변
+Absorção	흡수
+Paredes	벽
+Iceberg	아이스버그
+Liquidação	청산
+Liquidações	청산
+Execução grande	대량 체결
+Execuções	체결
+Divergência	다이버전스
+Divergências	다이버전스
+Macro	매크로
+wall|{0}|{1}|{2}	wall|{0}|{1}|{2}
+Parede {0} {1} de {2} BTC em {3} ({4}): {5}	{0} {1}벽 {2} BTC @ {3} ({4}): {5}
+de compra	매수
+de venda	매도
+{0} em {1} ({2}, {3}): executado {4} BTC, restante {5} BTC	{0} @ {1} ({2}, {3}): {4} BTC 체결, 잔량 {5} BTC
+Parede de compra	매수벽
+Parede de venda	매도벽
+executado {0} BTC · restante {1} BTC	체결 {0} BTC · 잔량 {1} BTC
+sig|{0}|{1}|{2}	sig|{0}|{1}|{2}
+Iniciando conexões (Binance, Bybit, OKX; liquidações também de Gate, Bitget e Deribit)	연결 시작 중 (Binance, Bybit, OKX; 청산은 Gate, Bitget, Deribit도 포함)
+publicação: {0}	발행: {0}
+Conexões encerradas	연결 종료됨
+Compra	매수
+Venda	매도
+{0} BTC agressor	{0} BTC 공격 주문
+Long	Long
+Short	Short
+{0} BTC · {1}	{0} BTC · {1}
+liq|{0}|{1}|{2}	liq|{0}|{1}|{2}
+Liquidação EXTREME: {0} {1} BTC @ {2} ({3})	EXTREME 청산: {0} {1} BTC @ {2} ({3})
+side|{0}|{1}	side|{0}|{1}
+Sinal mudou para {0} ({1} min): {2}, confiança {3}	신호 변경: {0} ({1}분): {2}, 신뢰도 {3}
+{0} ({1} min)	{0} ({1}분)
+De alta	상승
+De baixa	하락
+janela {0} min	{0}분 구간
+preço {0} → {1} · CVD {2} → {3} BTC	가격 {0} → {1} · CVD {2} → {3} BTC
+div|{0}|{1}|{2}	div|{0}|{1}|{2}
+retirada sem execução (provável cancelamento)	체결 없이 철회됨 (취소 가능성 높음)
+preço atravessou, execução não confirmada	가격 돌파, 체결 미확인
+execução confirmada pelos trades	거래 체결로 확인됨
+livro cruzado (bid {0} >= ask {1})	호가 교차 (bid {0} >= ask {1})
+Favorável ao BTC	BTC에 유리
+Desfavorável ao BTC	BTC에 불리
+Neutro	중립
+Indeterminado	불확실
+Baixa	하락
+Moderada	보통
+Alta	높음
+Crítica	심각
+Imediato (minutos a horas)	즉시 (몇 분~몇 시간)
+Curto prazo ({0} a {1} dias)	단기 ({0}~{1}일)
+Médio prazo ({0} a {1} semanas)	중기 ({0}~{1}주)
+Longo prazo (acima de {0} mês)	장기 ({0}개월 이상)
+Fonte oficial	공식 출처
+Média	중간
+Conflitos e segurança	분쟁 및 안보
+Comércio internacional	국제 무역
+Energia e commodities	에너지 및 원자재
+Federal Reserve	연방준비제도
+Política fiscal e dívida	재정 정책 및 부채
+Regulação cripto	암호화폐 규제
+Política americana	미국 정책
+Avanço regulatório ou institucional reduz risco jurídico e pode ampliar a demanda por BTC.	규제 또는 제도권 진전은 법적 위험을 줄이고 BTC 수요를 늘릴 수 있습니다.
+Decisão regulatória	규제 결정
+Acesso institucional / segurança jurídica	기관 접근 / 법적 안정성
+Demanda por cripto	암호화폐 수요
+Possível alta do BTC	BTC 상승 가능성
+Ação restritiva, processo ou incidente no setor aumenta o risco percebido e pode gerar vendas.	업계에 대한 제한 조치, 소송 또는 사고는 위험 인식을 높이고 매도를 유발할 수 있습니다.
+Ação contra o setor	업계 대상 조치
+Risco regulatório / de contraparte	규제 / 상대방 위험
+Saída de capital de cripto	암호화폐 자본 유출
+Possível pressão no BTC	BTC 하락 압력 가능성
+Tema regulatório em andamento: o efeito depende do conteúdo final.	진행 중인 규제 논의: 효과는 최종 내용에 따라 달라집니다.
+Debate regulatório	규제 논쟁
+Incerteza sobre regras	규칙 불확실성
+Posicionamento do mercado	시장 포지셔닝
+Efeito no BTC depende do desfecho	BTC에 대한 영향은 결과에 따라 달라집니다
+Juros menores (ou expectativa de cortes) reduzem o custo do dinheiro e tendem a favorecer ativos de risco.	금리 인하(또는 인하 기대)는 자금 비용을 낮춰 위험자산에 유리한 경향이 있습니다.
+Corte / sinal de corte de juros	금리 인하 / 인하 신호
+Treasury yields e dólar tendem a cair	국채 금리와 달러는 하락하는 경향
+Apetite por risco nas bolsas	주식시장의 위험선호
+Ambiente favorável ao BTC	BTC에 우호적인 환경
+Juros mais altos por mais tempo fortalecem o dólar e encarecem o risco.	고금리가 더 오래 유지되면 달러가 강세를 보이고 위험 비용이 높아집니다.
+Sinal de juros altos	고금리 신호
+Yields e dólar sobem	금리 및 달러 상승
+Aversão a risco nas bolsas	주식시장의 위험회피
+Pressão sobre o BTC	BTC에 대한 하락 압력
+Comunicação do Fed muda expectativas de juros; a direção depende do tom.	연준의 커뮤니케이션은 금리 기대를 바꾸며, 방향은 어조에 따라 달라집니다.
+Comunicação do Fed	연준 커뮤니케이션
+Expectativa de juros	금리 기대
+Yields / dólar	금리 / 달러
+BTC reage à mudança de expectativa	BTC는 기대 변화에 반응합니다
+Alívio comercial reduz risco de inflação e de desaceleração; costuma melhorar o apetite por risco.	무역 완화는 인플레이션 및 둔화 위험을 줄이며, 일반적으로 위험선호를 개선합니다.
+Alívio comercial	무역 완화
+Menos pressão em preços e cadeias	가격 및 공급망 압력 완화
+Bolsas tendem a subir	주식시장 상승 경향
+Apoio ao BTC	BTC 지지 요인
+Tarifas e sanções elevam custos e incerteza: pressão inflacionária, dólar mais forte e aversão a risco.	관세와 제재는 비용과 불확실성을 높입니다: 인플레이션 압력, 강한 달러, 위험회피.
+Tarifa / sanção	관세 / 제재
+Inflação e incerteza sobem	인플레이션과 불확실성 상승
+Dólar forte, bolsas pressionadas	강한 달러, 주식시장 압박
+Pressão de curto prazo no BTC	BTC에 대한 단기 압력
+Redução de tensão diminui a busca por proteção (dólar/ouro) e alivia petróleo.	긴장 완화는 안전자산(달러/금) 수요를 줄이고 유가를 낮춥니다.
+Redução de conflito	분쟁 완화
+Petróleo e VIX tendem a cair	유가 및 VIX 하락 경향
+Volta do apetite por risco	위험선호 회복
+Escalada militar gera aversão a risco imediata (dólar, ouro e petróleo sobem). No longo prazo o efeito sobre o BTC é ambíguo.	탈위험 심리 급등: 달러, 금, 원유 즉시 상승. 장기적으로 BTC에 대한 영향은 불분명합니다.
+Escalada militar	군사적 긴장 고조
+Petróleo, ouro, dólar e VIX sobem	원유, 금, 달러, VIX 상승
+Venda de ativos de risco	위험자산 매도
+Pressão imediata no BTC	BTC 즉각 하락 압력
+Petróleo mais barato alivia a inflação e abre espaço para juros menores.	원유가 하락하면 물가 상승이 완화되어 금리 인하 여지가 생깁니다.
+Petróleo em queda	원유 가격 하락
+Inflação esperada menor	기대 인플레이션 하락
+Juros/yields podem cair	금리/수익률 하락 가능
+Leve apoio ao BTC	BTC에 약한 지지
+Choque de energia pressiona a inflação e pode adiar cortes de juros.	에너지 충격으로 물가가 올라 금리 인하가 늦춰질 수 있습니다.
+Petróleo / gás sobem	원유 / 가스 상승
+Inflação esperada maior	기대 인플레이션 상승
+Pressão no BTC	BTC 하락 압력
+Impasse fiscal aumenta volatilidade; pode favorecer ativos fora do sistema, mas no curto prazo costuma haver aversão a risco.	재정 교착은 변동성을 키우며, 시스템 외 자산에 유리할 수 있지만 단기적으로는 위험회피가 나타나는 경우가 많습니다.
+Impasse fiscal	재정 교착
+Prêmio de risco nos Treasuries	국채(Treasuries) 위험 프리미엄
+Volatilidade nas bolsas	주식시장 변동성
+Efeito no BTC incerto	BTC에 미치는 영향 불확실
+Mais gasto/dívida pode aumentar liquidez e também os yields; o saldo depende da reação dos juros.	재정지출/부채 증가는 유동성과 금리를 함께 높일 수 있으며, 결과는 금리 반응에 따라 달라집니다.
+Política fiscal	재정 정책
+Liquidez × oferta de títulos	유동성 × 국채 공급
+Yields	수익률
+Efeito no BTC depende dos juros	BTC 영향은 금리에 따라 달라짐
+Inflação acima do esperado reduz a chance de cortes de juros.	예상보다 높은 물가는 금리 인하 가능성을 낮춥니다.
+Inflação acima do esperado	예상보다 높은 물가
+Menos cortes de juros	금리 인하 축소
+Inflação desacelerando aumenta a chance de cortes de juros.	물가 둔화는 금리 인하 가능성을 높입니다.
+Inflação abaixo do esperado	예상보다 낮은 물가
+Mais cortes de juros precificados	금리 인하 가능성 반영 확대
+Yields e dólar caem	수익률과 달러 하락
+Desaceleração aumenta chance de cortes de juros (positivo), mas também o risco de queda das bolsas (negativo).	경기 둔화는 금리 인하 가능성을 높이지만(긍정적), 주식 하락 위험도 키웁니다(부정적).
+Sinais de desaceleração	경기 둔화 신호
+Expectativa de cortes ↑ / lucros ↓	금리 인하 기대 ↑ / 기업 이익 ↓
+Bolsas oscilam	주식시장 등락
+Efeito no BTC ambíguo	BTC 영향 불분명
+High	High
+Menos cortes de juros / yields sobem	금리 인하 축소 / 수익률 상승
+Dólar sobe, bolsas caem	달러 상승, 주식 하락
+Pressão vendedora no BTC	BTC 매도 압력
+O impacto depende do que já estava precificado e da reação dos Treasury yields.	영향은 이미 반영된 기대와 국채 수익률의 반응에 따라 달라집니다.
+Mais cortes de juros / yields caem	금리 인하 확대 / 수익률 하락
+Dólar cai, bolsas sobem	달러 하락, 주식 상승
+Alívio para o BTC	BTC에 안도감
+Salários acima do esperado	예상보다 높은 임금
+Pressão inflacionária	인플레이션 압력
+Yields sobem	수익률 상승
+Salários fortes mantêm a inflação de serviços.	강한 임금이 서비스 물가를 높게 유지합니다.
+Salários abaixo do esperado	예상보다 낮은 임금
+Menos pressão inflacionária	물가 압력 완화
+Yields caem	수익률 하락
+Empregos acima do esperado	예상보다 많은 고용
+Economia aquecida: menos cortes	경기 과열: 금리 인하 축소
+Um número muito fraco também pode assustar (risco de recessão).	지나치게 약한 수치는 경기침체 우려를 키울 수도 있습니다.
+Empregos abaixo do esperado	예상보다 적은 고용
+Esfriamento: mais cortes	냉각: 금리 인하 확대
+Alívio para o BTC (se não virar medo de recessão)	BTC에 안도감 (경기침체 공포로 번지지 않을 경우)
+Desemprego/pedidos acima do esperado	실업수당/신규 주문 예상보다 높음
+Trabalho esfriando: mais cortes	고용 둔화: 금리 인하 확대
+Apoio ao BTC (se não virar medo de recessão)	BTC에 지지 (경기침체 공포로 번지지 않을 경우)
+Alta forte do desemprego pode virar aversão a risco.	실업률 급등이 위험 회피로 이어질 수 있음.
+Desemprego/pedidos abaixo do esperado	실업률/신규 주문 예상치 하회
+Trabalho firme: menos cortes	견조한 고용: 인하 축소
+Juros acima do esperado	금리 예상치 상회
+Política mais restritiva	더 긴축적인 정책
+O comunicado e a coletiva costumam pesar mais que a decisão.	성명과 기자회견이 결정 자체보다 더 큰 영향을 주는 경우가 많음.
+Juros abaixo do esperado	금리 예상치 하회
+Política mais frouxa	더 완화적인 정책
+Atividade acima do esperado	경기 활동 예상치 상회
+Lucros melhores, mas juros podem subir	기업 실적 개선, 하지만 금리 상승 가능성
+Bolsas e yields sobem juntos	주식과 금리가 함께 상승
+Efeito no BTC depende da reação dos juros	BTC 영향은 금리 반응에 따라 달라짐
+Crescimento forte é bom para risco, mas pode adiar cortes de juros.	강한 성장은 위험자산에 우호적이지만 금리 인하를 늦출 수 있음.
+Atividade abaixo do esperado	경기 활동 예상치 하회
+Mais cortes, mas lucros piores	인하 확대, 하지만 기업 실적 악화
+Yields caem, bolsas oscilam	금리 하락, 주식 등락
+Em linha com o esperado	예상치 부합
+Sem surpresa: o impacto tende a ser pequeno. {0}	예상된 결과로 영향은 작을 것으로 보임. {0}
+Acima do esperado	예상치 상회
+Abaixo do esperado	예상치 하회
+Política monetária	통화정책
+Média de: (a) Treasury {0} anos abaixo da taxa efetiva do Fed = cortes precificados (±{1} pp = ±{2}); (b) taxa implícita nos futuros de Fed funds de ~{3} meses à frente contra a taxa atual ({4} pp = {5}). Cortes esperados = favorável.	평균: (a) {0}년물 미국채 금리와 연준 실효금리 차이 = 반영된 인하 기대(±{1}%p = ±{2}); (b) 약 {3}개월 후 연방기금 선물 내재금리와 현재 금리 비교({4}%p = {5}). 인하 기대 = 우호적.
+Inflação	인플레이션
+Núcleo do CPI ({0} meses anualizado) contra a variação em {1} meses: desacelerando = favorável; acelerando = desfavorável. Escala: ±{2} pp = ±{3}.	근원 CPI ({0}개월 연율화) 대 {1}개월 변화: 둔화 = 우호적; 가속 = 비우호적. 척도: ±{2}%p = ±{3}.
+Mercado de trabalho	고용 시장
+Desemprego subindo {0}–{1} pp em {2} meses = esfriamento (mais cortes, {3}); acima de {4} pp = risco de recessão ({5}); salários > {6}% a/a = {7}.	실업률 {2}개월간 {0}–{1}%p 상승 = 냉각(인하 확대, {3}); {4}%p 초과 = 경기침체 위험({5}); 임금 > 전년比 {6}% = {7}.
+Dólar (DXY)	달러 지수 (DXY)
+Variação em {0} pregões: dólar caindo = favorável. Escala: ±{1}% = ±{2}.	{0}거래일 변화: 달러 하락 = 우호적. 척도: ±{1}% = ±{2}.
+Treasury yields	미국채 금리
+Média de: Treasury {0} anos nominal em {1} dias (±{2} bp = ∓{3}) e juro real de {4} anos (TIPS) em {5} dias (±{6} bp = ∓{7}). Juros caindo = favorável.	평균: {1}일 기준 {0}년물 미국채 명목금리(±{2}bp = ∓{3}) 및 {5}일 기준 {4}년물 실질금리(TIPS)(±{6}bp = ∓{7}). 금리 하락 = 우호적.
+Liquidez	유동성
+Média de: TGA em ~{0} semanas (caindo devolve liquidez; ±US$ {1} bi = ∓{2}), balanço do Fed na semana (±US$ {3} bi = ±{4}) e estoque de stablecoins em {5} dias (±{6}% = ±{7}, liquidez do mercado cripto).	평균: 약 {0}주 후 TGA(하락 시 유동성 공급, ±US$ {1}bn = ∓{2}), 주간 연준 대차대조표(±US$ {3}bn = ±{4}) 및 {5}일 기준 스테이블코인 시가총액(±{6}% = ±{7}, 암호화폐 시장 유동성).
+Mercado acionário	주식 시장
+Nasdaq {0} em {1} pregões: alta = apetite por risco (favorável). Escala: ±{2}% = ±{3}.	{1}거래일간 나스닥 {0}: 상승 = 위험 선호(우호적). 척도: ±{2}% = ±{3}.
+Volatilidade (VIX e MOVE)	변동성 (VIX 및 MOVE)
+VIX < {0}: {1} · {2}–{3}: {4} · {5}–{6}: {7} · > {8}: {9}; salto > {10}% no dia soma {11}. MOVE (volatilidade dos Treasuries) > {12} soma {13}; < {14} soma {15}.	VIX < {0}: {1} · {2}–{3}: {4} · {5}–{6}: {7} · > {8}: {9}; 당일 {10}% 초과 급등 시 {11}. MOVE(미국채 변동성) > {12} 시 {13}; < {14} 시 {15}.
+Eventos geopolíticos	지정학적 사건
+Soma das notícias classificadas nas últimas {0} h (direção × intensidade × confiabilidade), limitada a ±{1}.	최근 {0}시간 분류된 뉴스의 합계(방향 × 강도 × 신뢰도), ±{1}로 제한.
+Fluxo institucional (ETFs)	기관 자금 흐름 (ETF)
+Soma dos fluxos dos ETFs spot nos últimos {0} pregões: ±US$ {1} bi = ±{2}.	최근 {0}거래일 현물 ETF 자금 흐름 합계: ±US$ {1}bn = ±{2}.
+Sem dados suficientes	데이터 부족
+Extremamente desfavorável	매우 비우호적
+Desfavorável	비우호적
+Neutro / misto	중립 / 혼합
+Favorável	우호적
+Extremamente favorável	매우 우호적
+Fed efetivo {0}% × Treasury {1} anos {2}% ({3})	연준 실효금리 {0}% × {1}년물 미국채 {2}% ({3})
+sem mudança precificada	반영된 변동 없음
+futuros de Fed funds ~{0} meses: {1}% ({2} bp)	약 {0}개월 연방기금 선물: {1}% ({2}bp)
+Sem taxa do Fed, Treasury {0} anos ou futuros	연준 금리, {0}년물 미국채 또는 선물 데이터 없음
+Núcleo do CPI: {0}% em {1} meses, {2}% anualizado em {3} meses ({4})	근원 CPI: {1}개월간 {0}%, {3}개월 연율 {2}% ({4})
+Núcleo do CPI desatualizado ({0})	근원 CPI 데이터 오래됨 ({0})
+Sem núcleo do CPI	근원 CPI 데이터 없음
+Desemprego {0}% ({1} pp em {2} meses){3}	실업률 {0}% ({2}개월간 {1}%p){3}
+ · salários {0}% a/a	 · 전년比 임금 {0}%
+Desemprego desatualizado ({0})	실업률 데이터 오래됨 ({0})
+Sem dado de desemprego	실업률 데이터 없음
+DXY {0}% em {1} pregões	{1}거래일간 DXY {0}%
+Sem DXY	DXY 데이터 없음
+Treasury {0} anos {1} bp em {2} dias	{2}일간 {0}년물 미국채 {1}bp
+Sem Treasury {0} anos	Treasury {0}년 없음
+TGA US$ {0} bi ({1} bi em ~{2} semanas)	TGA US$ {0}B ({1}B, 약 {2}주 기준)
+balanço do Fed {0} bi na semana	주간 Fed 대차대조표 {0}B
+stablecoins {0}% em {1} dias	스테이블코인 {0}% ({1}일)
+Sem TGA, balanço do Fed ou stablecoins	TGA, Fed 대차대조표, 스테이블코인 없음
+Nasdaq {0} {1}% em {2} pregões	Nasdaq {0} {1}% ({2}거래일)
+Sem Nasdaq	Nasdaq 없음
+VIX {0}{1}	VIX {0}{1}
+ ({0}% no dia)	 (당일 {0}%)
+MOVE {0}	MOVE {0}
+Sem VIX nem MOVE	VIX와 MOVE 없음
+{0} notícias desfavoráveis · {1} favoráveis · {2} indeterminadas ({3} h)	부정적 뉴스 {0}건 · 긍정적 {1}건 · 중립 {2}건 ({3}h)
+Sem notícias classificadas nas últimas {0} h	최근 {0}h 내 분류된 뉴스 없음
+ETFs spot: US$ {0} mi em {1} pregões	현물 ETF: US$ {0}M ({1}거래일)
+Sem fluxo dos ETFs (abra a aba ETFs para carregar)	ETF 자금 흐름 없음 (ETF 탭을 열어 로드)
+ (desatualizado)	 (오래됨)
+Comprador	매수자
+Vendedor	매도자
+Equilibrado	균형
+LONG liquidados	LONG 청산
+SHORT liquidados	SHORT 청산
+Sem evento relevante	주요 이벤트 없음
+Cenário A: macro desfavorável + vendas agressoras + liquidações de LONG. Possível queda reforçada por pressão macro e desalavancagem.	시나리오 A: 비우호적 매크로 + 공격적 매도 + LONG 청산. 매크로 압력과 디레버리징으로 하락이 강화될 가능성.
+Cenário B: macro desfavorável, mas há absorção de vendas nas paredes de compra e o preço se sustenta. O mercado pode estar absorvendo a pressão vendedora (resistência à queda).	시나리오 B: 비우호적 매크로지만 매수벽에서 매도 흡수 중이며 가격이 지지됨. 시장이 매도 압력을 흡수하고 있을 수 있음 (하락 저항).
+Cenário C: macro favorável + compras agressoras. Movimento de alta alinhado com as condições macro e com o fluxo comprador	시나리오 C: 우호적 매크로 + 공격적 매수. 매크로 여건 및 매수 흐름과 맞물린 상승 움직임
+, reforçado por liquidações de SHORT.	, SHORT 청산으로 강화됨.
+Macro favorável, mas há absorção de compras nas paredes de venda e o preço não avança: oferta segurando a alta.	매크로는 우호적이나 매도벽에서 매수 흡수가 일어나며 가격이 오르지 못함: 공급이 상승을 막는 중.
+Macro desfavorável e vendas agressoras na mesma direção, ainda sem desalavancagem forte (liquidações de LONG). Pressão vendedora alinhada ao cenário macro.	비우호적 매크로와 공격적 매도가 같은 방향이나, 강한 디레버리징(LONG 청산)은 아직 없음. 매도 압력이 매크로 시나리오와 맞물림.
+Macro favorável e SHORT sendo liquidados, mas sem compra agressora clara: alta puxada por recompra forçada, menos sustentada.	우호적 매크로에 SHORT가 청산되고 있으나 뚜렷한 공격적 매수는 없음: 강제 환매가 상승을 이끌어 지속성이 낮음.
+Macro desfavorável e LONG sendo liquidados, mas sem venda agressora clara: queda puxada por desalavancagem.	비우호적 매크로에 LONG이 청산되고 있으나 뚜렷한 공격적 매도는 없음: 디레버리징이 하락을 이끎.
+Divergência: o fluxo agressor vai contra o cenário macro. Pode ser movimento técnico local; vale cautela até haver confirmação.	괴리: 공격적 주문 흐름이 매크로 시나리오와 반대 방향. 국지적 기술적 움직임일 수 있으니 확인 전까지 주의.
+Cenário macro neutro/misto: o order flow tende a dominar a leitura de curto prazo.	매크로 시나리오 중립/혼재: 단기 판단은 주문 흐름이 주도할 가능성이 큼.
+Sem confirmação clara do order flow em relação ao cenário macro.	매크로 시나리오와 비교한 주문 흐름의 뚜렷한 확인 없음.
+ Dados públicos não permitem identificar participantes individuais.	 공개 데이터로는 개별 참여자를 식별할 수 없습니다.
+Accept	수락
+limite de consultas da fonte (HTTP {0})	데이터 소스 조회 한도 (HTTP {0})
+HTTP {0}	HTTP {0}
+^GSPC	^GSPC
+Nasdaq {0}	Nasdaq {0}
+^NDX	^NDX
+Dow Jones	Dow Jones
+^DJI	^DJI
+^VIX	^VIX
+Treasury {0} anos (intradiário)	Treasury {0}년 (장중)
+^TNX	^TNX
+Ouro	금
+GC=F	GC=F
+Petróleo WTI	WTI 원유
+CL=F	CL=F
+Petróleo Brent	브렌트유
+BZ=F	BZ=F
+Bitcoin	비트코인
+sem resultado ({0})	결과 없음 ({0})
+{0} Yr	{0}년물
+colunas {0} Yr/{1} Yr não encontradas	{0}년물/{1}년물 열을 찾을 수 없음
+CPI (índice, dessaz.)	CPI (지수, 계절조정)
+Núcleo do CPI (índice, dessaz.)	CPI 근원 (지수, 계절조정)
+Nonfarm payrolls (mil)	비농업 고용 (천 명)
+Taxa de desemprego (%)	실업률 (%)
+Salário médio por hora (US$)	평균 시간당 임금 (US$)
+,"registrationkey":"{0}"	,"registrationkey":"{0}"
+{"seriesid":[{0}],"startyear":"{1}","endyear":"{2}"{3}}	{"seriesid":[{0}],"startyear":"{1}","endyear":"{2}"{3}}
+BLS: {0} {1}	BLS: {0} {1}
+Results	결과
+PCE (índice de preços)	PCE (물가지수)
+Núcleo do PCE (índice)	근원 PCE (지수)
+BEA (via DBnomics)	BEA (DBnomics 경유)
+Treasury General Account	재무부 일반계정 (TGA)
+Closing	종가
+Opening	시가
+(war OR missile OR airstrike OR invasion OR ceasefire OR "military escalation" OR "Strait of Hormuz") (US OR China OR Russia OR Iran OR Israel OR Taiwan OR Ukraine)	(war OR missile OR airstrike OR invasion OR ceasefire OR "military escalation" OR "Strait of Hormuz") (US OR China OR Russia OR Iran OR Israel OR Taiwan OR Ukraine)
+(tariffs OR sanctions OR "export controls" OR "trade deal" OR "trade war")	(tariffs OR sanctions OR "export controls" OR "trade deal" OR "trade war")
+("oil prices" OR OPEC OR "natural gas prices" OR "energy supply")	("oil prices" OR OPEC OR "natural gas prices" OR "energy supply")
+("Federal Reserve" OR Powell OR FOMC OR "rate cut" OR "rate hike" OR "inflation report" OR "jobs report")	("Federal Reserve" OR Powell OR FOMC OR "rate cut" OR "rate hike" OR "inflation report" OR "jobs report")
+("debt ceiling" OR "government shutdown" OR "Treasury yields" OR "credit rating" OR "fiscal deficit")	("debt ceiling" OR "government shutdown" OR "Treasury yields" OR "credit rating" OR "fiscal deficit")
+(bitcoin OR crypto OR stablecoin) (SEC OR regulation OR bill OR ban OR "strategic reserve" OR ETF)	(bitcoin OR crypto OR stablecoin) (SEC OR regulation OR bill OR ban OR "strategic reserve" OR ETF)
+dc|date	dc|date
+ GMT	 GMT
+ UTC	 UTC
+ UT	 UT
+ EST	 EST
+ EDT	 EDT
+ CST	 CST
+ CDT	 CDT
+ PST	 PST
+ PDT	 PDT
+Cointelegraph	Cointelegraph
+Decrypt	Decrypt
+The Block	The Block
+Bitcoin Magazine	Bitcoin Magazine
+CNBC Economy	CNBC Economy
+WSJ Markets	WSJ Markets
+New York Times	New York Times
+New York Times World	New York Times World
+BBC Business	BBC Business
+BBC World	BBC World
+Al Jazeera	Al Jazeera
+Financial Times	Financial Times
+Bloomberg	Bloomberg
+DW Business	DW Business
+Russell {0}	러셀 {0}
+^RUT	^RUT
+Bolsas	증시
+FTSE {0} (Londres)	FTSE {0} (런던)
+^FTSE	^FTSE
+DAX (Alemanha)	DAX (독일)
+^GDAXI	^GDAXI
+Nikkei {0} (Japão)	닛케이 {0} (일본)
+Hang Seng (Hong Kong)	항셍 (홍콩)
+^HSI	^HSI
+Xangai	상하이
+Ibovespa	Ibovespa
+^BVSP	^BVSP
+Euro / dólar	유로 / 달러
+EURUSD=X	EURUSD=X
+Moedas	통화
+Dólar / iene	달러 / 엔
+JPY=X	JPY=X
+Dólar / yuan	달러 / 위안
+CNY=X	CNY=X
+Dólar / real	달러 / 레알
+BRL=X	BRL=X
+Prata	은
+SI=F	SI=F
+Commodities	원자재
+Cobre	구리
+HG=F	HG=F
+Gás natural	천연가스
+NG=F	NG=F
+Treasury {0} semanas	Treasury {0}주
+^IRX	^IRX
+Juros e crédito	금리 및 신용
+Treasury {0} anos	Treasury {0}년
+^FVX	^FVX
+^TYX	^TYX
+MOVE (volatilidade dos Treasuries)	MOVE (국채 변동성)
+^MOVE	^MOVE
+HYG (crédito high yield)	HYG (하이일드 신용)
+Ethereum	이더리움
+Cripto e ações ligadas	암호화폐 및 관련 주식
+IBIT (ETF de BTC da BlackRock)	IBIT (블랙록 BTC ETF)
+Strategy (MSTR)	Strategy (MSTR)
+Coinbase (COIN)	Coinbase (COIN)
+coluna {0} não encontrada	{0} 열을 찾을 수 없음
+&#xa0;|&nbsp;|&#{0};	&#xa0;|&nbsp;|&#{0};
+total de ativos não encontrado	전체 자산을 찾을 수 없음
+sem dominância	지배력 없음
+sem observação	관측값 없음
+(tariffs OR sanctions OR ceasefire OR airstrike OR "federal reserve" OR "oil prices" OR "debt ceiling") sourcelang:english	(tariffs OR sanctions OR ceasefire OR airstrike OR "federal reserve" OR "oil prices" OR "debt ceiling") sourcelang:english
+&mode=artlist&maxrecords={0}&format=json&timespan={1}h&sort=datedesc	&mode=artlist&maxrecords={0}&format=json&timespan={1}h&sort=datedesc
+Federal Reserve Bank of New York	Federal Reserve Bank of New York
+Taxa efetiva do Fed (EFFR), intervalo-alvo, SOFR e reverse repo overnight	Fed 실효금리(EFFR), 목표 금리 범위, SOFR 및 역레포 overnight
+Calendário do FOMC, balanço semanal (H.4.1), reservas bancárias e comunicados	FOMC 일정, 주간 대차대조표(H.4.1), 은행 지준금 및 성명서
+U.S. Treasury	U.S. Treasury
+Curva de juros nominal e real (TIPS), saldo do TGA e dívida pública	명목 및 실질 금리 곡선(TIPS), TGA 잔고 및 국가 부채
+Treasury Fiscal Data	Treasury Fiscal Data
+Daily Treasury Statement (TGA) e Debt to the Penny	Daily Treasury Statement(TGA) 및 Debt to the Penny
+U.S. Bureau of Labor Statistics (BLS)	U.S. Bureau of Labor Statistics (BLS)
+CPI, núcleo do CPI, payroll, desemprego e salário por hora	CPI, 근원 CPI, 비농업 고용, 실업률 및 시간당 임금
+U.S. Bureau of Economic Analysis (BEA) via DBnomics	U.S. Bureau of Economic Analysis (BEA) via DBnomics
+PCE e núcleo do PCE	PCE 및 근원 PCE
+Banco Central Europeu (BCE)	유럽중앙은행(ECB)
+Taxa de depósito e comunicados	예금 금리 및 성명서
+SEC e CFTC	SEC 및 CFTC
+Comunicados dos reguladores americanos	미국 규제 당국 발표문
+Yahoo Finance	Yahoo Finance
+Bolsas (EUA, Europa, Ásia, Brasil), VIX, MOVE, DXY, moedas, commodities, Treasuries intradiários, futuros de Fed funds (CBOT), ETH, IBIT, MSTR, COIN, HYG	증시(미국, 유럽, 아시아, 브라질), VIX, MOVE, DXY, 통화, 원자재, 장중 Treasury, Fed funds 선물(CBOT), ETH, IBIT, MSTR, COIN, HYG
+Kalshi	Kalshi
+Probabilidades negociadas da próxima decisão de juros do Fed	Fed 다음 금리 결정에 대한 거래된 확률
+Forex Factory (faireconomy.media)	Forex Factory (faireconomy.media)
+Calendário econômico semanal: horário, impacto, expectativa e anterior	주간 경제 캘린더: 시각, 영향도, 예상치 및 이전 값
+Farside Investors	Farside Investors
+Fluxo diário dos ETFs spot de bitcoin	비트코인 현물 ETF 일별 자금 흐름
+Valor de mercado cripto, dominância do BTC e volume	암호화폐 시가총액, BTC 지배력 및 거래량
+Estoque total de stablecoins	스테이블코인 총 발행량
+Índice Fear & Greed do mercado cripto	암호화폐 시장 Fear & Greed 지수
+Hashrate, dificuldade e taxas da rede Bitcoin	비트코인 네트워크 해시레이트, 난이도 및 수수료
+Google News	Google News
+Manchetes por tema (conflitos, comércio, energia, Fed, fiscal, regulação cripto)	주제별 헤드라인(분쟁, 무역, 에너지, Fed, 재정, 암호화폐 규제)
+GDELT Project	GDELT Project
+Monitor global de notícias	글로벌 뉴스 모니터
+Veículos (RSS)	매체 (RSS)
+Google Tradutor	Google 번역
+Tradução automática de manchetes e textos sem tradução pronta	번역본이 없는 헤드라인과 본문의 자동 번역
+{0} ({1}, calculado do índice oficial)	{0} ({1}, 공식 지수 기준 계산)
+btcusdt@forceOrder	btcusdt@forceOrder
+trades.liquidation={0}	trades.liquidation={0}
+ABSORÇÃO	흡수
+{0}: reiniciando conexão ({1})	{0}: 연결 재시작 중 ({1})
+{0}: conectado	{0}: 연결됨
+{0}: falha na inscrição: {1}	{0}: 구독 실패: {1}
+parsing: {0}	파싱: {0}
+{0}: falha de parsing: {1} | {2}	{0}: 파싱 실패: {1} | {2}
+HTTP {0} 	HTTP {0} 
+{0}: desconectado: {1}	{0}: 연결 끊김: {1}
+{0}: fechado pelo servidor ({1} {2})	{0}: 서버가 연결 종료 ({1} {2})
+Tentar de novo	다시 시도
+CPU do processo	프로세스 CPU
+Radar BTC	BTC 레이더
+Windows	Windows
+O Radar BTC já está aberto.	BTC 레이더가 이미 열려 있습니다.
+Iniciando Radar BTC V8 (Java {0})	BTC 레이더 V8 시작 중 (Java {0})
+Encerrado	종료됨
+BTC Orderflow Terminal V8 — Radar BTC	BTC 오더플로 터미널 V8 — BTC 레이더
+[app] {0}	[앱] {0}
+acima (shorts a liquidar)	위 (청산 예정 숏)
+abaixo (longs a liquidar)	아래 (청산 예정 롱)
+zone|{0}	zone|{0}
+Preço {0} a {1}% da zona {2} {3} com ~{4} BTC estimados ({5})	가격 {0}, 구간 {2} {3}까지 {1}%, 추정 ~{4} BTC ({5})
+Teste de alerta do Radar BTC: canal configurado corretamente.	BTC 레이더 알림 테스트: 채널이 올바르게 설정되었습니다.
+Radar BTC · {0}\n{1}\n{2}	BTC 레이더 · {0}\n{1}\n{2}
+Radar BTC · {0}	BTC 레이더 · {0}
+Celular: 	휴대폰: 
+Windows: 	Windows: 
+notificações bloqueadas ou indisponíveis	알림 차단됨 또는 사용 불가
+Telegram: 	Telegram: 
+Radar BTC: {0}	BTC 레이더: {0}
+E-mail: 	이메일: 
+nenhum canal configurado	설정된 채널 없음
+alerta {0}: {1}	알림 {0}: {1}
+token ou chat ID vazio	토큰 또는 채팅 ID가 비어 있음
+HTTP {0}: {1}	HTTP {0}: {1}
+servidor, usuário ou destinatário vazio	서버, 사용자 또는 수신자가 비어 있음
+US$ {0} mi	US$ {0} 백만
+ETFs spot de BTC (EUA)	BTC 현물 ETF (미국)
+Carregando os fluxos dos ETFs…	ETF 자금 흐름 불러오는 중…
+Fonte: tabela pública diária da Farside Investors	출처: Farside Investors 일별 공개 표
+Fluxos indisponíveis no momento	현재 자금 흐름 데이터 없음
+Sem dados	데이터 없음
+Fluxo diário	일별 흐름
+Último pregão · 	최근 거래일 · 
+entrada líquida no dia	당일 순유입
+saída líquida no dia	당일 순유출
+{0} pregões	{0}거래일
+Fluxo diário · últimos {0} pregões	일별 흐름 · 최근 {0}거래일
+Valores em milhões de dólares, como publicados pela Farside Investors (atualiza depois do fechamento do mercado americano). Barras verdes = entrada líquida no dia; vermelhas = saída.	Farside Investors가 공개한 백만 달러 단위 값입니다(미국 장 마감 후 갱신). 초록 막대 = 당일 순유입, 빨간 막대 = 순유출.
+Por fundo	펀드별
+Por fundo no último pregão	최근 거래일 펀드별
+Velas visíveis	표시된 캔들
+Vela	캔들
+faixa US$ {0} · {1} velas	US$ {0} 구간 · {1}개 캔들
+Faixa US$	US$ 구간
+Velas	캔들
+Corretoras	거래소
+Todas	전체
+Dados desde {0}	{0} 이후 데이터
+Aguardando trades	체결 대기 중
+Footprint	풋프린트
+Footprint · venda × compra agressora por faixa (BTC)	풋프린트 · 구간별 공격적 매도 × 공격적 매수 (BTC)
+Montando o footprint	풋프린트 구성 중
+Precisa de trades das corretoras principais; cada vela aparece assim que recebe execuções	주요 거래소의 체결 데이터가 필요합니다. 각 캔들은 체결을 받는 즉시 표시됩니다
+Perfil de volume	볼륨 프로파일
+Sem volume no período	기간 내 거래량 없음
+Resumo	요약
+POC (maior volume)	POC (최대 거래량)
+VAH (topo da área de valor)	VAH (가치 영역 상단)
+VAL (base da área de valor)	VAL (가치 영역 하단)
+Volume no perfil	프로파일 거래량
+Delta do perfil	프로파일 델타
+{0} BTC	{0} BTC
+Delta da vela atual	현재 캔들 델타
+Cada célula mostra venda agressora × compra agressora naquela faixa de preço. Fundo verde = compradores dominaram a faixa; vermelho = vendedores. Número em destaque = desequilíbrio diagonal (um lado ≥ {0}× o outro). Contorno laranja = POC da vela. Área de valor = faixas com {1}% do volume. Trades de Binance, Bybit e OKX, guardados por {2} h em faixas de US$ {3}.	각 셀은 해당 가격 구간의 공격적 매도 × 공격적 매수를 보여줍니다. 녹색 배경 = 해당 구간을 매수자가 장악; 빨간색 = 매도자. 강조된 숫자 = 대각선 불균형(한쪽이 다른 쪽의 {0}× 이상). 주황색 테두리 = 캔들의 POC. 가치 영역 = 거래량의 {1}%를 차지하는 구간. Binance, Bybit, OKX 체결을 US$ {3} 구간으로 {2}시간 동안 보관합니다.
+Aumente a faixa US$ ou reduza o nº de velas para ver os números	숫자를 보려면 US$ 구간을 늘리거나 캔들 수를 줄이세요
+Mover	이동
+Linha de preço	가격선
+Linha	선
+Clique no preço onde a linha deve ficar	선을 놓을 가격을 클릭하세요
+Tendência	추세선
+Arraste do ponto inicial até o final	시작점에서 끝점까지 드래그하세요
+Zona	영역
+Arraste de um canto da zona até o canto oposto	영역의 한 모서리에서 반대 모서리까지 드래그하세요
+Texto	텍스트
+Clique onde a nota deve ficar	메모를 놓을 위치를 클릭하세요
+Ajustar	조정
+Apagar marcação	표시 삭제
+Apagar todas ({0})	모두 삭제 ({0})
+Nota em {0}:	{0}의 메모:
+Salvar	저장
+Cancelar	취소
+ BTC	 BTC
+Pinça: zoom · arrastar: mover · toque duplo: voltar	핀치: 확대/축소 · 드래그: 이동 · 더블 탭: 되돌리기
+Roda: zoom · na escala: zoom no preço · arrastar: mover · duplo clique: voltar	휠: 확대/축소 · 가격 축: 가격 확대/축소 · 드래그: 이동 · 더블 클릭: 되돌리기
+baixando velas	캔들 다운로드 중
+open interest {0}	미결제약정 {0}
+histórico de preço insuficiente para {0}	{0}에 대한 가격 이력이 부족합니다
+news-{0}|{1}	news-{0}|{1}
+US$	US$
+Corretora	거래소
+SMALL ≥	SMALL ≥
+MEDIUM ≥	MEDIUM ≥
+LARGE ≥	LARGE ≥
+EXTREME ≥	EXTREME ≥
+Faixa ±%	구간 ±%
+BTC · ativas: {0}	BTC · 활성: {0}
+Paredes de compra	매수 벽
+Top {0} paredes de compra	상위 {0}개 매수 벽
+Paredes de venda	매도 벽
+Top {0} paredes de venda	상위 {0}개 매도 벽
+Histórico de concentrações	집중 이력
+Histórico de concentrações (eventos de saída do livro)	집중 이력 (호가창 이탈 이벤트)
+PREÇO	가격
+NEGOCIADO NO NÍVEL	체결 가격대
+PERMANÊNCIA	지속
+Nenhuma concentração saiu do livro ainda	아직 호가창에서 사라진 집중 물량이 없습니다
+Quando uma parede some, aqui aparece se houve execução corroborada por trades ou só retirada	벽이 사라지면, 거래로 확인된 체결인지 단순 철회인지 여기에 표시됩니다
+Absorção e iceberg	흡수 및 아이스버그
+Absorção e iceberg · {0}	흡수 및 아이스버그 · {0}
+Nenhuma parede absorvendo agora	현재 흡수 중인 벽이 없습니다
+Aparece quando um nível recebe execução e não diminui (ou volta a crescer)	가격대가 체결을 받았지만 줄어들지 않거나(또는 다시 늘어날 때) 나타납니다
+Identidade = corretora + instrumento + lado + preço. O livro público é agregado por preço: não identificamos ordens individuais nem quem as colocou. Sumir do livro não prova execução: "Executada (confirmada)" exige trades no nível ≥ {0}% da quantidade. EXECUTADO = BTC negociado exatamente no preço da parede desde que ela apareceu; % CONS. = executado ÷ (executado + restante). ABSORÇÃO = recebeu execução ≥ {1}% do tamanho inicial e manteve ≥ {2}% dele. ICEBERG = executou mais do que mostrava e foi reposta {3}+ vezes (REPOSTO = execução que não reduziu o livro). Ambos são inferências.	식별자 = 거래소 + 상품 + 방향 + 가격. 공개 호가창은 가격별로 집계되므로 개별 주문이나 주문자를 식별할 수 없습니다. 호가창에서 사라졌다고 체결이 증명되지는 않습니다. "체결 확인됨"은 해당 가격대 거래량이 수량의 {0}% 이상일 때만 표시됩니다. 체결 = 벽이 나타난 이후 벽 가격에서 정확히 거래된 BTC, 체결 비중 % = 체결 ÷ (체결 + 잔량). 흡수 = 초기 크기의 {1}% 이상 체결을 받고 그중 {2}% 이상을 유지. 아이스버그 = 표시된 양보다 많이 체결되었고 {3}회 이상 재충전됨(재충전 = 호가창을 줄이지 않은 체결). 두 항목 모두 추정입니다.
+ATUAL (BTC)	현재 (BTC)
+Δ BTC	Δ BTC
+% CONS.	체결 비중 %
+Nenhuma parede acima do limite SMALL nesta faixa	이 범위에는 SMALL 한도를 넘는 벽이 없습니다
+Ajuste os limites ou a faixa ±% acima	한도 또는 위의 ±% 범위를 조정하세요
+Fluxo e CVD	체결 흐름 및 CVD
+Janela	구간
+Eventos processados na chegada; a tela agrupa a cada {0} s.	이벤트는 도착 즉시 처리되며, 화면은 {0}초마다 묶어서 표시합니다.
+Fluxo agressor ({0})	공격적 체결 흐름 ({0})
+Fonte	출처
+Comprado	매수
+Vendido	매도
+Delta	델타
+Trades	체결
+Médio	평균
+Maior compra	최대 매수
+Maior venda	최대 매도
+Consolidado	합계
+CVD e preço · últimos {0} (histórico desde que o app abriu, até {1} h)	CVD 및 가격 · 최근 {0} (앱 실행 이후 기록, 최대 {1}시간)
+Período	기간
+— Total	— 합계
+— Preço BTC (escala à direita)	— BTC 가격 (오른쪽 눈금)
+Total: 	합계: 
+Normalizado: 	정규화: 
+{0}% do OI	OI의 {0}%
+Sinal e resumo	신호 및 요약
+Sinal de fluxo ({0})	체결 흐름 신호 ({0})
+{0} · confiança {1}	{0} · 신뢰도 {1}
+Dados observados	관측 데이터
+Interpretação	해석
+Limitações	한계
+Divergências preço × CVD	가격 × CVD 괴리
+Nenhuma divergência detectada	괴리가 감지되지 않았습니다
+Checa {0} min, {1} min e {2} h a cada ~{3} s: preço faz novo fundo/topo e o CVD não confirma	{0}분, {1}분, {2}시간 구간을 약 {3}초마다 확인: 가격은 신저점/신고점을 갱신하지만 CVD가 이를 확인하지 않음
+{0} · {1} min	{0} · {1}분
+Divergência = o preço faz um fundo mais baixo (ou topo mais alto) na {0}ª metade da janela e o CVD não acompanha. Sinal de enfraquecimento, não de reversão garantida.	괴리 = 구간의 {0}번째 절반에서 가격은 더 낮은 저점(또는 더 높은 고점)을 만들지만 CVD는 따라가지 않는 상태. 약세 신호이며, 반전을 보장하지는 않습니다.
+Derivativos por corretora	거래소별 파생상품
+OI (BTC)	OI (BTC)
+OI somado ({0} corretoras)	합산 OI ({0}개 거래소)
+aguardando as {0} fontes	{0}개 출처 대기 중
+Variação do OI ({0})	OI 변화 ({0})
+Variação do preço ({0})	가격 변화 ({0})
+OI Binance via REST a cada {0} s (não há WebSocket de OI); Bybit e OKX por WebSocket. CVD normalizado = CVD ÷ OI somado, em %: permite comparar dias com open interest diferente.	Binance OI는 {0}초마다 REST로 조회됩니다(OI용 WebSocket 없음). Bybit과 OKX는 WebSocket으로 수신합니다. 정규화 CVD = CVD ÷ 합산 OI (%). 미결제약정이 다른 날짜끼리도 비교할 수 있습니다.
+Delta por janela · consolidado	구간별 델타 · 합계
+Barra = desequilíbrio entre compra e venda agressora (verde para a direita = compradores).	막대 = 공격적 매수와 매도 간의 불균형(오른쪽 초록 = 매수자).
+{0} min	{0}분
+Aguardando trades para desenhar o CVD	CVD를 그리기 위해 체결을 기다리는 중
+Roda: zoom · arrastar: mover · duplo clique: voltar	휠: 확대/축소 · 드래그: 이동 · 더블클릭: 복귀
+Zoom ativo · duplo clique: voltar ao período todo	확대 적용 중 · 더블클릭: 전체 기간으로 복귀
+Preço BTC	BTC 가격
+CVD total	CVD 총합
+Mínimo (BTC)	최저가 (BTC)
+Compras {0}: {1} · {2}	매수 {0}: {1} · {2}
+Vendas {0}: {1} · {2}	매도 {0}: {1} · {2}
+Compras e vendas	매수 및 매도
+Maiores compras agressoras · {0}	공격적 매수 상위 · {0}
+Nenhuma compra ≥ {0} BTC em {1}	{1}에서 ≥ {0} BTC 매수 없음
+Maiores vendas agressoras · {0}	공격적 매도 상위 · {0}
+Nenhuma venda ≥ {0} BTC em {1}	{1}에서 ≥ {0} BTC 매도 없음
+Fita e sequências	체결 테이프 및 연속 체결
+Fita de grandes execuções (mais recentes primeiro)	대형 체결 테이프 (최신순)
+Aguardando execuções ≥ {0} BTC	≥ {0} BTC 체결 대기 중
+Sequências · {0}+ grandes execuções do mesmo lado em até {1} s	연속 체결 · {1}초 이내 같은 방향 대형 체결 {0}건 이상
+Nenhuma sequência em {0}	{0}에서 연속 체결 없음
+Indica agressão concentrada: várias ordens grandes seguidas do mesmo lado	공격적 체결 집중을 나타냄: 같은 방향의 대형 주문이 연달아 발생
+{0}–{1}  {2}  {3} execuções  {4}  {5}–{6}  	{0}–{1}  {2}  체결 {3}건  {4}  {5}–{6}  
+Os eventos aparecem aqui assim que acontecem	이벤트가 발생하는 즉시 여기에 표시됩니다
+Mapa	맵
+ · estimado (modelo V8) · 	 · 추정치 (V8 모델) · 
+Mostrar	표시
+Já executadas	체결 완료
+Em aberto	미결제
+Reduzir gráfico	차트 축소
+Ampliar gráfico	차트 확대
+OI por entrada	진입별 OI
+Longs × shorts	롱 × 숏
+Alavancagem	레버리지
+Intensidade	강도
+Liquidações reais	실제 청산
+Carregando: {0}…	로딩 중: {0}…
+Erro: {0}	오류: {0}
+Atualizado {0} · {1} colunas	{0} 업데이트 · 열 {1}개
+Atualizar	새로고침
+Montando o heatmap ({0})…	히트맵 생성 중 ({0})…
+Heatmap indisponível	히트맵을 사용할 수 없음
+Usa velas e open interest históricos públicos das corretoras	거래소의 공개 과거 캔들 및 미결제약정 데이터를 사용합니다
+Níveis e visão geral	레벨 및 개요
+Níveis de liquidação em aberto	미결제 청산 레벨
+Níveis-chave de liquidação	주요 청산 레벨
+Principais	주요
+Todos	전체
+Aguardando o heatmap	히트맵 대기 중
+{0} faixas acima · {1} abaixo · as mesmas das linhas do gráfico	위 {0}개 구간 · 아래 {1}개 구간 · 차트 선과 동일
+● Acima · liquidações de SHORT	● 위 · 숏 청산
+● Abaixo · liquidações de LONG	● 아래 · 롱 청산
+Visão geral	개요
+Níveis de liquidação em aberto (estimados)	미결제 청산 레벨 (추정)
+Longs (abaixo do preço)	롱 (가격 아래)
+Shorts (acima do preço)	숏 (가격 위)
+Cobertura do histórico	히스토리 범위
+Estimativa: {0}x/{1}x/{2}x/{3}x sobre o aumento de open interest de cada corretora (Binance, Bybit, OKX, Gate, HTX e Kraken, as que publicam histórico; Bitget, Deribit e Hyperliquid só informam o valor atual); níveis atravessados pelo preço somem. OI por entrada = onde o modelo estima que as posições ainda abertas entraram. Longs × shorts: cor de compra = mais longs a liquidar naquele preço, cor de venda = mais shorts. Faixa inferior = total de níveis LONG em aberto menos SHORT. O filtro de alavancagem vale para o mapa e os níveis-chave. Pontos = liquidações REAIS reportadas pelas {4} corretoras (gravadas desde a instalação), na cor de LONG ou de SHORT.	추정: 거래소별 미결제약정 증가에 대한 {0}x/{1}x/{2}x/{3}x 기준 (히스토리를 공개하는 Binance, Bybit, OKX, Gate, HTX, Kraken; Bitget, Deribit, Hyperliquid는 현재 값만 제공); 가격이 통과한 레벨은 사라집니다. 진입별 OI = 모델이 아직 열려 있는 포지션이 언제 진입했다고 추정하는지를 나타냅니다. 롱 × 숏: 매수 색상 = 해당 가격에서 청산될 롱이 더 많음, 매도 색상 = 숏이 더 많음. 하단 막대 = 미결제 롱 레벨 총합에서 숏 레벨 총합을 뺀 값. 레버리지 필터는 맵과 주요 레벨에 적용됩니다. 점 = {4}개 거래소에서 보고된 실제 청산(설치 이후 기록), 롱 또는 숏 색상으로 표시.
+Escala: longs − shorts a liquidar por faixa (BTC)	눈금: 구간별 청산 예정 롱 − 숏 (BTC)
+Escala: OI aberto por faixa de preço (BTC)	눈금: 가격 구간별 미결제약정 (BTC)
+Escala: BTC a liquidar por faixa de preço	눈금: 가격 구간별 청산 예정 BTC
+● LONG liquidado	● 롱 청산됨
+● SHORT liquidado	● 숏 청산됨
+níveis em aberto (caixas ao lado)	미결제 레벨 (옆 박스)
+≥ {0} mais shorts	≥ {0} 숏 더 많음
+≥ {0} mais longs	≥ {0} 롱 더 많음
+Mapa de liquidações	청산 맵
+Open interest por preço de entrada	진입 가격별 Open interest
+Longs × shorts a liquidar	청산 대기 롱 × 숏
+  ·  fechamento 	  ·  종가 
+Faixa {0} – {1}	범위 {0} – {1}
+Distância do preço atual: 	현재 가격과의 거리: 
+Longs a liquidar	청산 대기 롱
+Shorts a liquidar	청산 대기 숏
+Longs − shorts	롱 − 숏
+OI aberto neste preço	이 가격의 미결제 OI
+Mapa e níveis	맵 및 레벨
+Liquidações reais e alertas	실제 청산 및 알림
+LONG {0} ({1})	LONG {0} ({1})
+SHORT {0} ({1})	SHORT {0} ({1})
+Top LONG	상위 LONG
+Top LONG liquidadas · {0}	상위 LONG 청산 · {0}
+Nenhuma liquidação LONG de BTC em {0} · {1} eventos desde a abertura	{0}에 BTC LONG 청산 없음 · 시작 이후 이벤트 {1}건
+Top SHORT	상위 SHORT
+Top SHORT liquidadas · {0}	상위 SHORT 청산 · {0}
+Nenhuma liquidação SHORT de BTC em {0} · {1} eventos desde a abertura	{0}에 BTC SHORT 청산 없음 · 시작 이후 이벤트 {1}건
+Top geral	전체 상위
+Top geral · {0}	전체 상위 · {0}
+Nenhuma liquidação de BTC em {0}	{0}에 BTC 청산 없음
+Alertas	알림
+Liquidações reais = Binance, Bybit, OKX, Gate, Bitget e Deribit (feeds públicos, não garantem todos os eventos; Binance envia no máximo {0}/s e a Bitget agrupa por segundo). Conversões para BTC: OKX {1}; Gate {2} contrato = {3} BTC; Bitget USDT ÷ preço; Deribit USD ÷ preço. Heatmap = estimativa a partir do open interest histórico de Binance, Bybit, OKX, Gate, HTX e Kraken.	실제 청산 = Binance, Bybit, OKX, Gate, Bitget, Deribit (공개 피드, 모든 이벤트를 보장하지 않음; Binance는 최대 {0}/초 전송하며 Bitget은 초 단위로 묶음). BTC 환산: OKX {1}; Gate {2} 계약 = {3} BTC; Bitget USDT ÷ 가격; Deribit USD ÷ 가격. Heatmap = Binance, Bybit, OKX, Gate, HTX, Kraken의 과거 open interest 기반 추정.
+Aparecem aqui assim que alguma das {0} corretoras reportar	{0}개 거래소 중 하나라도 보고하면 여기에 표시됩니다
+Conexões e livros	연결 및 오더북
+Conexões (Ao vivo = conexão + inscrição + dados recentes)	연결 (실시간 = 연결 + 구독 + 최근 데이터)
+ÚLTIMA MSG	마지막 메시지
+ÚLTIMO ERRO	마지막 오류
+Livros	오더북
+VÁLIDO	유효
+NÍVEIS BID/ASK	BID/ASK 레벨
+LATÊNCIA	지연 시간
+RECONSTRUÇÕES	재구성
+Bybit RPI	Bybit RPI
+NÃO	아니오
+{0} ms	{0} ms
+Log ao vivo (também gravado em {0})	실시간 로그 (다음 위치에도 기록됨: {0})
+Desempenho e log	성능 및 로그
+Desempenho	성능
+Mensagens/s (todas as fontes)	메시지/초 (모든 소스)
+Trades recebidos	수신 체결
+Liquidações recebidas	수신 청산
+Paredes ativas	활성 호가벽
+Tempo de execução	실행 시간
+Atualização da tela	화면 갱신
+Histórico (SQLite)	기록 (SQLite)
+Arquivo	파일
+Estado	상태
+Gravados nesta sessão	이번 세션 기록
+Na fila	대기열
+Tabela {0}	테이블 {0}
+{0} linhas	{0}행
+Nada é apagado automaticamente.	자동으로 삭제되는 항목은 없습니다.
+Fontes e conversões	소스 및 환산
+Binance USD-M: /public depth@{0}ms + snapshot REST {1}; /market aggTrade, markPrice@{2}s, forceOrder; OI REST {3} s.	Binance USD-M: /public depth@{0}ms + REST 스냅샷 {1}; /market aggTrade, markPrice@{2}s, forceOrder; OI REST {3}초.
+Bybit linear: orderbook.1000 ({0} ms), orderbook.rpi ({1} níveis), publicTrade, tickers, allLiquidation.	Bybit linear: orderbook.1000 ({0} ms), orderbook.rpi ({1}레벨), publicTrade, tickers, allLiquidation.
+OKX: books ({0} níveis, seqId/prevSeqId), trades, open-interest, funding-rate, mark-price, liquidation-orders.	OKX: books ({0}레벨, seqId/prevSeqId), trades, open-interest, funding-rate, mark-price, liquidation-orders.
+OKX: {0}. Binance e Bybit já publicam em BTC.	OKX: {0}. Binance와 Bybit은 이미 BTC 단위로 게시합니다.
+Liquidações extras: Gate (futures.public_liquidates), Bitget (UTA v3 liquidation), Deribit (trades com marca de liquidação).	추가 청산: Gate (futures.public_liquidates), Bitget (UTA v3 liquidation), Deribit (청산 표시가 붙은 trades).
+Alertas · {0}	알림 · {0}
+Sem alertas por enquanto	아직 알림 없음
+Nenhum alerta deste tipo	이 유형의 알림 없음
+Absorção e iceberg em paredes, liquidações ≥ LARGE, execuções muito grandes e divergências preço × CVD aparecem aqui	벽의 흡수 및 아이스버그, ≥ LARGE 청산, 매우 큰 체결 및 가격 × CVD 괴리가 여기에 표시됩니다
+Radar macro: {0}	매크로 레이더: {0}
+formato inesperado ({0})	예상치 못한 형식 ({0})
+Yahoo Finance · {0}	Yahoo Finance · {0}
+U.S. Treasury · yields oficiais	U.S. Treasury · 공식 수익률
+NY Fed · taxa efetiva (EFFR)	NY Fed · 실효 연방기금금리 (EFFR)
+BLS · CPI, emprego, salários	BLS · CPI, 고용, 임금
+BEA · {0}	BEA · {0}
+Tesouro · saldo do TGA	재무부 · TGA 잔고
+Calendário econômico (Forex Factory)	경제 캘린더 (Forex Factory)
+Federal Reserve · reuniões do FOMC	연방준비제도 · FOMC 회의
+Google News · tema {0}	Google News · 주제 {0}
+Federal Reserve · comunicados	연방준비제도 · 성명
+GDELT · notícias globais	GDELT · 글로벌 뉴스
+RSS · {0}	RSS · {0}
+CME/CBOT · futuro de Fed funds {0}	CME/CBOT · 연방기금 선물 {0}
+U.S. Treasury · juros reais (TIPS)	U.S. Treasury · 실질금리 (TIPS)
+{0} YR	{0}년물
+NY Fed · SOFR	NY Fed · SOFR
+NY Fed · reverse repo overnight	NY Fed · 오버나이트 역레포
+Federal Reserve · balanço semanal (H.4.1)	연방준비제도 · 주간 대차대조표 (H.4.1)
+Kalshi · probabilidades da decisão do Fed	Kalshi · Fed 금리 결정 확률
+Alternative.me · Fear & Greed	Alternative.me · 공포 & 탐욕 지수
+CoinGecko · mercado cripto global	CoinGecko · 글로벌 암호화폐 시장
+DefiLlama · estoque de stablecoins	DefiLlama · 스테이블코인 공급량
+mempool.space · hashrate	mempool.space · 해시레이트
+mempool.space · taxas da rede	mempool.space · 네트워크 수수료
+BCE · taxa de depósito	ECB · 예금금리
+Tesouro dos EUA · dívida pública	미국 재무부 · 국채
+macro|{0}	매크로|{0}
+ev|{0}	이벤트|{0}
+Em {0} min: {1} (EUA). Expectativa {2} · anterior {3}. Impacto alto no mercado.	{0}분 후: {1} (미국). 예상 {2} · 이전 {3}. 시장 영향 높음.
+Evento	이벤트
+Calendário	캘린더
+sp|{0}	sp|{0}
+{0}: {1} contra expectativa {2} ({3}). Leitura provável: {4}. {5}	{0}: 예상치 {2} 대비 {1} ({3}). 예상 해석: {4}. {5}
+Dado	데이터
+Oficial	공식
+fomc|{0}	fomc|{0}
+Decisão de juros do FOMC em {0} min.	{0}분 후 FOMC 금리 결정.
+dxy|{0}|{1}	dxy|{0}|{1}
+Dólar (DXY) {0}% no dia. Dólar {1} costuma {2} o BTC.	달러 지수(DXY) 당일 {0}%. 달러 {1}은(는) 보통 BTC를 {2}.
+tnx|{0}|{1}	tnx|{0}|{1}
+Treasury {0} anos {1} bp no dia ({2}%).	{0}년 국채 당일 {1}bp ({2}%).
+vix|{0}	vix|{0}
+VIX dispara {0}% no dia ({1}): aversão a risco.	VIX 당일 {0}% 급등 ({1}): 위험 회피.
+geo|{0}	geo|{0}
+div|{0}	div|{0}
+BTC {0}% e Nasdaq {1} {2}% na última hora: movimento próprio do BTC, não acompanhando o mercado americano.	지난 1시간 BTC {0}%, 나스닥 {1} {2}%: BTC 고유의 움직임으로 미국 시장과 동조하지 않음.
+sc|{0}|{1}	sc|{0}|{1}
+BTC Macro Sentiment: {0} → {1} ({2}). Confiança {3}%.	BTC 매크로 센티먼트: {0} → {1} ({2}). 신뢰도 {3}%.
+Score	점수
+Radar macro	매크로 레이더
+há {0} min	{0}분 전
+há {0} h	{0}시간 전
+há {0} d	{0}일 전
+Coletando dados macro…	매크로 데이터 수집 중…
+Mercado americano, juros, inflação, emprego, calendário e notícias. A primeira coleta leva cerca de {0} minuto.	미국 시장, 금리, 인플레이션, 고용, 일정 및 뉴스. 첫 수집에는 약 {0}분이 걸립니다.
+Indicadores	지표
+Mais dados	더 보기
+Notícias	뉴스
+Ajustes	설정
+Fontes	소스
+BTC Macro Sentiment	BTC 매크로 센티먼트
+  de {0} a {1}	  {0} ~ {1}
+Confiança {0}% (parte dos pesos com dado válido)	신뢰도 {0}% (유효한 데이터가 있는 가중치 기준)
+Sem dado: 	데이터 없음: 
+Mede se as condições macro estão favoráveis ou desfavoráveis ao BTC agora. Não é previsão de preço.	현재 매크로 여건이 BTC에 우호적인지 비우호적인지를 측정합니다. 가격 예측이 아닙니다.
+Leitura integrada · macro + order flow	통합 판독 · 매크로 + 오더 플로우
+Cenário macro	매크로 시나리오
+Order flow ({0} min)	오더 플로우 ({0}분)
+Liquidações ({0} h)	청산 ({0}시간)
+Confluência	컨플루언스
+Delta {0} min {1} BTC · liquidações {2} h: {3} BTC LONG / {4} BTC SHORT · absorções: {5} na compra, {6} na venda	델타 {0}분 {1} BTC · 청산 {2}시간: {3} BTC 롱 / {4} BTC 숏 · 흡수: 매수 {5}건, 매도 {6}건
+Próximos eventos de alto impacto	다가오는 고영향 이벤트
+Nenhum evento de alto impacto nesta semana no calendário.	이번 주 캘린더에 고영향 이벤트가 없습니다.
+{0} (horário local) · faltam {1}	{0} (현지 시간) · {1} 남음
+Expectativa {0} · anterior {1}	예상 {0} · 이전 {1}
+Próxima decisão do FOMC: {0} (faltam {1})	다음 FOMC 결정: {0} ({1} 남음)
+Mercado de previsões (Kalshi)	예측 시장 (Kalshi)
+Sentimento cripto (Fear & Greed)	크립토 센티먼트 (Fear & Greed)
+Fatores do score	점수 요인
+peso {0}	가중치 {0}
+{0} pts	{0}점
+ · ref. {0}	 · 기준 {0}
+Contribuição = leitura do fator ({0} a {1}) × peso ÷ soma dos pesos com dado × {2}. Regras e pesos: aba Ajustes e docs/MACRO.md.	기여도 = 요인 판독값({0} ~ {1}) × 가중치 ÷ 데이터가 있는 가중치 합 × {2}. 규칙 및 가중치: 설정 탭과 docs/MACRO.md 참고.
+{0} h {1} min	{0}시간 {1}분
+Mercado americano	미국 시장
+Ativo	자산
+Último	최종가
+Dia	일간
+{0} bp	{0} bp
+Yahoo Finance (não oficial), barras de {0} h. Cotação de {1}; fora do pregão mostra o último fechamento.	Yahoo Finance (비공식), {0}시간 봉. {1} 시세; 장외에는 마지막 종가를 표시합니다.
+Juros	금리
+Meta do Fed (intervalo)	연준 목표 금리 (범위)
+Taxa efetiva (EFFR) · {0}	실효 연방기금금리 (EFFR) · {0}
+Taxa do Fed	연준 금리
+Treasuries (oficial)	국채 (공식)
+ ({0} bp {1}d)	 ({0} bp {1}일)
+Treasury {0} anos (oficial) · {1}	{0}년물 국채 (공식) · {1}
+Treasury {0} anos (oficial)	{0}년물 국채 (공식)
+Inclinação {0}a − {1}a	곡선 기울기 {0}년 − {1}년
+Fontes: NY Fed (EFFR) e U.S. Treasury (curva diária de fechamento).	출처: 뉴욕 연은 (EFFR) 및 U.S. Treasury (일별 종가 곡선).
+Inflação e emprego	인플레이션 및 고용
+CPI em {0} meses	{0}개월 CPI
+CPI no mês	월간 CPI
+Núcleo do CPI em {0} meses	{0}개월 핵심 CPI
+Núcleo do CPI no mês	월간 핵심 CPI
+PCE em {0} meses	{0}개월 PCE
+Núcleo do PCE em {0} meses	{0}개월 핵심 PCE
+Payroll (vagas no mês)	비농업 고용 (월간 일자리 증감)
+{0} mil	{0}천 명
+Desemprego	실업률
+Salário/hora em {0} meses	{0}개월 시간당 임금
+BLS (CPI, payroll, desemprego, salários) e BEA (PCE), dessazonalizados, calculados do índice oficial. Entre parênteses: mês de referência.	BLS (CPI, 비농업 고용, 실업률, 임금) 및 BEA (PCE)의 계절 조정 데이터, 공식 지수에서 계산. 괄호 안은 기준 월.
+TGA (conta do Tesouro no Fed)	TGA (연준 내 재무부 계정)
+TGA · {0}	TGA · {0}
+US$ {0} bi	US$ {0}bi
+Variação em ~{0} semanas	~{0}주 동안의 변동
+TGA subindo retira dinheiro do sistema; caindo devolve. Fonte: Daily Treasury Statement.	TGA가 오르면 시스템의 돈을 거두고, 내리면 돌려준다. 출처: Daily Treasury Statement.
+Correlação com o BTC	BTC와의 상관관계
+Sem série do BTC para comparar.	비교할 BTC 시계열이 없습니다.
+Pearson dos retornos nos horários em que os dois negociam ({0} h e {1} d: barras de {2} h; {3} d: diário). Mínimo de amostras: {4} / {5} / {6}. Correlação passada não garante a futura.	두 자산이 함께 거래되는 시간대의 수익률 피어슨 상관계수 ({0}h 및 {1}d: {2}h 봉; {3}d: 일봉). 최소 표본 수: {4} / {5} / {6}. 과거의 상관관계가 미래를 보장하지는 않습니다.
+ · desatualizado	 · 업데이트 지연
+Medium	Medium
+Calendário econômico dos EUA · esta semana	미국 경제 캘린더 · 이번 주
+Alto e médio impacto	높음 및 중간 영향
+Sem eventos no calendário	캘린더에 이벤트가 없습니다
+O calendário semanal é publicado no domingo à noite (horário de Brasília).	주간 캘린더는 일요일 밤(브라질리아 시간)에 게시됩니다.
+Horários no fuso deste aparelho. Expectativa e anterior: calendário semanal do Forex Factory (não oficial). Resultado só aparece quando a série oficial (BLS/BEA) já traz o mês de referência; nos outros casos fica "aguardando".	시간은 이 기기의 시간대 기준입니다. 예상 및 이전 값: Forex Factory 주간 캘린더(비공식). 결과는 공식 시계열(BLS/BEA)에 기준 월 데이터가 포함된 경우에만 표시되며, 그 외에는 "대기 중"으로 표시됩니다.
+Reuniões do FOMC	FOMC 회의
+Decisão	결정
+Fonte: federalreserve.gov (decisão no último dia da reunião, {0}h de Nova York).	출처: federalreserve.gov (결정은 회의 마지막 날, 뉴욕 시간 {0}시 발표).
+Alto	높음
+Holiday	Holiday
+Feriado	휴일
+Baixo	낮음
+Expectativa {0} · anterior {1} · resultado {2}	예상 {0} · 이전 {1} · 결과 {2}
+Se vier acima do esperado: 	예상치를 웃돌 경우: 
+Notícias com ligação econômica ao BTC	BTC와 경제적으로 연관된 뉴스
+Tema	주제
+Nenhuma notícia relevante agora	지금 중요한 뉴스가 없습니다
+Só entram manchetes das últimas {0} h com ligação econômica clara (juros, dólar, energia, comércio, conflitos, regulação).	최근 {0}시간 내 경제적 연관성이 명확한 헤드라인만 표시됩니다 (금리, 달러, 에너지, 무역, 분쟁, 규제).
+Classificação automática por regras de palavras-chave sobre a manchete (docs/MACRO.md). Repetições entre veículos são agrupadas; abra o link para ler a matéria completa.	헤드라인의 키워드 규칙에 따른 자동 분류 (docs/MACRO.md). 여러 매체의 중복 기사는 묶어서 표시되며, 전체 기사는 링크를 열어 확인하세요.
+Intensidade 	강도 
+Original	원문
+Horizonte: {0} · relevância {1}%	시계: {0} · 관련도 {1}%
+Abrir a matéria	기사 열기
+Toque no título para ver a cadeia de impacto	제목을 누르면 영향 사슬을 볼 수 있습니다
+Pesos do score	점수 가중치
+Restaurar pesos padrão	기본 가중치 복원
+Peso {0} desliga o fator. O score usa só os fatores com dado; abaixo de {1}% dos pesos com dado ele não é mostrado.	가중치 {0}은(는) 해당 요인을 끕니다. 점수는 데이터가 있는 요인만 사용하며, 데이터가 있는 가중치 비율이 {1}% 미만이면 표시되지 않습니다.
+Alertas macro	매크로 알림
+Os tipos de alerta macro ligam e desligam na aba Alertas, junto com Telegram, e-mail e notificação. Cada ocorrência é avisada uma vez só.	매크로 알림 유형은 알림 탭에서 Telegram, 이메일, 푸시 알림과 함께 켜고 끌 수 있습니다. 각 이벤트는 한 번만 알립니다.
+Chave opcional	선택 키
+Chave da API do BLS (v2, gratuita)	BLS API 키 (v2, 무료)
+Sem chave o BLS permite {0} consultas por dia; o app usa {1}. A chave fica só neste aparelho (ou na variável de ambiente BLS_API_KEY).	키가 없으면 BLS는 하루 {0}회 조회를 허용하며, 앱은 {1}회를 사용합니다. 키는 이 기기에만 저장됩니다 (또는 환경 변수 BLS_API_KEY).
+Fontes dos dados	데이터 출처
+Mercado / mídia	시장 / 미디어
+Nenhum número é inventado: dado ausente aparece como "sem dado". Fontes não oficiais podem mudar sem aviso.	숫자는 임의로 만들지 않습니다. 데이터가 없으면 "데이터 없음"으로 표시됩니다. 비공식 출처는 예고 없이 변경될 수 있습니다.
+Situação da coleta	데이터 수집 상태
+Atualizar agora	지금 새로고침
+{0} de {1} fontes em dia	{1}개 출처 중 {0}개 최신
+dado de {0}	{0} 데이터
+ · falhou: {0}	 · 실패: {0}
+ · usando cópia salva	 · 저장된 사본 사용 중
+● em dia · ◐ fonte falhou, usando a última cópia salva · ○ sem dado. Após falha o app espera antes de tentar de novo.	● 최신 · ◐ 출처 실패, 마지막 저장본 사용 · ○ 데이터 없음. 실패 후에는 앱이 잠시 기다린 뒤 다시 시도합니다.
+Cut >{0}	컷 >{0}
+Corte maior que {0} pp	{0}pp보다 큰 인하
+Cut {0}	컷 {0}
+Corte de {0} pp	{0}pp 인하
+Hike >{0}	인상 >{0}
+Alta maior que {0} pp	{0}pp보다 큰 인상
+Hike {0}	인상 {0}
+Alta de {0} pp	{0}pp 인상
+Juros mantidos	금리 동결
+US$ {0} tri	US$ {0}조
+Expectativa de juros do Fed	Fed 금리 기대
+Sem probabilidades da Kalshi agora.	현재 Kalshi 확률 없음.
+Próxima reunião ({0}): probabilidades negociadas	다음 회의 ({0}): 거래 확률
+Cut	인하
+Hike	인상
+Taxa implícita nos futuros de Fed funds (CBOT)	Fed funds 선물의 내재 금리 (CBOT)
+ ({0} bp)	 ({0} bp)
+Kalshi: mercado regulado de previsões (preço do contrato = probabilidade). Futuros: taxa implícita = {0} − preço; entre parênteses, diferença para a taxa efetiva atual. Valores negativos = cortes esperados.	Kalshi: 규제된 예측 시장 (계약 가격 = 확률). 선물: 내재 금리 = {0} − 가격; 괄호 안은 현재 실효 금리와의 차이. 음수 = 인하 기대.
+Juros reais, inflação implícita e financiamento	실질 금리, 내재 인플레이션 및 자금 조달
+Juro real {0} anos (TIPS)	{0}년 실질 금리 (TIPS)
+Juro real {0} anos (TIPS) · {1}	{0}년 실질 금리 (TIPS) · {1}
+Inflação implícita {0} anos (breakeven)	{0}년 내재 인플레이션 (breakeven)
+SOFR · {0}	SOFR · {0}
+Reverse repo overnight · {0}	오버나이트 역레포 · {0}
+Juro real alto ou subindo costuma pesar sobre o BTC (custo de oportunidade). Breakeven = Treasury {0} anos − juro real.	실질 금리가 높거나 오르면 BTC에 부담이 되는 경향이 있습니다 (기회비용). 브레이크이븐 = {0}년 Treasury − 실질 금리.
+Balanço do Fed e liquidez	Fed 대차대조표 및 유동성
+Balanço do Fed (H.4.1)	Fed 대차대조표 (H.4.1)
+Ativos totais do Fed · semana até {0}	Fed 총자산 · {0}까지 주간
+Variação na semana	주간 변동
+Variação em {0} meses	{0}개월 변동
+Reservas dos bancos no Fed	Fed 내 은행 지급준비금
+Liquidez líquida estimada (ativos − TGA − RRP)	추정 순유동성 (총자산 − TGA − RRP)
+Liquidez líquida é uma estimativa comum no mercado, não um número oficial. Balanço crescendo e TGA caindo = mais dinheiro no sistema.	순유동성은 시장에서 흔히 쓰는 추정치이며 공식 수치가 아닙니다. 대차대조표 증가 및 TGA 감소 = 시스템 내 자금 증가.
+Mercado cripto	암호화폐 시장
+Fear & Greed	Fear & Greed
+Há {0} dias / há {1} dias	{0}일 전 / {1}일 전
+Valor de mercado cripto	암호화폐 시가총액
+Dominância do BTC	BTC 도미넌스
+Dominância do ETH	ETH 도미넌스
+Volume {0} h	거래량 {0}시간
+Stablecoins em circulação	유통 중인 스테이블코인
+Variação {0} d / {1} d	변동 {0}일 / {1}일
+Hashrate da rede	네트워크 해시레이트
+{0} EH/s	{0} EH/s
+Taxas (rápida / {0} min / {1} h)	수수료 (빠름 / {0}분 / {1}시간)
+{0} / {1} / {2} sat/vB	{0} / {1} / {2} sat/vB
+Fear & Greed é sentimento, não entra no score (evita contar duas vezes o que o order flow já mostra). Stablecoins entram no fator Liquidez.	Fear & Greed는 심리 지표이므로 점수에 포함되지 않습니다 (오더 플로우에서 이미 보이는 내용을 중복 계산하지 않기 위함). 스테이블코인은 유동성 요인에 포함됩니다.
+Mais mercados	더 많은 시장
+Yahoo Finance, barras de {0} h. Dólar subindo contra moedas emergentes e cobre caindo costumam indicar aversão a risco.	Yahoo Finance, {0}시간 봉. 달러가 신흥국 통화 대비 강세이고 구리가 하락하면 위험 회피 신호인 경우가 많습니다.
+Mundo e dívida	글로벌 및 부채
+BCE · taxa de depósito · {0}	ECB · 예금 금리 · {0}
+Dívida pública dos EUA · {0}	미국 국가부채 · {0}
+Variação desde {0}	{0} 이후 변동
+Juros do BCE abaixo dos do Fed sustentam o dólar; dívida crescendo rápido pressiona a oferta de Treasuries e os yields.	ECB 금리가 Fed보다 낮으면 달러를 떠받치고, 부채가 빠르게 늘면 국채 공급과 금리(yield)에 압력을 가합니다.
+extreme fear	극단적 공포
+Medo extremo	극심한 공포
+Medo	공포
+Ganância	탐욕
+extreme greed	극단적 탐욕
+Ganância extrema	극심한 탐욕
+Motivo desconhecido.	알 수 없는 이유.
+A Binance recusou o acesso nesta região (HTTP {0}). As outras abas não dependem disso.	이 지역에서 Binance가 접근을 거부했습니다 (HTTP {0}). 다른 탭은 이에 의존하지 않습니다.
+Zonas ímã · mapa estimado de liquidações	자석 구간 · 추정 청산 맵
+Calculando o mapa a partir do histórico de posições…	포지션 이력으로 맵 계산 중…
+Leva alguns segundos: velas de {0} min + open interest dos últimos {1} dias.	몇 초 소요: {0}분 봉 + 최근 {1}일 미결제약정.
+Mapa indisponível no momento	현재 맵을 사용할 수 없음
+O mapa estimado usa velas e histórico de open interest da Binance (REST).	추정 맵은 Binance(REST)의 봉 데이터와 미결제약정 이력을 사용합니다.
+Mercado e zonas	시장 및 구간
+Mercado (Binance perp)	시장 (Binance perp)
+Preço	가격
+Variação {0}h	변동 {0}h
+Funding	펀딩
+Open interest	미결제약정
+Zonas de atração	매집 구간
+Nenhum aglomerado relevante nesta faixa	이 범위에는 의미 있는 집중 구간이 없습니다
+Amplie a faixa para ±{0}%	범위를 ±{0}%로 확대하세요
+ do preço	 가격 대비
+Como ler	보는 법
+Estimativa, como no CoinGlass: quando o open interest sobe, simulamos posições {0}x/{1}x/{2}x/{3}x e marcamos onde seriam liquidadas; níveis que o preço já atravessou saem do mapa. Quanto mais vivo o vermelho, mais BTC estimado no nível. Liquidações reais ficam no LIQUIDATION RADAR.	CoinGlass와 같은 추정치입니다. 미결제약정이 늘면 {0}x/{1}x/{2}x/{3}x 포지션을 시뮬레이션하고 청산되는 지점을 표시합니다. 가격이 이미 통과한 레벨은 맵에서 제외됩니다. 빨간색이 진할수록 해당 레벨의 추정 BTC가 많습니다. 실제 청산은 LIQUIDATION RADAR에서 확인하세요.
+Mapa estimado	추정 맵
+Mapa de liquidações estimadas	추정 청산 맵
+Faixa	범위
+mais BTC estimado	추정 BTC 많음
+Book: 	호가창: 
+Liquidações estimadas	추정 청산
+Paredes do livro	호가창 벽
+Sem conexão com as corretoras ({0})	거래소 연결 끊김 ({0})
+Não foi possível carregar os fluxos dos ETFs ({0})	ETF 자금 흐름을 불러오지 못했습니다 ({0})
+Preço × CVD	가격 × CVD
+Positiva = o preço anda junto com a agressão compradora/vendedora.	양수 = 가격이 공격적 매수/매도 흐름과 함께 움직임.
+Preço × open interest	가격 × 미결제약정
+Positiva = alta com abertura de posições; negativa = alta com fechamento.	양수 = 포지션 증가와 함께 상승; 음수 = 청산 동반 상승.
+Preço × liquidações	가격 × 청산
+Positiva = alta acompanhada de shorts liquidados (squeeze).	양수 = 숏 청산과 함께 상승 (숏 스퀴즈).
+CVD × open interest	CVD × 미결제약정
+Positiva = compra agressora abrindo posições.	양수 = 공격적 매수가 포지션을 늘리는 중.
+CVD × liquidações	CVD × 청산
+Positiva = compras forçadas de shorts liquidados entrando no CVD.	양수 = 강제 청산된 숏의 매수가 CVD에 반영되는 중.
+Gráficos	차트
+Baldes de {0} minuto · preço, CVD, open interest e liquidações lado a lado	{0}분 단위 버킷 · 가격, CVD, 미결제약정, 청산을 나란히 표시
+Preço, fluxo, posições e liquidações por minuto	분당 가격, 흐름, 포지션 및 청산
+Juntando dados	데이터 수집 중
+Precisa de alguns minutos de dados desde a abertura do app (guarda até {0} h)	앱 실행 이후 몇 분간의 데이터가 필요합니다 (최대 {0}h 보관)
+Correlação e resumo	상관관계 및 요약
+Correlação (Pearson) na janela	구간 내 상관계수 (피어슨)
+Leitura dos últimos {0} minutos	최근 {0}분 분석
+Liquidações LONG / SHORT	청산 LONG / SHORT
+{0} / {1} BTC	{0} / {1} BTC
+Leitura automática a partir dos números acima; é inferência, não prova de quem abriu ou fechou posição.	위 수치를 바탕으로 한 자동 해석이며, 누가 포지션을 열거나 닫았는지에 대한 증거는 아닙니다.
+Correlação com menos de {0} minutos de dados aparece como "sem dados". |r| ≥ {1} forte, ≥ {2} moderada, ≥ {3} fraca. OI somado só conta quando Binance, Bybit e OKX reportaram. Liquidações = {4} corretoras (positivo = mais shorts liquidados).	데이터가 {0}분 미만이면 "데이터 없음"으로 표시됩니다. |r| ≥ {1} 강함, ≥ {2} 보통, ≥ {3} 약함. 합산 OI는 Binance, Bybit, OKX가 모두 보고한 경우에만 집계됩니다. 청산 = {4}개 거래소 (양수 = 숏 청산이 더 많음).
+Alta com compra agressora e open interest subindo: compatível com novas posições compradas puxando o preço.	공격적 매수와 미결제약정 증가를 동반한 상승: 신규 롱 포지션이 가격을 밀어 올리는 상황과 일치합니다.
+Alta com open interest caindo e shorts liquidados: compatível com short squeeze.	미결제약정 감소와 숏 청산을 동반한 상승: 숏 스퀴즈와 일치합니다.
+Alta com CVD negativo: o preço sobe apesar da venda agressora (compra passiva absorvendo).	CVD 음수 상태의 상승: 공격적 매도에도 가격이 오름 (수동적 매수가 흡수 중).
+Queda com venda agressora e open interest subindo: compatível com novas posições vendidas.	공격적 매도와 미결제약정 증가를 동반한 하락: 신규 숏 포지션과 일치합니다.
+Queda com open interest caindo e longs liquidados: compatível com cascata de liquidação de longs.	미결제약정 감소와 롱 청산을 동반한 하락: 롱 청산 연쇄와 일치합니다.
+Queda com CVD positivo: o preço cai apesar da compra agressora (venda passiva absorvendo).	CVD 양수 상태의 하락: 공격적 매수에도 가격이 하락 (수동적 매도가 흡수 중).
+Sem regime claro: preço lateral ou sinais misturados.	뚜렷한 국면 없음: 횡보 또는 혼합된 신호.
+CVD (BTC/min)	CVD (BTC/분)
+Δ OI (BTC/min)	Δ OI (BTC/분)
+LIQUIDAÇÕES	청산
+▲ short  ▼ long	▲ 숏  ▼ 롱
+Lado	방향
+Ambos	전체
+Pico ≥ (BTC)	최고치 ≥ (BTC)
+{0} paredes encerradas · {1} eventos gravados no período	기간 내 소진된 벽 {0}개 · 기록된 이벤트 {1}건
+Mapa do histórico	기록 맵
+Onde as paredes estiveram e como terminaram	벽이 존재했던 위치와 최종 결과
+Nenhuma parede encerrada no período com esses filtros	이 필터 조건에서 기간 내 소진된 벽이 없습니다
+O histórico vem do banco local: paredes que saíram do livro desde que o app foi instalado. Reduza o pico mínimo ou aumente o período.	기록은 로컬 데이터베이스에서 가져옵니다. 앱 설치 이후 호가창에서 사라진 벽들입니다. 최소 최고치를 낮추거나 기간을 늘려보세요.
+Como terminaram	마감 결과
+Execução confirmada pelos trades	체결로 확인됨
+Preço atravessou (não confirmada)	가격 돌파 (미확인)
+Retirada sem execução	체결 없이 철회
+Níveis onde a liquidez mais aparece (faixas de {0} US$)	유동성이 가장 많이 나타나는 가격대 ({0} US$ 단위)
+PICO SOMADO	누적 최고치
+ÚLTIMA	최근
+Sem níveis no período	기간 내 레벨 없음
+Cada ponto é uma parede que saiu do livro: posição = hora e preço; tamanho = pico em BTC; cor = lado (verde compra, vermelho venda); anel laranja = execução confirmada, anel amarelo = preço atravessou, sem anel = retirada. Níveis que se repetem costumam ser suporte/resistência defendidos.	각 점은 호가창에서 빠져나간 벽입니다: 위치 = 시간과 가격, 크기 = BTC 기준 최대치, 색 = 방향(녹색 매수, 빨간색 매도), 주황색 테두리 = 체결 확인, 노란색 테두리 = 가격 돌파(미확인), 테두리 없음 = 철회. 반복되는 레벨은 보통 방어되는 지지/저항입니다.
+Configurar avisos	알림 설정
+Notificações {0}	알림 {0}
+Mostrar notificação no celular	휴대폰에 알림 표시
+Mostrar notificação na bandeja do Windows	Windows 알림 영역에 알림 표시
+Continuar monitorando com o app fechado	앱을 닫은 상태에서도 계속 모니터링
+Mantém as conexões e os alertas ativos em segundo plano, com uma notificação fixa. Usa mais bateria e dados; desligue quando não precisar.	백그라운드에서 연결과 알림을 유지하며, 고정 알림이 표시됩니다. 배터리와 데이터를 더 많이 사용하니 필요하지 않을 때는 끄세요.
+Permita notificações do Radar BTC nas configurações do Android.	Android 설정에서 BTC Radar의 알림을 허용하세요.
+O que avisar	알림 조건
+Zona: distância ≤ %	구역: 거리 ≤ %
+Zona: tamanho ≥ BTC	구역: 크기 ≥ BTC
+Repetir o mesmo aviso após (min)	같은 알림 반복 간격 (분)
+Liquidação EXTREME usa o limite da aba Radar (Liquidações); parede grande = classe LARGE ou EXTREME da aba Paredes; mudança de sinal = janela de {0} min da aba Long/short. Máximo de {1} envios por minuto.	EXTREME 청산은 Radar 탭(청산)의 기준값을 사용합니다. 큰 벽 = 벽 탭의 LARGE 또는 EXTREME 등급; 방향 전환 = Long/short 탭의 {0}분 기간. 분당 최대 {1}건 전송.
+Telegram	텔레그램
+Enviar pelo Telegram	텔레그램으로 보내기
+Token do bot	봇 토큰
+Chat ID	채팅 ID
+Crie um bot com o @BotFather, mande uma mensagem para ele e pegue o chat ID em api.telegram.org/bot<token>/getUpdates.	@BotFather로 봇을 만들고 메시지를 보낸 뒤, api.telegram.org/bot<토큰>/getUpdates에서 채팅 ID를 확인하세요.
+E-mail (SMTP)	이메일 (SMTP)
+Enviar por e-mail	이메일로 보내기
+Servidor	서버
+Porta	포트
+Usuário (e-mail de envio)	사용자 (발신 이메일)
+Senha de app	앱 비밀번호
+Enviar para	받는 사람
+Gmail: smtp.gmail.com, porta {0}, com uma senha de app (Conta Google → Segurança → Senhas de app). Porta {1} usa STARTTLS.	Gmail: smtp.gmail.com, 포트 {0}, 앱 비밀번호 사용 (Google 계정 → 보안 → 앱 비밀번호). 포트 {1}은 STARTTLS를 사용합니다.
+Salvar alterações	변경 사항 저장
+Salvo	저장됨
+Enviar teste	테스트 전송
+Token e senha ficam guardados só neste celular (preferências do app), sem criptografia própria.	토큰과 비밀번호는 이 휴대폰(앱 환경설정)에만 저장되며, 별도의 암호화는 적용되지 않습니다.
+Token e senha ficam guardados só neste computador (registro do usuário do Windows), sem criptografia própria.	토큰과 비밀번호는 이 컴퓨터(Windows 사용자 레지스트리)에만 저장되며, 별도의 암호화는 적용되지 않습니다.
+Avisos enviados	보낸 알림
+Nenhum aviso enviado nesta sessão	이번 세션에서 보낸 알림이 없습니다
+Ligue um canal de aviso e salve	알림 채널을 켜고 저장하세요
+Os avisos aparecem aqui com o resultado de cada envio	각 전송 결과가 여기에 표시됩니다
+Uma liquidação real acima do limite EXTREME em qualquer das {0} corretoras	{0}개 거래소 중 어디서든 실제 청산이 EXTREME 기준을 초과
+Parede LARGE/EXTREME saiu do livro (retirada ou executada)	LARGE/EXTREME 벽이 호가창에서 사라짐 (철회 또는 체결)
+Parede absorvendo execução ou com reposição tipo iceberg	벽이 체결을 흡수하거나 빙산(iceberg) 유형으로 재충전됨
+Fluxo inferido muda de LONG para SHORT ou o contrário	추정 흐름이 LONG에서 SHORT로, 또는 그 반대로 바뀜
+Preço e CVD divergem em {0} min, {1} min ou {2} h	가격과 CVD가 {0}분, {1}분 또는 {2}시간 동안 엇갈림
+Preço a até {0}% de uma zona do heatmap com ≥ {1} BTC	가격이 ≥ {1} BTC인 히트맵 구역의 {0}% 이내에 접근
+CPI, PCE, payroll, FOMC e outros eventos de alto impacto (antecedência na aba Radar macro)	CPI, PCE, 고용지표(payroll), FOMC 등 고영향 이벤트 (사전 알림은 Radar 매크로 탭)
+Resultado oficial acima ou abaixo da expectativa do calendário	공식 발표가 달력상 예상치보다 높거나 낮음
+DXY ±{0}% no dia, Treasury {1} anos ±{2} bp ou VIX {3}%	DXY 당일 ±{0}%, 미국채 {1}년물 ±{2}bp 또는 VIX {3}%
+Notícia de alta intensidade: conflito, tarifas, sanções ou regulação cripto	고강도 뉴스: 분쟁, 관세, 제재 또는 암호화폐 규제
+BTC sobe com Nasdaq em queda (ou o contrário) em {0} hora	BTC가 상승하는 동안 나스닥은 하락 (또는 그 반대) — {0}시간 기준
+BTC Macro Sentiment muda {0} pontos ou troca de faixa	BTC Macro Sentiment가 {0}점 변하거나 구간이 바뀜
+Livro de ofertas	호가창
+Livro	호가
+Agrupar	묶기
+Exato	정확히
+{0} níveis · mín. {1} · {2}	{0}개 레벨 · 최소 {1} · {2}
+Níveis	레벨
+Mín.	최소
+Executado	체결
+Centro	중심
+Auto (meio {0})	자동 (중간 {0})
+Manual	수동
+Faixa mín	최소 범위
+Faixa máx	최대 범위
+Fora da consolidação: 	통합 범위 이탈: 
+ (livro inválido, ver aba Status)	 (오더북 유효하지 않음, 상태 탭 참조)
+Resumo do livro exibido	표시된 오더북 요약
+Maior BID	최대 BID
+Maior ASK	최대 ASK
+Profundidade BID	BID 깊이
+Profundidade ASK	ASK 깊이
+Desequilíbrio	불균형
+Spread consolidado	통합 스프레드
+cruzado entre corretoras	거래소 간 교차
+ USDT	 USDT
+Bybit RPI (só parte RPI, {0} níveis)	Bybit RPI (RPI 부분만, {0}개 레벨)
+Livro {0}	{0} 오더북
+Conexão	연결
+Ao vivo	실시간
+Sequência	시퀀스
+Spread próprio	자체 스프레드
+Níveis válidos (bid/ask)	유효 레벨 (bid/ask)
+Última atualização	마지막 업데이트
+ atrás	 전
+Latência (evento → recebido)	지연 시간 (이벤트 → 수신)
+Último update id	마지막 update id
+Reconstruções	재구성
+Quantidade (BTC)	수량 (BTC)
+Qtd. (BTC)	수량 (BTC)
+Bin	Bin
+Byb	Byb
+Ordens	주문
+Acumulado	누적
+Ex. C	거래소 C
+Ex. V	거래소 V
+ACUMULADO = BTC somado do preço atual até a linha · ORDENS = nº de ordens no nível (só a OKX publica) · EX. = BTC executado no nível nos últimos {0}	누적 = 현재 가격부터 해당 행까지 합산된 BTC · 주문 = 해당 레벨의 주문 수 (OKX만 공개) · 거래소 = 최근 {0} 동안 해당 레벨에서 체결된 BTC
+Celular: colunas por corretora ocultas (veja no PC ou na aba de cada livro) · EX. = executado nos últimos {0}	모바일: 거래소별 열 숨김 (PC 또는 각 오더북 탭에서 확인) · 거래소 = 최근 {0} 동안 체결
+sem livro válido	유효한 오더북 없음
+Livros cruzados entre corretoras: melhor compra {0} acima da melhor venda {1} (cada corretora tem preço próprio)	거래소 간 오더북 교차: 최优 매수 {0}이(가) 최우 매도 {1}보다 높음 (거래소마다 고유 가격)
+spread {0}  ·  meio {1}	스프레드 {0}  ·  중간 {1}
+LIQUIDITY WALLS	LIQUIDITY WALLS
+LIQUIDITY HISTORY	LIQUIDITY HISTORY
+MAGNET ZONES	MAGNET ZONES
+LONG & SHORT FLOW	LONG & SHORT FLOW
+MARKET FLOW CORRELATION	MARKET FLOW CORRELATION
+LARGE TRADES	LARGE TRADES
+LIQUIDATION RADAR	LIQUIDATION RADAR
+Histórico de paredes	호가벽 기록
+Zonas ímã	자석 구간
+Correlação	상관관계
+Grandes negócios	대형 거래
+Radar	레이더
+Status	상태
+Fluxo	흐름
+Mais	더보기
+Livro de ofertas consolidado e por corretora	통합 및 거래소별 오더북
+Compra × venda agressora por faixa de preço	가격대별 공격적 매수 × 매도
+Paredes grandes no livro agora	지금 호가창의 대형 벽
+Mapa estimado de zonas de liquidação	청산 구간 추정 맵
+Fluxo agressor, CVD e sinal	공격적 체결 흐름, CVD 및 신호
+Preço, CVD, OI e liquidações por minuto	분당 가격, CVD, OI 및 청산
+Maiores execuções e sequências	최대 체결 및 연속 체결
+Heatmap e liquidações reais	히트맵 및 실제 청산
+Fluxo diário dos ETFs spot de BTC	BTC 현물 ETF 일별 자금 흐름
+Juros, dólar, inflação, notícias e o score macro do BTC	금리, 달러, 인플레이션, 뉴스 및 BTC 매크로 점수
+Avisos no celular, Telegram e e-mail	휴대폰, 텔레그램 및 이메일 알림
+Conexões, livros e log	연결, 호가창 및 로그
+{0} de {1}	{0} / {1}
+Abas	탭
+Escolher aba	탭 선택
+Fechar ✕	닫기 ✕
+Para esconder abas desta lista, use ⚙ → Abas visíveis.	이 목록에서 탭을 숨기려면 ⚙ → 표시 탭을 사용하세요.
+  Orderflow V8	  Orderflow V8
+{0}/{1} livros ao vivo	{0}/{1} 실시간 호가창
+{0} msg/s	{0} 메시지/초
+Notas	노트
+☾ Escuro	☾ 다크
+☀ Claro	☀ 라이트
+⚙ Visualização	⚙ 보기
+Livros {0}/{1}	호가창 {0}/{1}
+Liquidações:	청산:
+Visualização	보기
+Configurações de visualização	보기 설정
+Escuro	다크
+Claro	라이트
+Cores de compra e venda	매수·매도 색상
+Verde / vermelho	초록 / 빨강
+Azul / laranja	파랑 / 주황
+Azul / laranja é a opção para daltonismo (vermelho e verde se confundem).	파랑 / 주황은 색맹용 옵션입니다(빨강과 초록은 구분이 어려움).
+Tamanho da interface · {0}%	인터페이스 크기 · {0}%
+A− diminuir	A− 축소
+A+ aumentar	A+ 확대
+Restaurar {0}%	{0}%로 복원
+Atalhos: Ctrl + e Ctrl − ajustam, Ctrl {0} volta a {1}%.	단축키: Ctrl + 및 Ctrl −로 조정, Ctrl {0}을 누르면 {1}%로 돌아갑니다.
+Traduz abas, menus, alertas e notícias. Textos montados na hora e manchetes usam tradução automática na primeira vez (precisa de internet) e ficam guardados no aparelho.	탭, 메뉴, 알림 및 뉴스를 번역합니다. 실시간으로 생성되는 텍스트와 헤드라인은 처음에 자동 번역을 사용하며(인터넷 필요), 기기에 저장됩니다.
+Tamanho da fonte · {0}%	글꼴 크기 · {0}%
+Só o texto muda de tamanho. Quando os painéis não cabem mais lado a lado, eles viram páginas com botões no topo (nada fica cortado). Para aumentar tudo junto, use o tamanho da interface.	텍스트 크기만 변경됩니다. 패널이 나란히 들어가지 않으면 상단 버튼이 있는 페이지로 바뀝니다(잘리는 항목 없음). 모든 요소를 함께 키우려면 인터페이스 크기를 사용하세요.
+Densidade	밀도
+Confortável	여유 있게
+Compacta	촘촘하게
+Compacta reduz margens e espaçamento entre linhas das tabelas para caber mais dados.	촘촘하게는 표의 여백과 행 간격을 줄여 더 많은 데이터를 표시합니다.
+Os dados chegam em tempo real de qualquer forma; isto muda só a frequência de redesenho (menor = mais CPU).	데이터는 어떤 경우든 실시간으로 수신되며, 이 설정은 화면 다시 그리기 빈도만 변경합니다(낮을수록 CPU 사용 증가).
+Textos explicativos	설명 텍스트
+Mostrar notas de rodapé	하단 노트 표시
+Também pelo botão Notas na barra do topo.	상단 바의 노트 버튼으로도 열 수 있습니다.
+Abas visíveis	표시할 탭
+Status fica sempre visível. Esconder uma aba não para a coleta de dados dela.	상태는 항상 표시됩니다. 탭을 숨겨도 해당 데이터 수집은 중단되지 않습니다.
+%,.{0}f BTC	%,.{0}f BTC
+Nova	신규
+Ativa	활성
+Aumentou	증가
+Reduziu	감소
+Saiu	이탈
+Talvez executada	체결 가능성 있음
+Executada (confirmada)	체결됨 (확인)
+Conectando	연결 중
+Inscrito	구독됨
+Ressincronizando	재동기화 중
+Fora do ar	연결 끊김
+BLOQUEADO NA REGIÃO (HTTP {0})	지역 차단됨 (HTTP {0})
+SNAPSHOT INDISPONÍVEL	스냅샷 사용 불가
+sequência	시퀀스
+RECONSTRUINDO (quebra de sequência)	재구성 중 (시퀀스 끊김)
+AGUARDANDO SNAPSHOT	스냅샷 대기 중
+Página	페이지
+◂ ▸ deslize para o lado para ver todas as colunas	◂ ▸ 좌우로 밀어서 모든 열 보기
+Menos filtros ▴	필터 접기 ▴
+Mais filtros ▾ · {0}	필터 더보기 ▾ · {0}

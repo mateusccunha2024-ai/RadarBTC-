@@ -1,0 +1,1332 @@
+# Radar BTC · Japanese · gerado do código-fonte (docs/I18N.md)
+Tabela de ETFs não encontrada	ETFテーブルが見つかりません
+th, td	th, td
+Total	合計
+{0}/fapi/v1/depth?symbol=BTCUSDT&limit={1}	{0}/fapi/v1/depth?symbol=BTCUSDT&limit={1}
+{0}/fapi/v1/klines?symbol=BTCUSDT&interval={1}&limit={2}	{0}/fapi/v1/klines?symbol=BTCUSDT&interval={1}&limit={2}
+{0}/futures/data/openInterestHist?symbol=BTCUSDT&period={1}&limit={2}	{0}/futures/data/openInterestHist?symbol=BTCUSDT&period={1}&limit={2}
+{0}/fapi/v1/ticker/{1}hr?symbol=BTCUSDT	{0}/fapi/v1/ticker/{1}hr?symbol=BTCUSDT
+{0}/fapi/v1/premiumIndex?symbol=BTCUSDT	{0}/fapi/v1/premiumIndex?symbol=BTCUSDT
+{0}/fapi/v1/openInterest?symbol=BTCUSDT	{0}/fapi/v1/openInterest?symbol=BTCUSDT
+{0}/v5/market/orderbook?category=linear&symbol=BTCUSDT&limit={1}	{0}/v5/market/orderbook?category=linear&symbol=BTCUSDT&limit={1}
+Bybit: resposta sem 'result'	Bybit: 'result' のない応答
+{0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}	{0}/api/v5/market/books?instId=BTC-USDT-SWAP&sz={1}
+Buy	買い
+Conexão encerrada ({0})	接続が終了しました ({0})
+Binance	Binance
+Bybit	Bybit
+HTTP {0} em {1}	{1}でHTTP {0}
+Resposta vazia em {0}	{0}で応答が空です
+Alertas do mercado	市場アラート
+Monitoramento em segundo plano	バックグラウンド監視
+{0} INFO [app] {1}	{0} INFO [app] {1}
+Memória (usada / máx.)	メモリ（使用中 / 最大）
+{0} / {1} MB	{0} / {1} MB
+Threads	スレッド
+Aparelho	端末
+{0} {1} · Android {2}	{0} {1} · Android {2}
+banco indisponível: {0}	データベース利用不可: {0}
+falha de gravação: {0}	書き込み失敗: {0}
+Histórico: {0}	履歴: {0}
+Radar BTC monitorando	BTCレーダー監視中
+Conexões e alertas ativos em segundo plano	バックグラウンドで接続とアラートが有効です
+DIVERGÊNCIA DE ALTA	強気ダイバージェンス
+DIVERGÊNCIA DE BAIXA	弱気ダイバージェンス
+Preço: fundo mais baixo ({0} → {1}). CVD: fundo mais alto ({2} → {3} BTC). Vendas agressoras perdendo força.	価格: 安値更新 ({0} → {1})。CVD: 安値切り上げ ({2} → {3} BTC)。成行売りの勢いが弱まっています。
+Preço: topo mais alto ({0} → {1}). CVD: topo mais baixo ({2} → {3} BTC). Compras agressoras perdendo força.	価格: 高値更新 ({0} → {1})。CVD: 高値切り下げ ({2} → {3} BTC)。成行買いの勢いが弱まっています。
+sem dados	データなし
+forte positiva	強い正
+forte negativa	強い負
+moderada positiva	中程度の正
+moderada negativa	中程度の負
+fraca positiva	弱い正
+fraca negativa	弱い負
+BTCUSDT perp (USD-M)	BTCUSDT perp (USD-M)
+BTCUSDT linear	BTCUSDT linear
+Gate	Gate
+BTC_USDT perp	BTC_USDT perp
+Bitget	Bitget
+BTCUSDT perp (USDT-M)	BTCUSDT perp (USDT-M)
+Deribit	Deribit
+BTC-PERPETUAL (inverso, USD)	BTC-PERPETUAL (逆、USD)
+BTC-USDT perp (só open interest)	BTC-USDT perp (建玉のみ)
+Kraken	Kraken
+PF_XBTUSD perp (só open interest)	PF_XBTUSD perp (建玉のみ)
+metadados do contrato indisponíveis, usando {0} BTC: {1}	メタデータを取得できません。{0} BTCを使用: {1}
+Liquidações (futures.public_liquidates)	清算 (futures.public_liquidates)
+Liquidações (UTA v3 liquidation)	清算 (UTA v3 liquidation)
+inscrição recusada: {0}	購読拒否: {0}
+Trades com marca de liquidação	清算マーク付き約定
+Livro (/public depth@{0}ms + REST {1})	板 (/public depth@{0}ms + REST {1})
+nova conexão	新規接続
+Trades/mark/liquidações (/market)	Trades/mark/清算 (/market)
+open interest REST falhou: {0}	open interest REST失敗: {0}
+quebra de sequência (pu ≠ u anterior)	シーケンス断絶 (前のpu ≠ u)
+Livro inválido, reconstruindo: {0}	板が無効、再構築中: {0}
+snapshot REST indisponível: {0}	REST スナップショット利用不可: {0}
+nova tentativa de snapshot	スナップショット再試行
+buffer sem continuidade com o snapshot	バッファがスナップショットと連続していません
+Livro sincronizado (snapshot {0})	板同期完了 (スナップショット {0})
+@aggTrade	@aggTrade
+@markPrice	@markPrice
+@forceOrder	@forceOrder
+Livro {0} + RPI + trades + tickers + liquidações	板 {0} + RPI + 約定 + ティッカー + 清算
+aguardando snapshot	スナップショット待機中
+quebra de sequência u {0} → {1}	シーケンス断絶 u {0} → {1}
+{0}: quebra de sequência, pedindo novo snapshot	{0}: シーケンス断絶、新しいスナップショットを要求
+padrão {0} BTC (metadados ainda não carregados)	標準 {0} BTC (メタデータ未読込)
+metadados OKX: {0} contrato = {1} BTC	OKX メタデータ: 1契約 = {1} BTC ({0})
+metadados inesperados ({0}); usando {1} BTC	予期しないメタデータ ({0}); {1} BTC を使用
+metadados do instrumento indisponíveis: {0}	銘柄メタデータ利用不可: {0}
+Livro {0} + trades + OI + funding + mark + liquidações	板 {0} + 約定 + OI + ファンディング + mark + 清算
+erro: {0}	エラー: {0}
+quebra de sequência prevSeqId {0} ≠ {1}	シーケンス断絶 prevSeqId {0} ≠ {1}
+books: quebra de sequência, pedindo novo snapshot	books: シーケンス断絶、新しいスナップショットを要求
+Acumulação comprada	買い建て蓄積
+Fluxo long	ロングフロー
+Recompra de shorts	ショート買い戻し
+Pressão compradora	買い圧力
+Acumulação vendida	売り建て蓄積
+Fluxo short	ショートフロー
+Fechamento de longs	ロング決済
+Pressão vendedora	売り圧力
+Sem viés claro	明確な偏りなし
+Inferência. A agressão mostra quem iniciou a execução, não se abriu ou fechou posição. Todo contrato tem comprador e vendedor; OI subindo com compra agressora é compatível com expansão LONG, mas não prova.	推定。アグレッシブ取引は執行を開始した側を示すもので、ポジションの新規建てか決済かは示しません。すべての契約には買い手と売り手が存在します。アグレッシブ買いを伴うOI上昇はロング拡大と整合しますが、証明にはなりません。
+Compra agressora: {0} BTC	アグレッシブ買い: {0} BTC
+Venda agressora: {0} BTC	アグレッシブ売り: {0} BTC
+Delta: {0} BTC (desequilíbrio {1}%)	デルタ: {0} BTC (不均衡 {1}%)
+Preço: 	価格: 
+sem dado	データなし
+Open interest: 	オープンインタレスト: 
+Funding médio: 	平均ファンディング: 
+Fluxo agressor equilibrado na janela.	ウィンドウ内のアグレッシブフローは均衡しています。
+MÉDIA	平均
+Compras agressoras com OI subindo: compatível com abertura líquida de LONG.	OI上昇を伴うアグレッシブ買い: ネットのロング新規建てと整合。
+Compras agressoras com OI caindo: compatível com fechamento de SHORT.	OI下落を伴うアグレッシブ買い: ショート決済と整合。
+Predomínio comprador sem variação relevante de OI.	大きなOI変動のない買い優勢。
+Vendas agressoras com OI subindo: compatível com abertura líquida de SHORT.	OI上昇を伴うアグレッシブ売り: ネットのショート新規建てと整合。
+Vendas agressoras com OI caindo: compatível com fechamento de LONG.	OI下落を伴うアグレッシブ売り: ロング決済と整合。
+Predomínio vendedor sem variação relevante de OI.	大きなOI変動のない売り優勢。
+{0} dias	{0}日
+{0} sem	{0}週
+{0} mês	{0}か月
+{0} meses	{0}か月
+{0} ano	{0}年
+{0} anos	{0}年
+bloqueado nesta região	この地域ではブロック中
+indisponível: {0}	利用不可: {0}
+sem dados no período	期間内のデータなし
+parcial: desde 	一部: 開始 
+ (API guarda ~{0} dias)	 (APIの保持期間 約{0}日)
+ (API guarda {0} pontos)	 (APIの保持数 {0}件)
+completo ({0} pontos)	完了 ({0}ポイント)
+Liquidação EXTREME	清算 EXTREME
+Parede grande saiu do livro	大口の壁がブックから消滅
+Absorção / iceberg	吸収 / アイスバーグ
+Mudança de sinal LONG/SHORT	LONG/SHORT シグナル反転
+Divergência preço × CVD	価格 × CVD の乖離
+Preço perto de zona do heatmap	価格がヒートマップのゾーン付近
+Macro: evento de alto impacto chegando	マクロ: 高インパクト イベント接近
+Macro: dado acima/abaixo do esperado	マクロ: 指標が予想を上回る/下回る
+Macro: DXY, yields ou VIX em movimento forte	マクロ: DXY、利回り、VIX が大きく変動
+Macro: escalada geopolítica, tarifas ou regulação	マクロ: 地政学的緊張、関税、規制の強化
+Macro: BTC diverge do mercado americano	マクロ: BTC が米国市場と乖離
+Macro: mudança forte do BTC Macro Sentiment	マクロ: BTC Macro Sentiment の大きな変化
+Absorção	吸収
+Paredes	壁
+Iceberg	アイスバーグ
+Liquidação	清算
+Liquidações	清算
+Execução grande	大口約定
+Execuções	約定
+Divergência	乖離
+Divergências	乖離
+Macro	マクロ
+wall|{0}|{1}|{2}	壁|{0}|{1}|{2}
+Parede {0} {1} de {2} BTC em {3} ({4}): {5}	{0} {1} de {2} BTC em {3} ({4}): {5}
+de compra	買い
+de venda	売り
+{0} em {1} ({2}, {3}): executado {4} BTC, restante {5} BTC	{0} {1}の{2} ({3}): 約定 {4} BTC、残り {5} BTC
+Parede de compra	買い壁
+Parede de venda	売り壁
+executado {0} BTC · restante {1} BTC	約定 {0} BTC · 残り {1} BTC
+sig|{0}|{1}|{2}	シグナル|{0}|{1}|{2}
+Iniciando conexões (Binance, Bybit, OKX; liquidações também de Gate, Bitget e Deribit)	接続を開始中 (Binance、Bybit、OKX。清算は Gate、Bitget、Deribit からも)
+publicação: {0}	公開: {0}
+Conexões encerradas	接続終了
+Compra	買い
+Venda	売り
+{0} BTC agressor	{0} BTC テイカー
+Long	Long
+Short	Short
+{0} BTC · {1}	{0} BTC · {1}
+liq|{0}|{1}|{2}	清算|{0}|{1}|{2}
+Liquidação EXTREME: {0} {1} BTC @ {2} ({3})	清算 EXTREME: {0} {1} BTC @ {2} ({3})
+side|{0}|{1}	方向|{0}|{1}
+Sinal mudou para {0} ({1} min): {2}, confiança {3}	シグナルが{0}に変化 ({1}分): {2}、信頼度 {3}
+{0} ({1} min)	{0} ({1}分)
+De alta	強気
+De baixa	弱気
+janela {0} min	ウィンドウ {0}分
+preço {0} → {1} · CVD {2} → {3} BTC	価格 {0} → {1} · CVD {2} → {3} BTC
+div|{0}|{1}|{2}	乖離|{0}|{1}|{2}
+retirada sem execução (provável cancelamento)	約定なしの引き出し (キャンセルの可能性が高い)
+preço atravessou, execução não confirmada	価格は通過したが約定未確認
+execução confirmada pelos trades	約定により確認済み
+livro cruzado (bid {0} >= ask {1})	クロスしたブック (bid {0} >= ask {1})
+Favorável ao BTC	BTCにとって有利
+Desfavorável ao BTC	BTCにとって不利
+Neutro	中立
+Indeterminado	不明
+Baixa	弱気
+Moderada	中程度
+Alta	高
+Crítica	重大
+Imediato (minutos a horas)	即時（数分〜数時間）
+Curto prazo ({0} a {1} dias)	短期（{0}〜{1}日）
+Médio prazo ({0} a {1} semanas)	中期（{0}〜{1}週間）
+Longo prazo (acima de {0} mês)	長期（{0}か月超）
+Fonte oficial	公式ソース
+Média	中
+Conflitos e segurança	紛争と安全保障
+Comércio internacional	国際貿易
+Energia e commodities	エネルギーとコモディティ
+Federal Reserve	連邦準備制度
+Política fiscal e dívida	財政政策と債務
+Regulação cripto	暗号資産規制
+Política americana	米国政策
+Avanço regulatório ou institucional reduz risco jurídico e pode ampliar a demanda por BTC.	規制や制度面の前進は法的リスクを軽減し、BTCへの需要拡大につながる可能性があります。
+Decisão regulatória	規制決定
+Acesso institucional / segurança jurídica	機関投資家のアクセス / 法的安定性
+Demanda por cripto	暗号資産需要
+Possível alta do BTC	BTC上昇の可能性
+Ação restritiva, processo ou incidente no setor aumenta o risco percebido e pode gerar vendas.	業界への制限措置、訴訟、インシデントは認識リスクを高め、売りを招く可能性があります。
+Ação contra o setor	業界への措置
+Risco regulatório / de contraparte	規制リスク / カウンターパーティリスク
+Saída de capital de cripto	暗号資産からの資金流出
+Possível pressão no BTC	BTCへの圧力の可能性
+Tema regulatório em andamento: o efeito depende do conteúdo final.	規制議論が進行中です。影響は最終的な内容によって異なります。
+Debate regulatório	規制に関する議論
+Incerteza sobre regras	ルールの不透明感
+Posicionamento do mercado	市場のポジション
+Efeito no BTC depende do desfecho	BTCへの影響は結果次第
+Juros menores (ou expectativa de cortes) reduzem o custo do dinheiro e tendem a favorecer ativos de risco.	利下げ（または利下げ観測）は資金コストを下げ、リスク資産に有利に働く傾向があります。
+Corte / sinal de corte de juros	利下げ / 利下げシグナル
+Treasury yields e dólar tendem a cair	米国債利回りとドルは低下傾向
+Apetite por risco nas bolsas	株式市場のリスク選好
+Ambiente favorável ao BTC	BTCに有利な環境
+Juros mais altos por mais tempo fortalecem o dólar e encarecem o risco.	高金利の長期化はドルを強め、リスクのコストを押し上げます。
+Sinal de juros altos	高金利シグナル
+Yields e dólar sobem	利回りとドルが上昇
+Aversão a risco nas bolsas	株式市場のリスク回避
+Pressão sobre o BTC	BTCへの圧力
+Comunicação do Fed muda expectativas de juros; a direção depende do tom.	FRBのコミュニケーションは金利見通しを変えます。方向性はトーン次第です。
+Comunicação do Fed	FRBのコミュニケーション
+Expectativa de juros	金利見通し
+Yields / dólar	利回り / ドル
+BTC reage à mudança de expectativa	見通しの変化にBTCが反応
+Alívio comercial reduz risco de inflação e de desaceleração; costuma melhorar o apetite por risco.	貿易緩和はインフレや景気減速のリスクを減らし、通常はリスク選好を改善させます。
+Alívio comercial	貿易緩和
+Menos pressão em preços e cadeias	価格とサプライチェーンへの圧力の低下
+Bolsas tendem a subir	株式市場は上昇傾向
+Apoio ao BTC	BTCへの支援
+Tarifas e sanções elevam custos e incerteza: pressão inflacionária, dólar mais forte e aversão a risco.	関税や制裁はコストと不確実性を高めます：インフレ圧力、ドル高、リスク回避。
+Tarifa / sanção	関税 / 制裁
+Inflação e incerteza sobem	インフレと不確実性の上昇
+Dólar forte, bolsas pressionadas	ドル高、株式市場は圧迫
+Pressão de curto prazo no BTC	BTCへの短期的な圧力
+Redução de tensão diminui a busca por proteção (dólar/ouro) e alivia petróleo.	緊張緩和により安全資産（ドル/金）への需要は減り、原油は下落します。
+Redução de conflito	紛争の緩和
+Petróleo e VIX tendem a cair	原油とVIXは低下傾向
+Volta do apetite por risco	リスク選好の回復
+Escalada militar gera aversão a risco imediata (dólar, ouro e petróleo sobem). No longo prazo o efeito sobre o BTC é ambíguo.	Escalada militar gera aversão a risco imediata (dólar, ouro e petróleo sobem). No longo prazo, o efeito sobre o BTC é ambíguo.
+Escalada militar	Escalada militar
+Petróleo, ouro, dólar e VIX sobem	原油・金・ドル・VIX 上昇
+Venda de ativos de risco	リスク資産の売り
+Pressão imediata no BTC	BTCへの即時圧力
+Petróleo mais barato alivia a inflação e abre espaço para juros menores.	原油安はインフレを和らげ、利下げの余地を広げます。
+Petróleo em queda	原油下落
+Inflação esperada menor	期待インフレ率の低下
+Juros/yields podem cair	Juros/yields podem cair
+Leve apoio ao BTC	BTCへの軽い支援
+Choque de energia pressiona a inflação e pode adiar cortes de juros.	エネルギーショックはインフレを押し上げ、利下げを先送りさせる可能性があります。
+Petróleo / gás sobem	原油・ガス 上昇
+Inflação esperada maior	期待インフレ率の上昇
+Pressão no BTC	BTCへの圧力
+Impasse fiscal aumenta volatilidade; pode favorecer ativos fora do sistema, mas no curto prazo costuma haver aversão a risco.	Impasse fiscal aumenta a volatilidade; pode favorecer ativos fora do sistema, mas no curto prazo costuma haver aversão a risco.
+Impasse fiscal	Impasse fiscal
+Prêmio de risco nos Treasuries	米国債のリスクプレミアム
+Volatilidade nas bolsas	Volatilidade nas bolsas
+Efeito no BTC incerto	BTCへの影響は不透明
+Mais gasto/dívida pode aumentar liquidez e também os yields; o saldo depende da reação dos juros.	Mais gasto/dívida pode aumentar a liquidez e também os yields; o saldo depende da reação dos juros.
+Política fiscal	財政政策
+Liquidez × oferta de títulos	流動性 × 国債供給
+Yields	Yields
+Efeito no BTC depende dos juros	BTCへの影響は金利次第
+Inflação acima do esperado reduz a chance de cortes de juros.	インフレが予想を上回り、利下げの可能性が低下します。
+Inflação acima do esperado	インフレが予想を上回る
+Menos cortes de juros	利下げ観測の後退
+Inflação desacelerando aumenta a chance de cortes de juros.	電脳の減速は利下げの可能性を高める。
+Inflação abaixo do esperado	インフレ予想を下回る
+Mais cortes de juros precificados	織り込まれる利下げが増加
+Yields e dólar caem	利回りとドルが下落
+Desaceleração aumenta chance de cortes de juros (positivo), mas também o risco de queda das bolsas (negativo).	Desaceleração aumenta a chance de cortes de juros (positivo), mas também o risco de queda das bolsas (negativo).
+Sinais de desaceleração	減速のシグナル
+Expectativa de cortes ↑ / lucros ↓	利下げ期待 ↑ / 利益 ↓
+Bolsas oscilam	Bolsas oscilam
+Efeito no BTC ambíguo	BTCへの影響は不透明
+High	High
+Menos cortes de juros / yields sobem	利下げ減少 / 利回り上昇
+Dólar sobe, bolsas caem	ドル高、株式下落
+Pressão vendedora no BTC	BTCに売り圧力
+O impacto depende do que já estava precificado e da reação dos Treasury yields.	影響は既に織り込まれていた内容と、米国債利回りの反応次第。
+Mais cortes de juros / yields caem	利下げ増加 / 利回り低下
+Dólar cai, bolsas sobem	ドル安、株式上昇
+Alívio para o BTC	BTCにとって追い風
+Salários acima do esperado	賃金が予想を上回る
+Pressão inflacionária	インフレ圧力
+Yields sobem	Yields sobem
+Salários fortes mantêm a inflação de serviços.	堅調な賃金がサービス部門のインフレを支える。
+Salários abaixo do esperado	賃金が予想を下回る
+Menos pressão inflacionária	インフレ圧力の緩和
+Yields caem	Yields caem
+Empregos acima do esperado	雇用が予想を上回る
+Economia aquecida: menos cortes	Economia aquecida: menos cortes
+Um número muito fraco também pode assustar (risco de recessão).	弱すぎる数字も不安を招く可能性があります（景気後退リスク）。
+Empregos abaixo do esperado	雇用が予想を下回る
+Esfriamento: mais cortes	冷え込み：追加利下げ
+Alívio para o BTC (se não virar medo de recessão)	BTCにとって追い風（景気後退への懸念に変わらない場合）
+Desemprego/pedidos acima do esperado	失業・新規受注が予想を上回る
+Trabalho esfriando: mais cortes	雇用の冷え込み：追加利下げ
+Apoio ao BTC (se não virar medo de recessão)	BTCの下支え（景気後退への懸念に変わらない場合）
+Alta forte do desemprego pode virar aversão a risco.	失業率の急上昇はリスク回避につながる可能性があります。
+Desemprego/pedidos abaixo do esperado	失業率・新規受注が予想を下回る
+Trabalho firme: menos cortes	雇用堅調：利下げは後退
+Juros acima do esperado	金利が予想を上回る
+Política mais restritiva	より引き締め的な政策
+O comunicado e a coletiva costumam pesar mais que a decisão.	声明と記者会見は、決定そのものより影響が大きいことが多い。
+Juros abaixo do esperado	金利が予想を下回る
+Política mais frouxa	より緩和的な政策
+Atividade acima do esperado	経済活動が予想を上回る
+Lucros melhores, mas juros podem subir	利益は改善、ただし金利は上昇の可能性
+Bolsas e yields sobem juntos	株式と利回りがともに上昇
+Efeito no BTC depende da reação dos juros	BTCへの影響は金利の反応次第
+Crescimento forte é bom para risco, mas pode adiar cortes de juros.	力強い成長はリスク資産に好材料だが、利下げを遅らせる可能性がある。
+Atividade abaixo do esperado	経済活動が予想を下回る
+Mais cortes, mas lucros piores	利下げ増加も、利益は悪化
+Yields caem, bolsas oscilam	利回り低下、株式は横ばい
+Em linha com o esperado	予想どおり
+Sem surpresa: o impacto tende a ser pequeno. {0}	予想どおりで、影響は小さいと見込まれる。{0}
+Acima do esperado	予想を上回る
+Abaixo do esperado	予想を下回る
+Política monetária	金融政策
+Média de: (a) Treasury {0} anos abaixo da taxa efetiva do Fed = cortes precificados (±{1} pp = ±{2}); (b) taxa implícita nos futuros de Fed funds de ~{3} meses à frente contra a taxa atual ({4} pp = {5}). Cortes esperados = favorável.	平均値：(a) Treasury {0}年物利回りと実効Fed金利の差から織り込まれる利下げ（±{1}pp = ±{2}）；(b) 約{3}か月先のFedファンド先物が示す金利と現在金利の差（{4}pp = {5}）。利下げ織り込みは追い風。
+Inflação	インフレ
+Núcleo do CPI ({0} meses anualizado) contra a variação em {1} meses: desacelerando = favorável; acelerando = desfavorável. Escala: ±{2} pp = ±{3}.	コアCPI（{0}か月年率）と{1}か月変化の比較：鈍化は追い風、加速は逆風。スケール：±{2}pp = ±{3}。
+Mercado de trabalho	労働市場
+Desemprego subindo {0}–{1} pp em {2} meses = esfriamento (mais cortes, {3}); acima de {4} pp = risco de recessão ({5}); salários > {6}% a/a = {7}.	失業率が{2}か月で{0}–{1}pp上昇 = 冷え込み（利下げ増加、{3}）；{4}pp超 = 景気後退リスク（{5}）；賃金 > 前年比{6}% = {7}。
+Dólar (DXY)	ドル指数（DXY）
+Variação em {0} pregões: dólar caindo = favorável. Escala: ±{1}% = ±{2}.	{0}営業日の変化：ドル安は追い風。スケール：±{1}% = ±{2}。
+Treasury yields	米国債利回り
+Média de: Treasury {0} anos nominal em {1} dias (±{2} bp = ∓{3}) e juro real de {4} anos (TIPS) em {5} dias (±{6} bp = ∓{7}). Juros caindo = favorável.	平均値：{0}年物Treasury名目利回りの{1}日変化（±{2}bp = ∓{3}）と{4}年物実質金利（TIPS）の{5}日変化（±{6}bp = ∓{7}）。利回り低下は追い風。
+Liquidez	流動性
+Média de: TGA em ~{0} semanas (caindo devolve liquidez; ±US$ {1} bi = ∓{2}), balanço do Fed na semana (±US$ {3} bi = ±{4}) e estoque de stablecoins em {5} dias (±{6}% = ±{7}, liquidez do mercado cripto).	平均値：約{0}週間後のTGA（低下は流動性を放出；±US$ {1}bn = ∓{2}）、今週のFed資産残高の変化（±US$ {3}bn = ±{4}）、{5}日間のステーブルコイン残高（±{6}% = ±{7}、暗号資産市場の流動性）。
+Mercado acionário	株式市場
+Nasdaq {0} em {1} pregões: alta = apetite por risco (favorável). Escala: ±{2}% = ±{3}.	Nasdaq {1}営業日で{0}：上昇 = リスク選好（追い風）。スケール：±{2}% = ±{3}。
+Volatilidade (VIX e MOVE)	ボラティリティ（VIXとMOVE）
+VIX < {0}: {1} · {2}–{3}: {4} · {5}–{6}: {7} · > {8}: {9}; salto > {10}% no dia soma {11}. MOVE (volatilidade dos Treasuries) > {12} soma {13}; < {14} soma {15}.	VIX < {0}: {1} · {2}–{3}: {4} · {5}–{6}: {7} · > {8}: {9}；当日{10}%超の急騰は{11}を加算。MOVE（米国債のボラティリティ）が{12}超で{13}を加算；{14}未満で{15}を加算。
+Eventos geopolíticos	地政学イベント
+Soma das notícias classificadas nas últimas {0} h (direção × intensidade × confiabilidade), limitada a ±{1}.	過去{0}時間に分類されたニュースの合計（方向 × 強度 × 信頼性）、±{1}に制限。
+Fluxo institucional (ETFs)	機関投資家フロー（ETF）
+Soma dos fluxos dos ETFs spot nos últimos {0} pregões: ±US$ {1} bi = ±{2}.	過去{0}営業日のスポットETFフロー合計：±US$ {1}bn = ±{2}。
+Sem dados suficientes	データ不足
+Extremamente desfavorável	非常に不利
+Desfavorável	不利
+Neutro / misto	中立 / 混合
+Favorável	有利
+Extremamente favorável	非常に有利
+Fed efetivo {0}% × Treasury {1} anos {2}% ({3})	Fed実効 {0}% × Treasury {1}年 {2}% ({3})
+sem mudança precificada	織り込まれた変更なし
+futuros de Fed funds ~{0} meses: {1}% ({2} bp)	Fedファンド先物 約{0}か月: {1}% ({2} bp)
+Sem taxa do Fed, Treasury {0} anos ou futuros	Fed金利、Treasury {0}年、先物なし
+Núcleo do CPI: {0}% em {1} meses, {2}% anualizado em {3} meses ({4})	コアCPI: {1}か月で{0}%、{3}か月で年率{2}% ({4})
+Núcleo do CPI desatualizado ({0})	コアCPIが古い ({0})
+Sem núcleo do CPI	コアCPIなし
+Desemprego {0}% ({1} pp em {2} meses){3}	失業率 {0}% ({2}か月で{1} pp){3}
+ · salários {0}% a/a	 · 賃金 前年比{0}%
+Desemprego desatualizado ({0})	失業率データが古い ({0})
+Sem dado de desemprego	失業率データなし
+DXY {0}% em {1} pregões	DXY {1}営業日で{0}%
+Sem DXY	DXYなし
+Treasury {0} anos {1} bp em {2} dias	Treasury {0}年 {2}日で{1} bp
+Sem Treasury {0} anos	Treasury {0}年物なし
+TGA US$ {0} bi ({1} bi em ~{2} semanas)	TGA US$ {0}bn ({1}bn、約{2}週間で)
+balanço do Fed {0} bi na semana	Fed バランスシート 週間{0}bn
+stablecoins {0}% em {1} dias	ステーブルコイン {1}日で{0}%
+Sem TGA, balanço do Fed ou stablecoins	TGA、Fedバランスシート、ステーブルコインのデータなし
+Nasdaq {0} {1}% em {2} pregões	Nasdaq {1}% ({2}営業日で){0}
+Sem Nasdaq	Nasdaqデータなし
+VIX {0}{1}	VIX {0}{1}
+ ({0}% no dia)	（当日{0}%）
+MOVE {0}	MOVE {0}
+Sem VIX nem MOVE	VIXとMOVEのデータなし
+{0} notícias desfavoráveis · {1} favoráveis · {2} indeterminadas ({3} h)	悪材料{0}件 · 好材料{1}件 · 中立{2}件（過去{3}h）
+Sem notícias classificadas nas últimas {0} h	過去{0}hに分類されたニュースなし
+ETFs spot: US$ {0} mi em {1} pregões	現物ETF: {1}営業日で US$ {0}M
+Sem fluxo dos ETFs (abra a aba ETFs para carregar)	ETFフローなし（ETFタブを開くと読み込まれます）
+ (desatualizado)	（古いデータ）
+Comprador	買い優勢
+Vendedor	売り優勢
+Equilibrado	均衡
+LONG liquidados	ロング清算
+SHORT liquidados	ショート清算
+Sem evento relevante	重要なイベントなし
+Cenário A: macro desfavorável + vendas agressoras + liquidações de LONG. Possível queda reforçada por pressão macro e desalavancagem.	シナリオA: マクロ環境は不利、成行売り、ロング清算。マクロ圧力とデレバレッジにより下落が強まる可能性。
+Cenário B: macro desfavorável, mas há absorção de vendas nas paredes de compra e o preço se sustenta. O mercado pode estar absorvendo a pressão vendedora (resistência à queda).	シナリオB: マクロ環境は不利だが、買い板で売りを吸収し価格は持ちこたえている。市場が売り圧力を吸収している可能性（下落への抵抗）。
+Cenário C: macro favorável + compras agressoras. Movimento de alta alinhado com as condições macro e com o fluxo comprador	シナリオC: マクロ環境は好材料、成行買い。上昇はマクロ環境および買いフローと整合。
+, reforçado por liquidações de SHORT.	、ショート清算により加速。
+Macro favorável, mas há absorção de compras nas paredes de venda e o preço não avança: oferta segurando a alta.	マクロ環境は好材料だが、売り板で買いを吸収し価格が上昇しない：売り圧力が上昇を抑えている。
+Macro desfavorável e vendas agressoras na mesma direção, ainda sem desalavancagem forte (liquidações de LONG). Pressão vendedora alinhada ao cenário macro.	マクロ環境は不利で、成行売りも同方向。まだ強いデレバレッジ（ロング清算）はなし。売り圧力はマクロシナリオと整合。
+Macro favorável e SHORT sendo liquidados, mas sem compra agressora clara: alta puxada por recompra forçada, menos sustentada.	マクロ環境は好材料でショートが清算されているが、明確な成行買いはなし：買い戻しによる上昇で、持続性は低め。
+Macro desfavorável e LONG sendo liquidados, mas sem venda agressora clara: queda puxada por desalavancagem.	マクロ環境は不利でロングが清算されているが、明確な成行売りはなし：デレバレッジによる下落。
+Divergência: o fluxo agressor vai contra o cenário macro. Pode ser movimento técnico local; vale cautela até haver confirmação.	乖離：成行フローがマクロシナリオと逆行。局所的なテクニカル要因の可能性があり、確認されるまで慎重さが必要。
+Cenário macro neutro/misto: o order flow tende a dominar a leitura de curto prazo.	マクロシナリオは中立／混在：短期的にはオーダーフローの読みが優勢になりやすい。
+Sem confirmação clara do order flow em relação ao cenário macro.	マクロシナリオに対するオーダーフローの明確な確認なし。
+ Dados públicos não permitem identificar participantes individuais.	 公開データでは個々の参加者を特定できません。
+Accept	同意
+limite de consultas da fonte (HTTP {0})	データソースのクエリ上限（HTTP {0}）
+HTTP {0}	HTTP {0}
+^GSPC	^GSPC
+Nasdaq {0}	Nasdaq {0}
+^NDX	^NDX
+Dow Jones	ダウ平均
+^DJI	^DJI
+^VIX	^VIX
+Treasury {0} anos (intradiário)	Treasury {0}年物（日中）
+^TNX	^TNX
+Ouro	金
+GC=F	GC=F
+Petróleo WTI	WTI原油
+CL=F	CL=F
+Petróleo Brent	ブレント原油
+BZ=F	BZ=F
+Bitcoin	ビットコイン
+sem resultado ({0})	結果なし（{0}）
+{0} Yr	{0}年
+colunas {0} Yr/{1} Yr não encontradas	{0} Yr/{1} Yr の列が見つかりません
+CPI (índice, dessaz.)	CPI（指数、季節調整済み）
+Núcleo do CPI (índice, dessaz.)	コアCPI（指数、季節調整済み）
+Nonfarm payrolls (mil)	非農業部門雇用者数（千人）
+Taxa de desemprego (%)	失業率（%）
+Salário médio por hora (US$)	平均時給（US$）
+,"registrationkey":"{0}"	,"registrationkey":"{0}"
+{"seriesid":[{0}],"startyear":"{1}","endyear":"{2}"{3}}	{"seriesid":[{0}],"startyear":"{1}","endyear":"{2}"{3}}
+BLS: {0} {1}	BLS: {0} {1}
+Results	結果
+PCE (índice de preços)	PCE（物価指数）
+Núcleo do PCE (índice)	PCEコア（指数）
+BEA (via DBnomics)	BEA（DBnomics経由）
+Treasury General Account	財務省一般口座（TGA）
+Closing	終値
+Opening	始値
+(war OR missile OR airstrike OR invasion OR ceasefire OR "military escalation" OR "Strait of Hormuz") (US OR China OR Russia OR Iran OR Israel OR Taiwan OR Ukraine)	(war OR missile OR airstrike OR invasion OR ceasefire OR "military escalation" OR "Strait of Hormuz") (US OR China OR Russia OR Iran OR Israel OR Taiwan OR Ukraine)
+(tariffs OR sanctions OR "export controls" OR "trade deal" OR "trade war")	(tariffs OR sanctions OR "export controls" OR "trade deal" OR "trade war")
+("oil prices" OR OPEC OR "natural gas prices" OR "energy supply")	("oil prices" OR OPEC OR "natural gas prices" OR "energy supply")
+("Federal Reserve" OR Powell OR FOMC OR "rate cut" OR "rate hike" OR "inflation report" OR "jobs report")	("Federal Reserve" OR Powell OR FOMC OR "rate cut" OR "rate hike" OR "inflation report" OR "jobs report")
+("debt ceiling" OR "government shutdown" OR "Treasury yields" OR "credit rating" OR "fiscal deficit")	("debt ceiling" OR "government shutdown" OR "Treasury yields" OR "credit rating" OR "fiscal deficit")
+(bitcoin OR crypto OR stablecoin) (SEC OR regulation OR bill OR ban OR "strategic reserve" OR ETF)	(bitcoin OR crypto OR stablecoin) (SEC OR regulation OR bill OR ban OR "strategic reserve" OR ETF)
+dc|date	dc|date
+ GMT	 GMT
+ UTC	 UTC
+ UT	 UT
+ EST	 EST
+ EDT	 EDT
+ CST	 CST
+ CDT	 CDT
+ PST	 PST
+ PDT	 PDT
+Cointelegraph	Cointelegraph
+Decrypt	Decrypt
+The Block	The Block
+Bitcoin Magazine	Bitcoin Magazine
+CNBC Economy	CNBC Economy
+WSJ Markets	WSJ Markets
+New York Times	New York Times
+New York Times World	New York Times World
+BBC Business	BBC Business
+BBC World	BBC World
+Al Jazeera	Al Jazeera
+Financial Times	Financial Times
+Bloomberg	Bloomberg
+DW Business	DW Business
+Russell {0}	Russell {0}
+^RUT	^RUT
+Bolsas	株式市場
+FTSE {0} (Londres)	FTSE {0}（ロンドン）
+^FTSE	^FTSE
+DAX (Alemanha)	DAX（ドイツ）
+^GDAXI	^GDAXI
+Nikkei {0} (Japão)	日経 {0}（日本）
+Hang Seng (Hong Kong)	ハンセン（香港）
+^HSI	^HSI
+Xangai	上海
+Ibovespa	Ibovespa
+^BVSP	^BVSP
+Euro / dólar	ユーロ / ドル
+EURUSD=X	EURUSD=X
+Moedas	通貨
+Dólar / iene	ドル / 円
+JPY=X	JPY=X
+Dólar / yuan	ドル / 元
+CNY=X	CNY=X
+Dólar / real	ドル／レアル
+BRL=X	BRL=X
+Prata	銀
+SI=F	SI=F
+Commodities	コモディティ
+Cobre	銅
+HG=F	HG=F
+Gás natural	天然ガス
+NG=F	NG=F
+Treasury {0} semanas	トレジャリー {0}週
+^IRX	^IRX
+Juros e crédito	金利・クレジット
+Treasury {0} anos	トレジャリー {0}年
+^FVX	^FVX
+^TYX	^TYX
+MOVE (volatilidade dos Treasuries)	MOVE（トレジャリーのボラティリティ）
+^MOVE	^MOVE
+HYG (crédito high yield)	HYG（ハイイールド・クレジット）
+Ethereum	イーサリアム
+Cripto e ações ligadas	暗号資産関連株
+IBIT (ETF de BTC da BlackRock)	IBIT（ブラックロックのBTC ETF）
+Strategy (MSTR)	Strategy（MSTR）
+Coinbase (COIN)	Coinbase（COIN）
+coluna {0} não encontrada	列 {0} が見つかりません
+&#xa0;|&nbsp;|&#{0};	&#xa0;|&nbsp;|&#{0};
+total de ativos não encontrado	総資産が見つかりません
+sem dominância	支配率なし
+sem observação	観測データなし
+(tariffs OR sanctions OR ceasefire OR airstrike OR "federal reserve" OR "oil prices" OR "debt ceiling") sourcelang:english	(tariffs OR sanctions OR ceasefire OR airstrike OR "federal reserve" OR "oil prices" OR "debt ceiling") sourcelang:english
+&mode=artlist&maxrecords={0}&format=json&timespan={1}h&sort=datedesc	&mode=artlist&maxrecords={0}&format=json&timespan={1}h&sort=datedesc
+Federal Reserve Bank of New York	Federal Reserve Bank of New York
+Taxa efetiva do Fed (EFFR), intervalo-alvo, SOFR e reverse repo overnight	FED実効金利（EFFR）、誘導目標レンジ、SOFR、翌日物リバースレポ
+Calendário do FOMC, balanço semanal (H.4.1), reservas bancárias e comunicados	FOMCカレンダー、週次バランスシート（H.4.1）、銀行準備金、声明
+U.S. Treasury	U.S. Treasury
+Curva de juros nominal e real (TIPS), saldo do TGA e dívida pública	名目・実質イールドカーブ（TIPS）、TGA残高、国債残高
+Treasury Fiscal Data	Treasury Fiscal Data
+Daily Treasury Statement (TGA) e Debt to the Penny	Daily Treasury Statement（TGA）および Debt to the Penny
+U.S. Bureau of Labor Statistics (BLS)	U.S. Bureau of Labor Statistics（BLS）
+CPI, núcleo do CPI, payroll, desemprego e salário por hora	CPI、コアCPI、非農業部門雇用者数、失業率、時給
+U.S. Bureau of Economic Analysis (BEA) via DBnomics	U.S. Bureau of Economic Analysis（BEA）／DBnomics経由
+PCE e núcleo do PCE	PCEおよびコアPCE
+Banco Central Europeu (BCE)	欧州中央銀行（ECB）
+Taxa de depósito e comunicados	預金金利・声明
+SEC e CFTC	SECおよびCFTC
+Comunicados dos reguladores americanos	米国規制当局の声明
+Yahoo Finance	Yahoo Finance
+Bolsas (EUA, Europa, Ásia, Brasil), VIX, MOVE, DXY, moedas, commodities, Treasuries intradiários, futuros de Fed funds (CBOT), ETH, IBIT, MSTR, COIN, HYG	株式市場（米国、欧州、アジア、ブラジル）、VIX、MOVE、DXY、通貨、コモディティ、日中のトレジャリー、CBOT FF金利先物、ETH、IBIT、MSTR、COIN、HYG
+Kalshi	Kalshi
+Probabilidades negociadas da próxima decisão de juros do Fed	FOMC次回金利決定の取引されている確率
+Forex Factory (faireconomy.media)	Forex Factory（faireconomy.media）
+Calendário econômico semanal: horário, impacto, expectativa e anterior	週間経済指標カレンダー：時刻、影響度、予想、前回値
+Farside Investors	Farside Investors
+Fluxo diário dos ETFs spot de bitcoin	ビットコイン現物ETFの日次フロー
+Valor de mercado cripto, dominância do BTC e volume	暗号資産時価総額、BTC支配率、出来高
+Estoque total de stablecoins	ステーブルコイン総残高
+Índice Fear & Greed do mercado cripto	暗号資産市場の Fear & Greed 指数
+Hashrate, dificuldade e taxas da rede Bitcoin	ハッシュレート、難易度、ビットコインネットワーク手数料
+Google News	Google News
+Manchetes por tema (conflitos, comércio, energia, Fed, fiscal, regulação cripto)	テーマ別見出し（紛争、貿易、エネルギー、FED、財政、暗号資産規制）
+GDELT Project	GDELT Project
+Monitor global de notícias	グローバルニュース・モニター
+Veículos (RSS)	メディア (RSS)
+Google Tradutor	Google翻訳
+Tradução automática de manchetes e textos sem tradução pronta	翻訳済みでない見出しと本文の自動翻訳
+{0} ({1}, calculado do índice oficial)	{0} ({1}、公式指数から算出)
+btcusdt@forceOrder	btcusdt@forceOrder
+trades.liquidation={0}	trades.liquidation={0}
+ABSORÇÃO	吸収
+{0}: reiniciando conexão ({1})	{0}: 接続を再開中 ({1})
+{0}: conectado	{0}: 接続済み
+{0}: falha na inscrição: {1}	{0}: 購読に失敗しました: {1}
+parsing: {0}	パース: {0}
+{0}: falha de parsing: {1} | {2}	{0}: パースに失敗しました: {1} | {2}
+HTTP {0} 	HTTP {0} 
+{0}: desconectado: {1}	{0}: 切断されました: {1}
+{0}: fechado pelo servidor ({1} {2})	{0}: サーバーによりクローズされました ({1} {2})
+Tentar de novo	再試行
+CPU do processo	プロセスのCPU
+Radar BTC	BTCレーダー
+Windows	Windows
+O Radar BTC já está aberto.	BTCレーダーは既に開いています。
+Iniciando Radar BTC V8 (Java {0})	BTCレーダー V8 を起動中 (Java {0})
+Encerrado	終了
+BTC Orderflow Terminal V8 — Radar BTC	BTC Orderflow Terminal V8 — BTCレーダー
+[app] {0}	[app] {0}
+acima (shorts a liquidar)	上方 (ショートの清算)
+abaixo (longs a liquidar)	下方 (ロングの清算)
+zone|{0}	ゾーン|{0}
+Preço {0} a {1}% da zona {2} {3} com ~{4} BTC estimados ({5})	価格 {0} が {2} {3} ゾーンの {1}% 以内、推定 ~{4} BTC ({5})
+Teste de alerta do Radar BTC: canal configurado corretamente.	BTCレーダーのアラートテスト: チャンネルは正しく設定されています。
+Radar BTC · {0}\n{1}\n{2}	BTCレーダー · {0}\n{1}\n{2}
+Radar BTC · {0}	BTCレーダー · {0}
+Celular: 	携帯: 
+Windows: 	Windows: 
+notificações bloqueadas ou indisponíveis	通知がブロックされているか、利用できません
+Telegram: 	Telegram: 
+Radar BTC: {0}	BTCレーダー: {0}
+E-mail: 	メール: 
+nenhum canal configurado	チャンネルが設定されていません
+alerta {0}: {1}	アラート {0}: {1}
+token ou chat ID vazio	トークンまたはチャットIDが空です
+HTTP {0}: {1}	HTTP {0}: {1}
+servidor, usuário ou destinatário vazio	サーバー、ユーザー、または宛先が空です
+US$ {0} mi	US$ {0} 百万
+ETFs spot de BTC (EUA)	米国 BTC スポットETF
+Carregando os fluxos dos ETFs…	ETFのフローを読み込み中…
+Fonte: tabela pública diária da Farside Investors	出典: Farside Investors の日次公開データ
+Fluxos indisponíveis no momento	現在フローデータを利用できません
+Sem dados	データなし
+Fluxo diário	日次フロー
+Último pregão · 	直近取引日 · 
+entrada líquida no dia	当日の純流入
+saída líquida no dia	当日の純流出
+{0} pregões	{0} 取引日
+Fluxo diário · últimos {0} pregões	日次フロー · 直近 {0} 取引日
+Valores em milhões de dólares, como publicados pela Farside Investors (atualiza depois do fechamento do mercado americano). Barras verdes = entrada líquida no dia; vermelhas = saída.	単位は百万米ドル、Farside Investors の公表値 (米国市場終了後に更新)。緑のバー = 当日の純流入、赤 = 純流出。
+Por fundo	ファンド別
+Por fundo no último pregão	直近取引日のファンド別
+Velas visíveis	表示中のローソク足
+Vela	ローソク足
+faixa US$ {0} · {1} velas	US$ {0} 価格帯 · {1} ローソク足
+Faixa US$	価格帯 US$
+Velas	ローソク足
+Corretoras	取引所
+Todas	すべて
+Dados desde {0}	{0} からのデータ
+Aguardando trades	トレードを待機中
+Footprint	フットプリント
+Footprint · venda × compra agressora por faixa (BTC)	フットプリント · 価格帯ごとの投げ売り × 成行買い (BTC)
+Montando o footprint	フットプリントを構築中
+Precisa de trades das corretoras principais; cada vela aparece assim que recebe execuções	主要取引所のトレードが必要です。各ローソク足は約定を受信するとすぐに表示されます
+Perfil de volume	ボリュームプロファイル
+Sem volume no período	この期間に出来高はありません
+Resumo	サマリー
+POC (maior volume)	POC（最大出来高）
+VAH (topo da área de valor)	VAH（価値領域の上端）
+VAL (base da área de valor)	VAL（価値領域の下端）
+Volume no perfil	プロファイル出来高
+Delta do perfil	プロファイルのデルタ
+{0} BTC	{0} BTC
+Delta da vela atual	現在のローソク足のデルタ
+Cada célula mostra venda agressora × compra agressora naquela faixa de preço. Fundo verde = compradores dominaram a faixa; vermelho = vendedores. Número em destaque = desequilíbrio diagonal (um lado ≥ {0}× o outro). Contorno laranja = POC da vela. Área de valor = faixas com {1}% do volume. Trades de Binance, Bybit e OKX, guardados por {2} h em faixas de US$ {3}.	各セルは、その価格帯における投げ売り × 成行買いを表示します。緑の背景 = その価格帯で買い手が優勢、赤 = 売り手が優勢。太字の数値 = 対角の不均衡（一方が他方の {0}× 以上）。オレンジの枠 = ローソク足のPOC。価値領域 = 出来高の {1}% を含む価格帯。Binance、Bybit、OKX のトレードを US$ {3} 刻みで {2} h 保存。
+Aumente a faixa US$ ou reduza o nº de velas para ver os números	数値を表示するには、価格帯 US$ を大きくするか、ローソク足の数を減らしてください
+Mover	移動
+Linha de preço	価格ライン
+Linha	ライン
+Clique no preço onde a linha deve ficar	ラインを置く価格をクリックしてください
+Tendência	トレンド
+Arraste do ponto inicial até o final	始点から終点までドラッグしてください
+Zona	ゾーン
+Arraste de um canto da zona até o canto oposto	ゾーンの角から反対の角までドラッグしてください
+Texto	テキスト
+Clique onde a nota deve ficar	メモを置く位置をクリックしてください
+Ajustar	調整
+Apagar marcação	マーキングを削除
+Apagar todas ({0})	すべて削除 ({0})
+Nota em {0}:	{0} のメモ:
+Salvar	保存
+Cancelar	キャンセル
+ BTC	 BTC
+Pinça: zoom · arrastar: mover · toque duplo: voltar	ピンチ: ズーム · ドラッグ: 移動 · ダブルタップ: 戻る
+Roda: zoom · na escala: zoom no preço · arrastar: mover · duplo clique: voltar	ホイール: ズーム · 価格軸上: 価格ズーム · ドラッグ: 移動 · ダブルクリック: 戻る
+baixando velas	ローソク足をダウンロード中
+open interest {0}	建玉 {0}
+histórico de preço insuficiente para {0}	{0} に必要な価格履歴が不足しています
+news-{0}|{1}	news-{0}|{1}
+US$	US$
+Corretora	取引所
+SMALL ≥	SMALL ≥
+MEDIUM ≥	MEDIUM ≥
+LARGE ≥	LARGE ≥
+EXTREME ≥	EXTREME ≥
+Faixa ±%	範囲 ±%
+BTC · ativas: {0}	BTC · 有効: {0}
+Paredes de compra	買い壁
+Top {0} paredes de compra	買い壁 上位 {0}
+Paredes de venda	売り壁
+Top {0} paredes de venda	売り壁 上位 {0}
+Histórico de concentrações	集中履歴
+Histórico de concentrações (eventos de saída do livro)	集中履歴（板からの離脱イベント）
+PREÇO	価格
+NEGOCIADO NO NÍVEL	この価格で約定
+PERMANÊNCIA	滞留時間
+Nenhuma concentração saiu do livro ainda	まだオーダーブックから消えた大口注文はありません
+Quando uma parede some, aqui aparece se houve execução corroborada por trades ou só retirada	壁が消えた場合、約定を伴っていたか、単なる取り消しかをここに表示します
+Absorção e iceberg	吸収とアイスバーグ
+Absorção e iceberg · {0}	吸収とアイスバーグ · {0}
+Nenhuma parede absorvendo agora	現在、吸収中の壁はありません
+Aparece quando um nível recebe execução e não diminui (ou volta a crescer)	価格水準で約定を受けても数量が減らない（または再び増える）場合に表示されます
+Identidade = corretora + instrumento + lado + preço. O livro público é agregado por preço: não identificamos ordens individuais nem quem as colocou. Sumir do livro não prova execução: "Executada (confirmada)" exige trades no nível ≥ {0}% da quantidade. EXECUTADO = BTC negociado exatamente no preço da parede desde que ela apareceu; % CONS. = executado ÷ (executado + restante). ABSORÇÃO = recebeu execução ≥ {1}% do tamanho inicial e manteve ≥ {2}% dele. ICEBERG = executou mais do que mostrava e foi reposta {3}+ vezes (REPOSTO = execução que não reduziu o livro). Ambos são inferências.	識別子 = 取引所 + 銘柄 + 売買方向 + 価格。公開オーダーブックは価格ごとに集計されるため、個別の注文や発注者は特定できません。板から消えても約定の証明にはなりません。「約定済（確認）」には、数量の ≥ {0}% に相当する約定がその価格水準で必要です。約定済 = 壁が出現して以降、正確に壁の価格で約定したBTC。% 消化 = 約定 ÷ (約定 + 残量)。吸収 = 初期サイズの ≥ {1}% の約定を受け、その ≥ {2}% を維持。アイスバーグ = 表示量以上に約定し、{3}回以上補充された（補充 = 板を減らさなかった約定）。いずれも推定です。
+ATUAL (BTC)	現在 (BTC)
+Δ BTC	Δ BTC
+% CONS.	% 消化
+Nenhuma parede acima do limite SMALL nesta faixa	この範囲では SMALL 閾値を超える壁はありません
+Ajuste os limites ou a faixa ±% acima	上の閾値または ±% の範囲を調整してください
+Fluxo e CVD	フローとCVD
+Janela	ウィンドウ
+Eventos processados na chegada; a tela agrupa a cada {0} s.	イベントは受信時に処理され、画面は {0} 秒ごとにまとめて表示されます。
+Fluxo agressor ({0})	アグレッシブフロー ({0})
+Fonte	ソース
+Comprado	買い
+Vendido	売り
+Delta	Delta
+Trades	約定
+Médio	平均
+Maior compra	最大買い
+Maior venda	最大売り
+Consolidado	統合
+CVD e preço · últimos {0} (histórico desde que o app abriu, até {1} h)	CVDと価格 · 直近 {0}（アプリ起動時からの履歴、{1} 時間まで）
+Período	期間
+— Total	— 合計
+— Preço BTC (escala à direita)	— BTC価格（右軸）
+Total: 	合計: 
+Normalizado: 	正規化: 
+{0}% do OI	OIの{0}%
+Sinal e resumo	シグナルと要約
+Sinal de fluxo ({0})	フローシグナル ({0})
+{0} · confiança {1}	{0} · 信頼度 {1}
+Dados observados	観測データ
+Interpretação	解釈
+Limitações	制限事項
+Divergências preço × CVD	価格 × CVD のダイバージェンス
+Nenhuma divergência detectada	ダイバージェンスは検出されていません
+Checa {0} min, {1} min e {2} h a cada ~{3} s: preço faz novo fundo/topo e o CVD não confirma	{0}分、{1}分、{2}時間を約{3}秒ごとに確認：価格が新安値/新高値を付けてもCVDが追随しない場合
+{0} · {1} min	{0} · {1}分
+Divergência = o preço faz um fundo mais baixo (ou topo mais alto) na {0}ª metade da janela e o CVD não acompanha. Sinal de enfraquecimento, não de reversão garantida.	ダイバージェンス = ウィンドウの{0}番目の半分で価格がより安い安値（またはより高い高値）を付けたのに、CVDが追随しない状態。勢いの弱まりを示すシグナルであり、反転を保証するものではありません。
+Derivativos por corretora	取引所別デリバティブ
+OI (BTC)	OI (BTC)
+OI somado ({0} corretoras)	OI合計 ({0}取引所)
+aguardando as {0} fontes	{0}ソースの受信待ち
+Variação do OI ({0})	OIの変化 ({0})
+Variação do preço ({0})	価格の変化 ({0})
+OI Binance via REST a cada {0} s (não há WebSocket de OI); Bybit e OKX por WebSocket. CVD normalizado = CVD ÷ OI somado, em %: permite comparar dias com open interest diferente.	Binance の OI は {0} 秒ごとに REST で取得（OI 用の WebSocket はありません）。Bybit と OKX は WebSocket。正規化 CVD = CVD ÷ OI合計（%）で、建玉残高が異なる日同士の比較を可能にします。
+Delta por janela · consolidado	ウィンドウ別デルタ · 統合
+Barra = desequilíbrio entre compra e venda agressora (verde para a direita = compradores).	バー = 積極的な買いと売りの不均衡（右方向の緑 = 買い手）。
+{0} min	{0}分
+Aguardando trades para desenhar o CVD	CVD を描画するための約定を待機中
+Roda: zoom · arrastar: mover · duplo clique: voltar	ホイール: ズーム · ドラッグ: 移動 · ダブルクリック: 戻す
+Zoom ativo · duplo clique: voltar ao período todo	ズーム中 · ダブルクリック: 全期間に戻す
+Preço BTC	BTC価格
+CVD total	CVD total
+Mínimo (BTC)	最安値 (BTC)
+Compras {0}: {1} · {2}	買い {0}: {1} · {2}
+Vendas {0}: {1} · {2}	売り {0}: {1} · {2}
+Compras e vendas	買いと売り
+Maiores compras agressoras · {0}	大口の成行買い · {0}
+Nenhuma compra ≥ {0} BTC em {1}	{1}で{0} BTC以上の買いはなし
+Maiores vendas agressoras · {0}	大口の成行売り · {0}
+Nenhuma venda ≥ {0} BTC em {1}	{1}で{0} BTC以上の売りはなし
+Fita e sequências	ティックとシーケンス
+Fita de grandes execuções (mais recentes primeiro)	大口約定ティッカー（新しい順）
+Aguardando execuções ≥ {0} BTC	{0} BTC以上の約定を待機中
+Sequências · {0}+ grandes execuções do mesmo lado em até {1} s	シーケンス · {0}秒以内に同じサイドの大口約定が{1}件以上
+Nenhuma sequência em {0}	{0}ではシーケンスなし
+Indica agressão concentrada: várias ordens grandes seguidas do mesmo lado	同じサイドの大口注文が連続しており、成行の集中を示します
+{0}–{1}  {2}  {3} execuções  {4}  {5}–{6}  	{0}–{1}  {2}  {3}件の約定  {4}  {5}–{6}  
+Os eventos aparecem aqui assim que acontecem	イベントは発生すると同時にここに表示されます
+Mapa	マップ
+ · estimado (modelo V8) · 	 · 推定（V8モデル） · 
+Mostrar	表示
+Já executadas	約定済み
+Em aberto	未決済
+Reduzir gráfico	チャートを縮小
+Ampliar gráfico	チャートを拡大
+OI por entrada	価格帯別OI
+Longs × shorts	ロング × ショート
+Alavancagem	レバレッジ
+Intensidade	強度
+Liquidações reais	実際の清算
+Carregando: {0}…	読み込み中: {0}…
+Erro: {0}	エラー: {0}
+Atualizado {0} · {1} colunas	{0}に更新 · {1}列
+Atualizar	更新
+Montando o heatmap ({0})…	ヒートマップを作成中 ({0})…
+Heatmap indisponível	ヒートマップは利用できません
+Usa velas e open interest históricos públicos das corretoras	取引所の公開ローソク足と過去のオープンインタレストを使用
+Níveis e visão geral	価格帯と概要
+Níveis de liquidação em aberto	未決済の清算価格帯
+Níveis-chave de liquidação	主要な清算価格帯
+Principais	主要
+Todos	すべて
+Aguardando o heatmap	ヒートマップを待機中
+{0} faixas acima · {1} abaixo · as mesmas das linhas do gráfico	上方{0}帯 · 下方{1}帯 · チャートの線と同じ
+● Acima · liquidações de SHORT	● 上方 · ショートの清算
+● Abaixo · liquidações de LONG	● 下方 · ロングの清算
+Visão geral	概要
+Níveis de liquidação em aberto (estimados)	未決済の清算価格帯（推定）
+Longs (abaixo do preço)	ロング（価格の下）
+Shorts (acima do preço)	ショート（価格の上）
+Cobertura do histórico	履歴のカバレッジ
+Estimativa: {0}x/{1}x/{2}x/{3}x sobre o aumento de open interest de cada corretora (Binance, Bybit, OKX, Gate, HTX e Kraken, as que publicam histórico; Bitget, Deribit e Hyperliquid só informam o valor atual); níveis atravessados pelo preço somem. OI por entrada = onde o modelo estima que as posições ainda abertas entraram. Longs × shorts: cor de compra = mais longs a liquidar naquele preço, cor de venda = mais shorts. Faixa inferior = total de níveis LONG em aberto menos SHORT. O filtro de alavancagem vale para o mapa e os níveis-chave. Pontos = liquidações REAIS reportadas pelas {4} corretoras (gravadas desde a instalação), na cor de LONG ou de SHORT.	推定: 各取引所のオープンインタレスト増加に基づく{0}x/{1}x/{2}x/{3}x（履歴を公開しているBinance、Bybit、OKX、Gate、HTX、Krakenが対象。Bitget、Deribit、Hyperliquidは現在値のみ提供）。価格が通過した価格帯は消えます。価格帯別OI = 現在も残るポジションが建てられたと推定される価格帯。ロング × ショート: 買いの色 = その価格で清算されるロングが多い、売りの色 = ショートが多い。下段の範囲 = 未決済のLONG価格帯の合計からSHORTを引いた値。レバレッジフィルターはマップと主要価格帯に適用されます。点 = {4}取引所が報告した実際の清算（インストール以降に記録）。LONGまたはSHORTの色で表示。
+Escala: longs − shorts a liquidar por faixa (BTC)	スケール: 価格帯ごとの清算予定のロング − ショート (BTC)
+Escala: OI aberto por faixa de preço (BTC)	スケール: 価格帯ごとの未決済OI (BTC)
+Escala: BTC a liquidar por faixa de preço	スケール: 価格帯ごとの清算予定BTC
+● LONG liquidado	● LONG清算済み
+● SHORT liquidado	● SHORT清算済み
+níveis em aberto (caixas ao lado)	未決済の価格帯（横のボックス）
+≥ {0} mais shorts	ショートが{0}以上
+≥ {0} mais longs	ロングが{0}以上
+Mapa de liquidações	清算マップ
+Open interest por preço de entrada	進行中建玉（エントリー価格別）
+Longs × shorts a liquidar	ロング × ショート清算予定
+  ·  fechamento 	  ·  終値 
+Faixa {0} – {1}	価格帯 {0} – {1}
+Distância do preço atual: 	現在価格からの距離: 
+Longs a liquidar	ロング清算予定
+Shorts a liquidar	ショート清算予定
+Longs − shorts	ロング − ショート
+OI aberto neste preço	この価格の未決済建玉
+Mapa e níveis	マップとレベル
+Liquidações reais e alertas	実清算とアラート
+LONG {0} ({1})	LONG {0} ({1})
+SHORT {0} ({1})	SHORT {0} ({1})
+Top LONG	トップ LONG
+Top LONG liquidadas · {0}	トップ LONG 清算 · {0}
+Nenhuma liquidação LONG de BTC em {0} · {1} eventos desde a abertura	{0} で BTC の LONG 清算はありません · 起動以降 {1} 件
+Top SHORT	トップ SHORT
+Top SHORT liquidadas · {0}	トップ SHORT 清算 · {0}
+Nenhuma liquidação SHORT de BTC em {0} · {1} eventos desde a abertura	{0} で BTC の SHORT 清算はありません · 起動以降 {1} 件
+Top geral	総合トップ
+Top geral · {0}	総合トップ · {0}
+Nenhuma liquidação de BTC em {0}	{0} で BTC の清算はありません
+Alertas	アラート
+Liquidações reais = Binance, Bybit, OKX, Gate, Bitget e Deribit (feeds públicos, não garantem todos os eventos; Binance envia no máximo {0}/s e a Bitget agrupa por segundo). Conversões para BTC: OKX {1}; Gate {2} contrato = {3} BTC; Bitget USDT ÷ preço; Deribit USD ÷ preço. Heatmap = estimativa a partir do open interest histórico de Binance, Bybit, OKX, Gate, HTX e Kraken.	実清算 = Binance、Bybit、OKX、Gate、Bitget、Deribit（公開フィード、全イベントを保証するものではありません。Binance は最大 {0}/秒、Bitget は秒単位でまとめて配信）。BTC 換算: OKX {1}; Gate 1 契約 = {3} BTC （{2}）; Bitget USDT ÷ 価格; Deribit USD ÷ 価格。ヒートマップ = Binance、Bybit、OKX、Gate、HTX、Kraken の過去の建玉からの推定。
+Aparecem aqui assim que alguma das {0} corretoras reportar	{0} 取引所のいずれかが報告するとすぐにここに表示されます
+Conexões e livros	接続と板
+Conexões (Ao vivo = conexão + inscrição + dados recentes)	接続（ライブ = 接続 + 購読 + 最新データ）
+ÚLTIMA MSG	最終メッセージ
+ÚLTIMO ERRO	最終エラー
+Livros	板
+VÁLIDO	有効
+NÍVEIS BID/ASK	BID/ASK レベル
+LATÊNCIA	レイテンシ
+RECONSTRUÇÕES	再構築
+Bybit RPI	Bybit RPI
+NÃO	いいえ
+{0} ms	{0} ms
+Log ao vivo (também gravado em {0})	ライブログ（{0} にも記録）
+Desempenho e log	パフォーマンスとログ
+Desempenho	パフォーマンス
+Mensagens/s (todas as fontes)	メッセージ/秒（全ソース）
+Trades recebidos	受信した取引
+Liquidações recebidas	受信した清算
+Paredes ativas	有効な壁
+Tempo de execução	実行時間
+Atualização da tela	画面更新
+Histórico (SQLite)	履歴（SQLite）
+Arquivo	ファイル
+Estado	状態
+Gravados nesta sessão	今回のセッションで記録
+Na fila	キュー待ち
+Tabela {0}	テーブル {0}
+{0} linhas	{0} 行
+Nada é apagado automaticamente.	自動削除は行われません。
+Fontes e conversões	ソースと換算
+Binance USD-M: /public depth@{0}ms + snapshot REST {1}; /market aggTrade, markPrice@{2}s, forceOrder; OI REST {3} s.	Binance USD-M: /public depth@{0}ms + REST スナップショット {1}; /market aggTrade, markPrice@{2}s, forceOrder; OI REST {3} 秒。
+Bybit linear: orderbook.1000 ({0} ms), orderbook.rpi ({1} níveis), publicTrade, tickers, allLiquidation.	Bybit linear: orderbook.1000 ({0} ms), orderbook.rpi ({1} レベル), publicTrade, tickers, allLiquidation。
+OKX: books ({0} níveis, seqId/prevSeqId), trades, open-interest, funding-rate, mark-price, liquidation-orders.	OKX: books ({0} レベル, seqId/prevSeqId), trades, open-interest, funding-rate, mark-price, liquidation-orders。
+OKX: {0}. Binance e Bybit já publicam em BTC.	OKX: {0}。Binance と Bybit は既に BTC で配信しています。
+Liquidações extras: Gate (futures.public_liquidates), Bitget (UTA v3 liquidation), Deribit (trades com marca de liquidação).	追加の清算: Gate (futures.public_liquidates)、Bitget (UTA v3 liquidation)、Deribit (清算マーク付きの取引)。
+Alertas · {0}	アラート · {0}
+Sem alertas por enquanto	現在アラートはありません
+Nenhum alerta deste tipo	この種類のアラートはありません
+Absorção e iceberg em paredes, liquidações ≥ LARGE, execuções muito grandes e divergências preço × CVD aparecem aqui	ウォールの吸収とアイスバーグ、LARGE以上の清算、非常に大きな約定、価格 × CVDの乖離がここに表示されます
+Radar macro: {0}	マクロレーダー: {0}
+formato inesperado ({0})	予期しない形式 ({0})
+Yahoo Finance · {0}	Yahoo Finance · {0}
+U.S. Treasury · yields oficiais	U.S. Treasury · 公式利回り
+NY Fed · taxa efetiva (EFFR)	NY Fed · 実効フェデラルファンド金利 (EFFR)
+BLS · CPI, emprego, salários	BLS · CPI、雇用、賃金
+BEA · {0}	BEA · {0}
+Tesouro · saldo do TGA	財務省 · TGA残高
+Calendário econômico (Forex Factory)	経済カレンダー (Forex Factory)
+Federal Reserve · reuniões do FOMC	Federal Reserve · FOMC会合
+Google News · tema {0}	Google News · テーマ {0}
+Federal Reserve · comunicados	Federal Reserve · 声明
+GDELT · notícias globais	GDELT · 世界のニュース
+RSS · {0}	RSS · {0}
+CME/CBOT · futuro de Fed funds {0}	CME/CBOT · Fed funds先物 {0}
+U.S. Treasury · juros reais (TIPS)	U.S. Treasury · 実質金利 (TIPS)
+{0} YR	{0}年
+NY Fed · SOFR	NY Fed · SOFR
+NY Fed · reverse repo overnight	NY Fed · オーバーナイト・リバースレポ
+Federal Reserve · balanço semanal (H.4.1)	Federal Reserve · 週次バランスシート (H.4.1)
+Kalshi · probabilidades da decisão do Fed	Kalshi · FED金利決定の確率
+Alternative.me · Fear & Greed	Alternative.me · Fear & Greed
+CoinGecko · mercado cripto global	CoinGecko · 世界の暗号資産市場
+DefiLlama · estoque de stablecoins	DefiLlama · ステーブルコイン残高
+mempool.space · hashrate	mempool.space · ハッシュレート
+mempool.space · taxas da rede	mempool.space · ネットワーク手数料
+BCE · taxa de depósito	ECB · 預金ファシリティ金利
+Tesouro dos EUA · dívida pública	米国財務省 · 公的債務
+macro|{0}	マクロ|{0}
+ev|{0}	経済指標|{0}
+Em {0} min: {1} (EUA). Expectativa {2} · anterior {3}. Impacto alto no mercado.	{0}分後: {1} (米国). 予想 {2} · 前回 {3}. 市場への影響大.
+Evento	イベント
+Calendário	カレンダー
+sp|{0}	S&P|{0}
+{0}: {1} contra expectativa {2} ({3}). Leitura provável: {4}. {5}	{0}: 予想 {2} に対して {1} ({3}). 想定される解釈: {4}. {5}
+Dado	データ
+Oficial	公式
+fomc|{0}	FOMC|{0}
+Decisão de juros do FOMC em {0} min.	{0}分後にFOMCの金利決定.
+dxy|{0}|{1}	ドル指数|{0}|{1}
+Dólar (DXY) {0}% no dia. Dólar {1} costuma {2} o BTC.	ドル指数 (DXY) 当日 {0}%. ドル{1}はBTCを{2}傾向があります.
+tnx|{0}|{1}	tnx|{0}|{1}
+Treasury {0} anos {1} bp no dia ({2}%).	米10年債 {0}年 当日 {1}bp ({2}%).
+vix|{0}	vix|{0}
+VIX dispara {0}% no dia ({1}): aversão a risco.	VIX当日 {0}%急騰 ({1}): リスク回避.
+geo|{0}	geo|{0}
+div|{0}	div|{0}
+BTC {0}% e Nasdaq {1} {2}% na última hora: movimento próprio do BTC, não acompanhando o mercado americano.	BTC {0}%、ナスダック {1} {2}%（直近1時間）: BTC独自の動きで、米国市場に連動していません.
+sc|{0}|{1}	sc|{0}|{1}
+BTC Macro Sentiment: {0} → {1} ({2}). Confiança {3}%.	BTCマクロセンチメント: {0} → {1} ({2}). 信頼度 {3}%.
+Score	スコア
+Radar macro	マクロレーダー
+há {0} min	{0}分前
+há {0} h	{0}時間前
+há {0} d	{0}日前
+Coletando dados macro…	マクロデータを収集中…
+Mercado americano, juros, inflação, emprego, calendário e notícias. A primeira coleta leva cerca de {0} minuto.	米国市場、金利、インフレ、雇用、カレンダー、ニュース。初回の取得には約{0}分かかります。
+Indicadores	指標
+Mais dados	その他のデータ
+Notícias	ニュース
+Ajustes	設定
+Fontes	ソース
+BTC Macro Sentiment	BTC マクロ・センチメント
+  de {0} a {1}	  {0}～{1}
+Confiança {0}% (parte dos pesos com dado válido)	信頼度 {0}%（有効なデータがある項目の重みに基づく）
+Sem dado: 	データなし: 
+Mede se as condições macro estão favoráveis ou desfavoráveis ao BTC agora. Não é previsão de preço.	現在のマクロ環境がBTCにとって追い風か向かい風かを測定します。価格予測ではありません。
+Leitura integrada · macro + order flow	統合分析 · マクロ + オーダーフロー
+Cenário macro	マクロシナリオ
+Order flow ({0} min)	オーダーフロー（{0}分）
+Liquidações ({0} h)	清算（{0}時間）
+Confluência	コンフルエンス
+Delta {0} min {1} BTC · liquidações {2} h: {3} BTC LONG / {4} BTC SHORT · absorções: {5} na compra, {6} na venda	デルタ {0}分 {1} BTC · 清算 {2}時間: {3} BTC ロング / {4} BTC ショート · アブソープション: 買い側 {5}、売り側 {6}
+Próximos eventos de alto impacto	今後の高インパクトイベント
+Nenhum evento de alto impacto nesta semana no calendário.	今週のカレンダーに高インパクトイベントはありません。
+{0} (horário local) · faltam {1}	{0}（現地時間）· 残り {1}
+Expectativa {0} · anterior {1}	予想 {0} · 前回 {1}
+Próxima decisão do FOMC: {0} (faltam {1})	次回FOMC決定: {0}（残り {1}）
+Mercado de previsões (Kalshi)	予測市場（Kalshi）
+Sentimento cripto (Fear & Greed)	暗号資産センチメント（Fear & Greed）
+Fatores do score	スコアの要因
+peso {0}	重み {0}
+{0} pts	{0} pts
+ · ref. {0}	 · 参照 {0}
+Contribuição = leitura do fator ({0} a {1}) × peso ÷ soma dos pesos com dado × {2}. Regras e pesos: aba Ajustes e docs/MACRO.md.	寄与度 = 要因の値（{0}～{1}）× 重み ÷ データがある項目の重みの合計 × {2}。ルールと重みは「設定」タブおよび docs/MACRO.md を参照。
+{0} h {1} min	{0}時間{1}分
+Mercado americano	米国市場
+Ativo	資産
+Último	終値
+Dia	日次
+{0} bp	{0} bp
+Yahoo Finance (não oficial), barras de {0} h. Cotação de {1}; fora do pregão mostra o último fechamento.	Yahoo Finance（非公式）、{0}時間足。{1}の相場。取引時間外は直近の終値を表示。
+Juros	金利
+Meta do Fed (intervalo)	FRB政策金利（誘導目標レンジ）
+Taxa efetiva (EFFR) · {0}	実効フェデラルファンド金利（EFFR）· {0}
+Taxa do Fed	FRB金利
+Treasuries (oficial)	米国債（公式）
+ ({0} bp {1}d)	（{0} bp {1}d）
+Treasury {0} anos (oficial) · {1}	{0}年物国債（公式）· {1}
+Treasury {0} anos (oficial)	{0}年物国債（公式）
+Inclinação {0}a − {1}a	イールドカーブ {0}年 − {1}年
+Fontes: NY Fed (EFFR) e U.S. Treasury (curva diária de fechamento).	ソース: NY連銀（EFFR）および米財務省（日次終値イールドカーブ）。
+Inflação e emprego	インフレと雇用
+CPI em {0} meses	CPI {0}か月
+CPI no mês	CPI（前月比）
+Núcleo do CPI em {0} meses	コアCPI {0}か月
+Núcleo do CPI no mês	コアCPI（前月比）
+PCE em {0} meses	PCE {0}か月
+Núcleo do PCE em {0} meses	コアPCE {0}か月
+Payroll (vagas no mês)	非農業部門雇用者数（月次増減）
+{0} mil	{0}千人
+Desemprego	失業率
+Salário/hora em {0} meses	賃金（時給）{0}か月
+BLS (CPI, payroll, desemprego, salários) e BEA (PCE), dessazonalizados, calculados do índice oficial. Entre parênteses: mês de referência.	BLS（CPI、雇用者数、失業率、賃金）およびBEA（PCE）の季節調整済みデータ。公式指数から算出。括弧内は対象月。
+TGA (conta do Tesouro no Fed)	TGA（連邦準備銀行の財務省口座）
+TGA · {0}	TGA · {0}
+US$ {0} bi	US$ {0} bi
+Variação em ~{0} semanas	{0}週間での変動
+TGA subindo retira dinheiro do sistema; caindo devolve. Fonte: Daily Treasury Statement.	TGAの増加はシステムから資金を吸い上げ、減少は資金を供給します。出典: Daily Treasury Statement。
+Correlação com o BTC	BTCとの相関
+Sem série do BTC para comparar.	比較するBTCのデータ系列がありません。
+Pearson dos retornos nos horários em que os dois negociam ({0} h e {1} d: barras de {2} h; {3} d: diário). Mínimo de amostras: {4} / {5} / {6}. Correlação passada não garante a futura.	両方が取引される時間帯のリターンのピアソン相関（{0}時間と{1}日: {2}時間足; {3}日: 日足）。最小サンプル数: {4} / {5} / {6}。過去の相関が将来の相関を保証するものではありません。
+ · desatualizado	 · 更新停止
+Medium	Medium
+Calendário econômico dos EUA · esta semana	米国経済カレンダー · 今週
+Alto e médio impacto	高・中インパクト
+Sem eventos no calendário	カレンダーにイベントはありません
+O calendário semanal é publicado no domingo à noite (horário de Brasília).	週間カレンダーは日曜の夜（ブラジリア時間）に公開されます。
+Horários no fuso deste aparelho. Expectativa e anterior: calendário semanal do Forex Factory (não oficial). Resultado só aparece quando a série oficial (BLS/BEA) já traz o mês de referência; nos outros casos fica "aguardando".	時刻はこの端末のタイムゾーンで表示。予想と前回値: Forex Factoryの週間カレンダー（非公式）。結果は公式系列（BLS/BEA）に対象月のデータが入った時のみ表示され、それ以外は「待機中」となります。
+Reuniões do FOMC	FOMC会合
+Decisão	決定
+Fonte: federalreserve.gov (decisão no último dia da reunião, {0}h de Nova York).	出典: federalreserve.gov（決定は会合最終日のニューヨーク時間{0}時）。
+Alto	高
+Holiday	祝日
+Feriado	祝日
+Baixo	低
+Expectativa {0} · anterior {1} · resultado {2}	予想 {0} · 前回 {1} · 結果 {2}
+Se vier acima do esperado: 	予想を上回った場合: 
+Notícias com ligação econômica ao BTC	BTCと経済的に関連するニュース
+Tema	テーマ
+Nenhuma notícia relevante agora	現在、重要なニュースはありません
+Só entram manchetes das últimas {0} h com ligação econômica clara (juros, dólar, energia, comércio, conflitos, regulação).	過去{0}時間の見出しのうち、経済的な関連が明確なもの（金利、ドル、エネルギー、貿易、紛争、規制）のみ表示します。
+Classificação automática por regras de palavras-chave sobre a manchete (docs/MACRO.md). Repetições entre veículos são agrupadas; abra o link para ler a matéria completa.	見出しのキーワードルールによる自動分類（docs/MACRO.md）。複数メディアの重複はまとめています。全文を読むにはリンクを開いてください。
+Intensidade 	強度 
+Original	原文
+Horizonte: {0} · relevância {1}%	時間軸: {0} · 関連度 {1}%
+Abrir a matéria	記事を開く
+Toque no título para ver a cadeia de impacto	見出しをタップすると影響の連鎖を表示します
+Pesos do score	スコアの重み
+Restaurar pesos padrão	標準の重みに戻す
+Peso {0} desliga o fator. O score usa só os fatores com dado; abaixo de {1}% dos pesos com dado ele não é mostrado.	重みが{0}のとファクターはオフになります。スコアはデータのあるファクターのみで算出され、データのある重みの合計が{1}%未満の場合は表示されません。
+Alertas macro	マクロアラート
+Os tipos de alerta macro ligam e desligam na aba Alertas, junto com Telegram, e-mail e notificação. Cada ocorrência é avisada uma vez só.	マクロアラートの種類はTelegram、メール、通知と合わせて「アラート」タブでオン・オフできます。各イベントは一度だけ通知されます。
+Chave opcional	任意のキー
+Chave da API do BLS (v2, gratuita)	BLS APIキー（v2、無料）
+Sem chave o BLS permite {0} consultas por dia; o app usa {1}. A chave fica só neste aparelho (ou na variável de ambiente BLS_API_KEY).	キーがない場合、BLSは1日{0}回のクエリを許可します。アプリは{1}回を使用します。キーはこの端末にのみ保存されます（または環境変数BLS_API_KEY）。
+Fontes dos dados	データのソース
+Mercado / mídia	市場 / メディア
+Nenhum número é inventado: dado ausente aparece como "sem dado". Fontes não oficiais podem mudar sem aviso.	数値は一切捏造しません。データがない場合は「データなし」と表示します。非公式ソースは予告なく変更される場合があります。
+Situação da coleta	データ収集の状況
+Atualizar agora	今すぐ更新
+{0} de {1} fontes em dia	{1}件中{0}件のソースが最新
+dado de {0}	{0}のデータ
+ · falhou: {0}	 · 失敗: {0}
+ · usando cópia salva	 · 保存済みのコピーを使用中
+● em dia · ◐ fonte falhou, usando a última cópia salva · ○ sem dado. Após falha o app espera antes de tentar de novo.	● 最新 · ◐ ソースが失敗、保存済みの最新コピーを使用 · ○ データなし。失敗後、アプリは再試行まで待機します。
+Cut >{0}	利下げ >{0}
+Corte maior que {0} pp	{0} ppを超える利下げ
+Cut {0}	利下げ {0}
+Corte de {0} pp	{0} ppの利下げ
+Hike >{0}	利上げ >{0}
+Alta maior que {0} pp	{0} ppを超える利上げ
+Hike {0}	利上げ {0}
+Alta de {0} pp	{0} ppの利上げ
+Juros mantidos	金利据え置き
+US$ {0} tri	US$ {0} tri
+Expectativa de juros do Fed	FRBの金利見通し
+Sem probabilidades da Kalshi agora.	現在、Kalshiの確率データはありません。
+Próxima reunião ({0}): probabilidades negociadas	próxima reunião ({0}): probabilidades negociadas
+Cut	Cut
+Hike	Hike
+Taxa implícita nos futuros de Fed funds (CBOT)	CBOT フェデラルファンド先物から算出した金利織り込み
+ ({0} bp)	 ({0} bp)
+Kalshi: mercado regulado de previsões (preço do contrato = probabilidade). Futuros: taxa implícita = {0} − preço; entre parênteses, diferença para a taxa efetiva atual. Valores negativos = cortes esperados.	Kalshi: 거래소 규제 예측 시장 (계약 가격 = 확률). 선물: 내재 금리 = {0} − 가격; 괄호 안은 현재 실효금리와의 차이. 음수 값 = 금리 인하 기대.
+Juros reais, inflação implícita e financiamento	실질금리, 내재 인플레이션 및 펀딩
+Juro real {0} anos (TIPS)	{0}년 실질금리 (TIPS)
+Juro real {0} anos (TIPS) · {1}	{0}년 실질금리 (TIPS) · {1}
+Inflação implícita {0} anos (breakeven)	{0}년 내재 인플레이션 (브레이크이븐)
+SOFR · {0}	SOFR · {0}
+Reverse repo overnight · {0}	역레포 오버나이트 · {0}
+Juro real alto ou subindo costuma pesar sobre o BTC (custo de oportunidade). Breakeven = Treasury {0} anos − juro real.	실질금리가 높거나 상승하면 BTC에 부담이 되는 경향이 있음 (기회비용). 브레이크이븐 = {0}년 Treasury − 실질금리.
+Balanço do Fed e liquidez	연준 대차대조표 및 유동성
+Balanço do Fed (H.4.1)	연준 대차대조표 (H.4.1)
+Ativos totais do Fed · semana até {0}	연준 총자산 · {0}까지 주간
+Variação na semana	주간 변동
+Variação em {0} meses	{0}개월 변동
+Reservas dos bancos no Fed	연준 내 은행 지준금
+Liquidez líquida estimada (ativos − TGA − RRP)	추정 순유동성 (자산 − TGA − RRP)
+Liquidez líquida é uma estimativa comum no mercado, não um número oficial. Balanço crescendo e TGA caindo = mais dinheiro no sistema.	순유동성은 시장에서 흔히 쓰는 추정치이며 공식 수치가 아님. 대차대조표 증가와 TGA 감소 = 시스템 내 자금 증가.
+Mercado cripto	암호화폐 시장
+Fear & Greed	공포·탐욕 지수
+Há {0} dias / há {1} dias	{0}일 전 / {1}일 전
+Valor de mercado cripto	암호화폐 시가총액
+Dominância do BTC	BTC 도미넌스
+Dominância do ETH	ETH 도미넌스
+Volume {0} h	{0}시간 거래량
+Stablecoins em circulação	유통 중인 스테이블코인
+Variação {0} d / {1} d	{0}일 / {1}일 변동
+Hashrate da rede	네트워크 해시레이트
+{0} EH/s	{0} EH/s
+Taxas (rápida / {0} min / {1} h)	수수료 (빠름 / {0}분 / {1}시간)
+{0} / {1} / {2} sat/vB	{0} / {1} / {2} sat/vB
+Fear & Greed é sentimento, não entra no score (evita contar duas vezes o que o order flow já mostra). Stablecoins entram no fator Liquidez.	공포·탐욕 지수는 심리 지표이며 점수에 포함되지 않음 (오더 플로우가 이미 보여주는 내용을 두 번 세지 않기 위함). 스테이블코인은 유동성 요인에 반영됨.
+Mais mercados	더 많은 시장
+Yahoo Finance, barras de {0} h. Dólar subindo contra moedas emergentes e cobre caindo costumam indicar aversão a risco.	Yahoo Finance, {0}시간 봉. 달러가 신흥국 통화 대비 강세이고 구리가 약세이면 위험 회피 신호인 경우가 많음.
+Mundo e dívida	세계 및 부채
+BCE · taxa de depósito · {0}	ECB · 예금금리 · {0}
+Dívida pública dos EUA · {0}	미국 공공부채 · {0}
+Variação desde {0}	{0} 이후 변동
+Juros do BCE abaixo dos do Fed sustentam o dólar; dívida crescendo rápido pressiona a oferta de Treasuries e os yields.	ECB 금리가 연준보다 낮으면 달러를 뒷받침함; 부채가 빠르게 늘면 Treasury 공급과 금리에 압력을 가함.
+extreme fear	극도의 공포
+Medo extremo	극도의 공포
+Medo	공포
+Ganância	탐욕
+extreme greed	극도의 탐욕
+Ganância extrema	극도의 탐욕
+Motivo desconhecido.	알 수 없는 이유.
+A Binance recusou o acesso nesta região (HTTP {0}). As outras abas não dependem disso.	바이낸스가 이 지역의 접근을 거부함 (HTTP {0}). 다른 탭은 이에 의존하지 않음.
+Zonas ímã · mapa estimado de liquidações	자석 구간 · 추정 청산 맵
+Calculando o mapa a partir do histórico de posições…	과거 포지션 기록으로 맵을 계산 중…
+Leva alguns segundos: velas de {0} min + open interest dos últimos {1} dias.	몇 초 걸림: {0}분 봉 + 최근 {1}일 미결제약정 기록.
+Mapa indisponível no momento	현재 맵을 사용할 수 없음
+O mapa estimado usa velas e histórico de open interest da Binance (REST).	추정 맵은 바이낸스(REST)의 봉 데이터와 미결제약정 기록을 사용함.
+Mercado e zonas	시장 및 구간
+Mercado (Binance perp)	시장 (Binance perp)
+Preço	価格
+Variação {0}h	変動 {0}h
+Funding	Funding
+Open interest	Open interest
+Zonas de atração	アトラクションゾーン
+Nenhum aglomerado relevante nesta faixa	この範囲に目立つクラスターはありません
+Amplie a faixa para ±{0}%	範囲を±{0}%に広げる
+ do preço	 価格比
+Como ler	見方
+Estimativa, como no CoinGlass: quando o open interest sobe, simulamos posições {0}x/{1}x/{2}x/{3}x e marcamos onde seriam liquidadas; níveis que o preço já atravessou saem do mapa. Quanto mais vivo o vermelho, mais BTC estimado no nível. Liquidações reais ficam no LIQUIDATION RADAR.	CoinGlass 方式の推定値です。open interestが増えると {0}x/{1}x/{2}x/{3}x のポジションを想定し、清算される位置をマークします。価格が既に通過した水準はマップから消えます。赤が濃いほど、その水準で推定BTCが多いことを示します。実際の清算は LIQUIDATION RADAR に表示されます。
+Mapa estimado	推定マップ
+Mapa de liquidações estimadas	推定清算マップ
+Faixa	範囲
+mais BTC estimado	推定BTCが多い
+Book: 	Book: 
+Liquidações estimadas	推定清算
+Paredes do livro	ブックの壁
+Sem conexão com as corretoras ({0})	取引所に接続できません ({0})
+Não foi possível carregar os fluxos dos ETFs ({0})	ETFフローを読み込めませんでした ({0})
+Preço × CVD	価格 × CVD
+Positiva = o preço anda junto com a agressão compradora/vendedora.	正 = 価格が買い/売りの成行注文の方向と一致。
+Preço × open interest	価格 × open interest
+Positiva = alta com abertura de posições; negativa = alta com fechamento.	正 = 建玉増加を伴う上昇、負 = 決済を伴う上昇。
+Preço × liquidações	価格 × 清算
+Positiva = alta acompanhada de shorts liquidados (squeeze).	正 = ショートの清算を伴う上昇（スクイーズ）。
+CVD × open interest	CVD × open interest
+Positiva = compra agressora abrindo posições.	正 = 成行買いがポジションを建てている。
+CVD × liquidações	CVD × 清算
+Positiva = compras forçadas de shorts liquidados entrando no CVD.	正 = 清算されたショートの強制買いがCVDに入っている。
+Gráficos	チャート
+Baldes de {0} minuto · preço, CVD, open interest e liquidações lado a lado	{0}分足 · 価格、CVD、open interest、清算を並べて表示
+Preço, fluxo, posições e liquidações por minuto	分ごとの価格、フロー、ポジション、清算
+Juntando dados	データを収集中
+Precisa de alguns minutos de dados desde a abertura do app (guarda até {0} h)	アプリ起動後、数分間のデータが必要です（{0}h まで保持）
+Correlação e resumo	相関と要約
+Correlação (Pearson) na janela	ウィンドウ内の相関（ピアソン）
+Leitura dos últimos {0} minutos	直近 {0}分の読み取り
+Liquidações LONG / SHORT	清算 LONG / SHORT
+{0} / {1} BTC	{0} / {1} BTC
+Leitura automática a partir dos números acima; é inferência, não prova de quem abriu ou fechou posição.	上記の数値に基づく自動判定です。推測であり、誰がポジションを建てた/決済したかの証明ではありません。
+Correlação com menos de {0} minutos de dados aparece como "sem dados". |r| ≥ {1} forte, ≥ {2} moderada, ≥ {3} fraca. OI somado só conta quando Binance, Bybit e OKX reportaram. Liquidações = {4} corretoras (positivo = mais shorts liquidados).	{0}分未満のデータでは相関は「データなし」と表示されます。|r| ≥ {1} 強い、≥ {2} 中程度、≥ {3} 弱い。OIの合計はBinance、Bybit、OKXが報告した場合のみ集計されます。清算 = {4}取引所（正 = ショートの清算が多い）。
+Alta com compra agressora e open interest subindo: compatível com novas posições compradas puxando o preço.	成行買いとopen interest増加を伴う上昇：新規のロングが価格を押し上げていると考えられます。
+Alta com open interest caindo e shorts liquidados: compatível com short squeeze.	open interest減少とショート清算を伴う上昇：ショートスクイーズと整合します。
+Alta com CVD negativo: o preço sobe apesar da venda agressora (compra passiva absorvendo).	CVDがマイナスの上昇：成行売りにもかかわらず価格が上昇（指値買いが吸収）。
+Queda com venda agressora e open interest subindo: compatível com novas posições vendidas.	成行売りとopen interest増加を伴う下落：新規のショートポジションと整合します。
+Queda com open interest caindo e longs liquidados: compatível com cascata de liquidação de longs.	open interest減少とロング清算を伴う下落：ロング清算の連鎖と整合します。
+Queda com CVD positivo: o preço cai apesar da compra agressora (venda passiva absorvendo).	CVDがプラスの下落：成行買いにもかかわらず価格が下落（指値売りが吸収）。
+Sem regime claro: preço lateral ou sinais misturados.	明確なレジームなし：価格は横ばい、またはシグナルが混在。
+CVD (BTC/min)	CVD (BTC/分)
+Δ OI (BTC/min)	Δ OI (BTC/分)
+LIQUIDAÇÕES	清算
+▲ short  ▼ long	▲ ショート  ▼ ロング
+Lado	側
+Ambos	両方
+Pico ≥ (BTC)	ピーク ≥ (BTC)
+{0} paredes encerradas · {1} eventos gravados no período	期間中 {0} 件の壁が消滅 · {1} 件のイベントを記録
+Mapa do histórico	履歴マップ
+Onde as paredes estiveram e como terminaram	壁が現れた場所と、その終わり方
+Nenhuma parede encerrada no período com esses filtros	これらのフィルターでは期間中に消滅した壁はありません
+O histórico vem do banco local: paredes que saíram do livro desde que o app foi instalado. Reduza o pico mínimo ou aumente o período.	履歴はローカルDBに保存された、アプリのインストール以降にブックから消えた壁です。最小ピークを下げるか、期間を延ばしてください。
+Como terminaram	結果
+Execução confirmada pelos trades	約定によって確認された執行
+Preço atravessou (não confirmada)	価格が通過（未確認）
+Retirada sem execução	取消（約定なし）
+Níveis onde a liquidez mais aparece (faixas de {0} US$)	流動性が最も集中する価格帯（{0} US$刻み）
+PICO SOMADO	合計ピーク
+ÚLTIMA	最終
+Sem níveis no período	期間内のレベルなし
+Cada ponto é uma parede que saiu do livro: posição = hora e preço; tamanho = pico em BTC; cor = lado (verde compra, vermelho venda); anel laranja = execução confirmada, anel amarelo = preço atravessou, sem anel = retirada. Níveis que se repetem costumam ser suporte/resistência defendidos.	各点はオーダーブックから消えた壁を示します：位置 = 時刻と価格、サイズ = BTCでのピーク、色 = 売買方向（緑は買い、赤は売り）、オレンジの輪 = 約定確認、黄色の輪 = 価格通過、輪なし = 取消。繰り返し現れる価格帯は、通常、防衛されているサポート／レジスタンスです。
+Configurar avisos	通知を設定
+Notificações {0}	通知 {0}
+Mostrar notificação no celular	スマートフォンに通知を表示
+Mostrar notificação na bandeja do Windows	Windowsの通知トレイに表示
+Continuar monitorando com o app fechado	アプリを閉じてもモニタリングを継続
+Mantém as conexões e os alertas ativos em segundo plano, com uma notificação fixa. Usa mais bateria e dados; desligue quando não precisar.	接続とアラートをバックグラウンドで維持し、常駐通知を表示します。バッテリーとデータの消費が増えるため、不要なときはオフにしてください。
+Permita notificações do Radar BTC nas configurações do Android.	Androidの設定で Radar BTC の通知を許可してください。
+O que avisar	通知する内容
+Zona: distância ≤ %	ゾーン：距離 ≤ %
+Zona: tamanho ≥ BTC	ゾーン：サイズ ≥ BTC
+Repetir o mesmo aviso após (min)	同じ通知を再送するまで（分）
+Liquidação EXTREME usa o limite da aba Radar (Liquidações); parede grande = classe LARGE ou EXTREME da aba Paredes; mudança de sinal = janela de {0} min da aba Long/short. Máximo de {1} envios por minuto.	EXTREME清算はRadarタブ（清算）の閾値を使用します。大型の壁 = Wallsタブの LARGE または EXTREME クラス、シグナル反転 = Long/shortタブの {0}分ウィンドウ。送信は1分あたり最大{1}件です。
+Telegram	Telegram
+Enviar pelo Telegram	Telegramで送信
+Token do bot	ボットのトークン
+Chat ID	チャットID
+Crie um bot com o @BotFather, mande uma mensagem para ele e pegue o chat ID em api.telegram.org/bot<token>/getUpdates.	@BotFatherでボットを作成し、そこにメッセージを送信してから、api.telegram.org/bot<token>/getUpdates でチャットIDを取得してください。
+E-mail (SMTP)	メール (SMTP)
+Enviar por e-mail	メールで送信
+Servidor	サーバー
+Porta	ポート
+Usuário (e-mail de envio)	ユーザー（送信元メール）
+Senha de app	アプリパスワード
+Enviar para	送信先
+Gmail: smtp.gmail.com, porta {0}, com uma senha de app (Conta Google → Segurança → Senhas de app). Porta {1} usa STARTTLS.	Gmail：smtp.gmail.com、ポート {0}、アプリパスワードを使用（Googleアカウント → セキュリティ → アプリパスワード）。ポート {1} はSTARTTLSを使用します。
+Salvar alterações	変更を保存
+Salvo	保存しました
+Enviar teste	テスト送信
+Token e senha ficam guardados só neste celular (preferências do app), sem criptografia própria.	トークンとパスワードは、このスマートフォンのみ（アプリの設定）に保存され、独自の暗号化は行われません。
+Token e senha ficam guardados só neste computador (registro do usuário do Windows), sem criptografia própria.	トークンとパスワードは、このパソコンのみ（Windowsユーザーのレジストリ）に保存され、独自の暗号化は行われません。
+Avisos enviados	送信済みの通知
+Nenhum aviso enviado nesta sessão	このセッションではまだ通知は送信されていません
+Ligue um canal de aviso e salve	通知チャンネルをオンにして保存してください
+Os avisos aparecem aqui com o resultado de cada envio	各送信の結果がここに表示されます
+Uma liquidação real acima do limite EXTREME em qualquer das {0} corretoras	{0}か所の取引所のいずれかで、実際の清算がEXTREME閾値を超えた場合
+Parede LARGE/EXTREME saiu do livro (retirada ou executada)	LARGE/EXTREMEの壁がオーダーブックから消えた場合（取消または約定）
+Parede absorvendo execução ou com reposição tipo iceberg	壁が約定を吸収している、またはアイスバーグ型の補充がある場合
+Fluxo inferido muda de LONG para SHORT ou o contrário	推定フローがLONGからSHORTへ、またはその逆に変わった場合
+Preço e CVD divergem em {0} min, {1} min ou {2} h	価格とCVDが{0}分、{1}分、または{2}時間にわたって乖離した場合
+Preço a até {0}% de uma zona do heatmap com ≥ {1} BTC	価格がヒートマップのゾーンから{0}%以内にあり、サイズが{1} BTC以上の場合
+CPI, PCE, payroll, FOMC e outros eventos de alto impacto (antecedência na aba Radar macro)	CPI、PCE、雇用統計、FOMCなどの高インパクトイベント（事前通知はRadarマクロタブで設定）
+Resultado oficial acima ou abaixo da expectativa do calendário	公式結果が市場予想より上振れまたは下振れした場合
+DXY ±{0}% no dia, Treasury {1} anos ±{2} bp ou VIX {3}%	DXYが当日±{0}%、{1}年国債利回りが±{2} bp、またはVIXが{3}%の場合
+Notícia de alta intensidade: conflito, tarifas, sanções ou regulação cripto	高強度のニュース：紛争、関税、制裁、または暗号資産規制
+BTC sobe com Nasdaq em queda (ou o contrário) em {0} hora	BTCが上昇し、ナスダックが下落（またはその逆）の状態が{0}時間続いた場合
+BTC Macro Sentiment muda {0} pontos ou troca de faixa	BTC Macro Sentimentが{0}ポイント変化した場合、またはレンジが変わった場合
+Livro de ofertas	オーダーブック
+Livro	板
+Agrupar	集約
+Exato	正確
+{0} níveis · mín. {1} · {2}	{0}レベル・最小 {1}・{2}
+Níveis	レベル
+Mín.	最小
+Executado	約定
+Centro	中心
+Auto (meio {0})	自動（中値 {0}）
+Manual	手動
+Faixa mín	下限
+Faixa máx	上限
+Fora da consolidação: 	レンジ外: 
+ (livro inválido, ver aba Status)	（無効な板、ステータスタブを参照）
+Resumo do livro exibido	表示中の板の概要
+Maior BID	最大BID
+Maior ASK	最大ASK
+Profundidade BID	BID厚み
+Profundidade ASK	ASK厚み
+Desequilíbrio	不均衡
+Spread consolidado	統合スプレッド
+cruzado entre corretoras	取引所間でクロス
+ USDT	 USDT
+Bybit RPI (só parte RPI, {0} níveis)	Bybit RPI（RPI部分のみ、{0}レベル）
+Livro {0}	{0}板
+Conexão	接続
+Ao vivo	ライブ
+Sequência	シーケンス
+Spread próprio	自社スプレッド
+Níveis válidos (bid/ask)	有効レベル（bid/ask）
+Última atualização	最終更新
+ atrás	 前
+Latência (evento → recebido)	レイテンシ（イベント → 受信）
+Último update id	最終update id
+Reconstruções	再構築
+Quantidade (BTC)	数量（BTC）
+Qtd. (BTC)	数量（BTC）
+Bin	Bin
+Byb	Byb
+Ordens	注文数
+Acumulado	累計
+Ex. C	約定C
+Ex. V	約定V
+ACUMULADO = BTC somado do preço atual até a linha · ORDENS = nº de ordens no nível (só a OKX publica) · EX. = BTC executado no nível nos últimos {0}	累計 = 現在価格から当該行までの合計BTC · 注文数 = 当該レベルの注文件数（OKXのみ公開） · 約定 = 直近{0}にそのレベルで約定したBTC
+Celular: colunas por corretora ocultas (veja no PC ou na aba de cada livro) · EX. = executado nos últimos {0}	モバイル: 取引所別の列は非表示（PCまたは各板のタブで確認） · 約定 = 直近{0}の約定量
+sem livro válido	有効な板なし
+Livros cruzados entre corretoras: melhor compra {0} acima da melhor venda {1} (cada corretora tem preço próprio)	取引所間で板がクロス: 最良買い {0} が最良売り {1} を上回っています（各取引所は独自の価格を持ちます）
+spread {0}  ·  meio {1}	スプレッド {0}  ·  中値 {1}
+LIQUIDITY WALLS	LIQUIDITY WALLS
+LIQUIDITY HISTORY	LIQUIDITY HISTORY
+MAGNET ZONES	MAGNET ZONES
+LONG & SHORT FLOW	LONG & SHORT FLOW
+MARKET FLOW CORRELATION	MARKET FLOW CORRELATION
+LARGE TRADES	LARGE TRADES
+LIQUIDATION RADAR	LIQUIDATION RADAR
+Histórico de paredes	壁の履歴
+Zonas ímã	マグネットゾーン
+Correlação	相関
+Grandes negócios	大口取引
+Radar	レーダー
+Status	ステータス
+Fluxo	フロー
+Mais	その他
+Livro de ofertas consolidado e por corretora	統合および取引所別の板
+Compra × venda agressora por faixa de preço	買い × 売りの成行注文、価格帯別
+Paredes grandes no livro agora	今、板上の大口の壁
+Mapa estimado de zonas de liquidação	推定清算ゾーンマップ
+Fluxo agressor, CVD e sinal	成行フロー、CVD、シグナル
+Preço, CVD, OI e liquidações por minuto	価格、CVD、OI、分足の清算
+Maiores execuções e sequências	最大約定と連続約定
+Heatmap e liquidações reais	ヒートマップと実際の清算
+Fluxo diário dos ETFs spot de BTC	BTCスポットETFの日次フロー
+Juros, dólar, inflação, notícias e o score macro do BTC	金利、ドル、インフレ、ニュース、BTCマクロスコア
+Avisos no celular, Telegram e e-mail	スマホ、Telegram、メールでの通知
+Conexões, livros e log	接続、板、ログ
+{0} de {1}	{1}件中{0}
+Abas	タブ
+Escolher aba	タブを選択
+Fechar ✕	閉じる ✕
+Para esconder abas desta lista, use ⚙ → Abas visíveis.	このリストからタブを非表示にするには、⚙ → 表示するタブを使用してください。
+  Orderflow V8	  Orderflow V8
+{0}/{1} livros ao vivo	{0}/{1} 板がリアルタイム稼働中
+{0} msg/s	{0} msg/s
+Notas	メモ
+☾ Escuro	☾ ダーク
+☀ Claro	☀ ライト
+⚙ Visualização	⚙ 表示
+Livros {0}/{1}	板 {0}/{1}
+Liquidações:	清算:
+Visualização	表示
+Configurações de visualização	表示設定
+Escuro	ダーク
+Claro	ライト
+Cores de compra e venda	買い・売りの色
+Verde / vermelho	緑 / 赤
+Azul / laranja	青 / オレンジ
+Azul / laranja é a opção para daltonismo (vermelho e verde se confundem).	青 / オレンジは色覚多様性向けのオプションです(赤と緑は見分けにくいため)。
+Tamanho da interface · {0}%	インターフェースサイズ · {0}%
+A− diminuir	A− 縮小
+A+ aumentar	A+ 拡大
+Restaurar {0}%	{0}%に戻す
+Atalhos: Ctrl + e Ctrl − ajustam, Ctrl {0} volta a {1}%.	ショートカット: Ctrl + と Ctrl − で調整、Ctrl {0} で{1}%に戻ります。
+Traduz abas, menus, alertas e notícias. Textos montados na hora e manchetes usam tradução automática na primeira vez (precisa de internet) e ficam guardados no aparelho.	タブ、メニュー、アラート、ニュースを翻訳します。その場で組み立てられるテキストと見出しは、初回のみ自動翻訳を使用し(インターネット接続が必要)、端末に保存されます。
+Tamanho da fonte · {0}%	フォントサイズ · {0}%
+Só o texto muda de tamanho. Quando os painéis não cabem mais lado a lado, eles viram páginas com botões no topo (nada fica cortado). Para aumentar tudo junto, use o tamanho da interface.	文字だけがサイズ変更されます。パネルが横に並べて収まらなくなると、上部のボタンで切り替わるページ形式になります(何も切れません)。すべてを一緒に拡大するには、インターフェースサイズを使用してください。
+Densidade	密度
+Confortável	ゆったり
+Compacta	コンパクト
+Compacta reduz margens e espaçamento entre linhas das tabelas para caber mais dados.	コンパクトは、表の余白と行間を減らし、より多くのデータを表示します。
+Os dados chegam em tempo real de qualquer forma; isto muda só a frequência de redesenho (menor = mais CPU).	データは常にリアルタイムで届きます。これは再描画の頻度のみを変更します(低いほどCPU使用量が増加)。
+Textos explicativos	説明テキスト
+Mostrar notas de rodapé	フッターのメモを表示
+Também pelo botão Notas na barra do topo.	上部バーのメモボタンからも表示できます。
+Abas visíveis	表示するタブ
+Status fica sempre visível. Esconder uma aba não para a coleta de dados dela.	ステータスは常に表示されます。タブを非表示にしても、そのタブのデータ収集は停止しません。
+%,.{0}f BTC	%,.{0}f BTC
+Nova	新規
+Ativa	アクティブ
+Aumentou	増加
+Reduziu	減少
+Saiu	消滅
+Talvez executada	約定の可能性あり
+Executada (confirmada)	約定済み(確認済み)
+Conectando	接続中
+Inscrito	登録済み
+Ressincronizando	再同期中
+Fora do ar	オフライン
+BLOQUEADO NA REGIÃO (HTTP {0})	地域でブロック (HTTP {0})
+SNAPSHOT INDISPONÍVEL	スナップショット利用不可
+sequência	シーケンス
+RECONSTRUINDO (quebra de sequência)	再構築中 (シーケンス断絶)
+AGUARDANDO SNAPSHOT	スナップショット待機中
+Página	ページ
+◂ ▸ deslize para o lado para ver todas as colunas	◂ ▸ 横にスワイプしてすべての列を表示
+Menos filtros ▴	フィルターを減らす ▴
+Mais filtros ▾ · {0}	フィルターを追加 ▾ · {0}

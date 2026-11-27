@@ -8,6 +8,19 @@
   "Instalar apps desconhecidos" para o Radar BTC.
 - Vale a partir desta versão: quem está numa versão anterior instala esta pelo GitHub uma última vez.
 
+## V8 — atualização 12 (2026-11-27) · idiomas e mais dados no Radar macro
+- **Idiomas:** português (Brasil), inglês, espanhol, francês, alemão, italiano, russo, chinês, japonês e coreano, no app inteiro
+  (abas, menus, gráficos, alertas e notificações). Números e datas no formato do idioma. Em Visualização → "Idioma · Language · 语言".
+- **Notícias traduzidas** para o idioma escolhido (inclusive português), com o título original ao abrir a notícia.
+- **Radar macro, página nova "Mais dados":** probabilidades da próxima decisão do Fed (Kalshi), taxa implícita nos futuros de Fed funds,
+  juro real de 10 anos e inflação implícita, SOFR, reverse repo, balanço semanal do Fed e reservas, liquidez líquida estimada,
+  Fear & Greed, valor de mercado cripto e dominância, stablecoins, hashrate e taxas da rede, 23 mercados a mais (bolsas globais, moedas,
+  commodities, Treasuries, MOVE, crédito, ETH, IBIT, MSTR, COIN), BCE e dívida pública dos EUA.
+- **Mais notícias:** 22 veículos e órgãos oficiais por RSS (SEC, CFTC, BCE, CoinDesk, CNBC, WSJ, NYT, BBC, FT, Bloomberg e outros).
+- **Score:** política monetária usa também os futuros de Fed funds; yields usam também o juro real; liquidez usa também o balanço do Fed
+  e as stablecoins; volatilidade usa também o MOVE. Correlações com mais ativos (Russell, ETH, HYG, Nikkei).
+- **Página "Fontes"** no fim da aba, com todas as fontes, link e situação de cada coleta. Detalhes em docs/MACRO.md e docs/I18N.md.
+
 ## V8 — atualização 11 (2026-11-27) · Radar macro-geopolítico do BTC
 - Aba nova **Radar macro** (grupo Macro, junto com ETFs): mercado americano (S&P 500, Nasdaq 100, Dow, VIX, DXY, Treasury
   10 anos, ouro, petróleo), juros (meta e taxa efetiva do Fed, Treasuries 2 e 10 anos oficiais), inflação e emprego (CPI, núcleo,
