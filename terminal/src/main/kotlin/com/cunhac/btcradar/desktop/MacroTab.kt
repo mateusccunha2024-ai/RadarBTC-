@@ -50,7 +50,7 @@ private val WD = SimpleDateFormat("EEE dd/MM HH:mm", BR)
 private fun dirColor(d: MacroDir) = when (d) { MacroDir.FAVORABLE -> Q.Buy; MacroDir.UNFAVORABLE -> Q.Sell; MacroDir.NEUTRAL -> Q.Text; MacroDir.UNDETERMINED -> Q.Muted }
 private fun ageTxt(now: Long, t: Long): String { val m = (now - t) / 60_000; return when { m < 1 -> "agora"; m < 60 -> "há $m min"; m < 1440 -> "há ${m / 60} h"; else -> "há ${m / 1440} d" } }
 private fun f2(v: Double?, d: Int = 2) = if (v == null) "—" else String.format(BR, "%,.${d}f", v)
-private fun scroll(pm: Modifier, compact: Boolean) = if (compact) pm else pm.verticalScroll(rememberScrollState())
+@Composable private fun scroll(pm: Modifier, compact: Boolean) = if (compact) pm else pm.verticalScroll(rememberScrollState())
 
 /** RADAR MACRO-GEOPOLÍTICO BTC: score, indicadores, calendário, notícias e leitura integrada com o order flow. */
 @Composable
