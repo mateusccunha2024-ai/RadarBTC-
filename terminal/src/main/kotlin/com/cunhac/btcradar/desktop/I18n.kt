@@ -154,11 +154,11 @@ object I18n {
      * Frases montadas com " · " são traduzidas por partes, e o que entra nas lacunas de um molde também.
      */
     private fun trm(c: String, m: String, depth: Int): String? {
-        if (ACRONYM.matches(m.trim()) || m.trim() in PASS) return m
         val key = "$c|$m"
         memo[key]?.let { return it.ifEmpty { null } }
         val found = lookup(c, m, depth) ?: mtCache[key]
         if (found != null) { memo[key] = found; return found }
+        if (ACRONYM.matches(m.trim()) || m.trim() in PASS) { memo[key] = m; return m }
         if (depth < 3 && m.contains(" · ")) {
             val parts = m.split(" · ")
             var all = true
