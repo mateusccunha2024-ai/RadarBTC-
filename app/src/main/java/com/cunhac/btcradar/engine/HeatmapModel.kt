@@ -83,16 +83,26 @@ object HeatmapModel {
             val active = ArrayList<LiqLevel>()
             val sc = DoubleArray(cols)
             var prev: Double? = null
+            var lastPt = Long.MIN_VALUE
+            // BTC de posições liquidadas (níveis atravessados pelo preço) desde o último ponto de OI.
+            var liquidatedSince = 0.0
             var col = -1
             var idx = 0
             for (c in all) {
                 var fThis = 1.0
-                active.removeAll { (it.isLong && c.low <= it.price) || (!it.isLong && c.high >= it.price) }
+                active.removeAll { l ->
+                    val hit = (l.isLong && c.low <= l.price) || (!l.isLong && c.high >= l.price)
+                    if (hit) liquidatedSince += l.btc
+                    hit
+                }
                 while (idx + 1 < pts.size && pts[idx + 1].timeMs <= c.timeMs) idx++
                 val cur = if (pts[idx].timeMs <= c.timeMs) pts[idx].btc else null
-                if (cur != null) {
+                if (cur != null && pts[idx].timeMs != lastPt) {
+                    lastPt = pts[idx].timeMs
                     val p = prev
                     prev = cur
+                    val liquidated = liquidatedSince
+                    liquidatedSince = 0.0
                     if (p != null) {
                         val delta = cur - p
                         if (delta > 0) {
@@ -102,8 +112,12 @@ object HeatmapModel {
                                 active += LiqLevel(entry * (1 + 1 / lev - MMR), false, delta * w, ti, entry, c.timeMs)
                             }
                         } else if (delta < 0) {
-                            val total = active.sumOf { it.btc } / 2
-                            if (total > 0) { val f = max(0.0, 1 + delta / total); active.forEach { it.btc *= f }; fThis *= f }
+                            // A parte da queda do OI que veio das próprias liquidações já saiu do mapa (níveis atravessados);
+                            // só o resto (posições fechadas por vontade própria) reduz os níveis que sobraram. Antes essa parte
+                            // era descontada duas vezes e, em períodos longos com quedas fortes, zerava Níveis-chave e Visão geral.
+                            val rest = delta + liquidated
+                            val total = max(active.filter { it.isLong }.sumOf { it.btc }, active.filter { !it.isLong }.sumOf { it.btc })
+                            if (rest < 0 && total > 0) { val f = max(0.0, 1 + rest / total); active.forEach { it.btc *= f }; fThis *= f }
                         }
                     }
                 }

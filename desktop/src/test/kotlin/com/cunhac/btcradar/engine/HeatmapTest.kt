@@ -23,6 +23,23 @@ class HeatmapTest {
         assertTrue(l.sumOf { it.sum().toDouble() } > 0 && s.sumOf { it.sum().toDouble() } > 0)
     }
 
+    /** Queda forte: os longs liquidados saem do mapa e a queda de OI que eles causaram não zera os shorts que sobraram. */
+    @Test fun crashDoesNotWipeRemainingLevels() {
+        val step = 3_600_000L
+        val now = System.currentTimeMillis()
+        val t0 = now - 30 * step
+        val candles = (0 until 30).map { i ->
+            val p = if (i < 15) 60_000.0 else 40_000.0
+            Candle(t0 + i * step, p, p + 100, p - 100, p)
+        }
+        val oi = mapOf(Venue.OKX to (0 until 30).map { i -> OiBtc(t0 + i * step, if (i < 5) 1_000.0 else if (i < 15) 2_000.0 else 1_000.0) })
+        val d = HeatmapModel.build(HeatRange.D3, candles, oi, mapOf(Venue.OKX to "teste"), now)!!
+        val sm = HeatmapModel.summary(d, setOf(Venue.OKX), 40_000.0, 500.0)
+        assertEquals(0.0, sm.longsBelowBtc, 1e-6)          // todos os longs abertos em 60 mil foram liquidados
+        assertEquals(1_000.0, sm.shortsAboveBtc, 1e-6)     // os shorts continuam lá
+        assertTrue(sm.above.isNotEmpty() && sm.above.all { it.btc > 0 })
+    }
+
     @Test fun consolidationGroupingKeepsSpread() {
         fun view(v: Venue, b: List<Level>, a: List<Level>) = BookView(v, true, b, a, b.size, a.size, 0, 0, 0, 0, "")
         val c = Consolidate.build(listOf(view(Venue.OKX, listOf(Level(59_089.0, 1.0, 7)), listOf(Level(59_090.0, 2.0, 3)))),

@@ -1,5 +1,12 @@
 # Changelog
 
+## V8 — atualização 8 (2026-11-27) · níveis de liquidação sem zerar e menos texto cortado
+- Mapa estimado: a queda de open interest causada pelas próprias liquidações era descontada duas vezes (os níveis atravessados
+  saíam do mapa e, de novo, a queda do OI encolhia o que sobrou). Em períodos longos (1–2 anos) com quedas fortes isso zerava
+  Níveis-chave e Visão geral. Agora só a parte da queda que não veio de liquidações reduz os níveis restantes (teste novo).
+- Tabelas: a última coluna quebra linha em vez de terminar em "…"; tabelas de liquidações reais mais compactas, cabem no painel do PC.
+- Status do heatmap (carregando/erro) quebra linha em vez de cortar.
+
 ## V8 — atualização 7 (2026-11-26) · todos os níveis em aberto e mais corretoras no mapa
 - Mapa de liquidações com 6 corretoras: além de Binance, Bybit e OKX, entram Gate (API guarda ~180 dias), HTX (últimos 200 pontos)
   e Kraken Futures (anos no diário) — as que publicam histórico de open interest. Bitget, Deribit e Hyperliquid só informam o OI atual.

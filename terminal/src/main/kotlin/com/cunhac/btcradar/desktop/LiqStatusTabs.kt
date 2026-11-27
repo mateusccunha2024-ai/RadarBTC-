@@ -84,16 +84,17 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
 
 @Composable
 private fun LiqTable(title: String, list: List<LiqEvent>, cls: (Double) -> LiqClass, modifier: Modifier, empty: String) {
-    Section(title, modifier.fillMaxHeight(), minWidth = 440.dp) {
+    // Compacta para caber no painel do PC sem rolar para o lado; a coluna ORIGINAL quebra linha se precisar.
+    Section(title, modifier.fillMaxHeight(), minWidth = 340.dp) {
         Column {
-            Th("HORA" to 64, "CORR." to 58, "POSIÇÃO" to 58, "PREÇO" to 84, "BTC" to 70, "ORIGINAL" to 0)
+            Th("HORA" to 60, "CORR." to 58, "LADO" to 48, "PREÇO" to 72, "BTC" to 58, "ORIGINAL" to 0)
             if (list.isEmpty()) Empty(empty, "Aparecem aqui assim que alguma das 6 corretoras reportar")
             LazyColumn {
                 items(list) { e ->
                     val c = if (e.side == LiqSide.LONG) Q.LiqLong else Q.LiqShort
                     val k = cls(e.qtyBtc)
-                    Td(Triple(hhmmss(e.timeMs), 64, Q.Muted), Triple(e.venue.label, 58, Q.Text), Triple(e.side.name, 58, c), Triple(px(e.price), 84, Q.Text),
-                        Triple(num(e.qtyBtc, 3) + if (k == LiqClass.EXTREME) " !!" else if (k == LiqClass.LARGE) " !" else "", 70, c),
+                    Td(Triple(hhmmss(e.timeMs), 60, Q.Muted), Triple(e.venue.label, 58, Q.Text), Triple(e.side.name, 48, c), Triple(px(e.price), 72, Q.Text),
+                        Triple(num(e.qtyBtc, 3) + if (k == LiqClass.EXTREME) " !!" else if (k == LiqClass.LARGE) " !" else "", 58, c),
                         Triple("${num(e.origQty, 3)} ${e.origUnit}", 0, Q.Muted))
                 }
             }

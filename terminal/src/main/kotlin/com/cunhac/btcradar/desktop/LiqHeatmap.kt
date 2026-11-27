@@ -202,7 +202,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier, expan
                         hs.error != null -> "Erro: ${hs.error}"
                         d != null -> "Atualizado ${hhmmss(d.builtAt)} · ${d.cols} colunas"
                         else -> ""
-                    }, if (hs.error != null) Q.Sell else Q.Muted, 11)
+                    }, if (hs.error != null) Q.Sell else Q.Muted, 11, wrap = true)
                     OutlineButton("Atualizar", border = Q.Line, size = 11) { ctx.heat.load(hs.range, force = true) }
                 }
                 }

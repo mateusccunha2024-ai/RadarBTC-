@@ -81,7 +81,8 @@ fun headerCase(t: String): String {
 
 @Composable
 fun Td(vararg cols: Triple<String, Int, Color>) = Row(Modifier.fillMaxWidth().padding(vertical = if (Look.compact) 0.dp else 2.dp)) {
-    cols.forEach { (t, w, c) -> T(t, c, 11, monoFont = true, modifier = if (w > 0) Modifier.width(w.dp) else Modifier.weight(1f)) }
+    // Colunas de largura fixa cortam; a coluna flexível (largura 0) quebra linha para mostrar tudo, sem "…".
+    cols.forEach { (t, w, c) -> T(t, c, 11, monoFont = true, modifier = if (w > 0) Modifier.width(w.dp) else Modifier.weight(1f), wrap = w == 0) }
 }
 
 // =====================================================================
