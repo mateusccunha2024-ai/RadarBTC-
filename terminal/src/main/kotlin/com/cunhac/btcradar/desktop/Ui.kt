@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
@@ -98,7 +99,21 @@ object UiScale {
     fun inc() = set((scale + 0.1f).coerceAtMost(1.8f))
     fun dec() = set((scale - 0.1f).coerceAtLeast(0.7f))
     fun reset() = set(1.0f)
+
+    /**
+     * Tamanho da fonte, separado do zoom: só o texto cresce. As larguras mínimas de painéis e colunas
+     * acompanham este fator, e o layout passa painéis para páginas quando eles não cabem mais lado a lado.
+     */
+    var font by mutableFloatStateOf(SettingsStore.d("ui.font", 1.0).toFloat().coerceIn(0.8f, 1.6f))
+        private set
+    fun setFont(v: Float) { font = ((v * 100).roundToInt() / 100f).coerceIn(0.8f, 1.6f); SettingsStore.put("ui.font", font.toDouble()) }
 }
+
+/** Opções de tamanho da fonte no menu Visualização. */
+val FONT_SIZES = listOf(0.85f, 1.0f, 1.15f, 1.3f, 1.5f)
+
+/** Largura que acompanha o tamanho da fonte (colunas de tabela, painéis laterais). */
+val Dp.f: Dp get() = this * UiScale.font
 
 val BR: Locale = Locale.forLanguageTag("pt-BR")
 val mono: TextStyle get() = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 13.sp, color = Q.Text)
@@ -164,16 +179,92 @@ fun T(text: String, color: Color = Q.Text, size: Int = 12, bold: Boolean = false
 val LocalCompact = staticCompositionLocalOf { false }
 val compact: Boolean @Composable get() = LocalCompact.current
 
-/** Um painel de [Panes]: peso no PC e altura fixa no celular (null = altura do conteúdo). */
-class Pane(val weight: Float, val mobileHeight: Dp? = null, val content: @Composable (Modifier) -> Unit)
+/**
+ * Um painel de [Panes]: peso no PC, altura fixa no celular (null = altura do conteúdo), [title] = nome do
+ * botão de página e [minWidth] = largura abaixo da qual o conteúdo começaria a cortar (cresce com a fonte).
+ */
+class Pane(val weight: Float, val mobileHeight: Dp? = null, val title: String = "", val minWidth: Dp = 320.dp,
+           val content: @Composable (Modifier) -> Unit)
 
-/** Painéis lado a lado no PC; empilhados no celular. */
+/** Botões de página (mesmo visual dos filtros). A escolha fica salva em [key]. */
+@Composable
+fun PageBar(titles: List<String>, selected: Int, onSelect: (Int) -> Unit) {
+    Box(Modifier.fillMaxWidth().background(Q.Panel).border(1.dp, Q.Line).padding(horizontal = 8.dp, vertical = 4.dp)) {
+        Chips("Página", titles, selected, onSelect)
+    }
+}
+
+/**
+ * Layout auto ajustável. Os painéis ficam lado a lado enquanto cabem com a largura mínima de cada um
+ * (painel nenhum fica espremido abaixo dela). Quando não cabem, viram páginas: cada página leva os painéis
+ * seguidos que cabem juntos, e botões no topo trocam de página — nenhum dado fica escondido pelo layout.
+ * No celular cada painel com título é uma página.
+ */
 @Composable
 fun Panes(modifier: Modifier = Modifier, vararg panes: Pane) {
-    if (compact) Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        panes.forEach { p -> p.content(if (p.mobileHeight != null) Modifier.fillMaxWidth().height(p.mobileHeight) else Modifier.fillMaxWidth()) }
-    } else Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        panes.forEach { p -> p.content(Modifier.weight(p.weight).fillMaxHeight()) }
+    val gap = 8.dp
+    val titled = panes.size > 1 && panes.all { it.title.isNotEmpty() }
+    val key = "pg." + panes.joinToString("|") { it.title }.hashCode()
+    if (compact) {
+        if (!titled) {
+            Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(gap)) {
+                panes.forEach { p -> p.content(if (p.mobileHeight != null) Modifier.fillMaxWidth().height(p.mobileHeight) else Modifier.fillMaxWidth()) }
+            }
+            return
+        }
+        var sel by remember(key) { mutableIntStateOf(SettingsStore.i(key + ".m", 0).coerceIn(0, panes.size - 1)) }
+        Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(gap)) {
+            PageBar(panes.map { it.title }, sel) { sel = it; SettingsStore.put(key + ".m", it) }
+            val p = panes[sel]
+            p.content(if (p.mobileHeight != null) Modifier.fillMaxWidth().height(p.mobileHeight) else Modifier.fillMaxWidth())
+        }
+        return
+    }
+    BoxWithConstraints(modifier) {
+        val avail = maxWidth
+        val mins = panes.map { it.minWidth.f }
+        // Agrupa os painéis em páginas: cada página leva os painéis seguidos que cabem lado a lado.
+        val pages = ArrayList<List<Int>>()
+        var cur = ArrayList<Int>()
+        var used = 0.dp
+        panes.indices.forEach { i ->
+            val add = mins[i] + if (cur.isEmpty()) 0.dp else gap
+            if (cur.isNotEmpty() && used + add > avail) { pages += cur; cur = arrayListOf(i); used = mins[i] }
+            else { cur += i; used += add }
+        }
+        pages += cur
+        if (pages.size == 1 || !titled) PaneRow(panes.toList(), mins, avail, gap, Modifier.fillMaxSize())
+        else {
+            val sig = key + "." + pages.size
+            var sel by remember(sig) { mutableIntStateOf(SettingsStore.i(sig, 0).coerceIn(0, pages.size - 1)) }
+            Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(gap)) {
+                PageBar(pages.map { pg -> pg.joinToString(" · ") { panes[it].title } }, sel) { sel = it; SettingsStore.put(sig, it) }
+                val pg = pages[sel]
+                PaneRow(pg.map { panes[it] }, pg.map { mins[it] }, avail, gap, Modifier.fillMaxWidth().weight(1f))
+            }
+        }
+    }
+}
+
+/** Distribui a largura pelos pesos sem deixar nenhum painel abaixo da largura mínima. */
+@Composable
+private fun PaneRow(ps: List<Pane>, mins: List<Dp>, avail: Dp, gap: Dp, modifier: Modifier) {
+    val free = (avail - gap * (ps.size - 1)).coerceAtLeast(0.dp)
+    val widths: List<Dp> = if (ps.size == 1) listOf(free) else {
+        val fixed = BooleanArray(ps.size)
+        var ws: List<Dp>
+        while (true) {
+            val rest = free - ps.indices.filter { fixed[it] }.fold(0.dp) { a, i -> a + mins[i] }
+            val tw = ps.indices.filter { !fixed[it] }.sumOf { ps[it].weight.toDouble() }.toFloat()
+            ws = ps.indices.map { if (fixed[it] || tw <= 0f) mins[it] else (rest * (ps[it].weight / tw)).coerceAtLeast(0.dp) }
+            val newly = ps.indices.filter { !fixed[it] && ws[it] < mins[it] }
+            if (newly.isEmpty() || tw <= 0f) break
+            newly.forEach { fixed[it] = true }
+        }
+        ws
+    }
+    Row(modifier, horizontalArrangement = Arrangement.spacedBy(gap)) {
+        ps.forEachIndexed { i, p -> p.content(Modifier.width(widths[i]).fillMaxHeight()) }
     }
 }
 
@@ -189,11 +280,12 @@ fun ColumnScope.grow(weight: Float = 1f, mobile: Dp? = null): Modifier =
 @Composable
 fun Section(title: String, modifier: Modifier = Modifier, minWidth: Dp? = null, content: @Composable () -> Unit) {
     Column(modifier.background(Q.Panel).border(1.dp, Q.Line).padding(if (Look.compact) 6.dp else 10.dp)) {
-        T(title.uppercase(), Q.Muted, 11, bold = true, wrap = compact)
+        T(title.uppercase(), Q.Muted, 11, bold = true, wrap = true)
         // Título de painel = único texto em caixa alta; o resto da tela usa caixa normal.
         if (minWidth == null) Box(Modifier.padding(top = 6.dp)) { content() }
         else BoxWithConstraints(Modifier.padding(top = 6.dp)) {
             val visible = maxWidth
+            val minWidth = minWidth.f
             if (visible >= minWidth) content()
             else Column {
                 // A dica de deslizar só faz sentido no toque (celular); no PC a barra de rolagem já aparece.
@@ -315,8 +407,8 @@ fun NumField(label: String, value: Double?, width: Dp = 90.dp, onValue: (Double?
 @Composable
 fun KV(k: String, v: String, color: Color = Q.Text) {
     Row(Modifier.fillMaxWidth().padding(vertical = 1.dp), verticalAlignment = Alignment.CenterVertically) {
-        T(k, Q.Muted, 11)
-        Spacer(Modifier.width(12.dp))
-        T(v, color, 12, monoFont = true, modifier = Modifier.weight(1f), align = TextAlign.End)
+        // Rótulo e valor quebram linha em vez de cortar.
+        T(k, Q.Muted, 11, wrap = true, modifier = Modifier.weight(1f))
+        T(v, color, 12, monoFont = true, wrap = true, align = TextAlign.End, modifier = Modifier.padding(start = 12.dp))
     }
 }

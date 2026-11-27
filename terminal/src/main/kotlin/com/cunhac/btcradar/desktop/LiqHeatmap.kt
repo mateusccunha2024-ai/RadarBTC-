@@ -34,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -155,7 +156,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier, expan
     val tm = rememberTextMeasurer()
     val axis = TextStyle(color = Q.Muted, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
 
-    Panes(modifier, Pane(1f) { hm ->
+    Panes(modifier, Pane(1f, null, "Mapa", 520.dp) { hm ->
         Section(HEAT_MODES[mode] + " · estimado (modelo V8) · " + (venueSel?.label ?: HEAT_VENUES.joinToString(" + ") { it.label }),
             hm) {
             Column {
@@ -224,8 +225,8 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier, expan
                 }
             }
         }
-    }, Pane(0.25f) { pm ->
-        Column(if (compact) pm else Modifier.width(320.dp).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    }, Pane(0.25f, null, "Níveis e visão geral", 320.dp) { pm ->
+        Column(if (compact) pm else pm.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section(if (keyAll) "Níveis de liquidação em aberto" else "Níveis-chave de liquidação", Modifier.fillMaxWidth()) {
                 Column {
                     Chips(null, listOf("Principais", "Todos"), if (keyAll) 1 else 0) { keyAll = it == 1; SettingsStore.put("hm.keyall", keyAll) }
@@ -343,13 +344,14 @@ private fun DeltaStrip(delta: FloatArray, modifier: Modifier) {
 
 @Composable
 private fun KeyRow(k: KeyLevel, mx: Double, c: Color) {
-    Row(Modifier.fillMaxWidth().height(20.dp), verticalAlignment = Alignment.CenterVertically) {
-        T(px(k.price), Q.Text, 11, monoFont = true, modifier = Modifier.width(76.dp))
-        Box(Modifier.weight(1f).fillMaxHeight().padding(vertical = 6.dp)) {
+    // Altura e larguras acompanham o tamanho da fonte (antes a altura fixa cortava os números com fonte maior).
+    Row(Modifier.fillMaxWidth().heightIn(min = 20.dp.f), verticalAlignment = Alignment.CenterVertically) {
+        T(px(k.price), Q.Text, 11, monoFont = true, modifier = Modifier.width(76.dp.f))
+        Box(Modifier.weight(1f).height(8.dp)) {
             Box(Modifier.fillMaxHeight().fillMaxWidth((k.btc / mx).toFloat().coerceIn(0.03f, 1f)).background(c.copy(alpha = 0.7f)))
         }
-        T(num(k.btc, if (k.btc < 10) 1 else 0), Q.Text, 11, monoFont = true, modifier = Modifier.width(54.dp).padding(start = 6.dp))
-        T(pct(k.distancePct), Q.Muted, 10, monoFont = true, modifier = Modifier.width(62.dp))
+        T(num(k.btc, if (k.btc < 10) 1 else 0), Q.Text, 11, monoFont = true, modifier = Modifier.width(54.dp.f).padding(start = 6.dp), align = TextAlign.End)
+        T(pct(k.distancePct), Q.Muted, 10, monoFont = true, modifier = Modifier.width(66.dp.f), align = TextAlign.End)
     }
 }
 

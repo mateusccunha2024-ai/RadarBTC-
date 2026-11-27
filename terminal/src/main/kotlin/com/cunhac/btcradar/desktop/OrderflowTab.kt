@@ -77,7 +77,7 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
     }
 
     val full = !compact
-    Panes(Modifier.fillMaxSize(), Pane(1.7f, 900.dp) { pm ->
+    Panes(Modifier.fillMaxSize(), Pane(1.7f, 900.dp, "Livro de ofertas", 560.dp) { pm ->
         Column(pm.background(Q.Panel).padding(10.dp)) {
             // Controles quebram linha sozinhos quando a interface está ampliada.
             FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -101,7 +101,7 @@ fun OrderflowTab(ctx: AppContext, s: TerminalState) {
             Spacer(Modifier.height(8.dp))
             Ladder(book.asks, book.bids, rpi, INTS[intIdx], s.tick, exec, g, listOf("5m", "15m", "1h")[exIdx], full)
         }
-    }, Pane(1f) { pm ->
+    }, Pane(1f, null, "Resumo", 320.dp) { pm ->
         Column(pm.then(if (compact) Modifier else Modifier.verticalScroll(rememberScrollState())), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section("Resumo do livro exibido") {
                 Column {

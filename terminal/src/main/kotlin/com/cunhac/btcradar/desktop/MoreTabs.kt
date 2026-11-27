@@ -85,7 +85,7 @@ fun CorrelationTab(ctx: AppContext, s: TerminalState) {
         Triple("CVD × open interest", Analytics.pearson(cvd, oi), "Positiva = compra agressora abrindo posições."),
         Triple("CVD × liquidações", Analytics.pearson(cvd, liq), "Positiva = compras forçadas de shorts liquidados entrando no CVD."),
     )
-    Panes(Modifier.fillMaxSize(), Pane(1.6f) { pm ->
+    Panes(Modifier.fillMaxSize(), Pane(1.6f, null, "Gráficos", 520.dp) { pm ->
         Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Controls {
                 Chips("Janela", CORR_WINDOWS.map { it.first }, wIdx) { wIdx = it; SettingsStore.put("co.w", it) }
@@ -96,7 +96,7 @@ fun CorrelationTab(ctx: AppContext, s: TerminalState) {
                 else CorrelationChart(buckets, Modifier.fillMaxSize())
             }
         }
-    }, Pane(1f) { pm ->
+    }, Pane(1f, null, "Correlação e resumo", 320.dp) { pm ->
         Column(pm.then(if (compact) Modifier else Modifier.verticalScroll(rememberScrollState())), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section("Correlação (Pearson) na janela", Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -255,13 +255,13 @@ fun LiquidityHistoryTab(ctx: AppContext, s: TerminalState) {
             NumField("Pico ≥ (BTC)", minPeak, 56.dp) { it?.let { v -> minPeak = v; SettingsStore.put("lh.min", v) } }
             T(String.format(BR, "%,d paredes encerradas · %,d eventos gravados no período", ev.size, all.size), Q.Muted, 11, wrap = true)
         }
-        Panes(grow(1f), Pane(1.5f, 420.dp) { m ->
+        Panes(grow(1f), Pane(1.5f, 420.dp, "Mapa do histórico", 480.dp) { m ->
             Section("Onde as paredes estiveram e como terminaram", m) {
                 if (ev.isEmpty()) Empty("Nenhuma parede encerrada no período com esses filtros",
                     "O histórico vem do banco local: paredes que saíram do livro desde que o app foi instalado. Reduza o pico mínimo ou aumente o período.")
                 else WallScatter(ev, period, price, Modifier.fillMaxSize())
             }
-        }, Pane(1f) { pm ->
+        }, Pane(1f, null, "Como terminaram", 320.dp) { pm ->
             Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Section("Como terminaram", Modifier.fillMaxWidth()) {
                     Column {
@@ -346,7 +346,7 @@ fun AlertsTab(ctx: AppContext, s: TerminalState) {
     val sent by ctx.alerts.sent.collectAsState()
     var c by remember { mutableStateOf(cfg) }
     val dirty = c != cfg
-    Panes(Modifier.fillMaxSize(), Pane(1f) { pm ->
+    Panes(Modifier.fillMaxSize(), Pane(1f, null, "Configurar avisos", 420.dp) { pm ->
         Column(pm.then(if (compact) Modifier else Modifier.verticalScroll(rememberScrollState())), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section("Notificações ${if (Platform.isMobile) "neste celular" else "do Windows"}", Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -407,7 +407,7 @@ fun AlertsTab(ctx: AppContext, s: TerminalState) {
             T(if (Platform.isMobile) "Token e senha ficam guardados só neste celular (preferências do app), sem criptografia própria."
               else "Token e senha ficam guardados só neste computador (registro do usuário do Windows), sem criptografia própria.", Q.Muted, 11, wrap = true)
         }
-    }, Pane(0.9f, 420.dp) { m ->
+    }, Pane(0.9f, 420.dp, "Avisos enviados", 360.dp) { m ->
         Section("Avisos enviados", m) {
             Column {
                 if (sent.isEmpty()) Empty("Nenhum aviso enviado nesta sessão", if (!cfg.telegramOn && !cfg.mailOn && !cfg.deviceOn) "Ligue um canal de aviso e salve" else "Os avisos aparecem aqui com o resultado de cada envio")

@@ -66,8 +66,8 @@ fun MagnetTab(m: MapModel) {
         return
     }
     val price = stats.price
-    Panes(Modifier.fillMaxSize(), Pane(0.4f) { pm ->
-        Column(if (compact) pm else Modifier.width(380.dp).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Panes(Modifier.fillMaxSize(), Pane(0.4f, null, "Mercado e zonas", 380.dp) { pm ->
+        Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section("Mercado (Binance perp)", Modifier.fillMaxWidth()) {
                 Column {
                     KV("Preço", px(price))
@@ -96,7 +96,7 @@ fun MagnetTab(m: MapModel) {
                     "níveis que o preço já atravessou saem do mapa. Quanto mais vivo o vermelho, mais BTC estimado no nível. Liquidações reais ficam no LIQUIDATION RADAR.")
             }
         }
-    }, Pane(1f, 620.dp) { m2 ->
+    }, Pane(1f, 620.dp, "Mapa estimado", 480.dp) { m2 ->
         Section("Mapa de liquidações estimadas", m2) {
             Column {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {

@@ -62,7 +62,7 @@ else listOf(Color(0xFF1F63C6), Color(0xFF6A4BD6), Color(0xFF0F7A85), Color(0xFF4
 
 @Composable
 fun Th(vararg cols: Pair<String, Int>) = Row(Modifier.fillMaxWidth().padding(vertical = if (Look.compact) 1.dp else 3.dp)) {
-    cols.forEach { (t, w) -> T(headerCase(t), Q.Muted, 10, modifier = if (w > 0) Modifier.width(w.dp) else Modifier.weight(1f)) }
+    cols.forEach { (t, w) -> T(headerCase(t), Q.Muted, 10, modifier = if (w > 0) Modifier.width(w.dp.f) else Modifier.weight(1f)) }
 }
 
 /** Siglas que continuam em maiúsculas nos cabeçalhos. */
@@ -84,7 +84,7 @@ fun headerCase(t: String): String {
 @Composable
 fun Td(vararg cols: Triple<String, Int, Color>) = Row(Modifier.fillMaxWidth().padding(vertical = if (Look.compact) 0.dp else 2.dp)) {
     // Colunas de largura fixa cortam; a coluna flexível (largura 0) quebra linha para mostrar tudo, sem "…".
-    cols.forEach { (t, w, c) -> T(t, c, 11, monoFont = true, modifier = if (w > 0) Modifier.width(w.dp) else Modifier.weight(1f), wrap = w == 0) }
+    cols.forEach { (t, w, c) -> T(t, c, 11, monoFont = true, modifier = if (w > 0) Modifier.width(w.dp.f) else Modifier.weight(1f), wrap = w == 0) }
 }
 
 // =====================================================================
@@ -111,11 +111,11 @@ fun WallsTab(ctx: AppContext, s: TerminalState) {
             T("BTC · ativas: ${ctx.hub.walls.activeCount()}", Q.Muted, 11)
         }
         Spacer(Modifier.height(8.dp))
-        Panes(grow(1f), Pane(1f, 440.dp) { m -> WallTable("Top 50 paredes de compra", bids, mid, Q.Buy, m) },
-            Pane(1f, 440.dp) { m -> WallTable("Top 50 paredes de venda", asks, mid, Q.Sell, m) })
+        Panes(grow(1f), Pane(1f, 440.dp, "Paredes de compra", 420.dp) { m -> WallTable("Top 50 paredes de compra", bids, mid, Q.Buy, m) },
+            Pane(1f, 440.dp, "Paredes de venda", 420.dp) { m -> WallTable("Top 50 paredes de venda", asks, mid, Q.Sell, m) })
         Spacer(Modifier.height(8.dp))
         val sigs = remember(s.tick) { ctx.hub.walls.signals() }
-        Panes(if (compact) Modifier else Modifier.fillMaxWidth().height(230.dp), Pane(1.7f, 300.dp) { m ->
+        Panes(if (compact) Modifier else Modifier.fillMaxWidth().height(230.dp), Pane(1.7f, 300.dp, "Histórico de concentrações", 480.dp) { m ->
         Section("Histórico de concentrações (eventos de saída do livro)", m, minWidth = 920.dp) {
             Column {
                 Th("HORA" to 70, "CORRETORA" to 80, "LADO" to 44, "PREÇO" to 90, "STATUS" to 190, "PICO" to 90, "FINAL" to 90, "NEGOCIADO NO NÍVEL" to 130, "PERMANÊNCIA" to 0)
@@ -130,7 +130,7 @@ fun WallsTab(ctx: AppContext, s: TerminalState) {
                 }
             }
         }
-        }, Pane(1f, 260.dp) { m ->
+        }, Pane(1f, 260.dp, "Absorção e iceberg", 360.dp) { m ->
         Section("Absorção e iceberg · ${sigs.size}", m, minWidth = 440.dp) {
             Column {
                 Th("PREÇO" to 80, "CORR." to 58, "SINAL" to 76, "EXECUTADO" to 72, "REPOSTO" to 66, "RESTANTE" to 0)
@@ -207,7 +207,7 @@ fun classColor(c: WallClass): Color = when (c) {
 fun FlowTab(ctx: AppContext, s: TerminalState) {
     var winIdx by remember { mutableIntStateOf(SettingsStore.i("fl.win", 5)) }
     val w = FLOW_WINDOWS[winIdx]
-    Panes(Modifier.fillMaxSize(), Pane(1.5f) { pm ->
+    Panes(Modifier.fillMaxSize(), Pane(1.5f, null, "Fluxo e CVD", 520.dp) { pm ->
         Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Controls {
                 Chips("Janela", FLOW_WINDOWS.map { it.first }, winIdx) { winIdx = it; SettingsStore.put("fl.win", it) }
@@ -250,7 +250,7 @@ fun FlowTab(ctx: AppContext, s: TerminalState) {
                 }
             }
         }
-    }, Pane(1f) { pm ->
+    }, Pane(1f, null, "Sinal e resumo", 320.dp) { pm ->
         Column(pm.then(if (compact) Modifier else Modifier.verticalScroll(rememberScrollState())), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             val sig = s.signals.getOrNull(winIdx)
             if (sig != null) {
@@ -570,12 +570,12 @@ fun LargeTradesTab(ctx: AppContext, s: TerminalState) {
             T("Vendas $pl: ${sells.size} · ${btc(sells.sumOf { it.qtyBtc })}", Q.Sell, 12, bold = true)
         }
         Spacer(Modifier.height(8.dp))
-        Panes(grow(1f), Pane(1f) { pm ->
+        Panes(grow(1f), Pane(1f, null, "Compras e vendas", 380.dp) { pm ->
             Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 TradeTable("Maiores compras agressoras · $pl", buys, grow(1f, 320.dp), "Nenhuma compra ≥ ${num(minBtc, 1)} BTC em $pl")
                 TradeTable("Maiores vendas agressoras · $pl", sells, grow(1f, 320.dp), "Nenhuma venda ≥ ${num(minBtc, 1)} BTC em $pl")
             }
-        }, Pane(1.2f) { pm ->
+        }, Pane(1.2f, null, "Fita e sequências", 420.dp) { pm ->
             Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 TradeTable("Fita de grandes execuções (mais recentes primeiro)", recent, grow(1f, 380.dp), "Aguardando execuções ≥ ${num(minBtc, 1)} BTC")
                 Section("Sequências · 3+ grandes execuções do mesmo lado em até 10 s", Modifier.fillMaxWidth().height(170.dp)) {

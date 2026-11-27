@@ -59,7 +59,7 @@ fun EtfTab(ctx: AppContext) {
         return
     }
     val funds = latest.flows.entries.sortedByDescending { abs(it.value) }.map { it.key to it.value }
-    Panes(Modifier.fillMaxSize(), Pane(1.3f) { pm ->
+    Panes(Modifier.fillMaxSize(), Pane(1.3f, null, "Fluxo diário", 480.dp) { pm ->
         Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section("Último pregão · " + latest.date.format(DMY), Modifier.fillMaxWidth()) {
                 Column {
@@ -83,7 +83,7 @@ fun EtfTab(ctx: AppContext) {
             Footnote("Valores em milhões de dólares, como publicados pela Farside Investors (atualiza depois do fechamento do mercado americano). " +
                 "Barras verdes = entrada líquida no dia; vermelhas = saída.")
         }
-    }, Pane(1f, 520.dp) { m2 ->
+    }, Pane(1f, 520.dp, "Por fundo", 320.dp) { m2 ->
         Section("Por fundo no último pregão", m2) {
             LazyColumn {
                 items(funds, key = { it.first }) { (name, v) ->

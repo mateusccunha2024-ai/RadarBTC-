@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Size
@@ -55,10 +56,17 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
     // "Ampliar gráfico" (só no PC): esconde as tabelas de baixo para o mapa ocupar a aba inteira.
     var big by remember { mutableStateOf(SettingsStore.b("lq.big", false)) }
     val expanded = big && !compact
+    // Pouca altura (tablet deitado, fonte grande) ou celular: mapa e liquidações reais viram duas páginas
+    // em vez de dividir a tela e espremer os dois.
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+    val paged = !expanded && (compact || maxHeight < 720.dp * UiScale.font)
+    var page by remember { mutableIntStateOf(SettingsStore.i("lq.page", 0).coerceIn(0, 1)) }
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        LiqHeatmapPanel(ctx, s, Modifier.fillMaxWidth().then(grow(if (expanded) 1f else 2f)), expanded,
+        if (paged) PageBar(listOf("Mapa e níveis", "Liquidações reais e alertas"), page) { page = it; SettingsStore.put("lq.page", it) }
+        if (!paged || page == 0)
+        LiqHeatmapPanel(ctx, s, Modifier.fillMaxWidth().then(grow(if (expanded || paged) 1f else 2f)), expanded,
             if (compact) null else ({ big = !big; SettingsStore.put("lq.big", big) }))
-        if (!expanded) {
+        if (!expanded && (!paged || page == 1)) {
         Controls {
             T("Liquidações reais", Q.Text, 14, bold = true)
             Chips("Período", LIQ_PERIODS.map { it.first }, pIdx) { pIdx = it; SettingsStore.put("lq.period", it) }
@@ -69,16 +77,17 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
             LIQ_VENUES.forEach { v -> T("${v.label} ${num(tot.byVenue[v] ?: 0.0, 3)}", Q.Muted, 11) }
         }
         Panes(grow(1f),
-            Pane(1f, 360.dp) { m -> LiqTable("Top LONG liquidadas · $pl", topL, r.thresholds::classify, m, "Nenhuma liquidação LONG de BTC em $pl · ${r.received} eventos desde a abertura") },
-            Pane(1f, 360.dp) { m -> LiqTable("Top SHORT liquidadas · $pl", topS, r.thresholds::classify, m, "Nenhuma liquidação SHORT de BTC em $pl · ${r.received} eventos desde a abertura") },
-            Pane(1f, 360.dp) { m -> LiqTable("Top geral · $pl", topAll, r.thresholds::classify, m, "Nenhuma liquidação de BTC em $pl") },
-            Pane(1.1f, 480.dp) { m ->
+            Pane(1f, 360.dp, "Top LONG", 340.dp) { m -> LiqTable("Top LONG liquidadas · $pl", topL, r.thresholds::classify, m, "Nenhuma liquidação LONG de BTC em $pl · ${r.received} eventos desde a abertura") },
+            Pane(1f, 360.dp, "Top SHORT", 340.dp) { m -> LiqTable("Top SHORT liquidadas · $pl", topS, r.thresholds::classify, m, "Nenhuma liquidação SHORT de BTC em $pl · ${r.received} eventos desde a abertura") },
+            Pane(1f, 360.dp, "Top geral", 340.dp) { m -> LiqTable("Top geral · $pl", topAll, r.thresholds::classify, m, "Nenhuma liquidação de BTC em $pl") },
+            Pane(1.1f, 480.dp, "Alertas", 360.dp) { m ->
             AlertFeed(s, m)
             })
         Footnote("Liquidações reais = Binance, Bybit, OKX, Gate, Bitget e Deribit (feeds públicos, não garantem todos os eventos; Binance envia no máximo 1/s e a Bitget agrupa por segundo). " +
             "Conversões para BTC: OKX ${s.okxCtVal}; Gate 1 contrato = 0,0001 BTC; Bitget USDT ÷ preço; Deribit USD ÷ preço. " +
             "Heatmap = estimativa a partir do open interest histórico de Binance, Bybit, OKX, Gate, HTX e Kraken.")
         }
+    }
     }
 }
 
@@ -110,7 +119,7 @@ fun StatusTab(ctx: AppContext, s: TerminalState) {
     val logs = remember(s.tick) { ctx.hub.logs(250) }
     val counts = remember(s.tick / 7) { ctx.db.counts() }
     val stats = remember(s.tick / 2) { processStats() }
-    Panes(Modifier.fillMaxSize(), Pane(1.4f) { pm ->
+    Panes(Modifier.fillMaxSize(), Pane(1.4f, null, "Conexões e livros", 520.dp) { pm ->
         Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section("Conexões (Ao vivo = conexão + inscrição + dados recentes)", Modifier.fillMaxWidth(), minWidth = 900.dp) {
                 Column {
@@ -140,7 +149,7 @@ fun StatusTab(ctx: AppContext, s: TerminalState) {
                 }
             }
         }
-    }, Pane(1f) { pm ->
+    }, Pane(1f, null, "Desempenho e log", 320.dp) { pm ->
         Column(pm, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Section("Desempenho", Modifier.fillMaxWidth()) {
                 Column {
