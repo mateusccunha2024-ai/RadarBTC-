@@ -7,14 +7,23 @@ val PT_BR: java.util.Locale = java.util.Locale.forLanguageTag("pt-BR")
  * Corretoras suportadas (perpétuos de BTC).
  * core = livro, trades e open interest completos. As demais entram só com liquidações reais.
  */
-enum class Venue(val label: String, val instrument: String, val core: Boolean = true) {
+/** [liq] = tem feed de liquidações reais no app; HTX e Kraken entram só no mapa estimado (histórico de open interest). */
+enum class Venue(val label: String, val instrument: String, val core: Boolean = true, val liq: Boolean = true) {
     BINANCE("Binance", "BTCUSDT perp (USD-M)"),
     BYBIT("Bybit", "BTCUSDT linear"),
     OKX("OKX", "BTC-USDT-SWAP"),
     GATE("Gate", "BTC_USDT perp", core = false),
     BITGET("Bitget", "BTCUSDT perp (USDT-M)", core = false),
     DERIBIT("Deribit", "BTC-PERPETUAL (inverso, USD)", core = false),
+    HTX("HTX", "BTC-USDT perp (só open interest)", core = false, liq = false),
+    KRAKEN("Kraken", "PF_XBTUSD perp (só open interest)", core = false, liq = false),
 }
+
+/** Corretoras com liquidações reais (feeds ao vivo). */
+val LIQ_VENUES: List<Venue> = Venue.entries.filter { it.liq }
+
+/** Corretoras com histórico PÚBLICO de open interest, usadas no mapa de liquidações estimadas. */
+val HEAT_VENUES: List<Venue> = listOf(Venue.BINANCE, Venue.BYBIT, Venue.OKX, Venue.GATE, Venue.HTX, Venue.KRAKEN)
 
 /** Corretoras com livro de ofertas, trades e open interest. */
 val CORE_VENUES: List<Venue> = Venue.entries.filter { it.core }

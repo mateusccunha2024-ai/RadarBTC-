@@ -64,6 +64,7 @@ import com.cunhac.btcradar.engine.LiqEvent
 import com.cunhac.btcradar.engine.LiqSide
 import com.cunhac.btcradar.engine.TerminalState
 import com.cunhac.btcradar.engine.CORE_VENUES
+import com.cunhac.btcradar.engine.HEAT_VENUES
 import com.cunhac.btcradar.engine.Venue
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -113,7 +114,9 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier, expan
     var mode by remember { mutableIntStateOf(SettingsStore.i("hm.mode", 0)) }
     var tierMask by remember { mutableIntStateOf(SettingsStore.i("hm.tiers", 0b1111).takeIf { it in 1..15 } ?: 0b1111) }
     val tiers = HEAT_TIERS.indices.filter { tierMask and (1 shl it) != 0 }.toSet()
-    val venues = if (venueIdx == 0) CORE_VENUES.toSet() else setOf(CORE_VENUES[venueIdx - 1])
+    // Corretoras do mapa: as que publicam histórico de open interest (Binance, Bybit, OKX, Gate, HTX, Kraken).
+    val venueSel = if (venueIdx == 0) null else HEAT_VENUES.getOrNull(venueIdx - 1)
+    val venues = venueSel?.let { setOf(it) } ?: HEAT_VENUES.toSet()
     val d = hs.data
     val allGrids = remember(d, venueIdx, tierMask) { d?.let { HeatmapModel.combine(it, venues, tiers) } }
     val grids = remember(allGrids, showDone, showOpen) {
@@ -140,8 +143,11 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier, expan
         }
     }
     val price = s.price ?: d?.candles?.lastOrNull()?.close
-    val summary = remember(d, venueIdx, tierMask, price?.let { (it / 50).toLong() }) {
-        if (d != null && price != null) HeatmapModel.summary(d, venues, price, d.pStep * 2, tiers = tiers) else null
+    // "Todos" = todos os níveis em aberto, sem corte de tamanho (lista e linhas do gráfico); "Principais" = os 6 maiores de cada lado.
+    var keyAll by remember { mutableStateOf(SettingsStore.b("hm.keyall", true)) }
+    val summary = remember(d, venueIdx, tierMask, keyAll, price?.let { (it / 50).toLong() }) {
+        if (d != null && price != null) HeatmapModel.summary(d, venues, price, d.pStep * 2,
+            n = if (keyAll) Int.MAX_VALUE else 6, tiers = tiers, minFrac = if (keyAll) 0.0 else 0.05) else null
     }
     val real = remember(d, showReal, venueIdx, s.tick / 20) {
         if (d != null && showReal) ctx.db.liquidations(d.t0, System.currentTimeMillis(), if (venueIdx == 0) Venue.entries.toSet() else venues) else emptyList()
@@ -150,7 +156,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier, expan
     val axis = TextStyle(color = Q.Muted, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
 
     Panes(modifier, Pane(1f) { hm ->
-        Section(HEAT_MODES[mode] + " · estimado (modelo V8) · " + if (venueIdx == 0) "Binance + Bybit + OKX" else CORE_VENUES[venueIdx - 1].label,
+        Section(HEAT_MODES[mode] + " · estimado (modelo V8) · " + (venueSel?.label ?: HEAT_VENUES.joinToString(" + ") { it.label }),
             hm) {
             Column {
                 // Período, filtro executadas/em aberto e "Ampliar gráfico" na mesma linha (no PC sobra altura para o mapa).
@@ -171,7 +177,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier, expan
                     onExpand?.let { OutlineButton(if (expanded) "Reduzir gráfico" else "Ampliar gráfico", color = Q.Text, border = Q.Line, size = 12, onClick = it) }
                 }
                 Spacer(Modifier.height(6.dp))
-                MoreFilters(listOf("Liquidações", "OI por entrada", "Longs × shorts")[mode] + " · " + (if (venueIdx == 0) "todas" else CORE_VENUES[venueIdx - 1].label)) {
+                MoreFilters(listOf("Liquidações", "OI por entrada", "Longs × shorts")[mode] + " · " + (venueSel?.label ?: "todas")) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Chips("Mapa", listOf("Liquidações", "OI por entrada", "Longs × shorts"), mode) { mode = it; SettingsStore.put("hm.mode", it) }
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -186,7 +192,7 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier, expan
                 }
                 Spacer(Modifier.height(6.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Chips("Corretoras", listOf("Todas") + CORE_VENUES.map { it.label }, venueIdx) { venueIdx = it; SettingsStore.put("hm.venue", it) }
+                    Chips("Corretoras", listOf("Todas") + HEAT_VENUES.map { it.label }, venueIdx) { venueIdx = it; SettingsStore.put("hm.venue", it) }
                     T("Intensidade", Q.Muted, 11)
                     Slider(intensity, { intensity = it; SettingsStore.put("hm.int", it.toDouble()) }, Modifier.width(150.dp).height(20.dp),
                         colors = SliderDefaults.colors(thumbColor = Q.Accent, activeTrackColor = Q.Accent, inactiveTrackColor = Q.Line))
@@ -220,10 +226,14 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier, expan
         }
     }, Pane(0.25f) { pm ->
         Column(if (compact) pm else Modifier.width(320.dp).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Section("Níveis-chave de liquidação", Modifier.fillMaxWidth()) {
+            Section(if (keyAll) "Níveis de liquidação em aberto" else "Níveis-chave de liquidação", Modifier.fillMaxWidth()) {
                 Column {
+                    Chips(null, listOf("Principais", "Todos"), if (keyAll) 1 else 0) { keyAll = it == 1; SettingsStore.put("hm.keyall", keyAll) }
+                    Spacer(Modifier.height(6.dp))
                     if (summary == null) Empty("Aguardando o heatmap")
                     summary?.let { sm ->
+                        if (keyAll) T("${sm.above.size} faixas acima · ${sm.below.size} abaixo · as mesmas das linhas do gráfico",
+                            Q.Muted, 10, wrap = true, modifier = Modifier.padding(bottom = 4.dp))
                         val mx = (sm.above + sm.below).maxOfOrNull { it.btc } ?: 1.0
                         T("● Acima · liquidações de SHORT", Q.Sell, 11)
                         sm.above.forEach { KeyRow(it, mx, Q.Sell) }
@@ -251,8 +261,9 @@ fun LiqHeatmapPanel(ctx: AppContext, s: TerminalState, modifier: Modifier, expan
                     }
                     Spacer(Modifier.height(6.dp))
                     T("Cobertura do histórico", Q.Muted, 11, bold = true)
-                    CORE_VENUES.forEach { v -> KV(v.label, d?.coverage?.get(v) ?: "—", if (d?.coverage?.get(v)?.startsWith("completo") == true) Q.Text else Q.Warn) }
-                    Footnote("Estimativa: 10x/25x/50x/100x sobre o aumento de open interest de cada corretora; níveis atravessados pelo preço somem. " +
+                    HEAT_VENUES.forEach { v -> KV(v.label, d?.coverage?.get(v) ?: "—", if (d?.coverage?.get(v)?.startsWith("completo") == true) Q.Text else Q.Warn) }
+                    Footnote("Estimativa: 10x/25x/50x/100x sobre o aumento de open interest de cada corretora (Binance, Bybit, OKX, Gate, HTX e Kraken, " +
+                        "as que publicam histórico; Bitget, Deribit e Hyperliquid só informam o valor atual); níveis atravessados pelo preço somem. " +
                         "OI por entrada = onde o modelo estima que as posições ainda abertas entraram. Longs × shorts: cor de compra = mais longs a liquidar naquele preço, cor de venda = mais shorts. " +
                         "Faixa inferior = total de níveis LONG em aberto menos SHORT. O filtro de alavancagem vale para o mapa e os níveis-chave. " +
                         "Pontos = liquidações REAIS reportadas pelas 6 corretoras (gravadas desde a instalação), na cor de LONG ou de SHORT.", Modifier.padding(top = 6.dp))
@@ -338,7 +349,7 @@ private fun KeyRow(k: KeyLevel, mx: Double, c: Color) {
             Box(Modifier.fillMaxHeight().fillMaxWidth((k.btc / mx).toFloat().coerceIn(0.03f, 1f)).background(c.copy(alpha = 0.7f)))
         }
         T(num(k.btc, if (k.btc < 10) 1 else 0), Q.Text, 11, monoFont = true, modifier = Modifier.width(54.dp).padding(start = 6.dp))
-        T(pct(k.distancePct), Q.Muted, 10, monoFont = true, modifier = Modifier.width(52.dp))
+        T(pct(k.distancePct), Q.Muted, 10, monoFont = true, modifier = Modifier.width(62.dp))
     }
 }
 

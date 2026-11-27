@@ -30,7 +30,7 @@ class HeatData(
     val finalLevels: Map<Venue, List<LiqLevel>>,
     val coverage: Map<Venue, String>,
     val builtAt: Long,
-    /** Fator acumulado das reduções de OI em cada coluna (por corretora): reconstrói o tamanho de um nível em qualquer coluna. */
+    /** Fator de redução de OI aplicado em cada coluna (por corretora; 1 = sem redução): reconstrói o tamanho de um nível em qualquer coluna. */
     val scale: Map<Venue, DoubleArray> = emptyMap(),
 )
 
@@ -82,11 +82,11 @@ object HeatmapModel {
             val eg = Array(rows) { FloatArray(cols) }
             val active = ArrayList<LiqLevel>()
             val sc = DoubleArray(cols)
-            var cum = 1.0
             var prev: Double? = null
             var col = -1
             var idx = 0
             for (c in all) {
+                var fThis = 1.0
                 active.removeAll { (it.isLong && c.low <= it.price) || (!it.isLong && c.high >= it.price) }
                 while (idx + 1 < pts.size && pts[idx + 1].timeMs <= c.timeMs) idx++
                 val cur = if (pts[idx].timeMs <= c.timeMs) pts[idx].btc else null
@@ -103,13 +103,13 @@ object HeatmapModel {
                             }
                         } else if (delta < 0) {
                             val total = active.sumOf { it.btc } / 2
-                            if (total > 0) { val f = max(0.0, 1 + delta / total); active.forEach { it.btc *= f }; cum *= f }
+                            if (total > 0) { val f = max(0.0, 1 + delta / total); active.forEach { it.btc *= f }; fThis *= f }
                         }
                     }
                 }
                 if (c.timeMs >= from) {
                     col++
-                    sc[col] = cum
+                    sc[col] = fThis
                     for (l in active) {
                         val r = floor((l.price - lo) / pStep).toInt()
                         if (r in 0 until rows) {
@@ -146,22 +146,27 @@ object HeatmapModel {
     /**
      * Grade (long, short) só dos níveis que continuam DE PÉ no fim da janela (o preço ainda não chegou neles).
      * A grade completa menos esta = níveis já EXECUTADOS (atravessados pelo preço).
-     * O tamanho em cada coluna sai do tamanho final × (fator de OI da coluna ÷ fator final).
+     * O tamanho em cada coluna sai do tamanho final ÷ (produto das reduções de OI depois daquela coluna).
      */
     fun openGrids(d: HeatData, venues: Set<Venue>, tiers: Set<Int> = HEAT_TIERS.indices.toSet()): Pair<Array<FloatArray>, Array<FloatArray>> {
         val l = Array(d.rows) { FloatArray(d.cols) }
         val s = Array(d.rows) { FloatArray(d.cols) }
         for (v in venues) {
-            val sc = d.scale[v] ?: continue
-            val end = sc.lastOrNull() ?: continue
-            if (end <= 0.0) continue
+            val fc = d.scale[v] ?: continue
+            if (d.cols == 0 || fc.size < d.cols) continue
+            // after[c] = produto dos fatores das colunas c+1..fim → tamanho na coluna c = tamanho final ÷ after[c].
+            // Fatores por coluna (e não um acumulado desde o início): se o OI zera em algum momento, os níveis
+            // criados depois continuam certos — antes, um zero no meio apagava a grade inteira (períodos longos).
+            val after = DoubleArray(d.cols)
+            after[d.cols - 1] = 1.0
+            for (c in d.cols - 2 downTo 0) after[c] = after[c + 1] * fc[c + 1]
             d.finalLevels[v]?.forEach { lv ->
-                if (lv.tier !in tiers) return@forEach
+                if (lv.tier !in tiers || lv.btc <= 0.0) return@forEach
                 val r = floor((lv.price - d.pMin) / d.pStep).toInt()
                 if (r !in 0 until d.rows) return@forEach
                 val first = d.candles.indexOfFirst { it.timeMs >= lv.born }.let { if (it < 0) return@forEach else it }
                 val g = if (lv.isLong) l else s
-                for (c in first until d.cols) g[r][c] += (lv.btc * sc[c] / end).toFloat()
+                for (c in first until d.cols) if (after[c] > 0.0) g[r][c] += (lv.btc / after[c]).toFloat()
             }
         }
         return l to s
@@ -189,7 +194,9 @@ object HeatmapModel {
     }
 
     /** Níveis-chave no fim da janela, agrupados em faixas de [binUsd]. */
-    fun summary(d: HeatData, venues: Set<Venue>, price: Double, binUsd: Double, n: Int = 6, tiers: Set<Int> = HEAT_TIERS.indices.toSet()): HeatSummary {
+    /** Níveis em aberto agrupados em faixas de [binUsd]. [n] = quantos por lado; [minFrac] = corte relativo ao maior nível (0 = todos). */
+    fun summary(d: HeatData, venues: Set<Venue>, price: Double, binUsd: Double, n: Int = 6, tiers: Set<Int> = HEAT_TIERS.indices.toSet(),
+                minFrac: Double = 0.05): HeatSummary {
         val above = HashMap<Double, Double>(); val below = HashMap<Double, Double>()
         val born = HashMap<Double, Long>()
         var sa = 0.0; var lb = 0.0
@@ -201,7 +208,7 @@ object HeatmapModel {
             if (l.isLong && l.price < price) { below[k] = (below[k] ?: 0.0) + l.btc; lb += l.btc }
         }
         val biggest = (above.values + below.values).maxOrNull() ?: 0.0
-        fun top(m: Map<Double, Double>) = m.entries.filter { it.value >= biggest * 0.05 }.sortedByDescending { it.value }.take(n)
+        fun top(m: Map<Double, Double>) = m.entries.filter { it.value > 1e-9 && it.value >= biggest * minFrac }.sortedByDescending { it.value }.take(n)
             .map { KeyLevel(it.key, it.value, (it.key / price - 1) * 100, born[it.key] ?: 0L) }.sortedByDescending { it.price }
         return HeatSummary(top(above), top(below), sa, lb)
     }

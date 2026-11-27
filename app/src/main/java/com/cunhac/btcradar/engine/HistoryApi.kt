@@ -12,6 +12,7 @@ import com.cunhac.btcradar.data.net.obj
 import com.cunhac.btcradar.data.net.str
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonPrimitive
 
 private const val MIN = 60_000L
 private const val HOUR = 3_600_000L
@@ -103,12 +104,64 @@ object HistoryApi {
         return out.distinctBy { it.timeMs }.sortedBy { it.timeMs }
     }
 
+    private fun gateInterval(step: Long) = when (step) { 5 * MIN -> "5m"; 15 * MIN -> "15m"; HOUR -> "1h"; 4 * HOUR -> "4h"; else -> "1d" }
+
+    /** Gate (BTC_USDT): contract_stats; open interest em US$ ÷ preço de marcação = BTC. A API guarda ~180 dias. */
+    suspend fun oiGate(step: Long, fromMs: Long): List<OiBtc> {
+        val now = System.currentTimeMillis()
+        var from = maxOf(fromMs, now - 179 * DAY) / 1000
+        val out = ArrayList<OiBtc>()
+        var pg = 0
+        while (pg++ < 40) {
+            val l = Net.getJson("https://api.gateio.ws/api/v4/futures/usdt/contract_stats?contract=BTC_USDT&interval=${gateInterval(step)}&from=$from&limit=1000").jsonArray
+            if (l.isEmpty()) break
+            l.forEach {
+                val o = it.o
+                val mark = o.dbl("mark_price")
+                val btc = if (mark > 0) o.dbl("open_interest_usd") / mark else o.dbl("open_interest") * 0.0001
+                out += OiBtc(o.lng("time") * 1000, btc)
+            }
+            val last = l.last().o.lng("time")
+            if (l.size < 1000 || last * 1000 >= now - step || last < from) break
+            from = last + 1
+            delay(150)
+        }
+        return out.filter { it.timeMs >= fromMs && it.btc > 0 }.distinctBy { it.timeMs }.sortedBy { it.timeMs }
+    }
+
+    /** HTX (BTC-USDT): open interest em BTC. A API devolve só os últimos 200 pontos (60 min ≈ 8 dias, 4 h ≈ 33 dias, 1 dia ≈ 200 dias). */
+    suspend fun oiHtx(step: Long, fromMs: Long): List<OiBtc> {
+        val period = when { step <= HOUR -> "60min"; step <= 4 * HOUR -> "4hour"; else -> "1day" }
+        val t = Net.getJson("https://api.hbdm.com/linear-swap-api/v1/swap_his_open_interest?contract_code=BTC-USDT&period=$period&amount_type=2&size=200")
+            .o.obj("data")?.arr("tick") ?: return emptyList()
+        return t.map { OiBtc(it.o.lng("ts"), it.o.dbl("volume")) }.filter { it.timeMs >= fromMs && it.btc > 0 }.distinctBy { it.timeMs }.sortedBy { it.timeMs }
+    }
+
+    /** Kraken Futures (PF_XBTUSD): open interest em BTC (fechamento de cada intervalo), até 2.000 pontos por página. */
+    suspend fun oiKraken(step: Long, fromMs: Long): List<OiBtc> {
+        val now = System.currentTimeMillis()
+        var since = fromMs / 1000
+        val out = ArrayList<OiBtc>()
+        var pg = 0
+        while (pg++ < 20) {
+            val r = Net.getJson("https://futures.kraken.com/api/charts/v1/analytics/PF_XBTUSD/open-interest?since=$since&interval=${step / 1000}").o.obj("result") ?: break
+            val ts = r.arr("timestamp"); val data = r.arr("data")
+            if (ts.isEmpty()) break
+            for (i in 0 until minOf(ts.size, data.size)) out += OiBtc(ts[i].jsonPrimitive.content.toLong() * 1000, data[i].dblAt(3))
+            val last = ts.last().jsonPrimitive.content.toLong()
+            if (ts.size < 2000 || last * 1000 >= now - step || last < since) break
+            since = last + 1
+            delay(150)
+        }
+        return out.filter { it.btc > 0 }.distinctBy { it.timeMs }.sortedBy { it.timeMs }
+    }
+
     /** Liquidez coberta por cada corretora no período pedido (texto para a tela). */
     fun coverage(v: Venue, pts: List<OiBtc>, fromMs: Long, error: String?): String = when {
         error != null -> if (error.contains("451") || error.contains("403")) "bloqueado nesta região" else "indisponível: ${error.take(60)}"
         pts.isEmpty() -> "sem dados no período"
         pts.first().timeMs > fromMs + (System.currentTimeMillis() - fromMs) / 10 ->
-            "parcial: desde " + java.text.SimpleDateFormat("dd/MM HH:mm").format(java.util.Date(pts.first().timeMs)) + (if (v == Venue.BINANCE) " (API guarda ~30 dias)" else "")
+            "parcial: desde " + java.text.SimpleDateFormat("dd/MM HH:mm").format(java.util.Date(pts.first().timeMs)) + when (v) { Venue.BINANCE -> " (API guarda ~30 dias)"; Venue.GATE -> " (API guarda ~180 dias)"; Venue.HTX -> " (API guarda 200 pontos)"; else -> "" }
         else -> "completo (${pts.size} pontos)"
     }
 }

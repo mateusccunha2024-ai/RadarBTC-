@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.cunhac.btcradar.engine.ConnState
 import com.cunhac.btcradar.engine.FeedAlert
 import com.cunhac.btcradar.engine.LIQ_PERIODS
+import com.cunhac.btcradar.engine.LIQ_VENUES
 import com.cunhac.btcradar.engine.LiqClass
 import com.cunhac.btcradar.engine.LiqEvent
 import com.cunhac.btcradar.engine.LiqSide
@@ -65,7 +66,7 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
             NumField("EXTREME ≥", r.thresholds.extreme, 56.dp) { it?.let { v -> r.thresholds.extreme = v; SettingsStore.put("lq.extreme", v); ver++ } }
             T("LONG ${btc(tot.longBtc, 3)} (${tot.longCount})", Q.LiqLong, 12, bold = true)
             T("SHORT ${btc(tot.shortBtc, 3)} (${tot.shortCount})", Q.LiqShort, 12, bold = true)
-            Venue.entries.forEach { v -> T("${v.label} ${num(tot.byVenue[v] ?: 0.0, 3)}", Q.Muted, 11) }
+            LIQ_VENUES.forEach { v -> T("${v.label} ${num(tot.byVenue[v] ?: 0.0, 3)}", Q.Muted, 11) }
         }
         Panes(grow(1f),
             Pane(1f, 360.dp) { m -> LiqTable("Top LONG liquidadas · $pl", topL, r.thresholds::classify, m, "Nenhuma liquidação LONG de BTC em $pl · ${r.received} eventos desde a abertura") },
@@ -76,7 +77,7 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
             })
         Footnote("Liquidações reais = Binance, Bybit, OKX, Gate, Bitget e Deribit (feeds públicos, não garantem todos os eventos; Binance envia no máximo 1/s e a Bitget agrupa por segundo). " +
             "Conversões para BTC: OKX ${s.okxCtVal}; Gate 1 contrato = 0,0001 BTC; Bitget USDT ÷ preço; Deribit USD ÷ preço. " +
-            "Heatmap = estimativa a partir do open interest histórico de Binance, Bybit e OKX.")
+            "Heatmap = estimativa a partir do open interest histórico de Binance, Bybit, OKX, Gate, HTX e Kraken.")
         }
     }
 }

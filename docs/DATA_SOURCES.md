@@ -28,3 +28,16 @@ Canal `orderbook.rpi.BTCUSDT`: cada nível = [preço, qtd não-RPI, qtd RPI]. Gu
 | Deribit | `wss://www.deribit.com/ws/api/v2` · `trades.BTC-PERPETUAL.100ms` | `amount` em USD ÷ preço (inverso) | campo `liquidation`: T = agressor, M = passivo, MT = ambos |
 
 Essas três corretoras entram só nas liquidações reais (sem livro, fluxo ou open interest).
+
+## Mapa de liquidações estimadas (histórico de open interest, REST)
+
+| Corretora | Endpoint | Unidade | Quanto histórico |
+|---|---|---|---|
+| Binance | `fapi.binance.com/futures/data/openInterestHist` | `sumOpenInterest` (BTC) | ~30 dias |
+| Bybit | `api.bybit.com/v5/market/open-interest` (linear BTCUSDT) | BTC | anos |
+| OKX | `okx.com/api/v5/rubik/stat/contracts/open-interest-history` (BTC-USDT-SWAP) | `oiCcy` (BTC) | anos |
+| Gate | `api.gateio.ws/api/v4/futures/usdt/contract_stats` (BTC_USDT) | `open_interest_usd` ÷ `mark_price` | ~180 dias |
+| HTX | `api.hbdm.com/linear-swap-api/v1/swap_his_open_interest` (BTC-USDT, `amount_type=2`) | `volume` (BTC) | últimos 200 pontos (60 min/4 h/1 dia) |
+| Kraken Futures | `futures.kraken.com/api/charts/v1/analytics/PF_XBTUSD/open-interest` | BTC (fechamento do intervalo) | anos |
+
+Bitget, Deribit e Hyperliquid publicam só o open interest atual, sem histórico — por isso não entram no mapa estimado.

@@ -1,5 +1,13 @@
 # Changelog
 
+## V8 — atualização 7 (2026-11-26) · todos os níveis em aberto e mais corretoras no mapa
+- Mapa de liquidações com 6 corretoras: além de Binance, Bybit e OKX, entram Gate (API guarda ~180 dias), HTX (últimos 200 pontos)
+  e Kraken Futures (anos no diário) — as que publicam histórico de open interest. Bitget, Deribit e Hyperliquid só informam o OI atual.
+- Radar: "Todos" mostra todos os níveis de liquidação em aberto (antes só os 6 maiores de cada lado e só os com ≥ 5% do maior);
+  "Principais" volta ao resumo. As linhas do gráfico seguem a mesma escolha; níveis pequenos aparecem como linha fina, sem rótulo.
+- Corrigido: com só "Em aberto" ligado em períodos longos (1 ano, 2 anos) o mapa ficava vazio (escala 0,0) quando o open interest
+  de uma corretora caía mais do que o modelo acompanhava.
+
 ## V8 — atualização 6 (2026-11-23) · liquidações executadas × em aberto
 - Radar: botões "Já executadas" e "Em aberto" para filtrar o mapa (os dois ligados = tudo). Níveis em aberto viram linhas
   do nascimento até a borda direita, nas cores e nos níveis das caixas "Níveis-chave" (short acima = vermelho, long abaixo = verde),
