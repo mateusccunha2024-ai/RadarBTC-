@@ -29,7 +29,7 @@ import kotlin.math.abs
 
 /** Configuração dos alertas externos. Guardada no registro do usuário do Windows (só nesta máquina). */
 data class AlertConfig(
-    val kinds: Set<AlertKind> = setOf(AlertKind.LIQ_EXTREME, AlertKind.WALL_PULLED, AlertKind.HEAT_ZONE, AlertKind.SIGNAL_CHANGE),
+    val kinds: Set<AlertKind> = setOf(AlertKind.LIQ_EXTREME, AlertKind.WALL_PULLED, AlertKind.HEAT_ZONE, AlertKind.SIGNAL_CHANGE, AlertKind.MACRO_EVENT, AlertKind.MACRO_SURPRISE),
     val telegramOn: Boolean = false,
     val telegramToken: String = "",
     val telegramChat: String = "",

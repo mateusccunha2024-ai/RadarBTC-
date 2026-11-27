@@ -59,11 +59,14 @@ class AppContext(val hub: Hub, val db: SqliteHistory, val map: MapModel,
                  val alerts: AlertEngine = AlertEngine(hub, heat)) {
     /** Fluxos dos ETFs spot de BTC: só carrega quando a aba é aberta. */
     val etf: EtfModel by lazy { EtfModel(CoroutineScope(SupervisorJob() + Dispatchers.IO)) }
+    /** Radar macro-geopolítico: coleta em segundo plano (start() no início do app) para os alertas funcionarem. */
+    val macro: MacroEngine by lazy { MacroEngine(hub) { etf } }
 }
 
 val TABS = listOf(
     "ORDERFLOW", "FOOTPRINT", "LIQUIDITY WALLS", "LIQUIDITY HISTORY", "MAGNET ZONES", "LONG & SHORT FLOW",
     "MARKET FLOW CORRELATION", "LARGE TRADES", "LIQUIDATION RADAR", "ETFs", "ALERTAS", "STATUS",
+    "MACRO",
 )
 
 /** Nome de cada aba na tela, em português (o id interno não muda: continua salvo nas preferências). */
@@ -72,6 +75,7 @@ val TAB_LABELS = mapOf(
     "LIQUIDITY HISTORY" to "Histórico de paredes", "MAGNET ZONES" to "Zonas ímã", "LONG & SHORT FLOW" to "Long/short",
     "MARKET FLOW CORRELATION" to "Correlação", "LARGE TRADES" to "Grandes negócios",
     "LIQUIDATION RADAR" to "Radar", "ETFs" to "ETFs", "ALERTAS" to "Alertas", "STATUS" to "Status",
+    "MACRO" to "Radar macro",
 )
 fun tabLabel(id: String) = TAB_LABELS[id] ?: id
 
@@ -80,7 +84,8 @@ val TAB_GROUPS = listOf(
     "Livro" to listOf("ORDERFLOW", "FOOTPRINT", "LIQUIDITY WALLS", "LIQUIDITY HISTORY"),
     "Fluxo" to listOf("LONG & SHORT FLOW", "MARKET FLOW CORRELATION", "LARGE TRADES"),
     "Liquidações" to listOf("LIQUIDATION RADAR", "MAGNET ZONES"),
-    "Mais" to listOf("ETFs", "ALERTAS", "STATUS"),
+    "Macro" to listOf("MACRO", "ETFs"),
+    "Mais" to listOf("ALERTAS", "STATUS"),
 )
 
 /** Abas que o usuário escondeu no menu de visualização (STATUS nunca some). */
@@ -158,6 +163,7 @@ private fun TerminalBody(ctx: AppContext, initialTab: Int?, showSettings: Boolea
                     "LARGE TRADES" -> LargeTradesTab(ctx, s)
                     "LIQUIDATION RADAR" -> LiqTab(ctx, s)
                     "ETFs" -> EtfTab(ctx)
+                    "MACRO" -> MacroTab(ctx)
                     "ALERTAS" -> AlertsTab(ctx, s)
                     else -> StatusTab(ctx, s)
                 }
@@ -201,6 +207,7 @@ private val TAB_HINTS = mapOf(
     "LARGE TRADES" to "Maiores execuções e sequências",
     "LIQUIDATION RADAR" to "Heatmap e liquidações reais",
     "ETFs" to "Fluxo diário dos ETFs spot de BTC",
+    "MACRO" to "Juros, dólar, inflação, notícias e o score macro do BTC",
     "ALERTAS" to "Avisos no celular, Telegram e e-mail",
     "STATUS" to "Conexões, livros e log",
 )

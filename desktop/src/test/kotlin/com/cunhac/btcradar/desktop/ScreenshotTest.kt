@@ -22,6 +22,7 @@ class ScreenshotTest {
         hub.history = db
         hub.start()
         val ctx = AppContext(hub, db, MapModel(CoroutineScope(Dispatchers.Default)))
+        ctx.macro.start()
         Thread.sleep(90_000)
         val out = File("build/screens").apply { mkdirs() }
 
@@ -65,6 +66,11 @@ class ScreenshotTest {
         UiScale.set(1.0f); UiScale.useFont(1.3f)
         listOf(0, 8).forEach { i -> shot("phone-font130-%02d".format(i), i, w = 618, h = 3600, density = 1.5f) }
         UiScale.useFont(1.0f)
+        // Radar macro (aba 12): tema claro, fonte grande, tablet e celular com fonte grande.
+        Look.useDark(false); shot("light-12", 12)
+        Look.useDark(true); UiScale.useFont(1.3f); shot("font130-12", 12)
+        shot("phone-font130-12", 12, w = 618, h = 3600, density = 1.5f)
+        UiScale.useFont(1.0f); shot("tablet-12", 12, w = 1280, h = 800)
         Look.useDark(true); UiScale.set(1.0f)
         hub.stop()
     }

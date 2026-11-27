@@ -185,7 +185,7 @@ fun StatusTab(ctx: AppContext, s: TerminalState) {
     })
 }
 
-private val FEED_FILTERS = listOf("Todos", "Paredes", "Liquidações", "Execuções", "Divergências")
+private val FEED_FILTERS = listOf("Todos", "Paredes", "Liquidações", "Execuções", "Divergências", "Macro")
 
 /**
  * Painel de alertas: uma linha de cabeçalho (hora, tipo, lado) e uma de dados (preço · corretora · números),

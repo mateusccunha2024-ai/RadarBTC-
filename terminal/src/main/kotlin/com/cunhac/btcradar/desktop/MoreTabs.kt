@@ -432,6 +432,12 @@ private fun kindHint(k: AlertKind, c: AlertConfig) = when (k) {
     AlertKind.SIGNAL_CHANGE -> "Fluxo inferido muda de LONG para SHORT ou o contrário"
     AlertKind.DIVERGENCE -> "Preço e CVD divergem em 5 min, 15 min ou 1 h"
     AlertKind.HEAT_ZONE -> String.format(BR, "Preço a até %.2f%% de uma zona do heatmap com ≥ %,.0f BTC", c.zonePct, c.zoneMinBtc)
+    AlertKind.MACRO_EVENT -> "CPI, PCE, payroll, FOMC e outros eventos de alto impacto (antecedência na aba Radar macro)"
+    AlertKind.MACRO_SURPRISE -> "Resultado oficial acima ou abaixo da expectativa do calendário"
+    AlertKind.MACRO_MARKET -> "DXY ±0,6% no dia, Treasury 10 anos ±10 bp ou VIX +15%"
+    AlertKind.MACRO_GEO -> "Notícia de alta intensidade: conflito, tarifas, sanções ou regulação cripto"
+    AlertKind.MACRO_DIVERGENCE -> "BTC sobe com Nasdaq em queda (ou o contrário) em 1 hora"
+    AlertKind.MACRO_SCORE -> "BTC Macro Sentiment muda 25 pontos ou troca de faixa"
 }
 
 @Composable
@@ -439,7 +445,7 @@ private fun ActionButton(label: String, enabled: Boolean, onClick: () -> Unit) =
     OutlineButton(label, if (enabled) Q.Accent else Q.Muted, if (enabled) Q.Accent else Q.Line, enabled, onClick = onClick)
 
 @Composable
-private fun TextSetting(label: String, value: String, width: Dp, secret: Boolean = false, onChange: (String) -> Unit) {
+internal fun TextSetting(label: String, value: String, width: Dp, secret: Boolean = false, onChange: (String) -> Unit) {
     var show by remember { mutableStateOf(false) }
     Column {
         T(label, Q.Muted, 11)
