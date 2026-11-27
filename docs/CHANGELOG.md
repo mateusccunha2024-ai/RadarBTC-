@@ -2,9 +2,10 @@
 
 ## V8 — atualização 9 (2026-11-27) · gráfico de CVD com preço, horário e histórico
 - Long/short: gráfico de CVD com períodos 5 min, 15 min, 1 h e 4 h (histórico desde que o app abriu; antes só 15 min).
-- Preço do BTC sobreposto (linha laranja, faixa mínima–média–máxima do período na escala da esquerda) e eixo de horário embaixo
-  (o primeiro rótulo traz a data).
-- Passar o mouse (ou tocar, no celular) mostra data, hora, preço, CVD total e de cada corretora naquele segundo.
+- Preço do BTC sobreposto (linha laranja) com escala à direita (máximo, meio, mínimo e etiqueta do último preço); escala do CVD
+  à esquerda; rodapé com data e hora.
+- Mesmo modelo do mapa de liquidações: roda do mouse = zoom no tempo, arrastar = mover, duplo clique = voltar; passar o mouse
+  (ou tocar) mostra pontos em cada linha, etiqueta de data/hora no rodapé e quadro com preço, CVD total e de cada corretora.
 
 ## V8 — atualização 8 (2026-11-27) · níveis de liquidação sem zerar e menos texto cortado
 - Mapa estimado: a queda de open interest causada pelas próprias liquidações era descontada duas vezes (os níveis atravessados

@@ -237,7 +237,7 @@ fun FlowTab(ctx: AppContext, s: TerminalState) {
                     Spacer(Modifier.height(4.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                         T("— Total", Q.Text, 11); CORE_VENUES.forEach { T("— ${it.label}", VENUE_COLORS[it.ordinal], 11) }
-                        T("— Preço (escala à esquerda)", Q.Accent, 11)
+                        T("— Preço BTC (escala à direita)", Q.Accent, 11)
                         series.lastOrNull()?.let {
                             val tot = it.second.sum()
                             T("Total: " + String.format(BR, "%+.2f BTC", tot), if (tot >= 0) Q.Buy else Q.Sell, 11)
@@ -339,60 +339,115 @@ private val CVD_PERIODS = listOf(
 private val CVD_DAY = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
 private val CVD_HMS = java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")
 private val CVD_HM = java.time.format.DateTimeFormatter.ofPattern("HH:mm")
+private val CVD_DM = java.time.format.DateTimeFormatter.ofPattern("dd/MM ")
+private val CVD_LEFT = 80.dp
+private val CVD_RIGHT = 70.dp
 private fun cvdTime(t: Long, f: java.time.format.DateTimeFormatter): String =
     java.time.Instant.ofEpochMilli(t).atZone(java.time.ZoneId.systemDefault()).format(f)
 
 /**
- * CVD (escala em BTC à direita) com o preço do BTC sobreposto (escala própria à esquerda, laranja) e eixo de horário embaixo.
- * Passar o mouse (ou tocar, no celular) mostra data, hora, preço e CVD daquele segundo.
+ * CVD com o preço do BTC sobreposto: escala do CVD (BTC) à esquerda, preço do BTC à direita, data e hora no rodapé.
+ * Mesmo modelo do mapa de liquidações: roda do mouse = zoom no tempo, arrastar = mover, duplo clique = voltar ao período todo;
+ * passar o mouse (ou tocar) mostra data, hora, preço e o CVD total e de cada corretora naquele segundo.
  */
 @Composable
 private fun CvdChart(series: List<Pair<Long, DoubleArray>>, prices: List<Pair<Long, Double>>) {
     if (series.size < 2) { Empty("Aguardando trades para desenhar o CVD"); return }
     val tm = rememberTextMeasurer()
     val st = TextStyle(color = Q.Muted, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
-    val line = Q.Line; val zero = Q.Muted; val text = Q.Text; val colors = VENUE_COLORS; val accent = Q.Accent; val panel = Q.Panel2
+    val line = Q.Line; val zero = Q.Muted; val text = Q.Text; val colors = VENUE_COLORS; val accent = Q.Accent; val panel = Q.Panel2; val bg = Q.Bg
     var hover by remember { mutableStateOf<Offset?>(null) }
+    var view by remember { mutableStateOf<Pair<Long, Long>?>(null) }
+    val rng = remember { LongArray(2) }
+    rng[0] = series.first().first; rng[1] = series.last().first
+    fun clampView(a: Long, b: Long): Pair<Long, Long>? {
+        val f0 = rng[0]; val f1 = rng[1]; val full = f1 - f0
+        if (full <= 0) return null
+        val span = (b - a).coerceIn(minOf(30_000L, full), full)
+        if (span >= full) return null
+        val s0 = a.coerceIn(f0, f1 - span)
+        return s0 to s0 + span
+    }
     Canvas(Modifier.fillMaxSize().padding(top = 6.dp).pointerInput(Unit) {
+        var dragX = 0f
+        var dragView: Pair<Long, Long>? = null
+        var lastPress = 0L
         awaitPointerEventScope {
             while (true) {
                 val e = awaitPointerEvent()
                 val ch = e.changes.firstOrNull() ?: continue
-                if (e.type == PointerEventType.Exit) hover = null
-                else if (e.type == PointerEventType.Move || e.type == PointerEventType.Press) hover = ch.position
+                val left = CVD_LEFT.toPx(); val w = size.width - left - CVD_RIGHT.toPx()
+                if (w <= 10f) continue
+                val cur = view ?: (rng[0] to rng[1])
+                when (e.type) {
+                    PointerEventType.Scroll -> {
+                        val dy = ch.scrollDelta.y
+                        if (dy != 0f) {
+                            val f = Math.pow(1.15, dy.toDouble())
+                            val t = cur.first + ((ch.position.x - left) / w).coerceIn(0f, 1f).toDouble() * (cur.second - cur.first)
+                            view = clampView((t - (t - cur.first) * f).toLong(), (t + (cur.second - t) * f).toLong())
+                            ch.consume()
+                        }
+                    }
+                    PointerEventType.Press -> {
+                        if (ch.uptimeMillis - lastPress < 350) view = null
+                        lastPress = ch.uptimeMillis
+                        dragX = ch.position.x
+                        dragView = view ?: (rng[0] to rng[1])
+                        hover = ch.position
+                    }
+                    PointerEventType.Move -> {
+                        val dv = dragView
+                        if (ch.pressed && dv != null) {
+                            val shift = ((dragX - ch.position.x) / w * (dv.second - dv.first)).toLong()
+                            view = clampView(dv.first + shift, dv.second + shift)
+                            if (view != null) ch.consume()
+                        }
+                        hover = ch.position
+                    }
+                    PointerEventType.Release -> dragView = null
+                    PointerEventType.Exit -> hover = null
+                    else -> {}
+                }
             }
         }
     }) {
-        val totals = series.map { it.second.sum() }
+        val left = CVD_LEFT.toPx(); val pad = 7.dp.toPx(); val axisH = 18.dp.toPx()
+        val w = size.width - left - CVD_RIGHT.toPx(); val h = size.height - 2 * pad - axisH
+        if (w <= 10f || h <= 10f) return@Canvas
+        val vw = view
+        val t0 = vw?.first ?: rng[0]; val t1 = vw?.second ?: rng[1]
+        var i0 = series.binarySearchBy(t0) { it.first }; if (i0 < 0) i0 = -i0 - 1
+        var i1 = series.binarySearchBy(t1) { it.first }; if (i1 < 0) i1 = -i1 - 2
+        i0 = i0.coerceIn(0, series.lastIndex); i1 = i1.coerceIn(i0, series.lastIndex)
+        val vis = series.subList(i0, i1 + 1)
+        val totals = vis.map { it.second.sum() }
         var lo = 0.0; var hi = 0.0
-        series.forEachIndexed { i, (_, d) ->
+        vis.forEachIndexed { i, (_, d) ->
             lo = minOf(lo, totals[i]); hi = maxOf(hi, totals[i])
             for (vi in 0..2) { lo = minOf(lo, d[vi]); hi = maxOf(hi, d[vi]) }
         }
-        // Uma escala só (BTC); o zero sempre aparece.
+        // Uma escala só para o CVD (BTC, à esquerda); o zero sempre aparece.
         val span = (hi - lo).takeIf { it > 1e-9 } ?: 1.0
-        val gut = 72.dp.toPx(); val left = 62.dp.toPx(); val pad = 7.dp.toPx(); val axisH = 16.dp.toPx()
-        val w = size.width - gut - left; val h = size.height - 2 * pad - axisH
-        if (w <= 10f || h <= 10f) return@Canvas
-        val t0 = series.first().first; val t1 = series.last().first
         val tw = (t1 - t0).coerceAtLeast(1).toFloat()
         fun x(t: Long) = left + (t - t0) / tw * w
         fun y(v: Double) = (pad + (hi - v) / span * h).toFloat()
-        fun label(v: Double, c: androidx.compose.ui.graphics.Color = st.color) =
-            drawText(tm, String.format(BR, "%+,.1f BTC", v).replace("+0,0", "0"), Offset(left + w + 6.dp.toPx(), y(v) - 7.dp.toPx()), st.copy(color = c))
+        fun label(v: Double) =
+            drawText(tm, String.format(BR, "%+,.1f BTC", v).replace("+0,0", "0"), Offset(2f, y(v) - 7.dp.toPx()), st)
         val minGap = 14.dp.toPx()
         drawLine(zero.copy(alpha = 0.7f), Offset(left, y(0.0)), Offset(left + w, y(0.0)), 1f)
         label(0.0)
         if (y(0.0) - y(hi) > minGap) { drawLine(line, Offset(left, y(hi)), Offset(left + w, y(hi)), 1f); label(hi) }
         if (y(lo) - y(0.0) > minGap) { drawLine(line, Offset(left, y(lo)), Offset(left + w, y(lo)), 1f); label(lo) }
 
-        // Preço do BTC (escala própria à esquerda): faixa mínima–máxima do período.
+        // Preço do BTC (escala própria à direita): máximo, meio e mínimo do trecho visível + preço atual.
         val pr = prices.filter { it.first >= t0 - 1_000 && it.first <= t1 + 1_000 }
-        var pLo = 0.0; var pHi = 0.0; var pSpan = 1.0
+        var pHi = 0.0; var pSpan = 1.0
+        fun py(p: Double) = (pad + (pHi - p) / pSpan * h).toFloat()
+        val px = left + w + 6.dp.toPx()
         if (pr.size >= 2) {
-            pLo = pr.minOf { it.second }; pHi = pr.maxOf { it.second }
+            val pLo = pr.minOf { it.second }; pHi = pr.maxOf { it.second }
             pSpan = (pHi - pLo).takeIf { it > 1e-9 } ?: 1.0
-            fun py(p: Double) = (pad + (pHi - p) / pSpan * h).toFloat()
             val pStep = maxOf(1, pr.size / 1500)
             var prev: Offset? = null
             pr.forEachIndexed { i, (t, p) ->
@@ -401,65 +456,85 @@ private fun CvdChart(series: List<Pair<Long, DoubleArray>>, prices: List<Pair<Lo
                 prev?.let { drawLine(accent.copy(alpha = 0.75f), it, o, 1.4f) }
                 prev = o
             }
-            val mid = (pHi + pLo) / 2
-            listOf(pHi, mid, pLo).forEach { p ->
-                val yy = py(p).coerceIn(0f, pad + h - 12.dp.toPx())
-                drawText(tm, String.format(BR, "%,.1f", p), Offset(2f, if (p == pHi) yy else yy - 6.dp.toPx()), st.copy(color = accent))
+            listOf(pHi, (pHi + pLo) / 2, pLo).forEach { p ->
+                val yy = (py(p) - 7.dp.toPx()).coerceIn(0f, (pad + h - 12.dp.toPx()).coerceAtLeast(0f))
+                drawText(tm, String.format(BR, "%,.1f", p), Offset(px, yy), st.copy(color = accent))
             }
+            // Etiqueta do último preço do trecho (como no mapa de liquidações).
+            val last = pr.last().second
+            val s = String.format(BR, "%,.1f", last)
+            val lw = tm.measure(s, st).size.width.toFloat()
+            val ty = (py(last) - 8.dp.toPx()).coerceIn(0f, (pad + h - 16.dp.toPx()).coerceAtLeast(0f))
+            drawRect(accent, Offset(px - 3.dp.toPx(), ty), Size(lw + 6.dp.toPx(), 16.dp.toPx()))
+            drawText(tm, s, Offset(px, ty + 1.dp.toPx()), st.copy(color = bg))
         }
 
-        val step = maxOf(1, series.size / 1500)
+        val step = maxOf(1, vis.size / 1500)
         for (vi in 0..3) {
             val color = if (vi == 3) text else colors[vi]
             var prev: Offset? = null
-            series.forEachIndexed { i, (t, d) ->
-                if (i % step != 0 && i != series.lastIndex) return@forEachIndexed
+            vis.forEachIndexed { i, (t, d) ->
+                if (i % step != 0 && i != vis.lastIndex) return@forEachIndexed
                 val p = Offset(x(t), y(if (vi == 3) totals[i] else d[vi]))
                 prev?.let { drawLine(color, it, p, if (vi == 3) 2f else 1.2f) }
                 prev = p
             }
         }
 
-        // Eixo de horário (o primeiro rótulo leva a data).
-        val axisY = pad + h + 3.dp.toPx()
+        // Rodapé: data e hora.
+        val axisY = pad + h + 4.dp.toPx()
         drawLine(line, Offset(left, pad + h), Offset(left + w, pad + h), 1f)
         val ticks = if (w < 260.dp.toPx()) 3 else 5
+        val fmt = if (t1 - t0 <= 900_000L) CVD_HMS else CVD_HM
         for (k in 0 until ticks) {
             val t = t0 + ((t1 - t0) * k / (ticks - 1).toDouble()).toLong()
-            val fmt = if (t1 - t0 <= 900_000L) CVD_HMS else CVD_HM
-            val s = if (k == 0) cvdTime(t, java.time.format.DateTimeFormatter.ofPattern("dd/MM ")) + cvdTime(t, fmt) else cvdTime(t, fmt)
+            val s = if (k == 0) cvdTime(t, CVD_DM) + cvdTime(t, fmt) else cvdTime(t, fmt)
             val lw = tm.measure(s, st).size.width.toFloat()
-            val lx = (x(t) - lw / 2).coerceIn(left, left + w - lw)
-            drawLine(line, Offset(x(t), pad + h), Offset(x(t), pad + h + 3.dp.toPx()), 1f)
+            val lx = (x(t) - lw / 2).coerceIn(left, maxOf(left, left + w - lw))
+            drawLine(line.copy(alpha = 0.5f), Offset(x(t), pad), Offset(x(t), pad + h + 3.dp.toPx()), 1f)
             drawText(tm, s, Offset(lx, axisY), st)
         }
+        drawText(tm, if (vw == null) "Roda: zoom · arrastar: mover · duplo clique: voltar" else "Zoom ativo · duplo clique: voltar ao período todo",
+            Offset(left + 4.dp.toPx(), pad), st.copy(color = zero.copy(alpha = 0.8f)))
 
-        // Leitura no ponto do cursor/toque.
+        // Leitura no ponto do cursor/toque: linha vertical, pontos em cada linha, etiquetas nos eixos e quadro com os valores.
         val hp = hover
-        if (hp != null && hp.x >= left && hp.x <= left + w) {
+        if (hp != null && hp.x >= left && hp.x <= left + w && vis.isNotEmpty()) {
             val tt = t0 + ((hp.x - left) / w * tw).toLong()
-            var idx = series.binarySearchBy(tt) { it.first }
-            if (idx < 0) idx = (-idx - 1).coerceIn(0, series.lastIndex)
-            val (ts, dv) = series[idx]
+            var idx = vis.binarySearchBy(tt) { it.first }
+            if (idx < 0) idx = (-idx - 1).coerceIn(0, vis.lastIndex)
+            val (ts, dv) = vis[idx]
             val xx = x(ts)
             drawLine(text.copy(alpha = 0.45f), Offset(xx, pad), Offset(xx, pad + h), 1f)
-            drawCircle(text, 3.dp.toPx(), Offset(xx, y(totals[idx])))
+            CORE_VENUES.forEach { v -> drawCircle(colors[v.ordinal], 3.dp.toPx(), Offset(xx, y(dv[v.ordinal]))) }
+            drawCircle(text, 3.5f * density, Offset(xx, y(totals[idx])))
             var pAt: Double? = null
-            if (pr.isNotEmpty()) {
+            if (pr.size >= 2) {
                 var pi = pr.binarySearchBy(ts) { it.first }
                 if (pi < 0) pi = (-pi - 1).coerceIn(0, pr.lastIndex)
                 pAt = pr[pi].second
-                drawCircle(accent, 3.dp.toPx(), Offset(xx, (pad + (pHi - pAt) / pSpan * h).toFloat()))
+                val yy = py(pAt)
+                drawCircle(accent, 3.dp.toPx(), Offset(xx, yy))
+                drawLine(accent.copy(alpha = 0.35f), Offset(left, yy), Offset(left + w, yy), 1f)
             }
+            // Etiqueta de data/hora no rodapé, na posição do cursor.
+            val tl = cvdTime(ts, CVD_DAY)
+            val tlw = tm.measure(tl, st).size.width.toFloat()
+            val tlx = (xx - tlw / 2).coerceIn(left, maxOf(left, left + w - tlw))
+            drawRect(panel, Offset(tlx - 3.dp.toPx(), axisY - 1.dp.toPx()), Size(tlw + 6.dp.toPx(), 15.dp.toPx()))
+            drawRect(text.copy(alpha = 0.6f), Offset(tlx - 3.dp.toPx(), axisY - 1.dp.toPx()), Size(tlw + 6.dp.toPx(), 15.dp.toPx()),
+                style = androidx.compose.ui.graphics.drawscope.Stroke(1f))
+            drawText(tm, tl, Offset(tlx, axisY), st.copy(color = text))
+
             val rows = ArrayList<Pair<String, androidx.compose.ui.graphics.Color>>()
             rows += cvdTime(ts, CVD_DAY) to text
-            pAt?.let { rows += ("Preço " + String.format(BR, "%,.1f", it)) to accent }
+            pAt?.let { rows += ("Preço BTC " + String.format(BR, "%,.1f", it)) to accent }
             rows += ("CVD total " + String.format(BR, "%+,.2f BTC", totals[idx])) to text
-            CORE_VENUES.forEach { v -> rows += (v.label + " " + String.format(BR, "%+,.2f", dv[v.ordinal])) to colors[v.ordinal] }
+            CORE_VENUES.forEach { v -> rows += (v.label + " " + String.format(BR, "%+,.2f BTC", dv[v.ordinal])) to colors[v.ordinal] }
             val lh = 14.dp.toPx(); val bp = 6.dp.toPx()
             val bw = rows.maxOf { tm.measure(it.first, st).size.width }.toFloat() + 2 * bp
             val bh = rows.size * lh + 2 * bp
-            val bx = if (xx + 10.dp.toPx() + bw <= left + w) xx + 10.dp.toPx() else xx - 10.dp.toPx() - bw
+            val bx = if (xx + 10.dp.toPx() + bw <= left + w) xx + 10.dp.toPx() else maxOf(0f, xx - 10.dp.toPx() - bw)
             val by = (hp.y - bh / 2).coerceIn(pad, (pad + h - bh).coerceAtLeast(pad))
             drawRect(panel.copy(alpha = 0.94f), Offset(bx, by), Size(bw, bh))
             drawRect(line, Offset(bx, by), Size(bw, bh), style = androidx.compose.ui.graphics.drawscope.Stroke(1f))
