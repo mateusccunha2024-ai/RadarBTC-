@@ -30,7 +30,8 @@ data class FlowStats(
  * Guarda os trades da última hora (todas as corretoras) e calcula estatísticas por janela.
  * CVD em baldes de 1 s desde a abertura do app.
  */
-class FlowEngine(private val keepMs: Long = 3_600_000L, private val maxTrades: Int = 400_000) {
+/** [keepMs] = quanto do CVD por segundo fica guardado (4 h, para o histórico do gráfico); a fita de trades continua limitada por [maxTrades]. */
+class FlowEngine(private val keepMs: Long = 14_400_000L, private val maxTrades: Int = 400_000) {
     private val trades = ArrayDeque<TradeEvent>()
     private val cvd = TreeMap<Long, DoubleArray>() // segundo -> delta por corretora
     private val totalDelta = DoubleArray(Venue.entries.size)

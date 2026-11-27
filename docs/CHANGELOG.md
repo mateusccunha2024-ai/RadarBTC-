@@ -1,5 +1,11 @@
 # Changelog
 
+## V8 — atualização 9 (2026-11-27) · gráfico de CVD com preço, horário e histórico
+- Long/short: gráfico de CVD com períodos 5 min, 15 min, 1 h e 4 h (histórico desde que o app abriu; antes só 15 min).
+- Preço do BTC sobreposto (linha laranja, faixa mínima–média–máxima do período na escala da esquerda) e eixo de horário embaixo
+  (o primeiro rótulo traz a data).
+- Passar o mouse (ou tocar, no celular) mostra data, hora, preço, CVD total e de cada corretora naquele segundo.
+
 ## V8 — atualização 8 (2026-11-27) · níveis de liquidação sem zerar e menos texto cortado
 - Mapa estimado: a queda de open interest causada pelas próprias liquidações era descontada duas vezes (os níveis atravessados
   saíam do mapa e, de novo, a queda do OI encolhia o que sobrou). Em períodos longos (1–2 anos) com quedas fortes isso zerava
