@@ -143,7 +143,7 @@ object I18n {
     fun tr(s: String): String {
         val c = code
         @Suppress("UNUSED_VARIABLE") val v = version   // relê quando chegam traduções automáticas
-        if (c == "pt" || s.isEmpty() || !hasWords(s) || s in PASS) return s
+        if (c == "pt" || s.isEmpty() || !hasWords(s) || s.trimStart('●', '■', '□', '•', ' ') in PASS) return s
         val (m, nums) = mask(s)
         val out = trm(c, m, 0) ?: return s
         return unmask(out, nums)
