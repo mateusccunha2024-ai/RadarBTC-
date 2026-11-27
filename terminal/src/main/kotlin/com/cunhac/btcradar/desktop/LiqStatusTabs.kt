@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.cunhac.btcradar.engine.ConnState
 import com.cunhac.btcradar.engine.FeedAlert
 import com.cunhac.btcradar.engine.LIQ_PERIODS
+import com.cunhac.btcradar.engine.LIQ_VENUES
 import com.cunhac.btcradar.engine.LiqClass
 import com.cunhac.btcradar.engine.LiqEvent
 import com.cunhac.btcradar.engine.LiqSide
@@ -65,7 +66,7 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
             NumField("EXTREME ≥", r.thresholds.extreme, 56.dp) { it?.let { v -> r.thresholds.extreme = v; SettingsStore.put("lq.extreme", v); ver++ } }
             T("LONG ${btc(tot.longBtc, 3)} (${tot.longCount})", Q.LiqLong, 12, bold = true)
             T("SHORT ${btc(tot.shortBtc, 3)} (${tot.shortCount})", Q.LiqShort, 12, bold = true)
-            Venue.entries.forEach { v -> T("${v.label} ${num(tot.byVenue[v] ?: 0.0, 3)}", Q.Muted, 11) }
+            LIQ_VENUES.forEach { v -> T("${v.label} ${num(tot.byVenue[v] ?: 0.0, 3)}", Q.Muted, 11) }
         }
         Panes(grow(1f),
             Pane(1f, 360.dp) { m -> LiqTable("Top LONG liquidadas · $pl", topL, r.thresholds::classify, m, "Nenhuma liquidação LONG de BTC em $pl · ${r.received} eventos desde a abertura") },
@@ -76,23 +77,24 @@ fun LiqTab(ctx: AppContext, s: TerminalState) {
             })
         Footnote("Liquidações reais = Binance, Bybit, OKX, Gate, Bitget e Deribit (feeds públicos, não garantem todos os eventos; Binance envia no máximo 1/s e a Bitget agrupa por segundo). " +
             "Conversões para BTC: OKX ${s.okxCtVal}; Gate 1 contrato = 0,0001 BTC; Bitget USDT ÷ preço; Deribit USD ÷ preço. " +
-            "Heatmap = estimativa a partir do open interest histórico de Binance, Bybit e OKX.")
+            "Heatmap = estimativa a partir do open interest histórico de Binance, Bybit, OKX, Gate, HTX e Kraken.")
         }
     }
 }
 
 @Composable
 private fun LiqTable(title: String, list: List<LiqEvent>, cls: (Double) -> LiqClass, modifier: Modifier, empty: String) {
-    Section(title, modifier.fillMaxHeight(), minWidth = 440.dp) {
+    // Compacta para caber no painel do PC sem rolar para o lado; a coluna ORIGINAL quebra linha se precisar.
+    Section(title, modifier.fillMaxHeight(), minWidth = 340.dp) {
         Column {
-            Th("HORA" to 64, "CORR." to 58, "POSIÇÃO" to 58, "PREÇO" to 84, "BTC" to 70, "ORIGINAL" to 0)
+            Th("HORA" to 60, "CORR." to 58, "LADO" to 48, "PREÇO" to 72, "BTC" to 58, "ORIGINAL" to 0)
             if (list.isEmpty()) Empty(empty, "Aparecem aqui assim que alguma das 6 corretoras reportar")
             LazyColumn {
                 items(list) { e ->
                     val c = if (e.side == LiqSide.LONG) Q.LiqLong else Q.LiqShort
                     val k = cls(e.qtyBtc)
-                    Td(Triple(hhmmss(e.timeMs), 64, Q.Muted), Triple(e.venue.label, 58, Q.Text), Triple(e.side.name, 58, c), Triple(px(e.price), 84, Q.Text),
-                        Triple(num(e.qtyBtc, 3) + if (k == LiqClass.EXTREME) " !!" else if (k == LiqClass.LARGE) " !" else "", 70, c),
+                    Td(Triple(hhmmss(e.timeMs), 60, Q.Muted), Triple(e.venue.label, 58, Q.Text), Triple(e.side.name, 48, c), Triple(px(e.price), 72, Q.Text),
+                        Triple(num(e.qtyBtc, 3) + if (k == LiqClass.EXTREME) " !!" else if (k == LiqClass.LARGE) " !" else "", 58, c),
                         Triple("${num(e.origQty, 3)} ${e.origUnit}", 0, Q.Muted))
                 }
             }

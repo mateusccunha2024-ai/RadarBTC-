@@ -329,7 +329,8 @@ fun HeatChart(d: HeatData, img: ImageBitmap, real: List<LiqEvent>, price: Double
                         val k = if (maxB > 0) (ol.btc / maxB).toFloat().coerceIn(0f, 1f) else 0f
                         val c = if (ol.short) Q.Sell else Q.Buy
                         val x0 = x(ol.bornMs.toDouble()).coerceIn(0f, w)
-                        drawLine(c.copy(alpha = 0.5f + 0.5f * k), Offset(x0, yy), Offset(w, yy), (1f + 2f * k) * u)
+                        drawLine(c.copy(alpha = 0.3f + 0.7f * k), Offset(x0, yy), Offset(w, yy), (0.8f + 2.2f * k) * u)
+                        if (k < 0.08f) return@forEach // níveis pequenos: só a linha, sem rótulo (com "Todos" são dezenas)
                         val lay = tm.measure(num(ol.btc, if (ol.btc < 10) 1 else 0) + " BTC", axis.copy(color = c))
                         if (labelYs.any { kotlin.math.abs(it - yy) < lay.size.height + 2f * u }) return@forEach
                         labelYs += yy

@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import com.cunhac.btcradar.engine.CORE_VENUES
 import com.cunhac.btcradar.engine.ConnState
 import com.cunhac.btcradar.engine.Hub
+import com.cunhac.btcradar.engine.LIQ_VENUES
 import com.cunhac.btcradar.engine.TerminalState
 import com.cunhac.btcradar.engine.Venue
 import kotlin.math.roundToInt
@@ -259,7 +260,7 @@ private fun TopBar(s: TerminalState, onSettings: () -> Unit) {
             T("● ${v.label}", if (ok) Q.Buy else if (down) Q.Sell else Q.Warn, 12, modifier = Modifier.padding(end = 8.dp))
         }
         T("Liq.:", Q.Muted, 11, modifier = Modifier.padding(start = 4.dp, end = 4.dp))
-        Venue.entries.filter { !it.core }.forEach { v -> T("● ${v.label}", venueDot(s, v), 11, modifier = Modifier.padding(end = 6.dp)) }
+        LIQ_VENUES.filter { !it.core }.forEach { v -> T("● ${v.label}", venueDot(s, v), 11, modifier = Modifier.padding(end = 6.dp)) }
         // Contadores detalhados (trades, liquidações) ficam na aba Status; aqui só o ritmo de mensagens.
         T(String.format(BR, "%,.0f msg/s", s.msgsPerSec), Q.Muted, 11,
             modifier = Modifier.weight(1f).padding(horizontal = 12.dp), align = TextAlign.End)
@@ -306,7 +307,7 @@ private fun CompactTopBar(s: TerminalState, onSettings: () -> Unit) {
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             T("Liquidações:", Q.Muted, 11, modifier = Modifier.padding(end = 4.dp))
-            Venue.entries.filter { !it.core }.forEach { v -> T("● ${v.label}", venueDot(s, v), 11, modifier = Modifier.padding(end = 6.dp)) }
+            LIQ_VENUES.filter { !it.core }.forEach { v -> T("● ${v.label}", venueDot(s, v), 11, modifier = Modifier.padding(end = 6.dp)) }
         }
     }
     }
