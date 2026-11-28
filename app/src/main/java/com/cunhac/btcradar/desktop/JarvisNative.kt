@@ -64,7 +64,11 @@ object JarvisNative {
                 putString("prompt", prompt); putInt("n", maxTokens); putFloat("temp", temperature); putStringArrayList("stop", ArrayList(stop))
             }
         } catch (e: java.io.IOException) { llmReady = false; throw IllegalStateException(e.message ?: "a IA fechou") }
-        r.getString("err")?.let { error(it) }
+        r.getString("err")?.let { e ->
+            // Processo da IA recriado sem o modelo (caiu e voltou): trata como queda para mostrar o motivo.
+            if (e == "modelo não carregado") { llmReady = false; LlmRemote.crash = LlmRemote.crash ?: "a IA fechou e o Android a reabriu sem o modelo"; LlmRemote.unbind() }
+            error(e)
+        }
         r.getString("text").orEmpty()
     }
 

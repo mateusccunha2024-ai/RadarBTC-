@@ -107,8 +107,12 @@ internal object LlmRemote {
         unbind()
         val latch = CountDownLatch(1)
         val c = object : ServiceConnection {
+            private var once = false
             override fun onServiceConnected(name: ComponentName?, b: IBinder?) {
                 if (conn !== this || b == null) return
+                // O Android recriou o processo da IA depois de uma queda: ele volta vazio, sem o modelo. Conta como queda.
+                if (once) { lostService(); return }
+                once = true
                 runCatching { b.linkToDeath({ lostService() }, 0) }
                 lost = false
                 service = Messenger(b)
