@@ -146,6 +146,13 @@ object JarvisNative {
     }
 
     /** Pesquisa diária só no Wi-Fi (rede sem cobrança por dados). */
+    /** Memória livre do celular em MB (o Android mata o app se a IA não couber). */
+    fun freeRamMb(): Long = runCatching {
+        val am = Platform.app.getSystemService(android.app.ActivityManager::class.java)
+        val mi = android.app.ActivityManager.MemoryInfo(); am.getMemoryInfo(mi)
+        mi.availMem / 1_048_576L
+    }.getOrDefault(-1L)
+
     fun unmetered(): Boolean = runCatching {
         val cm = Platform.app.getSystemService(android.net.ConnectivityManager::class.java)
         cm.activeNetwork != null && !cm.isActiveNetworkMetered

@@ -129,13 +129,13 @@ object JarvisMemory {
         refresh()
     } }
 
-    private fun refresh() { size = items.size; confirmed = items.count { it.confirmations >= 2 || it.kind == "resumo" } }
+    private fun refresh() { size = items.size; confirmed = items.count { it.confirmations >= 2 || it.kind == "resumo" || it.kind == "conceito" } }
 
     fun all(): List<Knowledge> { load(); return synchronized(items) { items.toList() } }
 
     fun save() = synchronized(items) {
         val now = System.currentTimeMillis()
-        items.removeAll { now - it.timeMs > KEEP_MS }
+        items.removeAll { now - it.timeMs > (if (it.kind == "conceito") 365 * 86_400_000L else KEEP_MS) }
         while (items.size > MAX) items.removeAt(0)
         runCatching {
             file.writeText(buildJsonArray {
@@ -175,12 +175,13 @@ object JarvisMemory {
             val kw = JvText.words(k.text + " " + k.topic).toSet()
             val hit = qw.intersect(kw).size.toDouble()
             val days = (now - k.timeMs) / 86_400_000.0
-            k to hit * (1 + 0.5 * (k.confirmations - 1).coerceAtMost(3)) * (if (k.kind == "resumo") 1.3 else 1.0) / (1 + days / 7)
+            k to hit * (1 + 0.5 * (k.confirmations - 1).coerceAtMost(3)) * (if (k.kind == "resumo") 1.3 else 1.0) / (1 + days / (if (k.kind == "conceito") 90 else 7))
         }.filter { it.second > 0 }.sortedByDescending { it.second }.take(n).map { it.first }
     }
 
     fun asFacts(q: String): List<Fact> = search(q, 4).map { k ->
         val d = java.text.SimpleDateFormat("dd/MM", BR).format(java.util.Date(k.timeMs))
+        if (k.kind == "conceito") return@map Fact("Conceito (Wikipedia): ${k.text}", k.url.ifBlank { k.source })
         Fact("Memória ($d, ${k.confirmations} ${if (k.confirmations == 1) "fonte" else "fontes"}): ${k.text}", k.source)
     }
 
@@ -435,7 +436,7 @@ object JarvisResearch {
                 for (n in news) if (JarvisMemory.add(Knowledge("n" + Integer.toHexString((n.title + n.source).hashCode()), n.title, n.source.ifBlank { "Google News" },
                         n.url, n.timeMs, topic, setOf(n.source.ifBlank { "Google News" }), "news"))) added++
                 // Com a IA pronta: um resumo curto por tema, só com as manchetes (conferido número a número).
-                if (Jarvis.brain == BrainState.READY && news.size >= 2) {
+                if (news.size >= 2 && Jarvis.brain == BrainState.READY) {
                     val facts = news.map { it.title + " [" + it.source + "]" }
                     val sum = runCatching { Jarvis.summarize(topic, facts) }.getOrNull()
                     if (!sum.isNullOrBlank() && Grounding.ungrounded(sum, facts).isEmpty())
@@ -444,6 +445,8 @@ object JarvisResearch {
                 }
             }
             JarvisMemory.save()
+            // Curiosidade: termos novos que apareceram nas manchetes viram conceitos (Wikipedia).
+            runCatching { added += JarvisCuriosity.learn().size }
             ScoreBook.resolve()
             SettingsStore.put("jv.res.queue", "")
             lastMs = System.currentTimeMillis(); SettingsStore.put("jv.res.last", lastMs.toString())
@@ -707,6 +710,153 @@ object JarvisEval {
             last = res
             SettingsStore.put("jv.eval.hist", (history + res.score).takeLast(20).joinToString(","))
             return res
+        } finally { running = false }
+    }
+}
+
+// =====================================================================================
+// Curiosidade: aprende coisas novas sozinho a partir do que aparece nas pesquisas
+// =====================================================================================
+
+/**
+ * Lê as manchetes guardadas, acha nomes e termos que começaram a aparecer (em 3+ manchetes de 2+ fontes) e que o Jarvis
+ * ainda não conhece, e pesquisa cada um na Wikipedia. O resumo vira conhecimento "conceito" com fonte e link, e o termo
+ * entra na pesquisa de notícias do dia seguinte. Nada é inventado: sem página na Wikipedia, o termo é ignorado.
+ */
+object JarvisCuriosity {
+    data class Concept(val term: String, val title: String, val text: String, val url: String, val lang: String)
+
+    var running by mutableStateOf(false); private set
+    var lastMs by mutableStateOf(SettingsStore.s("jv.cur.last", "0").toLongOrNull() ?: 0L); private set
+    /** Últimos termos aprendidos (mais novo primeiro). */
+    var recent by mutableStateOf(SettingsStore.s("jv.cur.recent", "").split('\u0001').filter { it.isNotBlank() }); private set
+
+    private fun done(): Set<String> = SettingsStore.s("jv.cur.done", "").split('\u0001').filter { it.isNotBlank() }.toSet()
+    private fun markDone(keys: Collection<String>) =
+        SettingsStore.put("jv.cur.done", (done() + keys).toList().takeLast(300).joinToString("\u0001"))
+
+    /** Palavras que começam com maiúscula em manchete mas não são nomes. */
+    private val COMMON = setOf(
+        "the", "a", "an", "and", "or", "of", "in", "on", "at", "to", "for", "with", "by", "from", "as", "is", "are", "was", "be", "its",
+        "new", "how", "why", "what", "who", "when", "where", "will", "can", "may", "after", "before", "over", "under", "up", "down",
+        "says", "said", "report", "reports", "week", "today", "news", "live", "update", "updates", "analysis", "opinion", "video",
+        "price", "prices", "stock", "stocks", "shares", "market", "markets", "rate", "rates", "cut", "cuts", "hike", "high", "low",
+        "record", "rally", "falls", "rises", "jumps", "drops", "surges", "slides", "gains", "losses", "trading", "trade", "deal",
+        "first", "last", "next", "more", "most", "less", "top", "big", "this", "that", "these", "here", "now", "amid", "than", "into",
+        "o", "a", "os", "as", "de", "do", "da", "dos", "das", "em", "no", "na", "nos", "nas", "e", "ou", "um", "uma", "por", "para",
+        "com", "sem", "sobre", "apos", "após", "ante", "mais", "menos", "novo", "nova", "hoje", "semana", "ano", "mes", "mês", "dia",
+        "alta", "queda", "sobe", "cai", "dispara", "despenca", "recorde", "preco", "preço", "precos", "preços", "acoes", "ações",
+        "mercado", "mercados", "juros", "taxa", "bolsa", "dolar", "dólar", "real", "veja", "entenda", "saiba", "diz", "afirma",
+        "january", "february", "march", "april", "june", "july", "august", "september", "october", "november", "december",
+        "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "q1", "q2", "q3", "q4",
+    )
+    /** O que o Jarvis já conhece pelos próprios dados (não precisa pesquisar). */
+    private val BASE = setOf("bitcoin", "btc", "crypto", "cripto", "fed", "federal reserve", "etf", "etfs", "google news", "yahoo", "reuters",
+        "bloomberg", "cnbc", "us", "eua", "u.s.", "wall street", "nasdaq", "s&p", "s&p 500", "dow", "dow jones", "nyse", "sec")
+
+    private val CAP = Regex("^[\\p{Lu}][\\p{L}\\p{N}&'.\\-]*$")
+
+    /** Tira o " - Fonte" do fim das manchetes do Google News. */
+    fun cleanTitle(t: String): String = t.replace(Regex("\\s+[-–|]\\s+[^-–|]{2,40}$"), "").trim()
+
+    /** Nomes de 1 a 3 palavras com inicial maiúscula (fora a primeira palavra da manchete). */
+    fun phrases(title: String): Set<String> {
+        val words = cleanTitle(title).split(Regex("[\\s,:;!?()\"“”‘’]+")).filter { it.isNotBlank() }
+        val out = LinkedHashSet<String>()
+        var run = ArrayList<String>()
+        fun flush() {
+            if (run.isNotEmpty()) {
+                for (len in 1..minOf(3, run.size)) for (i in 0..run.size - len) {
+                    val p = run.subList(i, i + len).joinToString(" ").trimEnd('.', '\'').removeSuffix("'s").removeSuffix("’s")
+                    val f = JarvisText.fold(p)
+                    if (p.length >= 3 && f !in BASE && run.subList(i, i + len).none { JarvisText.fold(it.trimEnd('.')) in COMMON } && !p.any { it.isDigit() }) out += p
+                }
+            }
+            run = ArrayList()
+        }
+        words.forEachIndexed { i, w -> if (i > 0 && CAP.matches(w) && w.length >= 2) run += w else flush() }
+        flush()
+        return out
+    }
+
+    /**
+     * Termos novos: aparecem em pelo menos [minTitles] manchetes de [minSources] fontes diferentes e não estão em [known].
+     * Entre um termo e um pedaço dele (ex.: "Jerome Powell" e "Powell"), fica o mais completo quando tem a mesma força.
+     */
+    fun candidates(news: List<Pair<String, String>>, known: Set<String>, max: Int = 3, minTitles: Int = 3, minSources: Int = 2): List<String> {
+        val titles = HashMap<String, MutableSet<String>>(); val sources = HashMap<String, MutableSet<String>>(); val shown = HashMap<String, String>()
+        for ((title, source) in news) for (p in phrases(title)) {
+            val k = JarvisText.fold(p)
+            titles.getOrPut(k) { HashSet() } += JarvisText.fold(cleanTitle(title)); sources.getOrPut(k) { HashSet() } += source
+            shown.putIfAbsent(k, p)
+        }
+        val knownF = known.map { JarvisText.fold(it) }.toSet()
+        val ok = titles.keys.filter { k -> titles[k]!!.size >= minTitles && sources[k]!!.size >= minSources && k !in knownF && knownF.none { it == k || it.contains(k) } }
+        val kept = ok.filter { k -> ok.none { o -> o != k && o.contains(k) && titles[o]!!.size >= titles[k]!!.size } }
+        return kept.sortedWith(compareByDescending<String> { titles[it]!!.size }.thenByDescending { it.length }).take(max).map { shown[it]!! }
+    }
+
+    private fun lang() = when (I18n.lang.code) { "pt", "es", "fr", "de", "it", "ja", "zh", "ko", "ru" -> I18n.lang.code; else -> "en" }
+
+    fun searchUrl(lang: String, q: String) = "https://$lang.wikipedia.org/w/rest.php/v1/search/title?limit=3&q=" + java.net.URLEncoder.encode(q, "UTF-8")
+    fun summaryUrl(lang: String, key: String) = "https://$lang.wikipedia.org/api/rest_v1/page/summary/" + java.net.URLEncoder.encode(key, "UTF-8").replace("+", "%20")
+
+    /** Primeira página cujo título bate com o termo (sem página parecida, devolve null: nada de chute). */
+    fun parseSearch(json: String, term: String): String? = runCatching {
+        val t = JarvisText.fold(term)
+        Net.parse(json).jsonObject["pages"]?.jsonArray?.map { it.jsonObject }?.firstOrNull { p ->
+            val title = JarvisText.fold((p["title"] as? JsonPrimitive)?.contentOrNull ?: "")
+            title == t || title.startsWith("$t ") || title.startsWith("$t (") || (t.length >= 6 && title.contains(t))
+        }?.let { (it["key"] as? JsonPrimitive)?.contentOrNull }
+    }.getOrNull()
+
+    /** Resumo da página: 2 primeiras frases, com link. Página de desambiguação não serve. */
+    fun parseSummary(json: String, term: String, lang: String): Concept? {
+        val o = runCatching { Net.parse(json).jsonObject }.getOrNull() ?: return null
+        if ((o["type"] as? JsonPrimitive)?.contentOrNull == "disambiguation") return null
+        val extract = (o["extract"] as? JsonPrimitive)?.contentOrNull?.trim().orEmpty()
+        if (extract.length < 40) return null
+        val text = extract.split(Regex("(?<=[.!?])\\s+")).take(2).joinToString(" ").take(420)
+        val title = (o["title"] as? JsonPrimitive)?.contentOrNull ?: term
+        val url = ((o["content_urls"] as? JsonObject)?.get("desktop") as? JsonObject)?.get("page")?.let { (it as? JsonPrimitive)?.contentOrNull }
+            ?: ("https://$lang.wikipedia.org/wiki/" + title.replace(' ', '_'))
+        return Concept(term, title, text, url, lang)
+    }
+
+    suspend fun lookup(term: String): Concept? {
+        for (l in listOf(lang(), "en").distinct()) {
+            val key = runCatching { parseSearch(Net.getText(searchUrl(l, term)), term) }.getOrNull() ?: continue
+            val c = runCatching { parseSummary(Net.getText(summaryUrl(l, key)), term, l) }.getOrNull()
+            if (c != null) return c
+        }
+        return null
+    }
+
+    /** Uma rodada: acha até [max] termos novos nas manchetes dos últimos 3 dias e aprende o que a Wikipedia diz. */
+    suspend fun learn(max: Int = 3): List<String> = withContext(Dispatchers.IO) {
+        if (running) return@withContext emptyList()
+        running = true
+        try {
+            val now = System.currentTimeMillis()
+            val all = JarvisMemory.all()
+            val news = all.filter { it.kind == "news" && now - it.timeMs < 3 * 86_400_000L }.map { it.text to it.source }
+            val known = done() + all.filter { it.kind == "conceito" }.map { it.topic } + JarvisSettings.symbols()
+            val terms = candidates(news, known, max)
+            val learned = ArrayList<String>()
+            for (t in terms) {
+                val c = lookup(t)
+                if (c != null && JarvisMemory.add(Knowledge("c" + Integer.toHexString(JarvisText.fold(t).hashCode()), "${c.title}: ${c.text}",
+                        "Wikipedia", c.url, now, t, setOf("Wikipedia"), "conceito"))) {
+                    learned += c.title
+                    JarvisResearch.enqueue(t) // amanhã a pesquisa de notícias inclui o termo novo
+                }
+            }
+            markDone(terms) // pesquisado (achou ou não): não repete todo dia
+            if (learned.isNotEmpty()) JarvisMemory.save()
+            recent = (learned + recent).distinct().take(12); SettingsStore.put("jv.cur.recent", recent.joinToString("\u0001"))
+            lastMs = now; SettingsStore.put("jv.cur.last", now.toString())
+            runCatching { FileLog.info("jarvis curiosidade: ${terms.size} termos novos, aprendeu ${learned.joinToString(", ")}") }
+            learned
         } finally { running = false }
     }
 }

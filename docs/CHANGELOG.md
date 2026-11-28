@@ -1,5 +1,16 @@
 # Changelog
 
+## V8 — atualização 15 (2026-11-27) · Jarvis não fecha o app e aprende coisas novas sozinho
+- **O app não fecha mais ao abrir o Jarvis:** ao abrir o painel nada pesado roda na hora (pesquisa e sincronização esperam o
+  painel abrir); a IA só carrega se houver memória livre para ela (senão avisa e responde com os dados do app); o microfone carrega
+  fora da tela principal (antes podia travar a tela e o sistema fechava o app); todo botão do painel virou à prova de erro.
+- **Se o app fechar, ele lembra por quê:** guarda o motivo e, se estava com o Jarvis aberto, a próxima abertura é em modo seguro
+  (nada roda sozinho) e mostra o motivo no painel. Quem fechar o app continua desligado até você tocar em "Tentar de novo".
+- **Aprende coisas novas sozinho:** quando um nome ou termo novo aparece em 3+ manchetes de 2+ fontes nas pesquisas, o Jarvis lê o
+  resumo na Wikipedia, guarda com o link (como "Conceito (Wikipedia)") e passa a pesquisar notícias sobre ele. Roda com a pesquisa
+  diária e pelo botão "Aprender coisas novas agora" em ⚙ › Inteligência, que também mostra o que aprendeu recentemente.
+- **Teste no celular de verdade:** cada mudança agora abre o Jarvis num emulador Android, baixa a IA, a voz e o microfone e usa tudo.
+
 ## V8 — atualização 14 (2026-11-27) · Jarvis aprende sozinho
 - **Não inventa números:** cada número da resposta da IA é conferido contra os dados; se não bater, ela refaz ou a resposta sai direto dos dados.
 - **Ferramentas:** a IA escolhe o que consultar antes de responder (dados do app, memória, comparar dois ativos, notícias, plano com outro stop/alvo). Pedidos como "plano da Tesla com stop de 1% e alvo 3R" funcionam.

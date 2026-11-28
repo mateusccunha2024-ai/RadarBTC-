@@ -346,7 +346,7 @@ data class JarvisMsg(
     val scan: List<ScanRow>? = null, val engine: String = "", val timeMs: Long = System.currentTimeMillis(),
 )
 
-enum class BrainState { OFF, NOT_INSTALLED, LOADING, READY, ERROR, UNSUPPORTED }
+enum class BrainState { OFF, NOT_INSTALLED, IDLE, LOADING, READY, ERROR, UNSUPPORTED }
 
 object Jarvis {
     val messages = mutableStateListOf<JarvisMsg>()
@@ -362,44 +362,116 @@ object Jarvis {
     private var loadedVoice: String? = null
     private var loadedMic: String? = null
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private val speakScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    /** Nenhum erro dentro do assistente pode fechar o app: vira aviso no painel e linha no log. */
+    private val guard = kotlinx.coroutines.CoroutineExceptionHandler { _, e ->
+        runCatching { FileLog.info("jarvis erro: $e") }
+        notice = L("O Jarvis teve um erro e se recuperou") + ": " + (e.message ?: e.javaClass.simpleName).take(120)
+        busy = false; listening = false; speaking = false
+    }
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default + guard)
+    private val speakScope = CoroutineScope(SupervisorJob() + Dispatchers.IO + guard)
 
     /** Carrega (ou troca) os modelos que já estão no aparelho. Chamado ao abrir o painel e depois de baixar. */
+    /**
+     * Ao abrir o painel: só confere o que está baixado (nada nativo é carregado aqui, então abrir o Jarvis nunca fecha o app).
+     * A IA, a voz e o microfone carregam na primeira vez que são usados, protegidos por [guarded].
+     */
     fun prepare() = scope.launch {
         val item = JarvisSettings.llmItem
-        when {
-            item == null -> { JarvisNative.unloadLlm(); loadedLlm = null; brain = BrainState.OFF }
-            !JarvisNative.llmSupported -> brain = BrainState.UNSUPPORTED
-            !JarvisModels.installed(item) -> brain = BrainState.NOT_INSTALLED
-            loadedLlm != item.id || !JarvisNative.llmLoaded -> {
-                brain = BrainState.LOADING
-                val err = JarvisNative.loadLlm(JarvisModels.file(item, item.files.first().second).path)
-                if (err == null) { loadedLlm = item.id; brain = BrainState.READY; brainError = null } else { brain = BrainState.ERROR; brainError = err }
-            }
-            else -> brain = BrainState.READY
+        if (item == null) { runCatching { JarvisNative.unloadLlm() }; loadedLlm = null }
+        brain = when {
+            item == null -> BrainState.OFF
+            !JarvisNative.llmSupported -> BrainState.UNSUPPORTED
+            !JarvisModels.installed(item) -> BrainState.NOT_INSTALLED
+            crashed("llm-${item.id}") -> { brainError = L("Este modelo fechou o app neste aparelho. Escolha o modelo leve ou toque em Tentar de novo."); BrainState.ERROR }
+            loadedLlm == item.id && JarvisNative.llmLoaded -> BrainState.READY
+            brain == BrainState.ERROR && loadedLlm == null && brainError != null && !crashedAny() -> BrainState.ERROR
+            else -> BrainState.IDLE
         }
-        val v = JarvisSettings.voice
-        val vk = "${v.lang}"
-        if (JarvisModels.installed(JarvisModels.VOICE) && (loadedVoice != vk || !JarvisNative.ttsLoaded)) {
-            val d = JarvisModels.dir(JarvisModels.VOICE)
-            val lex = listOf(if (v.lang == "en-gb") "lexicon-gb-en.txt" else "lexicon-us-en.txt", "lexicon-zh.txt").joinToString(",") { java.io.File(d, it).path }
-            val err = JarvisNative.loadTts(d, "model.int8.onnx", v.lang, lex, java.io.File(d, "dict").path)
-            voiceReady = err == null; loadedVoice = if (err == null) vk else null
-        } else voiceReady = JarvisNative.ttsLoaded
-        val mi = JarvisSettings.micItem
-        val mk = mi.id + I18n.lang.code
-        if (JarvisModels.installed(mi) && (loadedMic != mk || !JarvisNative.asrLoaded)) {
-            val p = if (mi == JarvisModels.MIC_TINY) "tiny" else "base"
-            val err = JarvisNative.loadAsr(JarvisModels.file(mi, "$p-encoder.int8.onnx"), JarvisModels.file(mi, "$p-decoder.int8.onnx"),
-                JarvisModels.file(mi, "$p-tokens.txt"), whisperLang())
-            micReady = err == null; loadedMic = if (err == null) mk else null
-        } else micReady = JarvisNative.asrLoaded
-        // Aprende sozinho: pesquisa do dia (Wi-Fi, 1 vez a cada 20 h) e sincronização com o cérebro na nuvem.
+        voiceReady = JarvisModels.installed(JarvisModels.VOICE) && !crashed("voice")
+        micReady = JarvisModels.installed(JarvisSettings.micItem) && !crashed("mic-${JarvisSettings.micItem.id}")
+        crashedList = listCrashed()
+        JarvisCrash.check()
+        // Modo seguro: o app fechou com o painel aberto da última vez. Nada roda sozinho ao abrir.
+        if (JarvisCrash.safeMode) return@launch
+        // Aprende sozinho: sincronização com o cérebro na nuvem e pesquisa do dia (Wi-Fi, 1 vez a cada 20 h).
+        // Espera o painel terminar de abrir antes de usar a rede.
+        delay(4_000)
         if (!synced) { synced = true; runCatching { CloudBrain.sync() } }
-        if (JarvisResearch.due()) runCatching { JarvisResearch.run() }
+        if (runCatching { JarvisResearch.due() }.getOrDefault(false)) runCatching { JarvisResearch.run() }
     }
     private var synced = false
+
+    // ---------------------------------------------------------------- carga protegida dos modelos nativos
+    /** Modelos que fecharam o app ao carregar (o app pula esses até o usuário tocar em "Tentar de novo"). */
+    var crashedList by mutableStateOf(emptyList<String>()); private set
+    private fun mark(key: String) = java.io.File(JarvisNative.modelsDir, "carregando-$key")
+    private fun bad(key: String) = java.io.File(JarvisNative.modelsDir, "falhou-$key")
+    /** Se ficou a marca "carregando" de uma vez anterior, o app fechou no meio da carga: vira "falhou". */
+    private fun crashed(key: String): Boolean {
+        if (mark(key).exists()) { runCatching { bad(key).writeText(mark(key).readText()); mark(key).delete() } }
+        return bad(key).exists()
+    }
+    private fun listCrashed() = JarvisNative.modelsDir.listFiles()?.filter { it.name.startsWith("falhou-") }?.map { it.name.removePrefix("falhou-") } ?: emptyList()
+    private fun crashedAny() = listCrashed().isNotEmpty()
+    fun retryCrashed() { JarvisNative.modelsDir.listFiles()?.filter { it.name.startsWith("falhou-") || it.name.startsWith("carregando-") }?.forEach { it.delete() }; brainError = null; prepare() }
+
+    private fun <T> guarded(key: String, block: () -> T): T {
+        runCatching { mark(key).writeText(System.currentTimeMillis().toString()) }
+        try { return block() } finally { runCatching { mark(key).delete() } }
+    }
+
+    private val loadLock = Any()
+
+    /** Carrega a IA na primeira pergunta. */
+    fun ensureBrain(): Boolean = synchronized(loadLock) {
+        val item = JarvisSettings.llmItem ?: return false
+        if (loadedLlm == item.id && JarvisNative.llmLoaded) { brain = BrainState.READY; return true }
+        if (!JarvisNative.llmSupported || !JarvisModels.installed(item) || crashed("llm-${item.id}")) return false
+        // Memória livre: sem espaço, o sistema mata o app no meio da carga. Melhor avisar e responder com os dados.
+        val free = runCatching { JarvisNative.freeRamMb() }.getOrDefault(-1L)
+        val need = needRamMb(item)
+        if (free in 0 until need) {
+            brain = BrainState.ERROR
+            brainError = L("Pouca memória livre para esta IA") + " (${free} MB " + L("livres") + ", ${need} MB " + L("necessários") + "). " +
+                L("Feche outros apps ou escolha a IA leve em ⚙.")
+            FileLog.info("jarvis: llm ${item.id} não carregou: ${free} MB livres < ${need} MB")
+            return false
+        }
+        brain = BrainState.LOADING
+        val err = guarded("llm-${item.id}") { JarvisNative.loadLlm(JarvisModels.file(item, item.files.first().second).path) }
+        return if (err == null) { loadedLlm = item.id; brain = BrainState.READY; brainError = null; true } else { brain = BrainState.ERROR; brainError = err; false }
+    }
+
+    /** Memória que a IA precisa livre para carregar (o arquivo é mapeado; o contexto e a conta vão para a RAM). */
+    fun needRamMb(item: JarvisModels.Item): Long = if (Platform.isMobile) (item.sizeMb * 0.75).toLong() + 300 else item.sizeMb.toLong() + 600
+
+    /** Carrega a voz na primeira fala. */
+    internal fun ensureVoice(): Boolean = synchronized(loadLock) {
+        val v = JarvisSettings.voice
+        if (loadedVoice == v.lang && JarvisNative.ttsLoaded) return true
+        if (!JarvisModels.installed(JarvisModels.VOICE) || crashed("voice")) return false
+        val d = JarvisModels.dir(JarvisModels.VOICE)
+        val lex = listOf(if (v.lang == "en-gb") "lexicon-gb-en.txt" else "lexicon-us-en.txt", "lexicon-zh.txt").joinToString(",") { java.io.File(d, it).path }
+        val err = guarded("voice") { JarvisNative.loadTts(d, "model.int8.onnx", v.lang, lex, java.io.File(d, "dict").path) }
+        loadedVoice = if (err == null) v.lang else null
+        if (err != null) notice = L("A voz não carregou") + ": " + err
+        return err == null
+    }
+
+    /** Carrega o microfone no primeiro toque. */
+    internal fun ensureMic(): Boolean = synchronized(loadLock) {
+        val mi = JarvisSettings.micItem
+        val mk = mi.id + I18n.lang.code
+        if (loadedMic == mk && JarvisNative.asrLoaded) return true
+        if (!JarvisModels.installed(mi) || crashed("mic-${mi.id}")) return false
+        val p = if (mi == JarvisModels.MIC_TINY) "tiny" else "base"
+        val err = guarded("mic-${mi.id}") { JarvisNative.loadAsr(JarvisModels.file(mi, "$p-encoder.int8.onnx"), JarvisModels.file(mi, "$p-decoder.int8.onnx"),
+            JarvisModels.file(mi, "$p-tokens.txt"), whisperLang()) }
+        loadedMic = if (err == null) mk else null
+        if (err != null) notice = L("O microfone não carregou") + ": " + err
+        return err == null
+    }
 
     private fun whisperLang() = when (I18n.lang.code) { "zh" -> "zh"; else -> I18n.lang.code }
 
@@ -415,6 +487,7 @@ object Jarvis {
             val reply = runCatching { answer(ctx, q) }.getOrElse { JarvisMsg(false, L("Não consegui buscar os dados agora") + ": " + (it.message ?: ""), engine = "erro") }
             messages += reply; busy = false
             if (JarvisSettings.voiceOn && voiceReady) say(reply.text)
+            busy = false
         }
     }
 
@@ -422,7 +495,7 @@ object Jarvis {
         speakScope.launch {
             JarvisNative.stopSpeaking()
             speaking = true
-            try { JarvisNative.speak(text, JarvisSettings.voice.sid, JarvisSettings.speed) } finally { speaking = false }
+            try { if (ensureVoice()) JarvisNative.speak(text, JarvisSettings.voice.sid, JarvisSettings.speed) } finally { speaking = false }
         }
     }
     fun stopVoice() { JarvisNative.stopSpeaking(); speaking = false }
@@ -442,8 +515,12 @@ object Jarvis {
         JarvisNative.requestMic { ok ->
             if (!ok) { notice = L("Sem permissão do microfone."); return@requestMic }
             stopVoice()
-            val err = JarvisNative.startRecording()
-            if (err == null) listening = true else notice = L(err)
+            // Carregar o Whisper leva segundos: fora da tela, senão o sistema acha que o app travou e fecha.
+            scope.launch {
+                if (!ensureMic()) { micReady = false; return@launch }
+                val err = JarvisNative.startRecording()
+                if (err == null) listening = true else notice = L(err)
+            }
         }
     }
 
@@ -500,13 +577,18 @@ object Jarvis {
      * Pergunta sobre dados: fatos do app + memória + habilidades + placar; com a IA pronta, ela escolhe ferramentas,
      * responde e a resposta é conferida número a número (se inventar, cai para a resposta com os dados).
      */
-    suspend fun answerFacts(ctx: AppContext, q: String, topics: Set<Topic>): FactsAnswer {
+    /** Sempre fora da tela principal: a IA pode levar segundos para carregar e responder. */
+    suspend fun answerFacts(ctx: AppContext, q: String, topics: Set<Topic>): FactsAnswer =
+        withContext(Dispatchers.Default) { answerFactsOffMain(ctx, q, topics) }
+
+    private suspend fun answerFactsOffMain(ctx: AppContext, q: String, topics: Set<Topic>): FactsAnswer {
         val facts = ArrayList(JarvisFacts.collect(ctx, topics))
         facts += JarvisMemory.asFacts(q)
         facts += runCatching { JarvisSkills.run(q) }.getOrDefault(emptyList())
         JarvisFacts.symbol(q)?.let { s -> ScoreBook.fact(s)?.let { facts += it } }
         var card: TradeCard? = null
-        if (brain == BrainState.READY) {
+        val ai = ensureBrain()
+        if (ai) {
             val calls = runCatching { JarvisTools.parse(JarvisNative.complete(plannerPrompt(q), 60, 0.1f, listOf("<|im_end|>", "<|im_start|>"))) }.getOrDefault(emptyList())
             for (c in calls) {
                 val (f, cd) = runCatching { JarvisTools.run(ctx, c, q) }.getOrDefault(emptyList<Fact>() to null)
@@ -516,7 +598,7 @@ object Jarvis {
         }
         if (facts.isEmpty()) { JarvisSkills.noteUnknown(q); JarvisResearch.enqueue(q) }
         val used = facts.take(56)
-        if (brain == BrainState.READY && used.isNotEmpty()) {
+        if (ai && used.isNotEmpty()) {
             for (strict in listOf(false, true)) {
                 val text = runCatching { llmAnswer(q, used, strict) }.getOrNull() ?: break
                 if (text.isNotBlank() && Grounding.ungrounded(text, used.map { it.text }).isEmpty()) return FactsAnswer(text, used, "IA local", card)
@@ -564,7 +646,7 @@ FACTS:
     private fun ruleAnswer(facts: List<Fact>): String {
         if (facts.isEmpty()) return L("Ainda não tenho dados para isso. Espere os livros conectarem ou abra a aba correspondente.")
         val head = when (brain) {
-            BrainState.READY, BrainState.LOADING -> ""
+            BrainState.READY, BrainState.LOADING, BrainState.IDLE -> ""
             else -> L("Com os dados do app") + ": "
         }
         return head + facts.take(8).joinToString(". ") { L(it.text) } + "."

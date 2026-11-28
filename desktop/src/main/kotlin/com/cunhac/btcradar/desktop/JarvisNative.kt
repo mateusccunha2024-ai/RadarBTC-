@@ -145,6 +145,12 @@ object JarvisNative {
     /** PC: conexão tratada como ilimitada (a pesquisa diária pode rodar). */
     fun unmetered() = true
 
+    /** Memória livre do PC em MB (inclui o que o sistema pode liberar). */
+    fun freeRamMb(): Long = runCatching {
+        val os = java.lang.management.ManagementFactory.getOperatingSystemMXBean() as com.sun.management.OperatingSystemMXBean
+        os.freeMemorySize / 1_048_576L
+    }.getOrDefault(-1L)
+
     /** No Windows não há pedido de permissão em tempo de execução. */
     fun requestMic(onResult: (Boolean) -> Unit) = onResult(true)
 }
