@@ -67,7 +67,7 @@ fun fetchDep(name: String, url: String): File {
     if (!f.exists() || f.length() == 0L) {
         f.parentFile.mkdirs()
         val tmp = File(f.parentFile, "$name.part")
-        java.net.URI(url).toURL().openStream().use { i -> tmp.outputStream().use { o -> i.copyTo(o) } }
+        uri(url).toURL().openStream().use { i -> tmp.outputStream().use { o -> i.copyTo(o) } }
         if (!tmp.renameTo(f)) error("não foi possível salvar $name")
     }
     return f
