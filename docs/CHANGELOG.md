@@ -1,5 +1,24 @@
 # Changelog
 
+## V8 — atualização 13 (2026-11-27) · Jarvis, o assistente de IA dentro do app
+- Botão **Jarvis · IA** no topo: abre um painel ao lado (no celular, tela cheia). Pergunte por texto ou pelo microfone; a resposta vem
+  em texto e na voz do assistente.
+- **IA no próprio aparelho:** Qwen2.5 Instruct (0,5B leve ou 1,5B padrão, GGUF, Apache 2.0) rodando com llama.cpp. Sem conta, sem
+  nuvem. O app junta os dados que já mostra (preço, livro, paredes, fluxo/CVD, liquidações, zonas ímã, funding, OI, ETFs, macro,
+  agenda, notícias) e a IA só pode usar esses dados ("Dados usados" mostra cada um com a fonte). Sem o modelo, o assistente responde
+  direto com os dados do app.
+- **Voz própria e microfone locais:** voz neural Kokoro-82M (português, inglês britânico estilo Jarvis, espanhol, francês, italiano,
+  japonês, chinês) e transcrição Whisper, via sherpa-onnx. Nenhum serviço pago ou externo.
+- **Fluxo de trade do day-trader-skill** (MIT, Jake Schincariol) para **BTC e ações dos EUA**: scanner da lista (rompimento da
+  abertura de 15 min + máxima de 20 dias, média de 20, sobrevenda), notícias do ticker, gatilho de entrada (1º fechamento acima da
+  máxima da abertura), stop no meio da abertura e alvo 2R, **Time Machine** (10.000 replays do resto do dia com os candles de 5 min do
+  próprio ativo + a mesma regra em cada sessão passada, leque 5–95%), tamanho pelas suas regras (perda máx., teto, ordem máx., caixa),
+  checagem de risco PASSA/BLOQUEADO e boleta bracket só para leitura.
+- **Nenhuma ordem é enviada.** Só é possível registrar um *paper trade* depois de um "Sim, registrar" explícito; isso liga alertas de
+  stop, alvo e hora de zerar e conta para os limites diários.
+- Modelos baixados uma vez em ⚙ do painel (IA 0,5–1,1 GB, voz 126 MB, microfone 98–152 MB). IA local no Android exige Android 9+ e
+  64 bits. Detalhes em docs/JARVIS.md.
+
 ## V8 — atualização pelo próprio app (2026-11-27)
 - Faixa no topo "Nova versão disponível · Atualizar agora": o app consulta as versões publicadas (a cada 3 h e ao abrir),
   baixa o instalador e instala sem passar pelo GitHub.

@@ -20,8 +20,37 @@ kotlin {
     }
 }
 
+// Assistente (Jarvis): voz e microfone locais com sherpa-onnx. Os jars oficiais saem das releases do GitHub
+// (não estão no Maven Central); baixados uma vez para .deps/.
+val sherpaVersion = "2.0.3"
+fun fetchDep(name: String, url: String): File {
+    val f = rootProject.file(".deps/$name")
+    if (!f.exists() || f.length() == 0L) {
+        f.parentFile.mkdirs()
+        val tmp = File(f.parentFile, "$name.part")
+        uri(url).toURL().openStream().use { i -> tmp.outputStream().use { o -> i.copyTo(o) } }
+        if (!tmp.renameTo(f)) error("não foi possível salvar $name")
+    }
+    return f
+}
+val osName = System.getProperty("os.name").lowercase()
+val sherpaNative = when {
+    osName.contains("win") -> "win-x64"
+    osName.contains("mac") -> if (System.getProperty("os.arch").contains("aarch64")) "osx-aarch64" else "osx-x64"
+    else -> if (System.getProperty("os.arch").contains("aarch64")) "linux-aarch64" else "linux-x64"
+}
+val sherpaBase = "https://github.com/k2-fsa/sherpa-onnx/releases/download/v$sherpaVersion"
+val sherpaJars = files(
+    fetchDep("sherpa-onnx-jvm-$sherpaVersion.jar", "$sherpaBase/sherpa-onnx-jvm-$sherpaVersion.jar"),
+    fetchDep("sherpa-onnx-native-lib-$sherpaNative-$sherpaVersion.jar", "$sherpaBase/sherpa-onnx-native-lib-$sherpaNative-$sherpaVersion.jar"),
+)
+
 dependencies {
     implementation(compose.desktop.currentOs)
+    // Assistente: IA local (llama.cpp), voz/microfone (sherpa-onnx) e extração dos modelos (.tar.bz2)
+    implementation("de.kherud:llama:4.2.0")
+    implementation(sherpaJars)
+    implementation("org.apache.commons:commons-compress:1.27.1")
     implementation(compose.material3)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")

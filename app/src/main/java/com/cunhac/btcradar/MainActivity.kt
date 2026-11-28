@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.ui.Modifier
+import com.cunhac.btcradar.desktop.JarvisNative
 import com.cunhac.btcradar.desktop.Platform
 import com.cunhac.btcradar.desktop.Q
 import com.cunhac.btcradar.desktop.RadarCore
@@ -23,11 +24,17 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         if (Build.VERSION.SDK_INT >= 33 && !Platform.canNotify()) requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
         if (Platform.backgroundOn) runCatching { Platform.setBackground(true) }
+        JarvisNative.activity = java.lang.ref.WeakReference(this)
         val ctx = RadarCore.ctx
         setContent {
             RadarTheme {
                 Box(Modifier.fillMaxSize().background(Q.Bg).systemBarsPadding()) { Terminal(ctx) }
             }
         }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == JarvisNative.REQ_MIC) JarvisNative.onPermission(grantResults.firstOrNull() == android.content.pm.PackageManager.PERMISSION_GRANTED)
     }
 }

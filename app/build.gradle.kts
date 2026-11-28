@@ -19,6 +19,8 @@ android {
         targetSdk = 35
         versionCode = runNumber
         versionName = "0.1.$runNumber"
+        // Bibliotecas nativas do assistente (IA e voz): celulares de 64 e 32 bits e emulador x86_64.
+        ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64") }
     }
     signingConfigs {
         create("radar") {
@@ -51,12 +53,32 @@ android {
     lint { checkReleaseBuilds = false; abortOnError = false }
     packaging {
         resources {
-            pickFirsts += setOf("META-INF/LICENSE.md", "META-INF/NOTICE.md", "META-INF/LICENSE.txt", "META-INF/NOTICE.txt")
+            pickFirsts += setOf("META-INF/LICENSE.md", "META-INF/NOTICE.md", "META-INF/LICENSE.txt", "META-INF/NOTICE.txt",
+                "META-INF/LICENSE", "META-INF/NOTICE", "META-INF/DEPENDENCIES", "META-INF/FastDoubleParser-LICENSE", "META-INF/FastDoubleParser-NOTICE")
+            excludes += setOf("META-INF/versions/**/module-info.class", "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
         }
     }
 }
 
+// Assistente (Jarvis): voz e microfone locais com sherpa-onnx (AAR oficial das releases do GitHub; baixado uma vez para .deps/).
+val sherpaVersion = "2.0.3"
+fun fetchDep(name: String, url: String): File {
+    val f = rootProject.file(".deps/$name")
+    if (!f.exists() || f.length() == 0L) {
+        f.parentFile.mkdirs()
+        val tmp = File(f.parentFile, "$name.part")
+        uri(url).toURL().openStream().use { i -> tmp.outputStream().use { o -> i.copyTo(o) } }
+        if (!tmp.renameTo(f)) error("não foi possível salvar $name")
+    }
+    return f
+}
+val sherpaAar = fetchDep("sherpa-onnx-$sherpaVersion.aar", "https://github.com/k2-fsa/sherpa-onnx/releases/download/v$sherpaVersion/sherpa-onnx-$sherpaVersion.aar")
+
 dependencies {
+    // Assistente: IA local (llama.cpp para Android, exige Android 9+ em tempo de execução), voz/microfone e extração dos modelos
+    implementation("net.ladenthin:llama-android:6.0.0")
+    implementation(files(sherpaAar))
+    implementation("org.apache.commons:commons-compress:1.27.1")
     val composeBom = platform("androidx.compose:compose-bom:2024.12.01")
     implementation(composeBom)
     implementation("androidx.compose.ui:ui")

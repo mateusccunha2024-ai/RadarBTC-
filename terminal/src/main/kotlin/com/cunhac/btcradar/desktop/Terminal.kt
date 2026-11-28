@@ -100,7 +100,7 @@ object TabPrefs {
 }
 
 @Composable
-fun Terminal(ctx: AppContext, initialTab: Int? = null, showSettings: Boolean = false, showTabs: Boolean = false) {
+fun Terminal(ctx: AppContext, initialTab: Int? = null, showSettings: Boolean = false, showTabs: Boolean = false, showJarvis: Boolean = false) {
     val base = LocalDensity.current
     // Zoom da interface: multiplica a densidade (tudo cresce junto, sem quebrar o layout).
     // Tamanho da fonte: multiplica só a escala do texto (o resto do layout se reorganiza para caber).
@@ -108,24 +108,28 @@ fun Terminal(ctx: AppContext, initialTab: Int? = null, showSettings: Boolean = f
         // Abaixo de 760 dp (celular em pé, já contando o zoom) o layout vira coluna única; com fonte maior
         // o limite sobe junto, para o texto maior não ser espremido em colunas.
         BoxWithConstraints(Modifier.fillMaxSize()) {
-            CompositionLocalProvider(LocalCompact provides (maxWidth < 760.dp * UiScale.font)) { TerminalBody(ctx, initialTab, showSettings, showTabs) }
+            CompositionLocalProvider(LocalCompact provides (maxWidth < 760.dp * UiScale.font)) { TerminalBody(ctx, initialTab, showSettings, showTabs, showJarvis) }
         }
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun TerminalBody(ctx: AppContext, initialTab: Int?, showSettings: Boolean, showTabs: Boolean) {
+private fun TerminalBody(ctx: AppContext, initialTab: Int?, showSettings: Boolean, showTabs: Boolean, showJarvis: Boolean) {
     val s by ctx.hub.stateFlow.collectAsState()
     var tabName by remember { mutableStateOf(initialTab?.let { TABS.getOrNull(it) } ?: SettingsStore.s("tab.name", TABS[0])) }
     var settingsOpen by remember { mutableStateOf(showSettings) }
     var tabsOpen by remember { mutableStateOf(showTabs) }
+    // Assistente (Jarvis): painel ao lado no PC, tela cheia no celular.
+    var jarvisOpen by remember { mutableStateOf(showJarvis) }
     fun pick(t: String) { tabName = t; SettingsStore.put("tab.name", t); tabsOpen = false }
     val tabs = TabPrefs.visible
     val current = if (tabName in tabs) tabName else tabs.first()
     Box(Modifier.fillMaxSize().background(Q.Bg)) {
-        Column(Modifier.fillMaxSize()) {
-            if (compact) CompactTopBar(s, onSettings = { settingsOpen = !settingsOpen }) else TopBar(s, onSettings = { settingsOpen = !settingsOpen })
+        Row(Modifier.fillMaxSize()) {
+        Column(Modifier.weight(1f).fillMaxHeight()) {
+            if (compact) CompactTopBar(s, onSettings = { settingsOpen = !settingsOpen }, jarvisOpen = jarvisOpen) { jarvisOpen = !jarvisOpen }
+            else TopBar(s, onSettings = { settingsOpen = !settingsOpen }, jarvisOpen = jarvisOpen) { jarvisOpen = !jarvisOpen }
             UpdateBar() // "Nova versão disponível · Atualizar agora" (só aparece quando há versão nova)
             if (compact) TabPickerBar(current, orderedTabs(tabs)) { tabsOpen = true }
             // PC: as abas quebram linha quando não cabem (nenhuma fica escondida fora da tela); cada grupo fica junto.
@@ -170,11 +174,14 @@ private fun TerminalBody(ctx: AppContext, initialTab: Int?, showSettings: Boolea
                 }
             }
         }
+        if (jarvisOpen && !compact) JarvisPanel(ctx, onClose = { jarvisOpen = false }, modifier = Modifier.width(420.dp.f).fillMaxHeight())
+        }
         if (tabsOpen && compact) {
             Box(Modifier.fillMaxSize().background(Q.Bg.copy(alpha = 0.55f))
                 .clickable(remember { MutableInteractionSource() }, null) { tabsOpen = false })
             TabSheet(current, orderedTabs(tabs), onPick = { pick(it) }, onClose = { tabsOpen = false })
         }
+        if (jarvisOpen && compact) JarvisPanel(ctx, onClose = { jarvisOpen = false }, modifier = Modifier.fillMaxSize())
         if (settingsOpen) {
             // Véu: clicar fora fecha o menu.
             Box(Modifier.fillMaxSize().background(Q.Bg.copy(alpha = 0.35f))
@@ -258,7 +265,7 @@ private fun TabSheet(current: String, tabs: List<String>, onPick: (String) -> Un
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun TopBar(s: TerminalState, onSettings: () -> Unit) {
+private fun TopBar(s: TerminalState, onSettings: () -> Unit, jarvisOpen: Boolean, onJarvis: () -> Unit) {
     // Blocos que quebram linha quando a janela fica estreita ou a fonte cresce (em vez de cortar com "…").
     FlowRow(Modifier.fillMaxWidth().background(Q.Bg).padding(horizontal = 14.dp, vertical = 6.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -295,6 +302,8 @@ private fun TopBar(s: TerminalState, onSettings: () -> Unit) {
         SmallButton(if (Look.dark) "☾ Escuro" else "☀ Claro") { Look.useDark(!Look.dark) }
         Spacer(Modifier.width(8.dp))
         SmallButton("⚙ Visualização", onClick = onSettings)
+        Spacer(Modifier.width(8.dp))
+        JarvisButton(jarvisOpen, onClick = onJarvis)
         }
     }
     Box(Modifier.fillMaxWidth().height(1.dp).background(Q.Line))
@@ -302,7 +311,7 @@ private fun TopBar(s: TerminalState, onSettings: () -> Unit) {
 
 /** Barra do celular: nome, preço, fontes e o menu; detalhes numa segunda linha que rola para o lado. */
 @Composable
-private fun CompactTopBar(s: TerminalState, onSettings: () -> Unit) {
+private fun CompactTopBar(s: TerminalState, onSettings: () -> Unit, jarvisOpen: Boolean, onJarvis: () -> Unit) {
     BoxWithConstraints(Modifier.fillMaxWidth()) {
     // Telas muito estreitas (ou zoom alto): some o nome do app para o preço e os botões caberem.
     val roomy = maxWidth >= 380.dp * UiScale.font
@@ -313,6 +322,8 @@ private fun CompactTopBar(s: TerminalState, onSettings: () -> Unit) {
             Spacer(Modifier.weight(1f))
             val live = s.liveCount()
             T("Livros $live/3", if (live == 3) Q.Buy else if (live > 0) Q.Warn else Q.Sell, 12, bold = true, modifier = Modifier.padding(end = 4.dp))
+            JarvisButton(jarvisOpen, short = true, onClick = onJarvis)
+            Spacer(Modifier.width(6.dp))
             SmallButton(if (Look.dark) "☾" else "☀") { Look.useDark(!Look.dark) }
             Spacer(Modifier.width(6.dp))
             SmallButton("⚙", onClick = onSettings)

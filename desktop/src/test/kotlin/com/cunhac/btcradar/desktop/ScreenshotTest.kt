@@ -26,9 +26,9 @@ class ScreenshotTest {
         Thread.sleep(90_000)
         val out = File("build/screens").apply { mkdirs() }
 
-        fun shot(name: String, tab: Int, settings: Boolean = false, w: Int = 1600, h: Int = 900, density: Float = 1f, tabs: Boolean = false) {
+        fun shot(name: String, tab: Int, settings: Boolean = false, w: Int = 1600, h: Int = 900, density: Float = 1f, tabs: Boolean = false, jarvis: Boolean = false) {
             val scene = ImageComposeScene(w, h, Density(density)) {
-                RadarTheme { Terminal(ctx, initialTab = tab, showSettings = settings, showTabs = tabs) }
+                RadarTheme { Terminal(ctx, initialTab = tab, showSettings = settings, showTabs = tabs, showJarvis = jarvis) }
             }
             var t = 0L
             repeat(6) { scene.render(t); t += 400_000_000L; Thread.sleep(250) }
@@ -38,6 +38,24 @@ class ScreenshotTest {
         }
 
         Look.useDark(true); UiScale.set(1.0f)
+        // Assistente (Jarvis): painel vazio, depois perguntas reais (dados do app e o fluxo de trade completo).
+        I18n.use("pt")
+        shot("jarvis-00-empty", 0, jarvis = true)
+        shot("phone-jarvis-00-empty", 0, w = 618, h = 1372, density = 1.5f, jarvis = true)
+        JarvisSettings.useVoiceOn(false)
+        fun askWait(q: String) { val n = Jarvis.messages.size; Jarvis.ask(ctx, q); var k = 0; while ((Jarvis.busy || Jarvis.messages.size < n + 2) && k++ < 240) Thread.sleep(500) }
+        askWait("Como está o BTC agora?")
+        shot("jarvis-01-summary", 0, jarvis = true, h = 1100)
+        askWait("Plano de trade BTC")
+        shot("jarvis-02-btc", 0, jarvis = true, h = 2400)
+        Jarvis.clear(); askWait("Time Machine TSLA")
+        shot("jarvis-03-tsla", 0, jarvis = true, h = 2400)
+        shot("phone-jarvis-03-tsla", 0, w = 618, h = 3600, density = 1.5f, jarvis = true)
+        Jarvis.clear(); askWait("Scanner de ações")
+        shot("jarvis-04-scan", 0, jarvis = true, h = 1400)
+        Jarvis.clear(); askWait("Resumo macro de hoje"); askWait("Onde estão as paredes?")
+        shot("jarvis-05-macro-walls", 0, jarvis = true, h = 1400)
+        Jarvis.clear()
         TABS.indices.forEach { i -> shot("dark-%02d".format(i), i) }
         shot("dark-menu", 0, settings = true)
         Look.useDark(false)
