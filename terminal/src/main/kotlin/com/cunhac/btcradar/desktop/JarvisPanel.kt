@@ -556,6 +556,14 @@ private fun JarvisSettingsView(modifier: Modifier) {
         Spacer(Modifier.height(8.dp))
         Section("Voz própria") {
             Column {
+                if (!Platform.isMobile) {
+                    val engines = listOf("kokoro", "voicestudio")
+                    Chips("Motor de voz", listOf("Kokoro (no aparelho)", "Jarvis · VoiceStudio"), engines.indexOf(JarvisSettings.engine).coerceAtLeast(0)) {
+                        JarvisSettings.useEngine(engines[it])
+                        if (it == 1) Jarvis.checkStudio()
+                    }
+                    if (JarvisSettings.studio) { VoiceStudioBox(); Spacer(Modifier.height(6.dp)) }
+                }
                 ModelRow(JarvisModels.VOICE)
                 val voices = JarvisVoices.ALL.filter { it.app == I18n.lang.code || it.app == "en" }
                 Chips(null, voices.map { it.label }, voices.indexOfFirst { it.sid == JarvisSettings.voice.sid }.coerceAtLeast(0)) {
@@ -565,8 +573,9 @@ private fun JarvisSettingsView(modifier: Modifier) {
                 Chips("Velocidade", speeds.map { String.format(BR, "%.2fx", it) }, speeds.indexOfFirst { it == JarvisSettings.speed }.coerceAtLeast(1)) {
                     JarvisSettings.useSpeed(speeds[it])
                 }
-                if (Jarvis.voiceReady) MiniButton("▶ Testar a voz") { Jarvis.say(L("Olá. Sou o Jarvis, do Radar BTC. Pergunte o que quiser sobre o mercado.")) }
-                Footnote("Voz neural Kokoro, gerada no aparelho (licença Apache 2.0). Nenhum serviço pago ou externo é usado.")
+                if (Jarvis.canSpeak) MiniButton("▶ Testar a voz") { Jarvis.say(L("Olá. Sou o Jarvis, do Radar BTC. Pergunte o que quiser sobre o mercado.")) }
+                Footnote(if (JarvisSettings.studio) "Com o VoiceStudio escolhido, a voz Kokoro (abaixo) fica de reserva: o Jarvis usa ela se o VoiceStudio estiver fechado."
+                    else "Voz neural Kokoro, gerada no aparelho (licença Apache 2.0). Nenhum serviço pago ou externo é usado.")
             }
         }
         Spacer(Modifier.height(8.dp))
@@ -736,3 +745,40 @@ private suspend fun safely(block: suspend () -> Unit) {
 
 /** Contexto do app para a seção de inteligência (rodar a prova). */
 val LocalJarvisCtx = androidx.compose.runtime.staticCompositionLocalOf<AppContext?> { null }
+
+
+/** Conexão com o VoiceStudio: endereço, estado e o aviso de licença. */
+@Composable
+private fun VoiceStudioBox() {
+    var url by remember { mutableStateOf(JarvisSettings.vsUrl) }
+    val st = JarvisVoiceStudio.status
+    Column(Modifier.fillMaxWidth().background(Q.Panel2).border(1.dp, Q.Line).padding(10.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            val c = when (st) { JarvisVoiceStudio.Status.ONLINE -> Q.Buy; JarvisVoiceStudio.Status.OFFLINE -> Q.Sell; else -> Q.Muted }
+            Box(Modifier.size(8.dp).background(c))
+            Spacer(Modifier.width(6.dp))
+            T(L("VoiceStudio") + ": " + L(st.label), Q.Text, 12, bold = true, tr = false)
+            if (st == JarvisVoiceStudio.Status.ONLINE && JarvisVoiceStudio.lastMs > 0)
+                T("  · " + L("última frase em") + " " + String.format(BR, "%.1f s", JarvisVoiceStudio.lastMs / 1000.0), Q.Muted, 11, tr = false)
+        }
+        Spacer(Modifier.height(6.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.weight(1f).background(Q.Bg).border(1.dp, Q.Line).padding(horizontal = 8.dp, vertical = 6.dp)) {
+                BasicTextField(url, { url = it }, singleLine = true, textStyle = TextStyle(color = Q.Text, fontSize = 12.sp),
+                    cursorBrush = SolidColor(Q.Accent), modifier = Modifier.fillMaxWidth())
+            }
+            Spacer(Modifier.width(6.dp))
+            MiniButton("Conectar") {
+                val n = JarvisVoiceStudio.normalize(url)
+                if (n != null) { url = n; JarvisSettings.useVsUrl(n) }
+                Jarvis.checkStudio()
+            }
+        }
+        JarvisVoiceStudio.lastError?.takeIf { st == JarvisVoiceStudio.Status.OFFLINE }?.let { T(it, Q.Sell, 11, wrap = true, tr = false) }
+        if (!JarvisVoiceStudio.isLoopback(JarvisSettings.vsUrl))
+            T("Atenção: este endereço não é deste PC. O texto das respostas vai pela rede até ele.", Q.Warn, 11, wrap = true)
+        Footnote("Voz no estilo do Jarvis dos filmes: mordomo britânico, calmo, de voz grave, desenhada com etiquetas do VoiceStudio. Não é uma cópia da voz do ator. " +
+            "Instale e abra o VoiceStudio (github.com/debpalash/voicestudio) neste PC: ele roda à parte, no endereço acima. " +
+            "O VoiceStudio é AGPL-3.0 e o modelo OmniVoice é só para uso pessoal, não comercial. Sem placa de vídeo, cada frase pode levar vários segundos.")
+    }
+}

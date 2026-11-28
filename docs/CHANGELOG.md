@@ -1,5 +1,17 @@
 # Changelog
 
+## V8 — atualização 18 (2026-11-28) · Voz Jarvis pelo VoiceStudio (Windows)
+- **Novo motor de voz:** ⚙ › Voz própria › Motor de voz › "Jarvis · VoiceStudio". O Jarvis fala pelo VoiceStudio
+  (github.com/debpalash/voicestudio) aberto no mesmo PC, pela API local compatível com a OpenAI (`http://127.0.0.1:3900`).
+- **Voz no estilo Jarvis:** mordomo britânico, calmo, de voz grave, desenhada com as etiquetas do OmniVoice
+  ("male, middle-aged, low pitch, british accent") e semente fixa, para soar igual em toda frase. Não é cópia da voz do ator.
+- **Sem travar:** gera a próxima frase enquanto a atual toca; o botão de parar corta na hora. Se o VoiceStudio estiver
+  fechado, o Jarvis avisa e usa a voz Kokoro do aparelho.
+- **Painel:** caixa com o endereço, "Conectar", estado (conectado / não encontrado), tempo da última frase e aviso se o
+  endereço não for deste PC. O mapa do cérebro mostra o motor em uso na região "Fala".
+- **Licença:** o VoiceStudio não vem dentro do Radar (é AGPL-3.0 e o modelo OmniVoice é só para uso não comercial); o usuário
+  instala à parte. No celular continua só a Kokoro.
+
 ## V8 — atualização 17 (2026-11-28) · Jarvis no PC sem AVX2, aprender sem parar e mapa do cérebro
 - **A IA roda em processador sem AVX2:** o teste no PC (Core i7 de 2ª/3ª geração) mostrou a biblioteca da IA morrendo por
   instrução que o processador não tem. O instalador do Windows agora traz duas versões compatíveis (só AVX e só SSE),

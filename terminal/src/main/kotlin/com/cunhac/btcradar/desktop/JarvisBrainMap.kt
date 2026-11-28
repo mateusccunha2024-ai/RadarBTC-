@@ -135,10 +135,20 @@ object JarvisBrainModel {
                 listOfNotNull("Perda máxima por trade" to "US$ " + num(JarvisSettings.rules.maxLossPerTrade),
                     sb?.takeIf { it.triggered > 0 }?.let { "Alvo · stop · nenhum" to "${it.target} · ${it.stop} · ${it.close}" })),
             BrainRegion("fala", "Fala", "voz", 0.24f, 0.70f,
-                when { !voiceInstalled -> SkillState.MISSING; !JarvisSettings.voiceOn -> SkillState.OFF; Jarvis.speaking -> SkillState.WORKING; else -> SkillState.ACTIVE },
-                when { !voiceInstalled -> "voz não baixada (⚙ › Voz)"; !JarvisSettings.voiceOn -> "voz desligada"; else -> JarvisSettings.voice.label },
-                "Lê as respostas em voz alta com uma voz que roda no aparelho. Fala só o começo da resposta; os detalhes ficam na tela.",
-                listOf("Voz" to JarvisSettings.voice.label)),
+                when {
+                    !JarvisSettings.voiceOn -> SkillState.OFF; Jarvis.speaking -> SkillState.WORKING
+                    JarvisSettings.studio && JarvisVoiceStudio.status == JarvisVoiceStudio.Status.OFFLINE -> if (voiceInstalled) SkillState.ACTIVE else SkillState.ERROR
+                    JarvisSettings.studio -> SkillState.ACTIVE
+                    !voiceInstalled -> SkillState.MISSING; else -> SkillState.ACTIVE
+                },
+                when {
+                    !JarvisSettings.voiceOn -> "voz desligada"
+                    JarvisSettings.studio && JarvisVoiceStudio.status == JarvisVoiceStudio.Status.OFFLINE -> "VoiceStudio fechado" + if (voiceInstalled) "; usando a Kokoro" else ""
+                    JarvisSettings.studio -> "voz Jarvis (VoiceStudio)"
+                    !voiceInstalled -> "voz não baixada (⚙ › Voz)"; else -> JarvisSettings.voice.label
+                },
+                "Lê as respostas em voz alta. Pode usar a voz Kokoro, que roda no aparelho, ou a voz no estilo Jarvis do VoiceStudio aberto no PC. Fala só o começo da resposta; os detalhes ficam na tela.",
+                listOf("Motor" to if (JarvisSettings.studio) "VoiceStudio · " + JarvisVoiceStudio.status.label else "Kokoro", "Voz" to if (JarvisSettings.studio) "Jarvis (mordomo britânico)" else JarvisSettings.voice.label)),
             BrainRegion("audicao", "Audição", "microfone", 0.42f, 0.80f,
                 when { !micInstalled -> SkillState.MISSING; Jarvis.listening -> SkillState.WORKING; Jarvis.micReady -> SkillState.ACTIVE; else -> SkillState.OFF },
                 when { !micInstalled -> "microfone não baixado (⚙ › Microfone)"; Jarvis.listening -> "ouvindo…"; else -> "pronto" },

@@ -32,6 +32,9 @@ object JarvisSettings {
     var voiceOn by mutableStateOf(SettingsStore.b("jv.voiceOn", true)); private set
     var voiceId by mutableStateOf(SettingsStore.i("jv.voice", -1)); private set
     var speed by mutableStateOf(SettingsStore.d("jv.speed", 1.0).toFloat()); private set
+    /** "kokoro" (voz do aparelho) ou "voicestudio" (VoiceStudio aberto no PC, voz no estilo Jarvis). */
+    var engine by mutableStateOf(SettingsStore.s("jv.engine", "kokoro")); private set
+    var vsUrl by mutableStateOf(SettingsStore.s("jv.vsUrl", JarvisVoiceStudio.DEFAULT_URL)); private set
     var mic by mutableStateOf(SettingsStore.s("jv.mic", if (Platform.isMobile) "mic-tiny" else "mic-base")); private set
     var watchlist by mutableStateOf(SettingsStore.s("jv.watch", "SPY,QQQ,TSLA,NVDA,AAPL,AMD,META,MSFT,AMZN,GOOGL,COIN,MSTR,PLTR")); private set
     var rules by mutableStateOf(loadRules()); private set
@@ -40,6 +43,9 @@ object JarvisSettings {
     fun useVoiceOn(v: Boolean) { voiceOn = v; SettingsStore.put("jv.voiceOn", v) }
     fun useVoice(sid: Int) { voiceId = sid; SettingsStore.put("jv.voice", sid) }
     fun useSpeed(v: Float) { speed = v; SettingsStore.put("jv.speed", v.toDouble()) }
+    fun useEngine(id: String) { engine = id; SettingsStore.put("jv.engine", id) }
+    fun useVsUrl(v: String) { vsUrl = v; SettingsStore.put("jv.vsUrl", v) }
+    val studio: Boolean get() = engine == "voicestudio" && !Platform.isMobile
     fun useMic(id: String) { mic = id; SettingsStore.put("jv.mic", id) }
     fun useWatchlist(v: String) { watchlist = v; SettingsStore.put("jv.watch", v) }
 
@@ -367,6 +373,8 @@ object Jarvis {
     var brain by mutableStateOf(BrainState.OFF); private set
     var brainError by mutableStateOf<String?>(null); private set
     var voiceReady by mutableStateOf(false); private set
+    /** Tem alguma voz: a Kokoro baixada ou o VoiceStudio escolhido. */
+    val canSpeak: Boolean get() = voiceReady || JarvisSettings.studio
     var micReady by mutableStateOf(false); private set
     var notice by mutableStateOf<String?>(null)
     private var loadedLlm: String? = null
@@ -532,7 +540,7 @@ object Jarvis {
             val reply = runCatching { answer(ctx, q) }.getOrElse { JarvisMsg(false, L("Não consegui buscar os dados agora") + ": " + (it.message ?: ""), engine = "erro") }
             messages += reply; busy = false
             // A voz lê só o começo (2 frases); a lista completa fica na tela.
-            if (JarvisSettings.voiceOn && voiceReady) say(JarvisChat.forSpeech(reply.text))
+            if (JarvisSettings.voiceOn && canSpeak) say(JarvisChat.forSpeech(reply.text))
             busy = false
         }
     }
@@ -541,9 +549,18 @@ object Jarvis {
         speakScope.launch {
             JarvisNative.stopSpeaking()
             speaking = true
-            try { if (ensureVoice()) JarvisNative.speak(text, JarvisSettings.voice.sid, JarvisSettings.speed) } finally { speaking = false }
+            try {
+                val viaStudio = JarvisSettings.studio && runCatching {
+                    JarvisNative.resetStop()
+                    JarvisVoiceStudio.speak(text, I18n.lang.code, JarvisSettings.speed) { a, r -> JarvisNative.playPcm(a, r) }
+                }.getOrDefault(false)
+                if (JarvisSettings.studio && !viaStudio) notice = L("VoiceStudio não respondeu; usei a voz do aparelho") + ". " + (JarvisVoiceStudio.lastError ?: "")
+                if (!viaStudio && ensureVoice()) JarvisNative.speak(text, JarvisSettings.voice.sid, JarvisSettings.speed)
+            } finally { speaking = false }
         }
     }
+    /** Procura o VoiceStudio sem travar a tela. */
+    fun checkStudio() { speakScope.launch { JarvisVoiceStudio.probe() } }
     fun stopVoice() { JarvisNative.stopSpeaking(); speaking = false }
 
     /** Microfone: toque para falar, toque de novo para enviar. */

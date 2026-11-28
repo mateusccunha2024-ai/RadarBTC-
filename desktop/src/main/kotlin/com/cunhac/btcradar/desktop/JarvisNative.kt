@@ -151,6 +151,10 @@ object JarvisNative {
         } finally { runCatching { line.stop(); line.close() }; speaking = null }
     }
 
+    /** Toca áudio vindo de fora (VoiceStudio). False se o usuário mandou parar. */
+    fun playPcm(samples: FloatArray, rate: Int): Boolean { if (stopFlag) return false; play(samples, rate); return !stopFlag }
+    fun resetStop() { stopFlag = false }
+
     fun stopSpeaking() { stopFlag = true; runCatching { speaking?.stop(); speaking?.flush() } }
 
     fun loadAsr(encoder: File, decoder: File, tokens: File, language: String): String? = runCatching {
