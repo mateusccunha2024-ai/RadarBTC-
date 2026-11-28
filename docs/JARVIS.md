@@ -46,3 +46,18 @@ abaixo disso, voz e microfone continuam funcionando e as respostas vêm dos dado
 Kokoro com vozes por idioma (português: Alex, Dora, Santa; inglês britânico: George, Lewis; e outras). Alemão, russo e coreano usam a
 voz inglesa (o Kokoro não tem esses idiomas). Nenhuma API paga ou serviço de terceiros é usado; não usamos acessos não oficiais a
 serviços comerciais de voz.
+
+## Inteligência que cresce (atualização 14)
+| Peça | Como funciona |
+| --- | --- |
+| Checagem de números | Todo número da resposta da IA tem de existir nos dados usados (aceita formatos pt/en e arredondamento). Se não existir, a IA tenta de novo copiando os números; se insistir, a resposta volta a ser montada direto com os dados. |
+| Ferramentas | Com a IA pronta, ela escolhe até 3 ferramentas antes de responder: `dados <assunto>`, `memoria <consulta>`, `comparar <A> <B>` (5 e 20 pregões + correlação de 60 dias), `noticias <ativo>`, `plano <ativo> [stop%] [alvoR]`. Linhas fora desse formato são ignoradas. |
+| Memória | Pesquisa diária (1 vez a cada 20 h, só no Wi-Fi no celular): manchetes das últimas 48 h no Google News sobre BTC, Fed, a lista do scanner, perguntas sem resposta e habilidades ligadas. Guarda texto, fonte, data e quantas fontes confirmaram; mantém 30 dias. Com a IA pronta, faz um resumo por tema (também conferido número a número). |
+| Placar | Cada plano de trade é guardado e conferido depois do fim da sessão: alvo, stop, nenhum ou sem gatilho. Mostra alvo previsto × real e a calibração (Brier). Entra nas respostas sobre o ativo. |
+| Avaliações | 👍 vira exemplo de treino (Exportar exemplos de treino → `treino-jarvis.jsonl`, formato de conversa); 👎 vira pesquisa do dia seguinte. |
+| Habilidades | Receitas de dados (palavras + buscas no Google News), nunca código. Uma palavra que aparece em 3 perguntas sem resposta vira proposta; o catálogo da nuvem também chega desligado. Só funcionam depois de "Aprovar". |
+| Prova | 40 perguntas fixas: roteamento (assunto e ativo), perguntas com dados e respostas da IA com números conferidos. Nota 0–100 com histórico. O teste automático exige pelo menos 38/40 no roteamento. |
+| Cérebro na nuvem | Supabase: login anônimo por aparelho, tabelas `jv_knowledge`, `jv_scores`, `jv_feedback` (cada aparelho só lê e grava as próprias linhas, RLS) e `jv_skills` (catálogo só leitura). Endereço e chave pública vêm dos segredos do GitHub no build (`JARVIS_CLOUD_URL`, `JARVIS_CLOUD_KEY`); a chave secreta nunca sai do servidor. |
+| IA forte no PC | Qwen2.5 7B Instruct Q4_K_M (4,4 GB, Apache 2.0), para PCs com 16 GB de RAM. |
+
+O ajuste fino semanal do modelo com os exemplos aprovados ainda é manual (precisa de GPU); os exemplos já saem prontos no formato certo.

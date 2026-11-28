@@ -142,6 +142,9 @@ object JarvisNative {
         return try { st.acceptWaveform(f, 16000); r.decode(st); r.getResult(st).text.trim() } finally { st.release() }
     }
 
+    /** PC: conexão tratada como ilimitada (a pesquisa diária pode rodar). */
+    fun unmetered() = true
+
     /** No Windows não há pedido de permissão em tempo de execução. */
     fun requestMic(onResult: (Boolean) -> Unit) = onResult(true)
 }

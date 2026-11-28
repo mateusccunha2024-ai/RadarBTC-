@@ -1,5 +1,15 @@
 # Changelog
 
+## V8 — atualização 14 (2026-11-27) · Jarvis aprende sozinho
+- **Não inventa números:** cada número da resposta da IA é conferido contra os dados; se não bater, ela refaz ou a resposta sai direto dos dados.
+- **Ferramentas:** a IA escolhe o que consultar antes de responder (dados do app, memória, comparar dois ativos, notícias, plano com outro stop/alvo). Pedidos como "plano da Tesla com stop de 1% e alvo 3R" funcionam.
+- **Memória com pesquisa diária** na internet (Google News, sem chave; no celular só no Wi-Fi), com fonte, data e confirmação por 2 fontes.
+- **Placar:** os planos do Time Machine são conferidos depois com o que aconteceu; mostra acerto previsto × real.
+- **👍/👎** em cada resposta: viram exemplos de treino e pesquisa do dia seguinte.
+- **Habilidades** propostas pelo uso (receitas de pesquisa, nunca código), ligadas só com sua aprovação.
+- **Prova** de 40 perguntas com nota e histórico, para medir cada melhoria.
+- **Cérebro na nuvem** (Supabase) para memória, placar e avaliações, e **IA forte 7B** opcional no PC. Detalhes em docs/JARVIS.md.
+
 ## V8 — atualização 13 (2026-11-27) · Jarvis, o assistente de IA dentro do app
 - Botão **Jarvis · IA** no topo: abre um painel ao lado (no celular, tela cheia). Pergunte por texto ou pelo microfone; a resposta vem
   em texto e na voz do assistente.

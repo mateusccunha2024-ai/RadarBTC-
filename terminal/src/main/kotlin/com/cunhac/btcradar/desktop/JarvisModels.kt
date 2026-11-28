@@ -54,6 +54,10 @@ object JarvisModels {
     val LLM_STD = Item("llm-1.5b", Kind.LLM, "IA padrão · Qwen2.5 1.5B", 1065,
         listOf("$HF/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf" to "qwen2.5-1.5b-instruct-q4_k_m.gguf"),
         dir = "llm", note = "Melhor qualidade; recomendada para PC e celulares com 6 GB de RAM ou mais.")
+    /** Só no PC (precisa de ~6 GB de RAM livres): raciocínio bem melhor. Arquivo único do GGUF oficial reempacotado (bartowski). */
+    val LLM_PRO = Item("llm-7b", Kind.LLM, "IA forte · Qwen2.5 7B (PC)", 4466,
+        listOf("$HF/bartowski/Qwen2.5-7B-Instruct-GGUF/resolve/main/Qwen2.5-7B-Instruct-Q4_K_M.gguf" to "Qwen2.5-7B-Instruct-Q4_K_M.gguf"),
+        dir = "llm", note = "Para PC com 16 GB de RAM ou mais. Mais lenta, mas entende e escolhe ferramentas muito melhor.")
     val VOICE = Item("voice-kokoro", Kind.VOICE, "Voz neural · Kokoro (vários idiomas)", 126,
         tarBz2 = "$GH/tts-models/kokoro-int8-multi-lang-v1_0.tar.bz2", dir = "kokoro-int8-multi-lang-v1_0",
         note = "Voz própria do assistente, gerada no aparelho.")
@@ -68,7 +72,7 @@ object JarvisModels {
         "$HF/csukuangfj/sherpa-onnx-whisper-base/resolve/main/base-tokens.txt" to "base-tokens.txt"),
         dir = "whisper-base", note = "Entende melhor sotaques e ruído; um pouco mais pesado.")
 
-    val ALL = listOf(LLM_LIGHT, LLM_STD, VOICE, MIC_TINY, MIC_BASE)
+    val ALL = listOf(LLM_LIGHT, LLM_STD, LLM_PRO, VOICE, MIC_TINY, MIC_BASE)
 
     /** Progresso de download por item (0..1); ausente = parado. */
     val progress = mutableStateMapOf<String, Float>()

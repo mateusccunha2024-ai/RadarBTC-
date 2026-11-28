@@ -9,6 +9,13 @@ val runNumber = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
 // Assinatura permanente (vem dos secrets do repositório; sem ela, usa a de debug)
 val keystorePath: String? = System.getenv("ANDROID_KEYSTORE_FILE")
 
+// Cérebro na nuvem do assistente: endereço e chave PÚBLICA (anon) vêm dos segredos do GitHub no build, nunca do código.
+val jarvisCloudRes = layout.buildDirectory.dir("generated/jarvis-cloud").get().asFile
+File(jarvisCloudRes, "jarvis-cloud.properties").apply {
+    parentFile.mkdirs()
+    writeText("url=" + (System.getenv("JARVIS_CLOUD_URL") ?: "") + "\nkey=" + (System.getenv("JARVIS_CLOUD_KEY") ?: "") + "\n")
+}
+
 android {
     namespace = "com.cunhac.btcradar"
     compileSdk = 35
@@ -49,6 +56,7 @@ android {
     // Telas do terminal compartilhadas com o app do Windows
     sourceSets["main"].java.srcDir("../terminal/src/main/kotlin")
     sourceSets["main"].resources.srcDir("../terminal/src/main/resources")   // traduções (i18n/*.tsv)
+    sourceSets["main"].resources.srcDir(jarvisCloudRes)
     // O lint de release não deve impedir a geração do APK (avisos ficam no relatório)
     lint { checkReleaseBuilds = false; abortOnError = false }
     packaging {

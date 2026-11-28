@@ -259,6 +259,26 @@ object TraderSkill {
         return History(full.size, out)
     }
 
+    /**
+     * Placar: o que aconteceu com o plano naquela sessão — "target", "stop", "close" (nenhum até zerar) ou "no_trigger"
+     * (plano hipotético que não rompeu). null = sessão ainda incompleta. Stop e alvo no mesmo candle contam como stop.
+     */
+    fun outcome(s: TradeSession, m: TradeMarket, entry: Double, stop: Double, target: Double, slot: Int, hypothetical: Boolean): String? {
+        val last = m.lastSlot
+        if (s.slots[last] == null) return null
+        var k = slot
+        if (hypothetical) {
+            val maxSlot = (m.noEntryAfterMin - m.openMin) / 5 - 1
+            k = (slot..maxSlot).firstOrNull { i -> s.slots[i]?.let { it.c >= entry } == true } ?: return "no_trigger"
+        }
+        for (i in k + 1..last) {
+            val b = s.slots[i] ?: continue
+            if (b.l <= stop) return "stop"
+            if (b.h >= target) return "target"
+        }
+        return "close"
+    }
+
     enum class Lean { NONE, COIN_FLIP, TOWARD_TARGET, TOWARD_STOP, STRONG_TARGET, STRONG_STOP }
 
     /** Veredito honesto da skill: participação do alvo entre os replays que tocaram um lado, contra o ponto de equilíbrio do R. */
