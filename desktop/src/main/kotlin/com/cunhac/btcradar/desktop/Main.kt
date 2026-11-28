@@ -37,7 +37,10 @@ private fun loadSettings(hub: Hub) {
     hub.refreshMs = SettingsStore.i("ui.refresh", 1_500).toLong().coerceIn(500L, 3_000L)
 }
 
-fun main() {
+fun main(args: Array<String>) {
+    // Processo separado da IA do Jarvis (aberto pelo próprio app): só roda a IA, sem janela e sem trava de instância.
+    if (args.firstOrNull() == JarvisLlmWorker.ARG) { runCatching { JarvisLlmWorker.serve(args) }; exitProcess(0) }
+    if (args.firstOrNull() == LlmProcessSelfTest.ARG) { LlmProcessSelfTest.run(args); exitProcess(0) }
     val lock = acquireSingleInstance()
     if (lock == null) {
         JOptionPane.showMessageDialog(null, "O Radar BTC já está aberto.", "Radar BTC", JOptionPane.INFORMATION_MESSAGE)

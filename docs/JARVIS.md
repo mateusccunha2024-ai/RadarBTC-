@@ -75,3 +75,12 @@ O ajuste fino semanal do modelo com os exemplos aprovados ainda é manual (preci
 - **Teste no emulador:** o CI instala o APK de teste num Android 11 com 4 GB, abre o Jarvis, roda o autoteste (`jarvisSelfTest`,
   só na versão de teste: baixa IA leve, voz e microfone leve, faz 3 perguntas, fala e carrega o microfone) e guarda capturas e log
   no ramo `android-smoke`.
+
+## IA em processo separado (atualização 16)
+- A IA local não roda mais dentro do app. Windows: `JarvisLlmWorker.kt` (o próprio `RadarBTC.exe --jarvis-llm <porta> <token>`,
+  conversa por um socket local 127.0.0.1). Android: `JarvisLlmService` no processo `:jarvis` (Messenger).
+- Se o processo da IA cair, `JarvisNative.takeCrash()` devolve o motivo e o Jarvis desliga aquele modelo (`falhou-llm-*`, com o
+  motivo), mostra no painel e responde com os dados. Windows: o motivo sai do relatório do Java (`jarvis/hs_err_pid*.log`) e de
+  `jarvis/ia-processo.log`; Android 11+: do registro de saída do processo (`ApplicationExitInfo`).
+- Testes: `JarvisLlmProcessTest` (Linux, com a IA leve se `JARVIS_TEST_MODEL` existir), job `windows-ia` (`RadarBTC.exe
+  --jarvis-llm-test <modelo> <saída>`) e o autoteste do emulador (queda simulada + "Tentar de novo").

@@ -19,7 +19,12 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: "8.9" }
 
+      - name: Baixar a IA leve (teste do processo separado da IA)
+        continue-on-error: true
+        run: curl -sSfL --retry 3 -o "$RUNNER_TEMP/qwen-0.5b.gguf" "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf"
+
       - name: Compilar Windows e Android (APK) + testes unitários e de carga
+        env: { JARVIS_TEST_MODEL: "${{ runner.temp }}/qwen-0.5b.gguf" }
         run: |
           set -o pipefail
           gradle :desktop:test :app:assembleDebug --no-daemon --continue 2>&1 | tee build.log
@@ -72,6 +77,34 @@ jobs:
             cat desktop/build/live-report.md 2>/dev/null || echo "(teste ao vivo não gerou relatório)"
           } > report.md
           gh issue create --title "Verificação V8 #${{ github.run_number }}" --body-file report.md
+
+  # Jarvis no Windows de verdade: o RadarBTC.exe abre a IA num processo separado, ela responde, cai e o app continua.
+  windows-ia:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: "8.9" }
+      - name: Gerar o app (como no instalador)
+        shell: bash
+        run: gradle :desktop:createDistributable --no-daemon -q
+      - name: Baixar a IA leve
+        shell: bash
+        run: curl -sSfL --retry 3 -o "$RUNNER_TEMP/qwen-0.5b.gguf" "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf"
+      - name: Testar a IA em processo separado pelo RadarBTC.exe
+        shell: pwsh
+        run: |
+          $exe = "desktop/build/compose/binaries/main/app/RadarBTC/RadarBTC.exe"
+          $out = "$env:RUNNER_TEMP\ia-test.txt"
+          $p = Start-Process -FilePath $exe -ArgumentList @("--jarvis-llm-test", "$env:RUNNER_TEMP\qwen-0.5b.gguf", $out) -PassThru
+          if (-not $p.WaitForExit(600000)) { $p.Kill(); Write-Output "TEMPO ESGOTADO" }
+          Get-Content $out -ErrorAction SilentlyContinue
+          Get-Content "$env:TEMP\radarbtc-ia-test\ia-processo.log" -Tail 15 -ErrorAction SilentlyContinue
+          if (-not (Select-String -Path $out -Pattern "fim ok" -Quiet)) { exit 1 }
 
   # Jarvis num emulador Android: abrir o painel e usar a IA, a voz e o microfone de verdade.
   android-smoke:

@@ -32,6 +32,11 @@
         <receiver
             android:name=".desktop.UpdateReceiver"
             android:exported="false" />
+        <!-- IA local do Jarvis em processo separado: se ela cair, o app continua aberto. -->
+        <service
+            android:name=".desktop.JarvisLlmService"
+            android:process=":jarvis"
+            android:exported="false" />
         <service
             android:name=".desktop.RadarService"
             android:exported="false"

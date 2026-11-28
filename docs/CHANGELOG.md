@@ -1,5 +1,15 @@
 # Changelog
 
+## V8 — atualização 16 (2026-11-28) · A IA do Jarvis não derruba mais o app
+- **Causa encontrada (log do PC):** o app fechava ao falar com o Jarvis porque a IA local (llama.cpp) carregava o modelo dentro
+  do próprio app. Um erro nativo ali (instrução que o processador não tem, modelo que a biblioteca não aguenta, falta de memória)
+  matava o app inteiro na hora, sem passar pelo registro de erros. Por isso não aparecia nenhum motivo.
+- **IA em processo separado:** no Windows o RadarBTC.exe abre a IA num segundo processo; no Android ela roda no processo
+  ":jarvis". Se a IA cair, só ela morre: o app continua aberto, responde com os dados do app e o painel mostra o motivo
+  (processador sem AVX2, falta de memória, erro na biblioteca nativa, demora). O modelo que caiu fica desligado até "Tentar de novo".
+- **Teste automático da queda:** o CI testa a IA em processo separado no Linux, no RadarBTC.exe do Windows e no emulador Android,
+  carrega a IA leve, responde, derruba a IA de propósito e confere que o app continua e se recupera.
+
 ## V8 — atualização 15 (2026-11-27) · Jarvis não fecha o app e aprende coisas novas sozinho
 - **O app não fecha mais ao abrir o Jarvis:** ao abrir o painel nada pesado roda na hora (pesquisa e sincronização esperam o
   painel abrir); a IA só carrega se houver memória livre para ela (senão avisa e responde com os dados do app); o microfone carrega
