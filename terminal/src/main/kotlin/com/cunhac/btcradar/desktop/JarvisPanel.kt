@@ -629,7 +629,7 @@ internal fun LearnSwitch() {
                 T(L(JarvisLearner.phaseText()) + (if (on && JarvisLearner.cycles > 0) " · ${JarvisLearner.cycles} " + L("rodadas") + " · +${JarvisLearner.learnedTotal} " + L("itens") else ""),
                     Q.Muted, 11, wrap = true, tr = false)
             }
-            OutlineButton(if (on) "Desligar" else "Ligar", color = if (on) Q.Sell else Q.Buy) { JarvisLearner.setOn(!on) }
+            OutlineButton(if (on) "Desligar" else "Ligar", color = if (on) Q.Sell else Q.Buy) { JarvisLearner.turn(!on) }
         }
         if (JarvisLearner.lastResult.isNotBlank()) T(L("Última rodada") + ": " + JarvisLearner.lastResult, Q.Text, 11, wrap = true, tr = false, modifier = Modifier.padding(top = 4.dp))
     }

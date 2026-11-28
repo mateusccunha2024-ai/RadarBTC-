@@ -43,7 +43,7 @@ jobs:
         working-directory: jllama
         run: |
           set -e
-          base='-G "Visual Studio 17 2022" -A x64 -DOS_NAME=Windows -DOS_ARCH=x86_64 -DGGML_NATIVE=OFF -DGGML_AVX2=OFF -DGGML_FMA=OFF -DGGML_F16C=OFF -DGGML_AVX512=OFF -DLLAMA_CURL=OFF'
+          base='-A x64 -DOS_NAME=Windows -DOS_ARCH=x86_64 -DGGML_NATIVE=OFF -DGGML_AVX2=OFF -DGGML_FMA=OFF -DGGML_F16C=OFF -DGGML_AVX512=OFF -DLLAMA_CURL=OFF'
           for v in avx sse; do
             if [ "$v" = avx ]; then extra="-DGGML_AVX=ON"; else extra="-DGGML_AVX=OFF"; fi
             rm -rf src/main/resources/de/kherud/llama/Windows

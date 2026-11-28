@@ -37,7 +37,7 @@ object JarvisLearner {
     private var job: Job? = null
 
     /** Liga ou desliga (fica guardado: ao abrir o app de novo, continua como você deixou). */
-    fun setOn(v: Boolean) {
+    fun turn(v: Boolean) {
         on = v
         SettingsStore.put("jv.learn.on", v)
         if (v) {
