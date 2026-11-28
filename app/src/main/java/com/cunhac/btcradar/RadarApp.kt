@@ -7,5 +7,7 @@ class RadarApp : Application() {
     override fun onCreate() {
         super.onCreate()
         Platform.init(this)
+        // Guarda o motivo se algum erro fechar o app (o Jarvis mostra na próxima vez).
+        runCatching { com.cunhac.btcradar.desktop.JarvisCrash.install() }
     }
 }

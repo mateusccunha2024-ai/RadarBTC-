@@ -59,4 +59,42 @@ class JarvisBrainTest {
         val misses = JarvisEval.CASES.filter { c -> Jarvis.route(c.q).let { r -> r.kind != c.route || (c.symbol != null && r.symbol != c.symbol) } }.map { it.q }
         assertTrue("roteamento $ok/$total; erros: $misses", ok >= total - 2)
     }
+
+    // ------------------------------------------------------------------ curiosidade e proteção contra fechamento
+
+    @Test fun curiosityFindsNewRecurringNames() {
+        val news = listOf(
+            "Trump picks Kevin Warsh to lead the Federal Reserve - Reuters" to "Reuters",
+            "Markets weigh what Kevin Warsh means for rates - CNBC" to "CNBC",
+            "Bitcoin jumps as Warsh nomination sinks in - CoinDesk" to "CoinDesk",
+            "Stocks Rise After Fed Minutes - Bloomberg" to "Bloomberg",
+            "Stocks Rise Again On Tech - Bloomberg" to "Bloomberg",
+            "Stocks Rise For A Third Day - Bloomberg" to "Bloomberg",
+            "Polymarket volume hits record - The Block" to "The Block",
+        )
+        val c = JarvisCuriosity.candidates(news, known = emptySet())
+        assertTrue("candidatos: $c", c.firstOrNull() == "Warsh" || c.firstOrNull() == "Kevin Warsh")
+        assertTrue("palavra comum não é termo: $c", c.none { it.contains("Stocks") || it.contains("Rise") })
+        assertTrue("uma fonte só não basta: $c", c.none { it.contains("Polymarket") })
+        assertTrue("já conhecido não repete", JarvisCuriosity.candidates(news, known = setOf("Kevin Warsh")).none { it.contains("Warsh") })
+        assertEquals("Trump picks Kevin Warsh to lead the Federal Reserve", JarvisCuriosity.cleanTitle("Trump picks Kevin Warsh to lead the Federal Reserve - Reuters"))
+    }
+
+    @Test fun curiosityReadsWikipediaWithoutGuessing() {
+        val search = """{"pages":[{"id":1,"key":"Kevin_Warsh","title":"Kevin Warsh","description":"American financier"}]}"""
+        assertEquals("Kevin_Warsh", JarvisCuriosity.parseSearch(search, "Kevin Warsh"))
+        assertEquals(null, JarvisCuriosity.parseSearch("""{"pages":[{"key":"Warsaw","title":"Warsaw"}]}""", "Kevin Warsh"))
+        val sum = """{"type":"standard","title":"Kevin Warsh","extract":"Kevin Maxwell Warsh is an American financier. He served on the Federal Reserve Board of Governors from 2006 to 2011. He later taught at Stanford.","content_urls":{"desktop":{"page":"https://en.wikipedia.org/wiki/Kevin_Warsh"}}}"""
+        val c = JarvisCuriosity.parseSummary(sum, "Kevin Warsh", "en")!!
+        assertEquals("https://en.wikipedia.org/wiki/Kevin_Warsh", c.url)
+        assertTrue(c.text.startsWith("Kevin Maxwell Warsh is an American financier. He served"))
+        assertTrue("só 2 frases", !c.text.contains("Stanford"))
+        assertEquals(null, JarvisCuriosity.parseSummary("""{"type":"disambiguation","title":"X","extract":"X may refer to many different things in this long text."}""", "X", "en"))
+    }
+
+    @Test fun crashSummaryIsShortAndReadable() {
+        val lines = listOf("123", "main", "painel=aberto", "java.lang.IllegalStateException: Vertically scrollable component was measured", "\tat a.b(C.kt:1)")
+        assertEquals("IllegalStateException: Vertically scrollable component was measured", JarvisCrash.summary(lines))
+        assertEquals("OutOfMemoryError", JarvisCrash.summary(listOf("1", "t", "painel=fechado", "java.lang.OutOfMemoryError")))
+    }
 }

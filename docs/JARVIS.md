@@ -61,3 +61,17 @@ serviços comerciais de voz.
 | IA forte no PC | Qwen2.5 7B Instruct Q4_K_M (4,4 GB, Apache 2.0), para PCs com 16 GB de RAM. |
 
 O ajuste fino semanal do modelo com os exemplos aprovados ainda é manual (precisa de GPU); os exemplos já saem prontos no formato certo.
+
+
+## Aprende coisas novas e não fecha o app (atualização 15)
+- **Curiosidade (`JarvisCuriosity`):** depois da pesquisa diária, lê as manchetes dos últimos 3 dias, acha nomes de 1 a 3 palavras
+  com inicial maiúscula que aparecem em 3+ manchetes de 2+ fontes e que ainda não conhece, procura cada um na Wikipedia (no idioma
+  do app, senão em inglês; só aceita página com o mesmo título, nunca desambiguação) e guarda as 2 primeiras frases com o link como
+  conhecimento `conceito` (vale 1 ano). O termo entra na fila de pesquisa de notícias. Sem página, o termo é ignorado e não volta.
+- **Proteção (`JarvisCrash`):** marca enquanto o painel está aberto e guarda o motivo de qualquer erro que derrube o app
+  (`jarvis/ultimo-fechamento.txt`). Se o app morreu com o painel aberto, a próxima abertura é em modo seguro. Os modelos nativos
+  continuam com as marcas "carregando/falhou" (quem fechou o app fica desligado até "Tentar de novo"). A IA só carrega com memória
+  livre suficiente.
+- **Teste no emulador:** o CI instala o APK de teste num Android 11 com 4 GB, abre o Jarvis, roda o autoteste (`jarvisSelfTest`,
+  só na versão de teste: baixa IA leve, voz e microfone leve, faz 3 perguntas, fala e carrega o microfone) e guarda capturas e log
+  no ramo `android-smoke`.

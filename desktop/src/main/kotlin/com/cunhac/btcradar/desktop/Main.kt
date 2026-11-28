@@ -43,6 +43,7 @@ fun main() {
         JOptionPane.showMessageDialog(null, "O Radar BTC já está aberto.", "Radar BTC", JOptionPane.INFORMATION_MESSAGE)
         exitProcess(0)
     }
+    runCatching { JarvisCrash.install() } // guarda o motivo se algum erro fechar o app
     FileLog.info("Iniciando Radar BTC V8 (Java ${System.getProperty("java.version")})")
     val db = SqliteHistory()
     db.error?.let { FileLog.info("Histórico: $it") }

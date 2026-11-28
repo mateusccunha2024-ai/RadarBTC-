@@ -77,6 +77,10 @@ private val SUGGESTIONS = listOf(
 @Composable
 fun JarvisPanel(ctx: AppContext, onClose: () -> Unit, modifier: Modifier = Modifier) {
     var settings by remember { mutableStateOf(false) }
+    androidx.compose.runtime.DisposableEffect(Unit) {
+        JarvisCrash.panelOpened()
+        onDispose { JarvisCrash.panelClosed() }
+    }
     LaunchedEffect(Unit) { Jarvis.prepare() }
     Column(modifier.background(Q.Panel).border(1.dp, Q.Line)) {
         // Cabeçalho
@@ -123,6 +127,7 @@ fun JarvisPanel(ctx: AppContext, onClose: () -> Unit, modifier: Modifier = Modif
 @Composable
 private fun brainLabel(): String = when (Jarvis.brain) {
     BrainState.READY -> L("IA local pronta") + " · " + (JarvisSettings.llmItem?.label ?: "")
+    BrainState.IDLE -> L("IA local baixada: carrega na primeira pergunta")
     BrainState.LOADING -> L("Carregando a IA local…")
     BrainState.NOT_INSTALLED -> L("IA local não baixada: respondo com os dados do app")
     BrainState.ERROR -> L("IA local com erro: respondo com os dados do app")
@@ -131,7 +136,7 @@ private fun brainLabel(): String = when (Jarvis.brain) {
 }
 
 @Composable
-private fun brainColor() = when (Jarvis.brain) { BrainState.READY -> Q.Buy; BrainState.LOADING -> Q.Warn; BrainState.ERROR -> Q.Sell; else -> Q.Muted }
+private fun brainColor() = when (Jarvis.brain) { BrainState.READY, BrainState.IDLE -> Q.Buy; BrainState.LOADING -> Q.Warn; BrainState.ERROR -> Q.Sell; else -> Q.Muted }
 
 @Composable
 private fun MiniButton(label: String, on: Boolean = false, color: Color = Q.Text, onClick: () -> Unit) = Tap(onClick) {
@@ -146,6 +151,26 @@ private fun Welcome(ctx: AppContext) {
         T("Pergunte qualquer coisa do app. Eu leio os dados ao vivo (livro, fluxo, liquidações, macro, ETFs, notícias) e respondo em texto e voz.", Q.Text, 13, wrap = true)
         Spacer(Modifier.height(6.dp))
         T("Para trades: entrada no rompimento da abertura de 15 min, stop, alvo, Time Machine com 10 mil simulações, tamanho e risco. Nunca envio ordens.", Q.Muted, 12, wrap = true)
+        if (JarvisCrash.safeMode || JarvisCrash.last != null) {
+            Spacer(Modifier.height(10.dp))
+            Column(Modifier.fillMaxWidth().border(1.dp, Q.Warn).padding(10.dp)) {
+                T("O app fechou da última vez", Q.Warn, 13, bold = true)
+                JarvisCrash.last?.let { T(L("Motivo") + ": " + it, Q.Text, 12, wrap = true, tr = false) }
+                if (JarvisCrash.safeMode) T("Estava com o Jarvis aberto. Para não repetir, desta vez nada roda sozinho ao abrir (pesquisa e sincronização ficam para depois). A IA, a voz e o microfone só carregam quando você usar, e quem fechar o app fica desligado.", Q.Muted, 11, wrap = true)
+                Spacer(Modifier.height(6.dp))
+                OutlineButton("Entendi") { JarvisCrash.dismiss() }
+            }
+        }
+        if (Jarvis.crashedList.isNotEmpty()) {
+            Spacer(Modifier.height(10.dp))
+            Column(Modifier.fillMaxWidth().border(1.dp, Q.Sell).padding(10.dp)) {
+                T("Um modelo fechou o app neste aparelho", Q.Sell, 13, bold = true)
+                T(L("O Jarvis desligou esse modelo para o app não fechar de novo") + ": " + Jarvis.crashedList.joinToString(", ") + ". " +
+                    L("Em ⚙, escolha a IA leve ou o microfone leve, ou tente de novo."), Q.Text, 12, wrap = true, tr = false)
+                Spacer(Modifier.height(6.dp))
+                OutlineButton("Tentar de novo") { Jarvis.retryCrashed() }
+            }
+        }
         val missing = listOfNotNull(JarvisSettings.llmItem, JarvisModels.VOICE, JarvisSettings.micItem).filter { !JarvisModels.installed(it) }
         if (missing.isNotEmpty()) {
             Spacer(Modifier.height(10.dp))
@@ -172,7 +197,7 @@ private fun SetupCard(missing: List<JarvisModels.Item>) {
         Spacer(Modifier.height(6.dp))
         if (missing.none { JarvisModels.progress.containsKey(it.id) })
             OutlineButton("Baixar tudo (~${sizeText(total)})") {
-                scope.launch { for (i in missing) if (!JarvisModels.download(i)) break; Jarvis.prepare() }
+                scope.launch { safely { for (i in missing) if (!JarvisModels.download(i)) break; Jarvis.prepare() } }
             }
     }
 }
@@ -193,7 +218,7 @@ private fun ModelRow(i: JarvisModels.Item) {
             when {
                 p != null -> T(String.format(BR, "%.0f%%", p * 100), Q.Warn, 12, monoFont = true)
                 ok -> MiniButton("Apagar", color = Q.Muted) { JarvisModels.delete(i); Jarvis.prepare() }
-                else -> MiniButton("Baixar", on = true) { scope.launch { JarvisModels.download(i); Jarvis.prepare() } }
+                else -> MiniButton("Baixar", on = true) { scope.launch { safely { JarvisModels.download(i); Jarvis.prepare() } } }
             }
         }
         if (p != null) Box(Modifier.fillMaxWidth().padding(top = 3.dp).height(4.dp).background(Q.Panel2)) {
@@ -554,7 +579,7 @@ private fun IntelligenceSection() {
                 KV("Tempo médio por resposta", String.format(BR, "%.1f s", last.avgMs / 1000.0))
             } else if (hist.isNotEmpty()) KV("Última nota", "${hist.last()}")
             if (hist.size >= 2) T(L("Evolução das notas") + ": " + hist.takeLast(10).joinToString(" → "), Q.Muted, 11, wrap = true, tr = false)
-            if (ctx != null) OutlineButton(if (JarvisEval.running) "Rodando a prova…" else "Rodar a prova", enabled = !JarvisEval.running) { scope.launch { JarvisEval.run(ctx) } }
+            if (ctx != null) OutlineButton(if (JarvisEval.running) "Rodando a prova…" else "Rodar a prova", enabled = !JarvisEval.running) { scope.launch { safely { JarvisEval.run(ctx) } } }
             Footnote("Perguntas fixas que medem se o Jarvis entende o pedido, acha os dados e não inventa números. Toda mudança tem de manter ou subir a nota.")
 
             // Memória e pesquisa diária
@@ -562,8 +587,23 @@ private fun IntelligenceSection() {
             KV("Conhecimentos guardados", "${JarvisMemory.size} (${JarvisMemory.confirmed} " + L("confirmados") + ")")
             KV("Última pesquisa", if (JarvisResearch.lastMs == 0L) "—" else java.text.SimpleDateFormat("dd/MM HH:mm", BR).format(java.util.Date(JarvisResearch.lastMs)) + " · +" + JarvisResearch.lastAdded)
             Toggle("Pesquisar na internet todo dia (só no Wi-Fi)", JarvisResearch.enabled) { JarvisResearch.useEnabled(it) }
-            OutlineButton(if (JarvisResearch.running) "Pesquisando…" else "Pesquisar agora", enabled = !JarvisResearch.running) { scope.launch { JarvisResearch.run(force = true) } }
+            OutlineButton(if (JarvisResearch.running) "Pesquisando…" else "Pesquisar agora", enabled = !JarvisResearch.running) { scope.launch { safely { JarvisResearch.run(force = true) } } }
             Footnote("Busca manchetes recentes (Google News) sobre o BTC, sua lista, as perguntas que ele não soube e as habilidades ligadas. Guarda com fonte e data; algo só conta como confirmado com 2 fontes. Nada do que vem da internet vira instrução para o Jarvis.")
+
+            // Curiosidade
+            T("Aprende coisas novas", Q.Accent, 12, bold = true, modifier = Modifier.padding(top = 6.dp))
+            KV("Última vez", if (JarvisCuriosity.lastMs == 0L) "—" else java.text.SimpleDateFormat("dd/MM HH:mm", BR).format(java.util.Date(JarvisCuriosity.lastMs)))
+            if (JarvisCuriosity.recent.isNotEmpty()) T(L("Aprendeu recentemente") + ": " + JarvisCuriosity.recent.joinToString(", "), Q.Text, 11, wrap = true, tr = false)
+            var learnedNow by remember { mutableStateOf<String?>(null) }
+            OutlineButton(if (JarvisCuriosity.running) "Aprendendo…" else "Aprender coisas novas agora", enabled = !JarvisCuriosity.running && !JarvisResearch.running) {
+                scope.launch { safely {
+                    if (JarvisMemory.all().none { it.kind == "news" }) JarvisResearch.run(force = true)
+                    val l = JarvisCuriosity.learn()
+                    learnedNow = if (l.isEmpty()) L("Nada novo por enquanto: nenhum termo apareceu em manchetes suficientes.") else L("Aprendeu") + ": " + l.joinToString(", ")
+                } }
+            }
+            learnedNow?.let { T(it, Q.Muted, 11, wrap = true, tr = false) }
+            Footnote("Quando um nome ou termo novo aparece em 3 ou mais manchetes de 2 ou mais fontes, o Jarvis lê o resumo dele na Wikipedia, guarda com o link e passa a pesquisar notícias sobre ele. Roda junto com a pesquisa diária. Sem página na Wikipedia, o termo é ignorado.")
 
             // Placar
             T("Placar das previsões", Q.Accent, 12, bold = true, modifier = Modifier.padding(top = 6.dp))
@@ -601,7 +641,7 @@ private fun IntelligenceSection() {
             })
             CloudBrain.error?.let { T(it, Q.Sell, 10, wrap = true, tr = false) }
             if (CloudBrain.lastSyncMs > 0) KV("Última sincronização", java.text.SimpleDateFormat("dd/MM HH:mm", BR).format(java.util.Date(CloudBrain.lastSyncMs)))
-            if (CloudBrain.configured) OutlineButton("Sincronizar agora") { scope.launch { CloudBrain.sync() } }
+            if (CloudBrain.configured) OutlineButton("Sincronizar agora") { scope.launch { safely { CloudBrain.sync() } } }
             Footnote("Guarda a memória, o placar e as avaliações deste aparelho (cada aparelho só vê os próprios dados) e traz habilidades aprovadas. Usa só a chave pública do projeto; a chave secreta nunca sai do servidor.")
 
             // Treino
@@ -612,6 +652,16 @@ private fun IntelligenceSection() {
             exported?.let { T(it, Q.Muted, 10, wrap = true, tr = false) }
             Footnote("As respostas com 👍 viram exemplos para o ajuste fino da IA. As com 👎 viram pesquisa do dia seguinte.")
         }
+    }
+}
+
+/** Botões do painel: um erro vira aviso, nunca fecha o app. O trabalho roda fora da tela principal. */
+private suspend fun safely(block: suspend () -> Unit) {
+    try { kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) { block() } }
+    catch (e: kotlinx.coroutines.CancellationException) { throw e }
+    catch (e: Throwable) {
+        runCatching { FileLog.info("jarvis botão: $e") }
+        Jarvis.notice = L("O Jarvis teve um erro e se recuperou") + ": " + (e.message ?: e.javaClass.simpleName).take(120)
     }
 }
 
