@@ -91,7 +91,7 @@ O ajuste fino semanal do modelo com os exemplos aprovados ainda é manual (preci
   `desktop/appResources/windows/jarvis-compat/{avx,sse}/jllama.dll` (Compose `appResourcesRootDir`). O processo da IA recebe a
   versão como 4º argumento e aponta `de.kherud.llama.lib.path` para a pasta. `JarvisNative.loadLlm` tenta padrão → avx → sse
   quando a queda é por instrução ilegal e guarda a que funcionou em `jarvis/ia-biblioteca.txt`.
-- **Conversa (`JarvisChat.kt`):** `smallTalk`, `GLOSSARY` (24 conceitos) + `concept`/`conceptAnswer`, `focus`/`ruleAnswer`
+- **Conversa (`JarvisChat.kt`):** `smallTalk`, `GLOSSARY` (23 conceitos) + `concept`/`conceptAnswer`, `focus`/`ruleAnswer`
   (assunto perguntado primeiro), `forSpeech` (2 frases), `hasSpeech` (energia por janela de 30 ms contra o ruído de fundo) e
   `suspicious` (frases típicas de alucinação do Whisper).
 - **Plano:** `TraderSkill.progress` (stop/alvo já atingidos depois da entrada) e as checagens novas em `TraderSkill.risk`.

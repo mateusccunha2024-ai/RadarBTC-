@@ -236,7 +236,7 @@ fun JarvisBrainMap(modifier: Modifier, onOpen: (JarvisView) -> Unit) {
             Row(Modifier.fillMaxWidth().clickable { selected = r.id }.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(10.dp).clip(CircleShape).background(stateColor(r.state)))
                 Spacer(Modifier.width(8.dp))
-                T(L(r.name), if (r.id == selected) Q.Accent else Q.Text, 12, bold = true, tr = false, modifier = Modifier.width(120.dp))
+                T(L(r.name), if (r.id == selected) Q.Accent else Q.Text, 12, bold = true, tr = false, modifier = Modifier.width(140.dp))
                 T(L(r.status), Q.Muted, 11, tr = false, modifier = Modifier.weight(1f))
             }
         }

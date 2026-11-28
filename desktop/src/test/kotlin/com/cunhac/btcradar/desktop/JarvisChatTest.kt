@@ -42,6 +42,11 @@ class JarvisChatTest {
         val a = JarvisChat.ruleAnswer(facts, setOf(Topic.DERIV))
         assertTrue(a, a.startsWith("Open interest") || a.startsWith("Funding"))
         assertFalse(a, a.contains("Preço do BTC"))
+        // "Quanto está o funding?": o "quanto está" não pode puxar o preço para a frente (visto nas capturas)
+        assertFalse(Topic.PRICE in JarvisFacts.topics("Quanto está o funding?"))
+        assertTrue(Topic.DERIV in JarvisFacts.topics("Quanto está o funding?"))
+        assertTrue(Topic.PRICE in JarvisFacts.topics("Quanto está o bitcoin?"))
+        assertTrue(Topic.PRICE in JarvisFacts.topics("Qual o preço e o funding?"))
         val all = JarvisChat.ruleAnswer(facts, setOf(Topic.SUMMARY))
         assertTrue(all.startsWith("Preço do BTC"))
     }

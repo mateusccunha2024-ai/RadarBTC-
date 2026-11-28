@@ -102,9 +102,15 @@ object JarvisFacts {
         Topic.SUMMARY to listOf("resumo", "summary", "como esta", "como ta", "how is", "visao geral", "overview", "situacao", "panorama", "mercado hoje", "o que acha"),
     )
 
+    /** "Quanto está", "valor"… só contam como preço quando a pergunta não cita outro assunto ("quanto está o funding?"). */
+    private val GENERIC_PRICE = setOf("quanto esta", "quanto ta", "how much", "valor")
+
     fun topics(q: String): Set<Topic> {
         val f = " " + JarvisText.fold(q) + " "
-        return KW.filter { (_, ks) -> ks.any { it in f } }.keys
+        val found = KW.filter { (_, ks) -> ks.any { it in f } }.keys
+        val specific = found - setOf(Topic.PRICE, Topic.SUMMARY, Topic.HELP)
+        if (Topic.PRICE in found && specific.isNotEmpty() && KW[Topic.PRICE]!!.none { it !in GENERIC_PRICE && it in f }) return found - Topic.PRICE
+        return found
     }
 
     private val NAMES = mapOf(

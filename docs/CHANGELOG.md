@@ -7,7 +7,7 @@
   guarda a que funcionou (⚙ › Cérebro mostra a biblioteca em uso).
 - **Plano de trade honesto:** se depois da entrada o preço já bateu no stop (ou no alvo), o cartão mostra "setup encerrado",
   o risco BLOQUEIA (novas checagens "Preço atual acima do stop" e "Stop e alvo ainda não atingidos hoje") e não há boleta.
-- **Conversa sem a IA:** responde cumprimentos ("oi, tudo bem?"), explica 24 conceitos de mercado com o valor ao vivo
+- **Conversa sem a IA:** responde cumprimentos ("oi, tudo bem?"), explica 23 conceitos de mercado com o valor ao vivo
   ("o que é funding?") e coloca primeiro os dados do assunto perguntado.
 - **Microfone:** ignora silêncio e ruído (antes o Whisper inventava "Eu não sou de você." e enviava sozinho).
 - **Voz:** lê só as 2 primeiras frases; o resto fica na tela.
