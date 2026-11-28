@@ -193,6 +193,20 @@ object I18n {
         return null
     }
 
+    /** Tradução na hora (Jarvis falando outro idioma). Números ficam como estão. Null sem internet. */
+    fun translateNow(text: String, to: String): String? {
+        val target = LANGS.firstOrNull { it.code == to }?.mt ?: return null
+        val (m, nums) = mask(text)
+        val key = "jv-$to|$m"
+        mtCache[key]?.let { return unmask(it, nums) }
+        val lines = m.split('\n')
+        val out = machine(lines, "auto", target)
+        val t = out.joinToString("\n").trim()
+        if (t.isEmpty()) return null
+        mtCache[key] = t
+        return unmask(t, nums)
+    }
+
     /** Manchete (em inglês ou outra língua) no idioma do app, inclusive português. */
     fun news(title: String): String {
         val c = code

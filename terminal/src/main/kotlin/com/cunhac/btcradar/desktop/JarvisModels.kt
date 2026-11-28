@@ -179,4 +179,10 @@ object JarvisVoices {
     /** Voz padrão para o idioma do app (alemão, russo e coreano usam a voz inglesa: o Kokoro não tem esses idiomas). */
     fun default(appLang: String) = ALL.firstOrNull { it.app == appLang } ?: ALL.first { it.name == "bm_george" }
     fun byId(sid: Int) = ALL.firstOrNull { it.sid == sid }
+
+    /** A voz única do Jarvis: masculina, calma, no idioma em que ele está falando. Alemão, russo e coreano: a Kokoro não tem. */
+    fun jarvis(code: String): Voice? = when (code) {
+        "pt" -> byId(43); "en" -> byId(26); "es" -> byId(29); "fr" -> byId(30); "it" -> byId(36); "ja" -> byId(41); "zh" -> byId(50)
+        else -> null
+    }
 }

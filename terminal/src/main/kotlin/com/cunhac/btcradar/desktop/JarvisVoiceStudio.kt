@@ -65,10 +65,20 @@ object JarvisVoiceStudio {
         }
     }
 
+    @Volatile private var lastProbe = 0L
+
+    /** Está aberto? Procura de novo no máximo a cada 60 s (recusa no próprio PC é imediata, então não atrasa a fala). */
+    fun ready(): Boolean {
+        if (status == Status.ONLINE) return true
+        if (System.currentTimeMillis() - lastProbe < 60_000) return false
+        return probe()
+    }
+
     /** Procura o VoiceStudio no endereço configurado (rápido, 2 s). */
     fun probe(url: String = JarvisSettings.vsUrl): Boolean {
         val base = normalize(url) ?: run { status = Status.OFFLINE; lastError = "endereço inválido"; return false }
         status = Status.CHECKING
+        lastProbe = System.currentTimeMillis()
         val ok = listOf("/.well-known/voicestudio-speech", "/v1/audio/voices").any { path ->
             runCatching {
                 val c = URI(base + path).toURL().openConnection() as HttpURLConnection
@@ -102,7 +112,7 @@ object JarvisVoiceStudio {
                 pcmToFloat(out.toByteArray()).also { if (it.isEmpty()) error("áudio vazio") }
             } finally { c.disconnect() }
         }.onSuccess { status = Status.ONLINE; lastError = null; lastMs = System.currentTimeMillis() - t0 }
-            .onFailure { lastError = it.message ?: it.javaClass.simpleName; FileLog.info("jarvis voicestudio: $lastError") }
+            .onFailure { lastError = it.message ?: it.javaClass.simpleName; status = Status.OFFLINE; lastProbe = System.currentTimeMillis(); FileLog.info("jarvis voicestudio: $lastError") }
             .getOrNull()
     }
 

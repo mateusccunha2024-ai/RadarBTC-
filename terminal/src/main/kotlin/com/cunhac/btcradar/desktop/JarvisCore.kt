@@ -30,10 +30,7 @@ object JarvisSettings {
     /** "off", "llm-0.5b" ou "llm-1.5b". */
     var llm by mutableStateOf(SettingsStore.s("jv.llm", if (Platform.isMobile) "llm-0.5b" else "llm-1.5b")); private set
     var voiceOn by mutableStateOf(SettingsStore.b("jv.voiceOn", true)); private set
-    var voiceId by mutableStateOf(SettingsStore.i("jv.voice", -1)); private set
     var speed by mutableStateOf(SettingsStore.d("jv.speed", 1.0).toFloat()); private set
-    /** "kokoro" (voz do aparelho) ou "voicestudio" (VoiceStudio aberto no PC, voz no estilo Jarvis). */
-    var engine by mutableStateOf(SettingsStore.s("jv.engine", "kokoro")); private set
     var vsUrl by mutableStateOf(SettingsStore.s("jv.vsUrl", JarvisVoiceStudio.DEFAULT_URL)); private set
     var mic by mutableStateOf(SettingsStore.s("jv.mic", if (Platform.isMobile) "mic-tiny" else "mic-base")); private set
     var watchlist by mutableStateOf(SettingsStore.s("jv.watch", "SPY,QQQ,TSLA,NVDA,AAPL,AMD,META,MSFT,AMZN,GOOGL,COIN,MSTR,PLTR")); private set
@@ -41,15 +38,15 @@ object JarvisSettings {
 
     fun useLlm(id: String) { llm = id; SettingsStore.put("jv.llm", id) }
     fun useVoiceOn(v: Boolean) { voiceOn = v; SettingsStore.put("jv.voiceOn", v) }
-    fun useVoice(sid: Int) { voiceId = sid; SettingsStore.put("jv.voice", sid) }
     fun useSpeed(v: Float) { speed = v; SettingsStore.put("jv.speed", v.toDouble()) }
-    fun useEngine(id: String) { engine = id; SettingsStore.put("jv.engine", id) }
     fun useVsUrl(v: String) { vsUrl = v; SettingsStore.put("jv.vsUrl", v) }
-    val studio: Boolean get() = engine == "voicestudio" && !Platform.isMobile
+    /** O VoiceStudio é usado sozinho quando está aberto neste PC (mesma voz Jarvis em todos os idiomas). */
+    val studio: Boolean get() = !Platform.isMobile && JarvisVoiceStudio.status == JarvisVoiceStudio.Status.ONLINE
     fun useMic(id: String) { mic = id; SettingsStore.put("jv.mic", id) }
     fun useWatchlist(v: String) { watchlist = v; SettingsStore.put("jv.watch", v) }
 
-    val voice: JarvisVoices.Voice get() = JarvisVoices.byId(voiceId) ?: JarvisVoices.default(I18n.lang.code)
+    /** A voz do Jarvis no aparelho para o idioma em que ele está falando (null = a Kokoro não tem esse idioma). */
+    val voice: JarvisVoices.Voice? get() = JarvisVoices.jarvis(Jarvis.replyLang)
     val llmItem: JarvisModels.Item? get() = JarvisModels.ALL.firstOrNull { it.id == llm && it.kind == JarvisModels.Kind.LLM }
     val micItem: JarvisModels.Item get() = if (mic == "mic-tiny") JarvisModels.MIC_TINY else JarvisModels.MIC_BASE
     fun symbols(): List<String> = watchlist.split(',', ' ', ';').map { it.trim().uppercase() }.filter { it.matches(Regex("[A-Z.\\-]{1,6}")) }.distinct().take(25)
@@ -373,6 +370,9 @@ object Jarvis {
     var brain by mutableStateOf(BrainState.OFF); private set
     var brainError by mutableStateOf<String?>(null); private set
     var voiceReady by mutableStateOf(false); private set
+    /** Idioma em que o Jarvis responde e fala. Começa em português; muda quando a pessoa pede ("fale em inglês"). */
+    var replyLang by mutableStateOf(JarvisLanguage.DEFAULT); private set
+    fun useReplyLang(code: String) { replyLang = code }
     /** Tem alguma voz: a Kokoro baixada ou o VoiceStudio escolhido. */
     val canSpeak: Boolean get() = voiceReady || JarvisSettings.studio
     var micReady by mutableStateOf(false); private set
@@ -396,6 +396,7 @@ object Jarvis {
      * A IA, a voz e o microfone carregam na primeira vez que são usados, protegidos por [guarded].
      */
     fun prepare() = scope.launch {
+        if (!Platform.isMobile) runCatching { JarvisVoiceStudio.ready() }
         val item = JarvisSettings.llmItem
         if (item == null) { runCatching { JarvisNative.unloadLlm() }; loadedLlm = null }
         brain = when {
@@ -501,7 +502,7 @@ object Jarvis {
 
     /** Carrega a voz na primeira fala. */
     internal fun ensureVoice(): Boolean = synchronized(loadLock) {
-        val v = JarvisSettings.voice
+        val v = JarvisSettings.voice ?: return false
         if (loadedVoice == v.lang && JarvisNative.ttsLoaded) return true
         if (!JarvisModels.installed(JarvisModels.VOICE) || crashed("voice")) return false
         val d = JarvisModels.dir(JarvisModels.VOICE)
@@ -515,7 +516,7 @@ object Jarvis {
     /** Carrega o microfone no primeiro toque. */
     internal fun ensureMic(): Boolean = synchronized(loadLock) {
         val mi = JarvisSettings.micItem
-        val mk = mi.id + I18n.lang.code
+        val mk = mi.id + replyLang
         if (loadedMic == mk && JarvisNative.asrLoaded) return true
         if (!JarvisModels.installed(mi) || crashed("mic-${mi.id}")) return false
         val p = if (mi == JarvisModels.MIC_TINY) "tiny" else "base"
@@ -526,7 +527,7 @@ object Jarvis {
         return err == null
     }
 
-    private fun whisperLang() = when (I18n.lang.code) { "zh" -> "zh"; else -> I18n.lang.code }
+    private fun whisperLang() = replyLang
 
     fun clear() { messages.clear() }
 
@@ -537,7 +538,11 @@ object Jarvis {
         messages += JarvisMsg(true, q)
         busy = true
         scope.launch {
-            val reply = runCatching { answer(ctx, q) }.getOrElse { JarvisMsg(false, L("Não consegui buscar os dados agora") + ": " + (it.message ?: ""), engine = "erro") }
+            val sw = JarvisLanguage.detect(q)
+            if (sw != null) replyLang = sw.code
+            val ask = sw?.rest ?: q
+            val reply = if (sw != null && ask.isBlank()) JarvisMsg(false, JarvisLanguage.confirm(sw.code), engine = "idioma")
+                else runCatching { inReplyLang(answer(ctx, ask)) }.getOrElse { JarvisMsg(false, L("Não consegui buscar os dados agora") + ": " + (it.message ?: ""), engine = "erro") }
             messages += reply; busy = false
             // A voz lê só o começo (2 frases); a lista completa fica na tela.
             if (JarvisSettings.voiceOn && canSpeak) say(JarvisChat.forSpeech(reply.text))
@@ -545,17 +550,34 @@ object Jarvis {
         }
     }
 
+    /**
+     * Respostas montadas pelo app saem no idioma do app; se o Jarvis estiver falando outro idioma, traduz a resposta
+     * (a IA local já responde direto no idioma pedido). Sem internet, fica no original com um aviso.
+     */
+    private fun inReplyLang(m: JarvisMsg): JarvisMsg {
+        if (replyLang == I18n.lang.code || m.engine == "IA local" || m.engine == "idioma") return m
+        val t = runCatching { I18n.translateNow(m.text, replyLang) }.getOrNull()
+        if (t.isNullOrBlank()) { notice = L("Sem internet para traduzir a resposta para o") + " " + L(JarvisLanguage.label(replyLang)) + "."; return m }
+        return m.copy(text = t)
+    }
+
     fun say(text: String) {
         speakScope.launch {
             JarvisNative.stopSpeaking()
             speaking = true
             try {
-                val viaStudio = JarvisSettings.studio && runCatching {
+                val useStudio = !Platform.isMobile && JarvisVoiceStudio.ready()
+                val viaStudio = useStudio && runCatching {
                     JarvisNative.resetStop()
-                    JarvisVoiceStudio.speak(text, I18n.lang.code, JarvisSettings.speed) { a, r -> JarvisNative.playPcm(a, r) }
+                    JarvisVoiceStudio.speak(text, replyLang, JarvisSettings.speed) { a, r -> JarvisNative.playPcm(a, r) }
                 }.getOrDefault(false)
-                if (JarvisSettings.studio && !viaStudio) notice = L("VoiceStudio não respondeu; usei a voz do aparelho") + ". " + (JarvisVoiceStudio.lastError ?: "")
-                if (!viaStudio && ensureVoice()) JarvisNative.speak(text, JarvisSettings.voice.sid, JarvisSettings.speed)
+                val v = JarvisSettings.voice
+                when {
+                    viaStudio -> {}
+                    v != null && ensureVoice() -> JarvisNative.speak(text, v.sid, JarvisSettings.speed)
+                    v == null -> notice = L("A voz do aparelho não fala") + " " + L(JarvisLanguage.label(replyLang)) + ". " +
+                        L("A resposta fica só na tela (com o VoiceStudio aberto no PC, o Jarvis fala esse idioma).")
+                }
             } finally { speaking = false }
         }
     }
@@ -709,7 +731,7 @@ object Jarvis {
     private fun llmAnswer(q: String, facts: List<Fact>, strict: Boolean = false): String {
         val now = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.US).apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }.format(java.util.Date())
         val sys = """You are JARVIS, the voice assistant inside the "Radar BTC" app (a Bitcoin order-flow terminal that also covers US stocks).
-Always answer in ${langName()}. Speak like a calm, sharp butler-analyst: 2 to 5 short sentences, no markdown, no lists.
+Always answer in ${JarvisLanguage.llmName(replyLang)}. Speak like a calm, sharp butler-analyst: 2 to 5 short sentences, no markdown, no lists.
 Use ONLY the FACTS below. Never invent prices, numbers, probabilities, news, dates or sources. If the facts do not answer the question, say you don't have that data now and suggest the app tab that shows it.
 You never place orders and never promise profits; trading involves risk. Do not give financial advice; describe what the data shows.
 ${if (strict) "IMPORTANT: copy every number exactly as written in the FACTS; do not compute, round or estimate new numbers." else ""}

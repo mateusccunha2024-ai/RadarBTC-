@@ -272,7 +272,7 @@ private fun Message(ctx: AppContext, m: JarvisMsg, question: String = "") {
             T(L(m.engine) + (if (m.facts.isNotEmpty()) " · ${m.facts.size} " + L("dados usados") else ""), Q.Muted, 10, tr = false,
                 modifier = if (m.facts.isNotEmpty()) Modifier.clickable { showFacts = !showFacts } else Modifier)
             Spacer(Modifier.weight(1f))
-            if (Jarvis.voiceReady) T("▶ " + L("ouvir"), Q.Accent, 10, tr = false, modifier = Modifier.clickable { Jarvis.say(m.text) }.padding(horizontal = 4.dp))
+            if (Jarvis.canSpeak) T("▶ " + L("ouvir"), Q.Accent, 10, tr = false, modifier = Modifier.clickable { Jarvis.say(m.text) }.padding(horizontal = 4.dp))
             // Avaliação: 👍 vira exemplo de treino; 👎 vira pesquisa do dia seguinte.
             if (rated == null && question.isNotBlank()) {
                 T("👍", Q.Muted, 12, tr = false, modifier = Modifier.clickable { rated = true; JarvisFeedback.record(question, m.text, m.engine, true, m.facts) }.padding(horizontal = 6.dp))
@@ -556,26 +556,20 @@ private fun JarvisSettingsView(modifier: Modifier) {
         Spacer(Modifier.height(8.dp))
         Section("Voz própria") {
             Column {
-                if (!Platform.isMobile) {
-                    val engines = listOf("kokoro", "voicestudio")
-                    Chips("Motor de voz", listOf("Kokoro (no aparelho)", "Jarvis · VoiceStudio"), engines.indexOf(JarvisSettings.engine).coerceAtLeast(0)) {
-                        JarvisSettings.useEngine(engines[it])
-                        if (it == 1) Jarvis.checkStudio()
-                    }
-                    if (JarvisSettings.studio) { VoiceStudioBox(); Spacer(Modifier.height(6.dp)) }
-                }
+                T(L("Voz") + ": Jarvis · " + L(JarvisLanguage.label(Jarvis.replyLang)), Q.Text, 13, bold = true, tr = false)
+                T("O Jarvis tem uma voz só e fala português. Para trocar, peça na conversa: \"fale em inglês\", \"responda em espanhol\" ou \"volte para o português\".",
+                    Q.Muted, 11, wrap = true)
+                if (Jarvis.replyLang != JarvisLanguage.DEFAULT) MiniButton("Voltar ao português") { Jarvis.useReplyLang(JarvisLanguage.DEFAULT); Jarvis.prepare() }
+                Spacer(Modifier.height(6.dp))
                 ModelRow(JarvisModels.VOICE)
-                val voices = JarvisVoices.ALL.filter { it.app == I18n.lang.code || it.app == "en" }
-                Chips(null, voices.map { it.label }, voices.indexOfFirst { it.sid == JarvisSettings.voice.sid }.coerceAtLeast(0)) {
-                    JarvisSettings.useVoice(voices[it].sid); Jarvis.prepare()
-                }
+                if (!Platform.isMobile) { Spacer(Modifier.height(6.dp)); VoiceStudioBox(); Spacer(Modifier.height(6.dp)) }
                 val speeds = listOf(0.9f, 1.0f, 1.1f, 1.25f)
                 Chips("Velocidade", speeds.map { String.format(BR, "%.2fx", it) }, speeds.indexOfFirst { it == JarvisSettings.speed }.coerceAtLeast(1)) {
                     JarvisSettings.useSpeed(speeds[it])
                 }
                 if (Jarvis.canSpeak) MiniButton("▶ Testar a voz") { Jarvis.say(L("Olá. Sou o Jarvis, do Radar BTC. Pergunte o que quiser sobre o mercado.")) }
-                Footnote(if (JarvisSettings.studio) "Com o VoiceStudio escolhido, a voz Kokoro (abaixo) fica de reserva: o Jarvis usa ela se o VoiceStudio estiver fechado."
-                    else "Voz neural Kokoro, gerada no aparelho (licença Apache 2.0). Nenhum serviço pago ou externo é usado.")
+                Footnote("Voz neural Kokoro, gerada no aparelho (licença Apache 2.0). Português, inglês, espanhol, francês, italiano, japonês e chinês; " +
+                    "alemão, russo e coreano aparecem só na tela, a não ser com o VoiceStudio aberto no PC.")
             }
         }
         Spacer(Modifier.height(8.dp))
@@ -757,7 +751,7 @@ private fun VoiceStudioBox() {
             val c = when (st) { JarvisVoiceStudio.Status.ONLINE -> Q.Buy; JarvisVoiceStudio.Status.OFFLINE -> Q.Sell; else -> Q.Muted }
             Box(Modifier.size(8.dp).background(c))
             Spacer(Modifier.width(6.dp))
-            T(L("VoiceStudio") + ": " + L(st.label), Q.Text, 12, bold = true, tr = false)
+            T(L("VoiceStudio") + ": " + L(st.label) + if (st == JarvisVoiceStudio.Status.ONLINE) " · " + L("a voz Jarvis usa ele") else " · " + L("usando a voz do aparelho"), Q.Text, 12, bold = true, tr = false)
             if (st == JarvisVoiceStudio.Status.ONLINE && JarvisVoiceStudio.lastMs > 0)
                 T("  · " + L("última frase em") + " " + String.format(BR, "%.1f s", JarvisVoiceStudio.lastMs / 1000.0), Q.Muted, 11, tr = false)
         }
@@ -777,8 +771,8 @@ private fun VoiceStudioBox() {
         JarvisVoiceStudio.lastError?.takeIf { st == JarvisVoiceStudio.Status.OFFLINE }?.let { T(it, Q.Sell, 11, wrap = true, tr = false) }
         if (!JarvisVoiceStudio.isLoopback(JarvisSettings.vsUrl))
             T("Atenção: este endereço não é deste PC. O texto das respostas vai pela rede até ele.", Q.Warn, 11, wrap = true)
-        Footnote("Voz no estilo do Jarvis dos filmes: mordomo britânico, calmo, de voz grave, desenhada com etiquetas do VoiceStudio. Não é uma cópia da voz do ator. " +
-            "Instale e abra o VoiceStudio (github.com/debpalash/voicestudio) neste PC: ele roda à parte, no endereço acima. " +
+        Footnote("Opcional. Com o VoiceStudio aberto neste PC, a mesma voz Jarvis (mordomo britânico, calmo, voz grave; não é a voz do ator) " +
+            "fala todos os idiomas e o Jarvis usa ele sozinho. Fechado, usa a voz do aparelho. Instale à parte: github.com/debpalash/voicestudio. " +
             "O VoiceStudio é AGPL-3.0 e o modelo OmniVoice é só para uso pessoal, não comercial. Sem placa de vídeo, cada frase pode levar vários segundos.")
     }
 }

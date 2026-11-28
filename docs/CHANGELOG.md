@@ -1,16 +1,19 @@
 # Changelog
 
-## V8 — atualização 18 (2026-11-28) · Voz Jarvis pelo VoiceStudio (Windows)
-- **Novo motor de voz:** ⚙ › Voz própria › Motor de voz › "Jarvis · VoiceStudio". O Jarvis fala pelo VoiceStudio
-  (github.com/debpalash/voicestudio) aberto no mesmo PC, pela API local compatível com a OpenAI (`http://127.0.0.1:3900`).
-- **Voz no estilo Jarvis:** mordomo britânico, calmo, de voz grave, desenhada com as etiquetas do OmniVoice
-  ("male, middle-aged, low pitch, british accent") e semente fixa, para soar igual em toda frase. Não é cópia da voz do ator.
-- **Sem travar:** gera a próxima frase enquanto a atual toca; o botão de parar corta na hora. Se o VoiceStudio estiver
-  fechado, o Jarvis avisa e usa a voz Kokoro do aparelho.
-- **Painel:** caixa com o endereço, "Conectar", estado (conectado / não encontrado), tempo da última frase e aviso se o
-  endereço não for deste PC. O mapa do cérebro mostra o motor em uso na região "Fala".
-- **Licença:** o VoiceStudio não vem dentro do Radar (é AGPL-3.0 e o modelo OmniVoice é só para uso não comercial); o usuário
-  instala à parte. No celular continua só a Kokoro.
+## V8 — atualização 18 (2026-11-28) · Uma voz só, português por padrão e troca de idioma por pedido
+- **Uma voz só:** saiu a lista de vozes e o seletor de motor. O Jarvis tem uma voz masculina e calma; em ⚙ › Voz aparece
+  "Voz: Jarvis · português", a velocidade e o teste.
+- **Português por padrão:** o Jarvis sempre começa falando e respondendo em português, mesmo com o app em outro idioma.
+- **Outros idiomas quando pedir:** "fale em inglês", "responda em espanhol", "speak English", "parle français"… trocam o
+  idioma das respostas, da voz e do microfone (Whisper) até pedir outro ou "volte para o português" (ou o botão
+  "Voltar ao português"). Dá para perguntar junto: "fale em inglês: como está o funding?". Inglês, espanhol, francês,
+  italiano, japonês e chinês têm voz no aparelho; alemão, russo e coreano ficam só na tela sem o VoiceStudio.
+  A IA local responde direto no idioma pedido; respostas montadas pelo app são traduzidas na hora (precisa de internet).
+- **VoiceStudio automático (Windows, opcional):** com o VoiceStudio (github.com/debpalash/voicestudio) aberto no mesmo PC,
+  o Jarvis usa ele sozinho, com a mesma voz em todos os idiomas: mordomo britânico, calmo, de voz grave (etiquetas
+  "male, middle-aged, low pitch, british accent" e semente fixa; não é cópia da voz do ator). Fechado, usa a voz do
+  aparelho. Gera a próxima frase enquanto a atual toca. O VoiceStudio é instalado à parte (AGPL-3.0; modelo OmniVoice
+  só para uso não comercial).
 
 ## V8 — atualização 17 (2026-11-28) · Jarvis no PC sem AVX2, aprender sem parar e mapa do cérebro
 - **A IA roda em processador sem AVX2:** o teste no PC (Core i7 de 2ª/3ª geração) mostrou a biblioteca da IA morrendo por

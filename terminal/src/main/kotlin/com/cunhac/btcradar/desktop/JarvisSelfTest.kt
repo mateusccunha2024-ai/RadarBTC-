@@ -51,7 +51,7 @@ object JarvisSelfTest {
             delay(2_000)
             askAndLog("Onde estão as paredes?", "depois de Tentar de novo")
             val v = Jarvis.ensureVoice(); log("voz carregou: $v")
-            if (v) log("voz falou: " + runCatching { JarvisNative.speak("Teste de voz do Jarvis.", JarvisSettings.voice.sid, 1f); "ok" }.getOrElse { it.toString() })
+            if (v) log("voz falou: " + runCatching { JarvisNative.speak("Teste de voz do Jarvis.", JarvisSettings.voice!!.sid, 1f); "ok" }.getOrElse { it.toString() })
             log("microfone carregou: ${Jarvis.ensureMic()}")
             log("fim ok (memória livre ${JarvisNative.freeRamMb()} MB)")
         } catch (e: Throwable) {

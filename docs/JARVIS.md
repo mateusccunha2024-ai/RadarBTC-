@@ -47,13 +47,17 @@ Kokoro com vozes por idioma (português: Alex, Dora, Santa; inglês britânico: 
 voz inglesa (o Kokoro não tem esses idiomas). Nenhuma API paga ou serviço de terceiros é usado; não usamos acessos não oficiais a
 serviços comerciais de voz.
 
-**VoiceStudio (Windows, opcional, atualização 18):** ⚙ › Voz própria › Motor de voz › "Jarvis · VoiceStudio". `JarvisVoiceStudio`
-procura `GET /.well-known/voicestudio-speech` (ou `/v1/audio/voices`) e fala com `POST /v1/audio/speech`
-(`model: omnivoice`, `voice: default`, `instruct: "male, middle-aged, low pitch, british accent"`, `seed: 3000`,
-`response_format: pcm` = 24 kHz 16 bits mono, `language` ISO 639-1, `speed`). Frase por frase, gerando a próxima enquanto a
-atual toca (`JarvisNative.playPcm`). Falhou a primeira frase → aviso e Kokoro. O VoiceStudio é AGPL-3.0 e roda como programa
-separado (não é embutido); os pesos do OmniVoice são CC-BY-NC (uso pessoal). Só aceita endereço http/https sem usuário/senha
-e avisa quando o endereço não é deste PC.
+**Uma voz e idioma da fala (atualização 18):** `JarvisVoices.jarvis(código)` dá a voz única do Jarvis por idioma
+(pt Alex, en George, es Alex, fr Siwis, it Nicola, ja Kumo, zh Yunxi; de/ru/ko sem voz no aparelho). `Jarvis.replyLang` começa
+em "pt" a cada abertura; `JarvisLanguage.detect` reconhece "fale/responda/speak/habla/parle… em <idioma>" (sem confundir
+"como se diz X em inglês" ou "mercado chinês") e devolve a pergunta que veio junto. A IA local recebe o idioma no prompt;
+respostas do app passam por `I18n.translateNow`; o Whisper carrega no idioma da fala.
+
+**VoiceStudio (Windows, opcional, automático):** `JarvisVoiceStudio.ready()` procura `GET /.well-known/voicestudio-speech`
+(ou `/v1/audio/voices`) no máximo a cada 60 s; aberto, o Jarvis fala com `POST /v1/audio/speech` (`model: omnivoice`,
+`voice: default`, `instruct: "male, middle-aged, low pitch, british accent"`, `seed: 3000`, `response_format: pcm` =
+24 kHz 16 bits mono, `language` = idioma da fala, `speed`), frase por frase (`JarvisNative.playPcm`). Falhou → voz do aparelho.
+AGPL-3.0, roda à parte (não é embutido); pesos OmniVoice CC-BY-NC. Só http/https sem usuário/senha; avisa endereço fora do PC.
 
 ## Inteligência que cresce (atualização 14)
 | Peça | Como funciona |
