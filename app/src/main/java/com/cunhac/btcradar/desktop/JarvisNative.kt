@@ -23,7 +23,7 @@ import java.io.File
 import java.lang.ref.WeakReference
 
 /**
- * Android: IA (llama.cpp, net.ladenthin:llama-android), voz (Kokoro) e microfone (Whisper) rodando no próprio celular.
+ * Android: IA (llama.cpp, net.ladenthin:llama-android, no processo ":jarvis"), voz (Kokoro) e microfone (Whisper) rodando no próprio celular.
  * A IA local exige Android 9 ou mais novo e processador de 64 bits; sem isso o assistente responde só com os dados do app.
  */
 object JarvisNative {
@@ -32,37 +32,54 @@ object JarvisNative {
     const val micSupported = true
     private val threads = Runtime.getRuntime().availableProcessors().coerceIn(2, 6)
 
-    @Volatile private var llm: Any? = null   // net.ladenthin.llama.LlamaModel (só tocado quando suportado)
+    @Volatile private var llmReady = false
     @Volatile private var tts: OfflineTts? = null
     @Volatile private var asr: OfflineRecognizer? = null
     private val llmLock = Any()
 
-    val llmLoaded get() = llm != null
+    /** A IA roda no processo ":jarvis" ([JarvisLlmService]): se ela cair, o app continua aberto. */
+    val llmLoaded get() = llmReady && LlmRemote.connected
     val ttsLoaded get() = tts != null
     val asrLoaded get() = asr != null
 
     fun loadLlm(path: String): String? = synchronized(llmLock) {
         if (!llmSupported) return "Este aparelho não roda a IA local (precisa de Android 9+ e 64 bits)."
-        runCatching { Llm.close(llm); llm = null; llm = Llm.open(path, threads); null }
-            .getOrElse { (it.message ?: it.javaClass.simpleName).also { m -> FileLog.info("jarvis llm: $m") } }
+        llmReady = false
+        LlmRemote.bind()?.let { e -> LlmRemote.crash = e; FileLog.info("jarvis llm: $e"); return e }
+        try {
+            val r = LlmRemote.call(LlmRemote.LOAD, 300_000) { putString("path", path); putInt("ctx", 4096); putInt("threads", threads) }
+            r.getString("err")?.let { e -> FileLog.info("jarvis llm: $e"); return e }
+            llmReady = true
+            null
+        } catch (e: java.io.IOException) { e.message ?: "a IA fechou" }
     }
 
-    fun unloadLlm() = synchronized(llmLock) { runCatching { Llm.close(llm) }; llm = null }
+    fun unloadLlm() = synchronized(llmLock) { llmReady = false; runCatching { LlmRemote.unbind() }; Unit }
 
     fun complete(prompt: String, maxTokens: Int, temperature: Float, stop: List<String>): String = synchronized(llmLock) {
-        Llm.complete(llm ?: error("modelo não carregado"), prompt, maxTokens, temperature, stop)
+        checkLlm()
+        if (!llmLoaded) error(LlmRemote.crash ?: "modelo não carregado")
+        val r = try {
+            LlmRemote.call(LlmRemote.COMPLETE, 300_000) {
+                putString("prompt", prompt); putInt("n", maxTokens); putFloat("temp", temperature); putStringArrayList("stop", ArrayList(stop))
+            }
+        } catch (e: java.io.IOException) { llmReady = false; throw IllegalStateException(e.message ?: "a IA fechou") }
+        r.getString("err")?.let { e ->
+            // Processo da IA recriado sem o modelo (caiu e voltou): trata como queda para mostrar o motivo.
+            if (e == "modelo não carregado") { llmReady = false; LlmRemote.crash = LlmRemote.crash ?: "a IA fechou e o Android a reabriu sem o modelo"; LlmRemote.unbind() }
+            error(e)
+        }
+        r.getString("text").orEmpty()
     }
 
-    /** Isolado num objeto separado: as classes do llama só são carregadas em aparelhos compatíveis. */
-    private object Llm {
-        fun open(path: String, threads: Int): Any = net.ladenthin.llama.LlamaModel(
-            net.ladenthin.llama.parameters.ModelParameters().setModel(path).setCtxSize(4096).setThreads(threads).setThreadsBatch(threads))
-        fun close(m: Any?) { (m as? net.ladenthin.llama.LlamaModel)?.close() }
-        fun complete(m: Any, prompt: String, maxTokens: Int, temperature: Float, stop: List<String>): String =
-            (m as net.ladenthin.llama.LlamaModel).complete(
-                net.ladenthin.llama.parameters.InferenceParameters(prompt).withNPredict(maxTokens).withTemperature(temperature)
-                    .withStopStrings(*stop.toTypedArray()))
-    }
+    /** Motivo, se o processo da IA caiu desde a última consulta (o Jarvis mostra e desliga o modelo). */
+    /** Confere se o processo da IA morreu parado; o motivo fica para [takeCrash]. */
+    fun checkLlm() { if (llmReady) runCatching { LlmRemote.checkLost() }; if (!LlmRemote.connected) llmReady = false }
+
+    fun takeCrash(): String? = LlmRemote.crash.also { LlmRemote.crash = null }
+
+    /** Só o teste: derruba o processo da IA para conferir que o app continua. */
+    fun crashLlmForTest() { runCatching { LlmRemote.crashForTest() } }
 
     fun loadTts(dir: File, model: String, lang: String, lexicon: String, dictDir: String?): String? = runCatching {
         tts?.release(); tts = null

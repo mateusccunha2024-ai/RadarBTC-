@@ -9,9 +9,6 @@ import com.k2fsa.sherpa.onnx.OfflineTtsConfig
 import com.k2fsa.sherpa.onnx.OfflineTtsKokoroModelConfig
 import com.k2fsa.sherpa.onnx.OfflineTtsModelConfig
 import com.k2fsa.sherpa.onnx.OfflineWhisperModelConfig
-import de.kherud.llama.InferenceParameters
-import de.kherud.llama.LlamaModel
-import de.kherud.llama.ModelParameters
 import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.sound.sampled.AudioFormat
@@ -21,7 +18,7 @@ import javax.sound.sampled.TargetDataLine
 
 /**
  * Windows: o "cérebro" e a voz do assistente rodando no próprio PC.
- * IA: llama.cpp (de.kherud:llama) com um modelo GGUF aberto. Voz: Kokoro (sherpa-onnx). Microfone: Whisper (sherpa-onnx).
+ * IA: llama.cpp (de.kherud:llama) com um modelo GGUF aberto, num processo separado (JarvisLlmWorker.kt). Voz: Kokoro (sherpa-onnx). Microfone: Whisper (sherpa-onnx).
  * Nenhum dado sai do computador; só o download dos modelos usa a internet.
  */
 object JarvisNative {
@@ -31,31 +28,46 @@ object JarvisNative {
     /** Threads para a IA: metade dos núcleos (o app continua fluido). */
     private val threads = (Runtime.getRuntime().availableProcessors() / 2).coerceIn(2, 8)
 
-    @Volatile private var llm: LlamaModel? = null
+    @Volatile private var llmReady = false
     @Volatile private var tts: OfflineTts? = null
     @Volatile private var asr: OfflineRecognizer? = null
     private val llmLock = Any()
 
-    val llmLoaded get() = llm != null
+    /** A IA roda num processo separado ([LlmProcess]): se ela cair, o app continua aberto. */
+    val llmLoaded get() = llmReady && LlmProcess.alive
     val ttsLoaded get() = tts != null
     val asrLoaded get() = asr != null
 
-    /** Carrega o modelo de linguagem. Devolve a mensagem de erro, ou null se deu certo. */
+    /** Carrega o modelo de linguagem no processo da IA. Devolve a mensagem de erro, ou null se deu certo. */
     fun loadLlm(path: String): String? = synchronized(llmLock) {
-        runCatching {
-            llm?.close(); llm = null
-            llm = LlamaModel(ModelParameters().setModel(path).setCtxSize(4096).setThreads(threads).setThreadsBatch(threads).setGpuLayers(0))
-            null
-        }.getOrElse { (it.message ?: it.javaClass.simpleName).also { m -> FileLog.info("jarvis llm: $m") } }
+        llmReady = false
+        if (!LlmProcess.alive) LlmProcess.start()?.let { e -> LlmProcess.crash = e; FileLog.info("jarvis llm: $e"); return e }
+        try {
+            val r = LlmProcess.call(300_000, "load", path, "4096", threads.toString())
+            if (r.firstOrNull() == "ok") { llmReady = true; null } else (r.getOrNull(1) ?: "erro ao carregar").also { FileLog.info("jarvis llm: $it") }
+        } catch (e: java.io.IOException) { e.message ?: "a IA fechou" }
     }
 
-    fun unloadLlm() = synchronized(llmLock) { runCatching { llm?.close() }; llm = null }
+    fun unloadLlm() = synchronized(llmLock) { llmReady = false; runCatching { LlmProcess.stop() }; Unit }
 
     fun complete(prompt: String, maxTokens: Int, temperature: Float, stop: List<String>): String = synchronized(llmLock) {
-        val m = llm ?: error("modelo não carregado")
-        m.complete(InferenceParameters(prompt).setNPredict(maxTokens).setTemperature(temperature).setTopP(0.9f)
-            .setRepeatPenalty(1.1f).setStopStrings(*stop.toTypedArray()))
+        checkLlm()
+        if (!llmLoaded) error(LlmProcess.crash ?: "modelo não carregado")
+        val r = try {
+            LlmProcess.call(300_000, "complete", prompt, maxTokens.toString(), temperature.toString(), *stop.toTypedArray())
+        } catch (e: java.io.IOException) { llmReady = false; throw IllegalStateException(e.message ?: "a IA fechou") }
+        if (r.firstOrNull() != "ok") error(r.getOrNull(1) ?: "erro da IA")
+        r.getOrNull(1).orEmpty()
     }
+
+    /** Motivo, se o processo da IA caiu desde a última consulta (o Jarvis mostra e desliga o modelo). */
+    /** Confere se o processo da IA morreu parado; o motivo fica para [takeCrash]. */
+    fun checkLlm() { if (llmReady) runCatching { LlmProcess.checkLost() }; if (!LlmProcess.alive) llmReady = false }
+
+    fun takeCrash(): String? = LlmProcess.crash.also { LlmProcess.crash = null }
+
+    /** Só o teste: derruba o processo da IA para conferir que o app continua. */
+    fun crashLlmForTest() { runCatching { LlmProcess.crashForTest() } }
 
     fun loadTts(dir: File, model: String, lang: String, lexicon: String, dictDir: String?): String? = runCatching {
         tts?.release(); tts = null

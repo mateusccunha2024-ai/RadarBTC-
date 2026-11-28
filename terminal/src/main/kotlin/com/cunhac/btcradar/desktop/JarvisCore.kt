@@ -383,7 +383,11 @@ object Jarvis {
             item == null -> BrainState.OFF
             !JarvisNative.llmSupported -> BrainState.UNSUPPORTED
             !JarvisModels.installed(item) -> BrainState.NOT_INSTALLED
-            crashed("llm-${item.id}") -> { brainError = L("Este modelo fechou o app neste aparelho. Escolha o modelo leve ou toque em Tentar de novo."); BrainState.ERROR }
+            crashed("llm-${item.id}") -> {
+                brainError = crashReason("llm-${item.id}")?.let { L("A IA local fechou neste aparelho") + ": " + it + ". " + L("Escolha a IA leve em ⚙ ou toque em Tentar de novo.") }
+                    ?: L("Este modelo fechou o app neste aparelho. Escolha o modelo leve ou toque em Tentar de novo.")
+                BrainState.ERROR
+            }
             loadedLlm == item.id && JarvisNative.llmLoaded -> BrainState.READY
             brain == BrainState.ERROR && loadedLlm == null && brainError != null && !crashedAny() -> BrainState.ERROR
             else -> BrainState.IDLE
@@ -412,6 +416,25 @@ object Jarvis {
         if (mark(key).exists()) { runCatching { bad(key).writeText(mark(key).readText()); mark(key).delete() } }
         return bad(key).exists()
     }
+    /** Motivo guardado quando o processo da IA caiu (o app continuou aberto). */
+    private fun crashReason(key: String): String? = runCatching { bad(key).readText() }.getOrNull()?.takeIf { it.startsWith("motivo: ") }?.removePrefix("motivo: ")?.trim()
+
+    /**
+     * A IA roda num processo separado. Se ele caiu, o app segue aberto: este modelo fica desligado até "Tentar de novo",
+     * o motivo aparece no painel e a resposta sai com os dados do app.
+     */
+    private fun noteLlmCrash(): Boolean {
+        val why = runCatching { JarvisNative.takeCrash() }.getOrNull() ?: return false
+        val item = JarvisSettings.llmItem
+        if (item != null) runCatching { bad("llm-${item.id}").writeText("motivo: $why") }
+        loadedLlm = null
+        brain = BrainState.ERROR
+        brainError = L("A IA local fechou e o app continuou aberto") + ": " + why + ". " + L("Respondo com os dados do app. Escolha a IA leve em ⚙ ou toque em Tentar de novo.")
+        crashedList = listCrashed()
+        runCatching { FileLog.info("jarvis: IA ${item?.id} caiu: $why") }
+        return true
+    }
+
     private fun listCrashed() = JarvisNative.modelsDir.listFiles()?.filter { it.name.startsWith("falhou-") }?.map { it.name.removePrefix("falhou-") } ?: emptyList()
     private fun crashedAny() = listCrashed().isNotEmpty()
     fun retryCrashed() { JarvisNative.modelsDir.listFiles()?.filter { it.name.startsWith("falhou-") || it.name.startsWith("carregando-") }?.forEach { it.delete() }; brainError = null; prepare() }
@@ -426,6 +449,9 @@ object Jarvis {
     /** Carrega a IA na primeira pergunta. */
     fun ensureBrain(): Boolean = synchronized(loadLock) {
         val item = JarvisSettings.llmItem ?: return false
+        // A IA pode ter caído parada (entre perguntas): mostra o motivo em vez de recarregar sem avisar.
+        runCatching { JarvisNative.checkLlm() }
+        if (noteLlmCrash()) return false
         if (loadedLlm == item.id && JarvisNative.llmLoaded) { brain = BrainState.READY; return true }
         if (!JarvisNative.llmSupported || !JarvisModels.installed(item) || crashed("llm-${item.id}")) return false
         // Memória livre: sem espaço, o sistema mata o app no meio da carga. Melhor avisar e responder com os dados.
@@ -440,7 +466,8 @@ object Jarvis {
         }
         brain = BrainState.LOADING
         val err = guarded("llm-${item.id}") { JarvisNative.loadLlm(JarvisModels.file(item, item.files.first().second).path) }
-        return if (err == null) { loadedLlm = item.id; brain = BrainState.READY; brainError = null; true } else { brain = BrainState.ERROR; brainError = err; false }
+        return if (err == null) { loadedLlm = item.id; brain = BrainState.READY; brainError = null; true }
+        else { brain = BrainState.ERROR; brainError = err; noteLlmCrash(); false }
     }
 
     /** Memória que a IA precisa livre para carregar (o arquivo é mapeado; o contexto e a conta vão para a RAM). */
@@ -587,9 +614,10 @@ object Jarvis {
         facts += runCatching { JarvisSkills.run(q) }.getOrDefault(emptyList())
         JarvisFacts.symbol(q)?.let { s -> ScoreBook.fact(s)?.let { facts += it } }
         var card: TradeCard? = null
-        val ai = ensureBrain()
+        var ai = ensureBrain()
         if (ai) {
             val calls = runCatching { JarvisTools.parse(JarvisNative.complete(plannerPrompt(q), 60, 0.1f, listOf("<|im_end|>", "<|im_start|>"))) }.getOrDefault(emptyList())
+            if (noteLlmCrash()) ai = false
             for (c in calls) {
                 val (f, cd) = runCatching { JarvisTools.run(ctx, c, q) }.getOrDefault(emptyList<Fact>() to null)
                 facts += f.filter { n -> facts.none { it.text == n.text } }
@@ -603,6 +631,7 @@ object Jarvis {
                 val text = runCatching { llmAnswer(q, used, strict) }.getOrNull() ?: break
                 if (text.isNotBlank() && Grounding.ungrounded(text, used.map { it.text }).isEmpty()) return FactsAnswer(text, used, "IA local", card)
             }
+            if (noteLlmCrash()) return FactsAnswer(ruleAnswer(used), used, "dados do app (a IA fechou; o app continuou aberto)", card)
             return FactsAnswer(ruleAnswer(used), used, "dados do app (a IA citou um número fora dos dados)", card)
         }
         return FactsAnswer(ruleAnswer(used), used, "dados do app", card)
@@ -616,7 +645,8 @@ object Jarvis {
     fun summarize(topic: String, headlines: List<String>): String {
         val p = "<|im_start|>system\nSummarize these headlines about \"$topic\" in 1 or 2 short sentences in ${langName()}. Use only what the headlines say; do not add numbers that are not in them.<|im_end|>\n" +
             "<|im_start|>user\n" + headlines.joinToString("\n") { "- $it" } + "<|im_end|>\n<|im_start|>assistant\n"
-        return JarvisNative.complete(p, 120, 0.2f, listOf("<|im_end|>", "<|im_start|>")).trim()
+        return runCatching { JarvisNative.complete(p, 120, 0.2f, listOf("<|im_end|>", "<|im_start|>")).trim() }
+            .getOrElse { noteLlmCrash(); throw it }
     }
 
     private fun langName() = when (I18n.lang.code) {

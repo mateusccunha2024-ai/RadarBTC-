@@ -35,6 +35,21 @@ object JarvisSelfTest {
                 val r = Jarvis.messages.lastOrNull()
                 log("pergunta '$q': ${w}s motor=${r?.engine} cérebro=${Jarvis.brain} erro=${Jarvis.brainError} resposta=${r?.text?.take(160)?.replace('\n', ' ')}")
             }
+            // A IA cai no meio (como um erro nativo ou falta de memória): o app deve continuar e responder com os dados.
+            suspend fun askAndLog(q: String, tag: String) {
+                val n = Jarvis.messages.size
+                Jarvis.ask(ctx, q)
+                var w = 0
+                while ((Jarvis.busy || Jarvis.messages.size < n + 2) && w < 240) { delay(1_000); w++ }
+                val r = Jarvis.messages.lastOrNull()
+                log("$tag '$q': ${w}s motor=${r?.engine} cérebro=${Jarvis.brain} erro=${Jarvis.brainError?.take(200)} resposta=${r?.text?.take(120)?.replace('\n', ' ')}")
+            }
+            JarvisNative.crashLlmForTest()
+            delay(2_000)
+            askAndLog("Como está o BTC agora?", "depois da queda da IA")
+            Jarvis.retryCrashed()
+            delay(2_000)
+            askAndLog("Onde estão as paredes?", "depois de Tentar de novo")
             val v = Jarvis.ensureVoice(); log("voz carregou: $v")
             if (v) log("voz falou: " + runCatching { JarvisNative.speak("Teste de voz do Jarvis.", JarvisSettings.voice.sid, 1f); "ok" }.getOrElse { it.toString() })
             log("microfone carregou: ${Jarvis.ensureMic()}")
