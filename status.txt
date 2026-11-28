@@ -1,0 +1,18 @@
+1 abrir o Jarvis: app aberto
+2 teste completo: terminou (250 s)
+2 fim: app aberto
+3 reabrir com modelos: app aberto
+11-28 17:27:20.030  5552  5689 I RadarBTC: selftest: inicio (memória livre 2625 MB)
+11-28 17:28:36.798  5552  5632 I RadarBTC: selftest: download llm-0.5b: ok em 76 s
+11-28 17:29:58.426  5552  5684 I RadarBTC: selftest: download voice-kokoro: ok em 81 s
+11-28 17:30:10.905  5552  5685 I RadarBTC: selftest: download mic-tiny: ok em 12 s
+11-28 17:30:10.907  5552  5685 I RadarBTC: selftest: prepare: cérebro=IDLE voz=true mic=true desligados=[]
+11-28 17:30:43.919  5552  5685 I RadarBTC: selftest: pergunta 'Como está o BTC agora?': 25s motor=IA local cérebro=READY erro=null resposta=O BTC está em US$ 59.476,6 [Radar BTC (Binance, Bybit, OKX)].
+11-28 17:30:46.921  5552  5660 I RadarBTC: selftest: pergunta 'Plano de trade BTC': 3s motor=app cérebro=READY erro=null resposta=BTC rompeu a abertura de 15 minutos em 60.069,8. Mas o trade de hoje já bateu no stop (59.965,0, 02:50 UTC). O setup acabou: não há entrada agora.
+11-28 17:31:13.941  5552  5688 I RadarBTC: selftest: pergunta 'Onde estão as paredes?': 27s motor=IA local cérebro=READY erro=null resposta=As paredes de compra e venda estão em US$ 59.476,6 e US$ 59.476,6, respectivamente.
+11-28 17:31:16.945  5552  5632 I RadarBTC: selftest: depois da queda da IA 'Como está o BTC agora?': 1s motor=dados do app cérebro=ERROR erro=A IA local fechou e o app continuou aberto: a IA foi encerrada pelo sistema (sinal 9). Respondo com os dados do app. Escolha a IA leve em ⚙ ou toque em Tentar de novo. resposta=Com os dados do app: Preço do BTC agora: US$ 59.480,8. Variação do BTC em 5 min: +0,08%. Variação do BTC em 1 h: +0,08%.
+11-28 17:31:41.978  5552  5688 I RadarBTC: selftest: depois de Tentar de novo 'Onde estão as paredes?': 23s motor=IA local cérebro=READY erro=null resposta=As paredes de compra e venda estão em US$ 59.476,6 e US$ 59.476,6, respectivamente.
+11-28 17:31:41.979  5552  5688 I RadarBTC: selftest: voz carregou: true
+11-28 17:31:44.859  5552  5688 I RadarBTC: selftest: voz falou: ok
+11-28 17:31:45.658  5552  5688 I RadarBTC: selftest: microfone carregou: true
+11-28 17:31:45.660  5552  5688 I RadarBTC: selftest: fim ok (memória livre 1993 MB)

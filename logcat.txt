@@ -1,0 +1,281 @@
+11-28 17:26:51.785  3517  3517 I RadarBTC: [app] Iniciando conexões (Binance, Bybit, OKX; liquidações também de Gate, Bitget e Deribit)
+11-28 17:26:52.318  3517  3674 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:26:52.468  3517  3644 I RadarBTC: [Deribit] Trades com marca de liquidação: conectado
+11-28 17:26:52.539  3517  3634 I RadarBTC: [Binance] Livro (/public depth@100ms + REST 1000): conectado
+11-28 17:26:52.540  3517  3634 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova conexão
+11-28 17:26:52.559  3517  3635 I RadarBTC: [Binance] Trades/mark/liquidações (/market): conectado
+11-28 17:26:52.715  3517  3640 I RadarBTC: [OKX] Livro 400 + trades + OI + funding + mark + liquidações: conectado
+11-28 17:26:52.716  3517  3642 I RadarBTC: [Gate] Liquidações (futures.public_liquidates): conectado
+11-28 17:26:52.852  3517  3638 I RadarBTC: [Bybit] Livro 1000 + RPI + trades + tickers + liquidações: conectado
+11-28 17:26:52.874  3517  3643 I RadarBTC: [Bitget] Liquidações (UTA v3 liquidation): conectado
+11-28 17:26:53.050  3517  3653 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:26:54.175  2870  2949 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:26:54.175  2870  2949 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:26:54.189  2870  2962 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:26:54.190  2870  2962 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:26:55.646  2870  3749 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:26:55.647  2870  3749 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:26:56.067   418   418 E libc    : The property "ro.build.fingerprint" has a value with length 92 that is too large for __system_property_get()/__system_property_read(); use __system_property_read_callback() instead.
+11-28 17:26:56.996  3517  3663 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:26:57.002  3517  3671 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:26:57.003  3517  3651 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:26:57.004  3517  3655 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:26:57.005  3517  3658 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:26:57.005  3517  3652 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:26:57.439  2870  2899 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:26:57.439  2870  2899 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:26:58.365  2870  2899 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:26:58.365  2870  2899 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:26:58.628  3517  3658 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:26:58.648  3517  3651 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:26:58.650  3517  3671 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:26:59.362  2870  2899 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:26:59.362  2870  2899 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:27:00.202  3517  3651 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:00.205  3517  3671 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:00.213  3517  3671 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:01.404  2870  2899 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:27:01.404  2870  2899 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:27:01.753  3517  3671 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:02.162  2870  3749 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:27:02.162  2870  3749 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:27:03.017  2870  4040 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:27:03.017  2870  4040 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:27:03.051  3517  3653 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:27:03.638  3517  3651 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:27:05.157  2870  4040 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:27:05.157  2870  4040 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:27:05.519  3517  3652 I RadarBTC: jarvis curiosidade: 3 termos novos, aprendeu 
+11-28 17:27:06.550  3517  3652 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:06.563  3517  3651 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:06.582  3517  3658 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:06.583  3517  3655 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:06.584  3517  3653 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:06.585  3517  3663 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:06.587  3517  3651 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:07.359  3517  3651 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:27:08.680  2870  2949 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:27:08.680  2870  2949 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:27:09.389  2870  2949 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:27:09.389  2870  2949 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:27:10.514  2870  4829 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:27:10.514  2870  4829 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:27:10.595  2870  4929 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:27:10.595  2870  4929 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:27:13.258  2870  3891 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:27:13.258  2870  3891 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:27:13.640  3517  3651 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:27:14.156  3517  3653 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:27:17.408  2870  4929 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:27:17.409  2870  4929 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:27:19.865  5552  5552 I RadarBTC: [app] Iniciando conexões (Binance, Bybit, OKX; liquidações também de Gate, Bitget e Deribit)
+11-28 17:27:20.030  5552  5689 I RadarBTC: selftest: inicio (memória livre 2625 MB)
+11-28 17:27:20.594  5552  5633 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:27:20.681  5552  5629 I RadarBTC: [Binance] Livro (/public depth@100ms + REST 1000): conectado
+11-28 17:27:20.682  5552  5629 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova conexão
+11-28 17:27:20.684  5552  5630 I RadarBTC: [Binance] Trades/mark/liquidações (/market): conectado
+11-28 17:27:20.693  5552  5638 I RadarBTC: [Deribit] Trades com marca de liquidação: conectado
+11-28 17:27:20.852  5552  5636 I RadarBTC: [Gate] Liquidações (futures.public_liquidates): conectado
+11-28 17:27:20.928  5552  5634 I RadarBTC: [Bybit] Livro 1000 + RPI + trades + tickers + liquidações: conectado
+11-28 17:27:20.939  5552  5637 I RadarBTC: [Bitget] Liquidações (UTA v3 liquidation): conectado
+11-28 17:27:20.997  5552  5635 I RadarBTC: [OKX] Livro 400 + trades + OI + funding + mark + liquidações: conectado
+11-28 17:27:21.198  5552  5686 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:27:23.601  5552  5651 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:23.622  5552  5651 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:23.624  5552  5632 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:23.628  5552  5633 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:23.631  5552  5660 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:23.668  5552  5660 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:23.684  5552  5633 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:23.684  5552  5632 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:23.690  5552  5660 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:23.703  5552  5632 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:23.714  5552  5660 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:23.750  5552  5660 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:23.766  5552  5632 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:23.789  5552  5660 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:23.804  5552  5660 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:23.806  5552  5632 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:23.842  5552  5632 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:23.878  5552  5632 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:24.195   418   418 E libc    : The property "ro.build.fingerprint" has a value with length 92 that is too large for __system_property_get()/__system_property_read(); use __system_property_read_callback() instead.
+11-28 17:27:25.727  5552  5685 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:25.728  5552  5660 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:27:31.201  5552  5632 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:27:31.843  5552  5686 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:27:35.626  5552  5686 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:27:41.853  5552  5686 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:27:42.372  5552  5686 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:27:50.639  5552  5686 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:27:52.374  5552  5632 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:27:52.912  5552  5642 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:27:53.014  2870  4929 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:27:53.014  2870  4929 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:28:02.916  5552  5632 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:28:03.738  5552  5660 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:28:05.655  5552  5642 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:28:13.740  5552  5642 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:28:14.420  5552  5642 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:28:20.676  5552  5632 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:28:24.115  5552  5632 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:24.125  5552  5686 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:24.421  5552  5686 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:28:24.956  5552  5632 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:28:25.769  5552  5632 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:27.403  5552  5632 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:27.420  5552  5632 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:27.420  5552  5686 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:27.422  5552  5686 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:27.451  5552  5632 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:27.459  5552  5686 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:27.470  5552  5685 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:27.471  5552  5632 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:29.061  5552  5686 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:29.062  5552  5685 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:29.062  5552  5632 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:29.083  5552  5632 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:30.637  5552  5632 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:32.225  5552  5681 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:33.802  5552  5681 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:28:34.957  5552  5632 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:28:35.486  5552  5688 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:28:35.692  5552  5688 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:28:36.798  5552  5632 I RadarBTC: selftest: download llm-0.5b: ok em 76 s
+11-28 17:28:45.492  5552  5688 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:28:46.005  5552  5688 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:28:50.704  5552  5688 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:28:56.006  5552  5684 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:28:56.521  5552  5684 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:29:05.712  5552  5684 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:29:06.522  5552  5633 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:29:07.029  5552  5684 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:29:17.030  5552  5684 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:29:17.540  5552  5681 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:29:20.718  5552  5684 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:29:24.437  5552  5681 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:29:25.954  5552  5633 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:29:27.515  5552  5633 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:29:27.583  5552  5688 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:29:27.724  2870  4929 E libc    : Access denied finding property "persist.adb.tls_server.enable"
+11-28 17:29:27.724  2870  4929 E libc    : Access denied finding property "service.adb.tls.port"
+11-28 17:29:28.091  5552  5633 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:29:30.554  5552  5633 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:29:33.664  5552  5633 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:29:35.189  5552  5688 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:29:35.724  5552  5688 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:29:38.092  5552  5688 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:29:38.599  5552  5681 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:29:48.600  5552  5681 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:29:49.106  5552  5684 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:29:50.731  5552  5633 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:29:58.426  5552  5684 I RadarBTC: selftest: download voice-kokoro: ok em 81 s
+11-28 17:29:59.108  5552  5685 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:29:59.630  5552  5685 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:30:05.754  5552  5681 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:30:09.631  5552  5632 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:30:10.145  5552  5632 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:30:10.905  5552  5685 I RadarBTC: selftest: download mic-tiny: ok em 12 s
+11-28 17:30:10.907  5552  5685 I RadarBTC: selftest: prepare: cérebro=IDLE voz=true mic=true desligados=[]
+11-28 17:30:20.146  5552  5632 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:30:20.652  5552  5684 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:30:20.761  5552  5684 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:30:30.222  5552  5679 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:30.223  5552  5660 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:30.653  5552  5684 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:30:31.159  5552  5684 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:30:31.743  5552  5684 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:33.273  5552  5660 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:33.273  5552  5684 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:33.275  5552  5688 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:34.792  5552  5684 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:34.793  5552  5660 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:34.793  5552  5688 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:34.793  5552  5651 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:34.799  5552  5633 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:34.801  5552  5633 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:34.802  5552  5660 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:34.803  5552  5651 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:34.803  5552  5684 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:34.804  5552  5633 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:34.804  5552  5688 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:35.770  5552  5679 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:30:36.335  5552  5679 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:36.341  5552  5679 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:30:41.160  5552  5633 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:30:41.666  5552  5679 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:30:43.919  5552  5685 I RadarBTC: selftest: pergunta 'Como está o BTC agora?': 25s motor=IA local cérebro=READY erro=null resposta=O BTC está em US$ 59.476,6 [Radar BTC (Binance, Bybit, OKX)].
+11-28 17:30:46.921  5552  5660 I RadarBTC: selftest: pergunta 'Plano de trade BTC': 3s motor=app cérebro=READY erro=null resposta=BTC rompeu a abertura de 15 minutos em 60.069,8. Mas o trade de hoje já bateu no stop (59.965,0, 02:50 UTC). O setup acabou: não há entrada agora.
+11-28 17:30:50.775  5552  5689 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:30:51.684  5552  5684 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:30:52.194  5552  5684 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:31:02.195  5552  5688 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:31:02.713  5552  5689 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:31:05.782  5552  5688 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:31:12.713  5552  5689 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:31:13.231  5552  5632 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:31:13.941  5552  5688 I RadarBTC: selftest: pergunta 'Onde estão as paredes?': 27s motor=IA local cérebro=READY erro=null resposta=As paredes de compra e venda estão em US$ 59.476,6 e US$ 59.476,6, respectivamente.
+11-28 17:31:14.009   494  1007 I ActivityManager: Process com.cunhac.btcradar:jarvis (pid 6569) has died: vis BTOP
+11-28 17:31:16.006  5552  5688 I RadarBTC: jarvis: o processo da IA caiu (o app continua): a IA foi encerrada pelo sistema (sinal 9)
+11-28 17:31:16.015  5552  5688 I RadarBTC: jarvis: IA llm-0.5b caiu: a IA foi encerrada pelo sistema (sinal 9)
+11-28 17:31:16.067   494  1943 I ActivityManager: Process com.cunhac.btcradar:jarvis (pid 6669) has died: fg  SVC 
+11-28 17:31:16.945  5552  5632 I RadarBTC: selftest: depois da queda da IA 'Como está o BTC agora?': 1s motor=dados do app cérebro=ERROR erro=A IA local fechou e o app continuou aberto: a IA foi encerrada pelo sistema (sinal 9). Respondo com os dados do app. Escolha a IA leve em ⚙ ou toque em Tentar de novo. resposta=Com os dados do app: Preço do BTC agora: US$ 59.480,8. Variação do BTC em 5 min: +0,08%. Variação do BTC em 1 h: +0,08%.
+11-28 17:31:20.788  5552  5681 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:31:23.232  5552  5714 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:31:23.738  5552  5714 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:31:33.078  5552  5684 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:33.739  5552  5660 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:31:34.246  5552  5660 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:31:34.618  5552  5679 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:34.623  5552  5679 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:35.794  5552  5679 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:31:36.154  5552  5660 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:39.214  5552  5679 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:40.738  5552  5679 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:40.742  5552  5660 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:40.743  5552  5679 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:40.745  5552  5660 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:40.748  5552  5660 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:40.752  5552  5714 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:40.753  5552  5689 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:40.755  5552  5679 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:40.756  5552  5684 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:40.759  5552  5684 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:40.762  5552  5660 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:41.978  5552  5688 I RadarBTC: selftest: depois de Tentar de novo 'Onde estão as paredes?': 23s motor=IA local cérebro=READY erro=null resposta=As paredes de compra e venda estão em US$ 59.476,6 e US$ 59.476,6, respectivamente.
+11-28 17:31:41.979  5552  5688 I RadarBTC: selftest: voz carregou: true
+11-28 17:31:42.276  5552  5684 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:43.803  5552  5679 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:43.804  5552  5684 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:44.247  5552  5679 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:31:44.755  5552  5684 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:31:44.859  5552  5688 I RadarBTC: selftest: voz falou: ok
+11-28 17:31:45.658  5552  5688 I RadarBTC: selftest: microfone carregou: true
+11-28 17:31:45.660  5552  5688 I RadarBTC: selftest: fim ok (memória livre 1993 MB)
+11-28 17:31:46.720  6777  6777 I RadarBTC: [app] Iniciando conexões (Binance, Bybit, OKX; liquidações também de Gate, Bitget e Deribit)
+11-28 17:31:47.258  6777  6813 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
+11-28 17:31:47.359  6777  6819 I RadarBTC: [Deribit] Trades com marca de liquidação: conectado
+11-28 17:31:47.378  6777  6811 I RadarBTC: [Binance] Trades/mark/liquidações (/market): conectado
+11-28 17:31:47.391  6777  6810 I RadarBTC: [Binance] Livro (/public depth@100ms + REST 1000): conectado
+11-28 17:31:47.391  6777  6810 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova conexão
+11-28 17:31:47.511  6777  6816 I RadarBTC: [Gate] Liquidações (futures.public_liquidates): conectado
+11-28 17:31:47.525  6777  6815 I RadarBTC: [OKX] Livro 400 + trades + OI + funding + mark + liquidações: conectado
+11-28 17:31:47.547  6777  6814 I RadarBTC: [Bybit] Livro 1000 + RPI + trades + tickers + liquidações: conectado
+11-28 17:31:47.667  6777  6818 I RadarBTC: [Bitget] Liquidações (UTA v3 liquidation): conectado
+11-28 17:31:47.914  6777  6844 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:31:49.863  6777  6844 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:49.888  6777  6844 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:51.430  6777  6844 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:51.448  6777  6844 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:51.599   418   418 E libc    : The property "ro.build.fingerprint" has a value with length 92 that is too large for __system_property_get()/__system_property_read(); use __system_property_read_callback() instead.
+11-28 17:31:52.978  6777  6844 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:52.993  6777  6844 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:52.995  6777  6812 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:54.532  6777  6812 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:54.541  6777  6812 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:54.548  6777  6844 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:54.554  6777  6844 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:56.078  6777  6829 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:56.087  6777  6829 I RadarBTC: alerta WALL_PULLED: Celular: notificado
+11-28 17:31:57.915  6777  6831 W RadarBTC: [Binance] Livro inválido, reconstruindo: nova tentativa de snapshot
+11-28 17:31:58.458  6777  6831 E RadarBTC: [Binance] snapshot REST indisponível: HTTP 451 em https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=1000
+11-28 17:32:02.273  6777  6829 W RadarBTC: [Binance] open interest REST falhou: HTTP 451 em https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
