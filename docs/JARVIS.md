@@ -84,3 +84,18 @@ O ajuste fino semanal do modelo com os exemplos aprovados ainda é manual (preci
   `jarvis/ia-processo.log`; Android 11+: do registro de saída do processo (`ApplicationExitInfo`).
 - Testes: `JarvisLlmProcessTest` (Linux, com a IA leve se `JARVIS_TEST_MODEL` existir), job `windows-ia` (`RadarBTC.exe
   --jarvis-llm-test <modelo> <saída>`) e o autoteste do emulador (queda simulada + "Tentar de novo").
+
+## Atualização 17
+- **Bibliotecas compatíveis (Windows):** `.github/workflows/llama-compat.yml` compila java-llama.cpp 4.2.0 (llama.cpp b4916)
+  sem AVX2/FMA/F16C em duas versões (`avx`, `sse`) e publica na release `llama-compat-b4916`; `fetch-llama-compat.sh` coloca em
+  `desktop/appResources/windows/jarvis-compat/{avx,sse}/jllama.dll` (Compose `appResourcesRootDir`). O processo da IA recebe a
+  versão como 4º argumento e aponta `de.kherud.llama.lib.path` para a pasta. `JarvisNative.loadLlm` tenta padrão → avx → sse
+  quando a queda é por instrução ilegal e guarda a que funcionou em `jarvis/ia-biblioteca.txt`.
+- **Conversa (`JarvisChat.kt`):** `smallTalk`, `GLOSSARY` (24 conceitos) + `concept`/`conceptAnswer`, `focus`/`ruleAnswer`
+  (assunto perguntado primeiro), `forSpeech` (2 frases), `hasSpeech` (energia por janela de 30 ms contra o ruído de fundo) e
+  `suspicious` (frases típicas de alucinação do Whisper).
+- **Plano:** `TraderSkill.progress` (stop/alvo já atingidos depois da entrada) e as checagens novas em `TraderSkill.risk`.
+- **Aprender sem parar (`JarvisLearn.kt`):** `JarvisLearner` com estado guardado (`jv.learn.on`), rodada = pesquisa (resumos da IA a
+  cada 6 rodadas) + curiosidade (até 4 termos), intervalo de 20 min, só Wi-Fi no celular, retomado na abertura do app.
+  `JarvisCuriosity.relevant` filtra páginas fora do mercado; `purgeIrrelevant` limpa uma vez as antigas.
+- **Mapa (`JarvisBrainMap.kt`):** `JarvisBrainModel.regions` monta as regiões com o estado atual; `BrainCanvas` desenha.

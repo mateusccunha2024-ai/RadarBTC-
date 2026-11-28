@@ -10,7 +10,11 @@ permissions:
   issues: write
 
 jobs:
+  compat:
+    uses: ./.github/workflows/llama-compat.yml
+
   build:
+    needs: compat
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,6 +27,11 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
+
+      - name: IA compatível (PC sem AVX2)
+        shell: bash
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: bash .github/scripts/fetch-llama-compat.sh
 
       - name: Empacotar (.msi e portátil)
         shell: bash

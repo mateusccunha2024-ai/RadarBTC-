@@ -45,10 +45,32 @@ internal object LlmWire {
 object JarvisLlmWorker {
     const val ARG = "--jarvis-llm"
 
+    /** Versões da biblioteca da IA, da mais rápida para a mais compatível: "" (AVX2, a do pacote), "avx", "sse". */
+    val VARIANTS = listOf("", "avx", "sse")
+
+    /** Pasta da biblioteca compatível (PC sem AVX2) que vem no instalador, ou null se não existir. */
+    fun compatDir(variant: String): File? {
+        if (variant.isEmpty()) return null
+        val roots = listOfNotNull(System.getProperty("compose.application.resources.dir"), System.getProperty("jarvis.compat.dir"))
+        return roots.map { File(it, "jarvis-compat/$variant") }.firstOrNull { File(it, "jllama.dll").isFile || File(it, "libjllama.so").isFile }
+    }
+
+    /** Usa a biblioteca compatível: carrega as dependências na ordem e aponta o carregador do llama para a pasta. */
+    private fun useVariant(variant: String) {
+        val dir = compatDir(variant) ?: return
+        val dlls = dir.listFiles()?.filter { it.name.endsWith(".dll") && !it.name.startsWith("jllama") }.orEmpty()
+        val order = listOf("ggml-base", "ggml-cpu", "ggml", "llama")
+        for (f in dlls.sortedBy { d -> order.indexOfFirst { d.name.startsWith(it) }.let { if (it < 0) 99 else it } })
+            runCatching { System.load(f.absolutePath) }
+        System.setProperty("de.kherud.llama.lib.path", dir.absolutePath)
+        System.err.println("jarvis: biblioteca compatível '$variant' em $dir")
+    }
+
     /** Lado do processo da IA: conecta no app, carrega o modelo e responde. Sai quando o app fecha a conexão. */
     fun serve(args: Array<String>) {
         val port = args.getOrNull(1)?.toIntOrNull() ?: return
         val token = args.getOrNull(2) ?: return
+        args.getOrNull(3)?.takeIf { it.isNotBlank() }?.let { useVariant(it) }
         var model: LlamaModel? = null
         Socket(InetAddress.getLoopbackAddress(), port).use { s ->
             s.tcpNoDelay = true
@@ -100,21 +122,27 @@ internal object LlmProcess {
     private var startedMs = 0L
     /** Motivo da última queda (o Jarvis lê uma vez e mostra). */
     @Volatile var crash: String? = null
+    /** A última queda foi por instrução que o processador não tem (dá para tentar a biblioteca compatível). */
+    @Volatile var lastIllegal = false
+    /** Versão da biblioteca em uso no processo aberto ("" = padrão). */
+    @Volatile var variant = ""; private set
 
     val alive: Boolean get() = sock != null && proc?.isAlive == true
 
     /** Pasta onde o processo roda: o Java deixa ali o relatório (hs_err) se a parte nativa morrer. */
     var dir: () -> File = { JarvisNative.modelsDir }
 
-    @Synchronized fun start(): String? {
+    @Synchronized fun start(variant: String = ""): String? {
         stop()
+        this.variant = variant
+        lastIllegal = false
         val d = dir()
         runCatching { d.listFiles()?.filter { it.name.startsWith("hs_err_pid") }?.forEach { it.delete() } }
         val server = ServerSocket(0, 1, InetAddress.getLoopbackAddress())
         try {
             server.soTimeout = 90_000
             val token = UUID.randomUUID().toString()
-            val cmd = launcher() + listOf(JarvisLlmWorker.ARG, server.localPort.toString(), token)
+            val cmd = launcher() + listOf(JarvisLlmWorker.ARG, server.localPort.toString(), token, variant)
             startedMs = System.currentTimeMillis()
             val p = ProcessBuilder(cmd).directory(d).redirectErrorStream(true)
                 .redirectOutput(ProcessBuilder.Redirect.to(File(d, "ia-processo.log"))).start()
@@ -198,8 +226,9 @@ internal object LlmProcess {
         val assert = log.lastOrNull { it.contains("GGML_ASSERT") || it.contains("terminate called") }?.trim()?.take(160)
         val cpu = report.lineSequence().firstOrNull { it.startsWith("CPU:") }.orEmpty().lowercase()
         val frame = report.lineSequence().dropWhile { !it.startsWith("# Problematic frame") }.drop(1).firstOrNull()?.removePrefix("#")?.trim()?.take(120)
+        lastIllegal = report.contains("EXCEPTION_ILLEGAL_INSTRUCTION") || report.contains("SIGILL") || code == 0xC000001D.toInt() || code == 132
         return when {
-            report.contains("EXCEPTION_ILLEGAL_INSTRUCTION") || report.contains("SIGILL") || code == 0xC000001D.toInt() ->
+            lastIllegal ->
                 "o processador deste PC não tem as instruções que a IA local usa" + (if (cpu.isNotEmpty() && "avx2" !in cpu) " (falta AVX2)" else "")
             report.contains("Out of Memory") || report.contains("Native memory allocation") || log.any { it.contains("failed to allocate", true) } ->
                 "faltou memória para este modelo"
@@ -246,7 +275,10 @@ object LlmProcessSelfTest {
             val d = File(System.getProperty("java.io.tmpdir"), "radarbtc-ia-test").apply { mkdirs() }
             LlmProcess.dir = { d }
             log("app-path: ${System.getProperty("jpackage.app-path")}")
-            log("iniciar: ${LlmProcess.start() ?: "ok"}")
+            val variant = args.getOrNull(3).orEmpty()
+            log("biblioteca: ${variant.ifEmpty { "padrão" }} ${JarvisLlmWorker.compatDir(variant) ?: ""}")
+            if (variant.isNotEmpty() && JarvisLlmWorker.compatDir(variant) == null) { log("fim com erro: biblioteca compatível '$variant' não está no app"); return }
+            log("iniciar: ${LlmProcess.start(variant) ?: "ok"}")
             log("ping: ${LlmProcess.call(30_000, "ping")}")
             if (model != null && File(model).isFile) {
                 val t0 = System.currentTimeMillis()
@@ -257,7 +289,7 @@ object LlmProcessSelfTest {
             LlmProcess.crashForTest()
             val why = try { LlmProcess.call(30_000, "ping"); "NÃO CAIU" } catch (e: IOException) { e.message }
             log("queda simulada: motivo='$why' vivo=${LlmProcess.alive}")
-            log("reiniciar: ${LlmProcess.start() ?: "ok"} ping=${LlmProcess.call(30_000, "ping")}")
+            log("reiniciar: ${LlmProcess.start(variant) ?: "ok"} ping=${LlmProcess.call(30_000, "ping")}")
             LlmProcess.stop()
             log("fim ok")
         } catch (e: Throwable) {

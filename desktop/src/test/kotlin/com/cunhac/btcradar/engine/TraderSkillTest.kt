@@ -93,6 +93,29 @@ class TraderSkillTest {
         assertEquals(0.0, tooFar.qty, 0.0)
     }
 
+    /** Caso real (28/11): BTC rompeu em 60.069,8, stop 59.965, e o preço já estava em 59.283. Não pode PASSAR. */
+    @Test fun stopAlreadyHitBlocksTheTrade() {
+        val d = LocalDate.of(2026, 11, 28)
+        val t0 = d.atStartOfDay(java.time.ZoneOffset.UTC).toInstant().toEpochMilli()
+        val px = doubleArrayOf(59_950.0, 60_000.0, 59_980.0, 60_069.8, 60_010.0, 59_900.0, 59_500.0, 59_283.0)
+        val bars = px.mapIndexed { i, c -> Bar5(t0 + i * 300_000L, c, c + 30, c - 30, c, 1.0) }
+        val today = TraderSkill.sessions(bars, TradeMarket.BTC).first()
+        val now = t0 + px.size * 300_000L
+        val p = TraderSkill.Plan("BTC", TradeMarket.BTC, d, 60_069.8, 3, null, 59_965.0, 60_279.4, 2.0, TraderSkill.StopRule.OR_MID, 60_030.0, 59_920.0, 15)
+        val pr = TraderSkill.progress(today, p, now, 59_283.0)
+        assertEquals(TraderSkill.ProgressStatus.STOPPED, pr.status)
+        assertEquals(t0 + 6 * 300_000L, pr.timeMs)                // o candle das 0h25 (fecha 0h30) foi o primeiro a tocar o stop
+        val s = TraderSkill.size(p, TraderSkill.Rules(), 59_283.0)
+        assertNotNull(s.refusal)
+        val v = TraderSkill.risk(p, s, TraderSkill.Rules(), 0.0, 0, now, 59_283.0, pr)
+        assertFalse(v.pass)
+        assertFalse(v.checks.first { it.name == "Preço atual acima do stop" }.pass)
+        assertFalse(v.checks.first { it.name == "Stop e alvo ainda não atingidos hoje" }.pass)
+        // Ainda em aberto: passa nessas duas checagens
+        val open = TraderSkill.progress(today, p.copy(stop = 59_000.0), now, 59_283.0)
+        assertEquals(TraderSkill.ProgressStatus.OPEN, open.status)
+    }
+
     @Test fun btcSessionsAreUtcDays() {
         val d = LocalDate.of(2026, 11, 20)
         val t0 = d.atStartOfDay(java.time.ZoneOffset.UTC).toInstant().toEpochMilli()

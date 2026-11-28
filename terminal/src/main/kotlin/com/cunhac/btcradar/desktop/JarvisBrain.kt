@@ -133,6 +133,9 @@ object JarvisMemory {
 
     fun all(): List<Knowledge> { load(); return synchronized(items) { items.toList() } }
 
+    /** Apaga itens pelo id e salva. */
+    fun remove(ids: Set<String>) { load(); synchronized(items) { items.removeAll { it.id in ids } }; save() }
+
     fun save() = synchronized(items) {
         val now = System.currentTimeMillis()
         items.removeAll { now - it.timeMs > (if (it.kind == "conceito") 365 * 86_400_000L else KEEP_MS) }
@@ -425,7 +428,7 @@ object JarvisResearch {
         return (listOf("Bitcoin" to "bitcoin price", "Fed e juros" to "Federal Reserve rates") + q + syms + skills).distinctBy { it.second }.take(16)
     }
 
-    suspend fun run(force: Boolean = false): Int = withContext(Dispatchers.IO) {
+    suspend fun run(force: Boolean = false, withSummaries: Boolean = true): Int = withContext(Dispatchers.IO) {
         if (running || (!force && !due())) return@withContext 0
         running = true
         var added = 0
@@ -436,7 +439,7 @@ object JarvisResearch {
                 for (n in news) if (JarvisMemory.add(Knowledge("n" + Integer.toHexString((n.title + n.source).hashCode()), n.title, n.source.ifBlank { "Google News" },
                         n.url, n.timeMs, topic, setOf(n.source.ifBlank { "Google News" }), "news"))) added++
                 // Com a IA pronta: um resumo curto por tema, só com as manchetes (conferido número a número).
-                if (news.size >= 2 && Jarvis.brain == BrainState.READY) {
+                if (withSummaries && news.size >= 2 && Jarvis.brain == BrainState.READY) {
                     val facts = news.map { it.title + " [" + it.source + "]" }
                     val sum = runCatching { Jarvis.summarize(topic, facts) }.getOrNull()
                     if (!sum.isNullOrBlank() && Grounding.ungrounded(sum, facts).isEmpty())
@@ -724,7 +727,41 @@ object JarvisEval {
  * entra na pesquisa de notícias do dia seguinte. Nada é inventado: sem página na Wikipedia, o termo é ignorado.
  */
 object JarvisCuriosity {
-    data class Concept(val term: String, val title: String, val text: String, val url: String, val lang: String)
+    data class Concept(val term: String, val title: String, val text: String, val url: String, val lang: String, val desc: String = "")
+
+    /** Sinais de que a página fala de mercado, economia, empresas, governo ou tecnologia (o que interessa a um trader). */
+    private val RELEVANT = listOf("econom", "financ", "mercad", "market", "bolsa", "stock", "acao", "acoes", "share", "empresa", "company",
+        "corporat", "companhia", "banco", "bank", "moeda", "currency", "dinheiro", "money", "invest", "fundo", "fund", "trader", "trading",
+        "bitcoin", "cripto", "crypto", "blockchain", "token", "exchange", "corretora", "regula", "comissao", "commission", "agencia", "agency",
+        "governo", "government", "president", "presidente", "ministr", "secretar", "senador", "senator", "congress", "parlament", "politic",
+        "politico", "banco central", "central bank", "juro", "interest rate", "inflac", "inflation", "tarif", "imposto", "tax", "comercio",
+        "commerce", "industr", "tecnolog", "technolog", "software", "semicondut", "semiconductor", "chip", "intelig", "artificial", "energia",
+        "energy", "petrol", "oil", "ouro", "gold", "commodit", "indice", "index", "etf", "bilionario", "billionaire", "executiv", "ceo",
+        "fundador", "founder", "guerra", "war", "sancao", "sanction", "pais ", "country", "estado ", "state ")
+    /** Páginas de cultura e entretenimento: não ajudam a entender o mercado. */
+    private val IRRELEVANT = listOf("cancao", "canção", "song", "single", "album", "álbum", " banda ", " band ", "cantor", "cantora", "singer",
+        "rapper", "musica", "música", "music", "filme", "film", "movie", "serie de televis", "television series", "tv series", "episod",
+        "novela", "romance", "novel", "livro de", "book by", "jogo eletron", "video game", "personagem", "character", "clube de futebol",
+        "football club", "jogador", "footballer", "atleta", "athlete", " ator ", "actor", " atriz ", "actress", "poema", "poem", "pintura", "painting")
+
+    /** A página interessa a quem acompanha mercado? Descrição de música/filme/esporte reprova; precisa de algum sinal de mercado. */
+    fun relevant(c: Concept): Boolean {
+        val d = " " + JarvisText.fold(c.desc) + " "
+        val t = " " + JarvisText.fold(c.text) + " "
+        if (IRRELEVANT.any { JarvisText.fold(it) in d } || IRRELEVANT.any { JarvisText.fold(it) in t.take(160) }) return false
+        return RELEVANT.any { JarvisText.fold(it) in d || JarvisText.fold(it) in t }
+    }
+
+    /** Limpa conceitos já guardados que não passam no filtro (ex.: nomes de músicas aprendidos antes da atualização 17). */
+    fun purgeIrrelevant(): Int {
+        val bad = JarvisMemory.all().filter { it.kind == "conceito" && !relevant(Concept(it.topic, it.topic, it.text.substringAfter(": "), it.url, "", "")) }
+        if (bad.isEmpty()) return 0
+        JarvisMemory.remove(bad.map { it.id }.toSet())
+        recent = recent.filter { r -> bad.none { JarvisText.fold(it.topic) == JarvisText.fold(r) || it.text.startsWith("$r:") } }
+        SettingsStore.put("jv.cur.recent", recent.joinToString("\u0001"))
+        runCatching { FileLog.info("jarvis curiosidade: removeu ${bad.size} conceitos fora do mercado: ${bad.joinToString(", ") { it.topic }}") }
+        return bad.size
+    }
 
     var running by mutableStateOf(false); private set
     var lastMs by mutableStateOf(SettingsStore.s("jv.cur.last", "0").toLongOrNull() ?: 0L); private set
@@ -820,7 +857,8 @@ object JarvisCuriosity {
         val title = (o["title"] as? JsonPrimitive)?.contentOrNull ?: term
         val url = ((o["content_urls"] as? JsonObject)?.get("desktop") as? JsonObject)?.get("page")?.let { (it as? JsonPrimitive)?.contentOrNull }
             ?: ("https://$lang.wikipedia.org/wiki/" + title.replace(' ', '_'))
-        return Concept(term, title, text, url, lang)
+        val desc = (o["description"] as? JsonPrimitive)?.contentOrNull.orEmpty()
+        return Concept(term, title, text, url, lang, desc)
     }
 
     suspend fun lookup(term: String): Concept? {
@@ -844,7 +882,7 @@ object JarvisCuriosity {
             val terms = candidates(news, known, max)
             val learned = ArrayList<String>()
             for (t in terms) {
-                val c = lookup(t)
+                val c = lookup(t)?.takeIf { relevant(it) }   // música, filme, esporte etc. ficam de fora
                 if (c != null && JarvisMemory.add(Knowledge("c" + Integer.toHexString(JarvisText.fold(t).hashCode()), "${c.title}: ${c.text}",
                         "Wikipedia", c.url, now, t, setOf("Wikipedia"), "conceito"))) {
                     learned += c.title

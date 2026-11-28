@@ -20,6 +20,35 @@ import java.nio.channels.FileLock
 import javax.swing.JOptionPane
 import kotlin.system.exitProcess
 
+/**
+ * Segunda abertura do app: em vez do aviso "já está aberto", pede para a janela que já está aberta vir para a frente
+ * (porta local 127.0.0.1 guardada em app.port).
+ */
+private object Reopen {
+    private val portFile get() = File(AppDirs.root, "app.port")
+    @Volatile var onShow: (() -> Unit)? = null
+
+    fun listen() = Thread {
+        runCatching {
+            val ss = java.net.ServerSocket(0, 5, java.net.InetAddress.getLoopbackAddress())
+            portFile.writeText(ss.localPort.toString())
+            while (true) runCatching {
+                ss.accept().use { c -> c.soTimeout = 2_000; if (c.getInputStream().bufferedReader().readLine() == "show") onShow?.invoke() }
+            }
+        }
+    }.apply { isDaemon = true; name = "reabrir"; start() }
+
+    /** true se a janela aberta recebeu o pedido. */
+    fun signal(): Boolean = runCatching {
+        val port = portFile.readText().trim().toInt()
+        java.net.Socket().use { s ->
+            s.connect(java.net.InetSocketAddress(java.net.InetAddress.getLoopbackAddress(), port), 2_000)
+            s.getOutputStream().write("show\n".toByteArray()); s.getOutputStream().flush()
+        }
+        true
+    }.getOrDefault(false)
+}
+
 /** Impede duas instâncias abertas ao mesmo tempo (conexões e banco duplicados). */
 private fun acquireSingleInstance(): FileLock? = runCatching {
     RandomAccessFile(File(AppDirs.root, "app.lock"), "rw").channel.tryLock()
@@ -43,10 +72,12 @@ fun main(args: Array<String>) {
     if (args.firstOrNull() == LlmProcessSelfTest.ARG) { LlmProcessSelfTest.run(args); exitProcess(0) }
     val lock = acquireSingleInstance()
     if (lock == null) {
+        if (Reopen.signal()) exitProcess(0)
         JOptionPane.showMessageDialog(null, "O Radar BTC já está aberto.", "Radar BTC", JOptionPane.INFORMATION_MESSAGE)
         exitProcess(0)
     }
     runCatching { JarvisCrash.install() } // guarda o motivo se algum erro fechar o app
+    Reopen.listen()
     FileLog.info("Iniciando Radar BTC V8 (Java ${System.getProperty("java.version")})")
     val db = SqliteHistory()
     db.error?.let { FileLog.info("Histórico: $it") }
@@ -71,10 +102,19 @@ fun main(args: Array<String>) {
                 } else false
             },
         ) {
+            // Segunda abertura do app traz esta janela para a frente
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                Reopen.onShow = {
+                    javax.swing.SwingUtilities.invokeLater {
+                        if (window.extendedState and java.awt.Frame.ICONIFIED != 0) window.extendedState = window.extendedState and java.awt.Frame.ICONIFIED.inv()
+                        window.isVisible = true; window.toFront(); window.requestFocus()
+                    }
+                }
+            }
             RadarTheme {
                 val scope = rememberCoroutineScope()
                 // O contexto (e o carregador do heatmap) é criado uma vez só, não a cada redesenho.
-                val ctx = remember { AppContext(hub, db, MapModel(scope)).also { it.alerts.start(); it.macro.start() } }
+                val ctx = remember { AppContext(hub, db, MapModel(scope)).also { it.alerts.start(); it.macro.start(); runCatching { JarvisLearner.resumeIfOn() } } }
                 Terminal(ctx)
             }
         }

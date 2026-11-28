@@ -76,7 +76,9 @@ private val SUGGESTIONS = listOf(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun JarvisPanel(ctx: AppContext, onClose: () -> Unit, modifier: Modifier = Modifier) {
-    var settings by remember { mutableStateOf(false) }
+    // Telas do painel: conversa, mapa do cérebro (habilidades) e configurações
+    var view by remember { mutableStateOf(JarvisUi.initialView) }
+    val settings = view == JarvisView.SETTINGS
     androidx.compose.runtime.DisposableEffect(Unit) {
         JarvisCrash.panelOpened()
         onDispose { JarvisCrash.panelClosed() }
@@ -96,12 +98,18 @@ fun JarvisPanel(ctx: AppContext, onClose: () -> Unit, modifier: Modifier = Modif
                 JarvisSettings.useVoiceOn(!JarvisSettings.voiceOn); if (!JarvisSettings.voiceOn) Jarvis.stopVoice()
             }
             Spacer(Modifier.width(4.dp))
-            MiniButton("⚙", on = settings) { settings = !settings }
+            MiniButton("Mapa", on = view == JarvisView.MAP) { view = if (view == JarvisView.MAP) JarvisView.CHAT else JarvisView.MAP }
+            Spacer(Modifier.width(4.dp))
+            MiniButton("⚙", on = settings) { view = if (settings) JarvisView.CHAT else JarvisView.SETTINGS }
             Spacer(Modifier.width(4.dp))
             MiniButton("✕") { onClose() }
         }
         Box(Modifier.fillMaxWidth().height(1.dp).background(Q.Line))
+        BrainErrorBar()
         if (settings) androidx.compose.runtime.CompositionLocalProvider(LocalJarvisCtx provides ctx) { JarvisSettingsView(Modifier.weight(1f).fillMaxWidth()) }
+        else if (view == JarvisView.MAP) androidx.compose.runtime.CompositionLocalProvider(LocalJarvisCtx provides ctx) {
+            JarvisBrainMap(Modifier.weight(1f).fillMaxWidth()) { view = it }
+        }
         else {
             val list = rememberLazyListState()
             val n = Jarvis.messages.size
@@ -124,6 +132,25 @@ fun JarvisPanel(ctx: AppContext, onClose: () -> Unit, modifier: Modifier = Modif
     }
 }
 
+enum class JarvisView { CHAT, MAP, SETTINGS }
+
+/** Tela em que o painel abre (as capturas de tela automáticas abrem direto no mapa). */
+object JarvisUi { var initialView = JarvisView.CHAT }
+
+/** IA com erro: motivo inteiro e o botão "Tentar de novo" sempre à vista (antes só existia no cartão de boas-vindas). */
+@Composable
+private fun BrainErrorBar() {
+    val err = Jarvis.brainError ?: return
+    if (Jarvis.brain != BrainState.ERROR) return
+    Column(Modifier.fillMaxWidth().background(Q.Panel2).padding(horizontal = 10.dp, vertical = 6.dp)) {
+        T(err, Q.Sell, 11, wrap = true, tr = false)
+        Row(Modifier.padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            MiniButton("Tentar de novo", on = true) { Jarvis.retryCrashed() }
+            if (JarvisSettings.llm != JarvisModels.LLM_LIGHT.id) MiniButton("Usar a IA leve") { JarvisSettings.useLlm(JarvisModels.LLM_LIGHT.id); Jarvis.retryCrashed() }
+        }
+    }
+}
+
 @Composable
 private fun brainLabel(): String = when (Jarvis.brain) {
     BrainState.READY -> L("IA local pronta") + " · " + (JarvisSettings.llmItem?.label ?: "")
@@ -139,7 +166,7 @@ private fun brainLabel(): String = when (Jarvis.brain) {
 private fun brainColor() = when (Jarvis.brain) { BrainState.READY, BrainState.IDLE -> Q.Buy; BrainState.LOADING -> Q.Warn; BrainState.ERROR -> Q.Sell; else -> Q.Muted }
 
 @Composable
-private fun MiniButton(label: String, on: Boolean = false, color: Color = Q.Text, onClick: () -> Unit) = Tap(onClick) {
+internal fun MiniButton(label: String, on: Boolean = false, color: Color = Q.Text, onClick: () -> Unit) = Tap(onClick) {
     T(label, if (on) Q.Accent else color, 11, modifier = Modifier.background(if (on) Q.Panel2 else Q.Panel).border(1.dp, if (on) Q.Accent else Q.Line)
         .padding(horizontal = if (compact) 10.dp else 7.dp, vertical = if (compact) 7.dp else 3.dp))
 }
@@ -164,9 +191,9 @@ private fun Welcome(ctx: AppContext) {
         if (Jarvis.crashedList.isNotEmpty()) {
             Spacer(Modifier.height(10.dp))
             Column(Modifier.fillMaxWidth().border(1.dp, Q.Sell).padding(10.dp)) {
-                T("Um modelo fechou o app neste aparelho", Q.Sell, 13, bold = true)
-                T(L("O Jarvis desligou esse modelo para o app não fechar de novo") + ": " + Jarvis.crashedList.joinToString(", ") + ". " +
-                    L("Em ⚙, escolha a IA leve ou o microfone leve, ou tente de novo."), Q.Text, 12, wrap = true, tr = false)
+                T("A IA local caiu neste aparelho (o app continuou aberto)", Q.Sell, 13, bold = true)
+                T(L("O Jarvis desligou estes modelos até você tentar de novo") + ": " + Jarvis.crashedList.joinToString(", ") + ". " +
+                    L("Enquanto isso ele responde com os dados do app."), Q.Text, 12, wrap = true, tr = false)
                 Spacer(Modifier.height(6.dp))
                 OutlineButton("Tentar de novo") { Jarvis.retryCrashed() }
             }
@@ -279,6 +306,16 @@ private fun TradeCardView(ctx: AppContext, c: TradeCard) {
         KV("Último preço", px(c.last))
         KV("Situação", entryText(c))
         c.refusal?.let { T(it, Q.Sell, 11, wrap = true) }
+        // O trade de hoje já acabou: aviso em destaque (o resto do cartão fica como registro)
+        c.progress?.takeIf { it.status != TraderSkill.ProgressStatus.OPEN }?.let { pr ->
+            val stopped = pr.status == TraderSkill.ProgressStatus.STOPPED
+            Column(Modifier.fillMaxWidth().padding(top = 6.dp).border(1.dp, if (stopped) Q.Sell else Q.Buy).padding(8.dp)) {
+                T(if (stopped) "SETUP ENCERRADO: JÁ BATEU NO STOP" else "SETUP ENCERRADO: JÁ CHEGOU AO ALVO", if (stopped) Q.Sell else Q.Buy, 12, bold = true)
+                T(L(if (stopped) "O preço tocou o stop depois da entrada. Não há entrada agora; espere o próximo dia." else
+                    "O movimento já aconteceu depois da entrada. Entrar agora seria correr atrás do preço.") +
+                    (pr.price?.let { " (" + px(it) + ")" } ?: ""), Q.Text, 11, wrap = true, tr = false)
+            }
+        }
         c.plan?.let { p ->
             Step("2 · Saída (stop no meio da abertura, alvo 2R)")
             KV(if (c.hypothetical) "Entrada (se romper)" else "Entrada", px(p.entry))
@@ -383,11 +420,13 @@ private fun OutcomeBar(mc: TraderSkill.MonteCarlo) {
             if (p > 0) Box(Modifier.weight(max(p, 0.001).toFloat()).fillMaxHeight().padding(start = if (i > 0) 2.dp else 0.dp).background(c))
         }
     }
-    Row(Modifier.fillMaxWidth().padding(top = 3.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+    // Uma linha por resultado: a legenda nunca fica cortada, nem em painel estreito.
+    Column(Modifier.fillMaxWidth().padding(top = 3.dp)) {
         parts.forEach { (l, p, c) ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(8.dp).background(c)); Spacer(Modifier.width(4.dp))
-                T("$l ${String.format(BR, "%.1f%%", p * 100)}", Q.Text, 11, tr = false)
+                T(l, Q.Text, 11, tr = false, modifier = Modifier.weight(1f))
+                T(String.format(BR, "%.1f%%", p * 100), Q.Text, 11, bold = true, monoFont = true, tr = false)
             }
         }
     }
@@ -419,9 +458,17 @@ private fun FanChart(mc: TraderSkill.MonteCarlo, p: TraderSkill.Plan) {
         val med = Path(); b.forEachIndexed { i, q -> if (i == 0) med.moveTo(x(i), y(q[2])) else med.lineTo(x(i), y(q[2])) }
         drawPath(med, acc, style = Stroke(2.dp.toPx()))
         val dash = PathEffect.dashPathEffect(floatArrayOf(6f, 5f))
-        listOf(Triple(p.target, buy, L("alvo")), Triple(p.entry, txt, L("entrada")), Triple(p.stop, sell, L("stop"))).forEach { (v, c, l) ->
+        // Rótulos à direita, afastados uns dos outros (antes ficavam um em cima do outro quando os preços eram próximos)
+        val lines = listOf(Triple(p.target, buy, L("alvo")), Triple(p.entry, txt, L("entrada")), Triple(p.stop, sell, L("stop")))
+        val rowH = 22.dp.toPx()
+        val ys = lines.map { (y(it.first) - rowH / 2).coerceIn(0f, h - rowH) }.toMutableList()
+        for (i in 1 until ys.size) if (ys[i] < ys[i - 1] + rowH) ys[i] = ys[i - 1] + rowH
+        val over = ys.last() - (h - rowH)
+        if (over > 0) for (i in ys.indices) ys[i] = (ys[i] - over).coerceAtLeast(0f)
+        lines.forEachIndexed { i, (v, c, l) ->
             drawLine(c, Offset(0f, y(v)), Offset(w, y(v)), strokeWidth = 1.dp.toPx(), pathEffect = dash)
-            drawText(tm, "$l ${px(v)}", Offset(w + 4.dp.toPx(), (y(v) - 7.dp.toPx()).coerceIn(0f, h - 14.dp.toPx())), TextStyle(color = c, fontSize = 10.sp))
+            drawText(tm, l, Offset(w + 4.dp.toPx(), ys[i]), TextStyle(color = c, fontSize = 9.sp))
+            drawText(tm, px(v), Offset(w + 4.dp.toPx(), ys[i] + 10.dp.toPx()), TextStyle(color = c, fontSize = 9.sp))
         }
         drawLine(line, Offset(0f, h - 1), Offset(w, h - 1))
         drawText(tm, L("agora"), Offset(0f, h - 13.dp.toPx()), TextStyle(color = muted, fontSize = 9.sp))
@@ -438,7 +485,7 @@ private fun ScanView(ctx: AppContext, rows: List<ScanRow>) {
         T(L("Scanner · abertura de 15 min e setups do diário"), Q.Accent, 11, bold = true, tr = false)
         rows.forEach { r ->
             Row(Modifier.fillMaxWidth().clickable { Jarvis.ask(ctx, L("Plano de trade") + " ${r.symbol}") }.padding(vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
-                T(r.symbol, Q.Text, 12, bold = true, monoFont = true, tr = false, modifier = Modifier.width(56.dp))
+                T(r.symbol, Q.Text, 12, bold = true, monoFont = true, tr = false, modifier = Modifier.width(64.dp))   // cabe GOOGL
                 T(px(r.last), Q.Text, 11, monoFont = true, tr = false, modifier = Modifier.width(76.dp))
                 Column(Modifier.weight(1f)) {
                     T(L(r.status), when (r.status) { "ROMPEU" -> Q.Buy; "AGUARDANDO" -> Q.Warn; "ERRO" -> Q.Sell; else -> Q.Muted }, 11, bold = true, tr = false)
@@ -494,7 +541,12 @@ private fun JarvisSettingsView(modifier: Modifier) {
                     JarvisSettings.useLlm(opts[it]); Jarvis.prepare()
                 }
                 if (!JarvisNative.llmSupported) T("Este aparelho não roda a IA local (precisa de Android 9+ e 64 bits).", Q.Warn, 11, wrap = true)
-                Jarvis.brainError?.let { T(L("Erro") + ": $it", Q.Sell, 11, wrap = true, tr = false) }
+                Jarvis.brainError?.takeIf { Jarvis.brain == BrainState.ERROR }?.let {
+                    T(L("Erro") + ": $it", Q.Sell, 11, wrap = true, tr = false)
+                    Spacer(Modifier.height(4.dp))
+                    MiniButton("Tentar de novo", on = true) { Jarvis.retryCrashed() }
+                }
+                if (!Platform.isMobile) T(L("Biblioteca da IA") + ": " + L(JarvisNative.libraryLabel()), Q.Muted, 11, tr = false)
                 ModelRow(JarvisModels.LLM_LIGHT); ModelRow(JarvisModels.LLM_STD); if (!Platform.isMobile) ModelRow(JarvisModels.LLM_PRO)
                 Footnote("A IA recebe só os dados que o app já mostra e é instruída a não inventar números. Sem a IA, o assistente responde com os próprios dados do app.")
             }
@@ -558,6 +610,31 @@ private fun JarvisSettingsView(modifier: Modifier) {
     }
 }
 
+// ------------------------------------------------------------------ aprender sem parar
+
+/** Botão grande liga/desliga do aprendizado contínuo, com o que está fazendo agora. Usado no ⚙ e no mapa do cérebro. */
+@Composable
+internal fun LearnSwitch() {
+    // Atualiza a contagem regressiva sem depender de outros eventos
+    var tick by remember { mutableStateOf(0) }
+    LaunchedEffect(JarvisLearner.on) { while (JarvisLearner.on) { kotlinx.coroutines.delay(15_000); tick++ } }
+    @Suppress("UNUSED_VARIABLE") val t = tick
+    val on = JarvisLearner.on
+    Column(Modifier.fillMaxWidth().border(1.dp, if (on) Q.Buy else Q.Line).background(if (on) Q.Panel2 else Q.Panel).padding(8.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(10.dp).background(if (on) Q.Buy else Q.Muted))
+            Spacer(Modifier.width(8.dp))
+            Column(Modifier.weight(1f)) {
+                T(if (on) "APRENDENDO SEM PARAR" else "APRENDER SEM PARAR: DESLIGADO", if (on) Q.Buy else Q.Text, 12, bold = true)
+                T(L(JarvisLearner.phaseText()) + (if (on && JarvisLearner.cycles > 0) " · ${JarvisLearner.cycles} " + L("rodadas") + " · +${JarvisLearner.learnedTotal} " + L("itens") else ""),
+                    Q.Muted, 11, wrap = true, tr = false)
+            }
+            OutlineButton(if (on) "Desligar" else "Ligar", color = if (on) Q.Sell else Q.Buy) { JarvisLearner.setOn(!on) }
+        }
+        if (JarvisLearner.lastResult.isNotBlank()) T(L("Última rodada") + ": " + JarvisLearner.lastResult, Q.Text, 11, wrap = true, tr = false, modifier = Modifier.padding(top = 4.dp))
+    }
+}
+
 // ------------------------------------------------------------------ inteligência que cresce sozinha
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -590,20 +667,12 @@ private fun IntelligenceSection() {
             OutlineButton(if (JarvisResearch.running) "Pesquisando…" else "Pesquisar agora", enabled = !JarvisResearch.running) { scope.launch { safely { JarvisResearch.run(force = true) } } }
             Footnote("Busca manchetes recentes (Google News) sobre o BTC, sua lista, as perguntas que ele não soube e as habilidades ligadas. Guarda com fonte e data; algo só conta como confirmado com 2 fontes. Nada do que vem da internet vira instrução para o Jarvis.")
 
-            // Curiosidade
+            // Curiosidade: aprender sem parar (liga e desliga; continua ligado depois de reabrir o app)
             T("Aprende coisas novas", Q.Accent, 12, bold = true, modifier = Modifier.padding(top = 6.dp))
+            LearnSwitch()
             KV("Última vez", if (JarvisCuriosity.lastMs == 0L) "—" else java.text.SimpleDateFormat("dd/MM HH:mm", BR).format(java.util.Date(JarvisCuriosity.lastMs)))
             if (JarvisCuriosity.recent.isNotEmpty()) T(L("Aprendeu recentemente") + ": " + JarvisCuriosity.recent.joinToString(", "), Q.Text, 11, wrap = true, tr = false)
-            var learnedNow by remember { mutableStateOf<String?>(null) }
-            OutlineButton(if (JarvisCuriosity.running) "Aprendendo…" else "Aprender coisas novas agora", enabled = !JarvisCuriosity.running && !JarvisResearch.running) {
-                scope.launch { safely {
-                    if (JarvisMemory.all().none { it.kind == "news" }) JarvisResearch.run(force = true)
-                    val l = JarvisCuriosity.learn()
-                    learnedNow = if (l.isEmpty()) L("Nada novo por enquanto: nenhum termo apareceu em manchetes suficientes.") else L("Aprendeu") + ": " + l.joinToString(", ")
-                } }
-            }
-            learnedNow?.let { T(it, Q.Muted, 11, wrap = true, tr = false) }
-            Footnote("Quando um nome ou termo novo aparece em 3 ou mais manchetes de 2 ou mais fontes, o Jarvis lê o resumo dele na Wikipedia, guarda com o link e passa a pesquisar notícias sobre ele. Roda junto com a pesquisa diária. Sem página na Wikipedia, o termo é ignorado.")
+            Footnote("Ligado, o Jarvis faz uma rodada a cada 20 minutos: pesquisa manchetes e, quando um nome ou termo novo de mercado aparece em 3 ou mais manchetes de 2 ou mais fontes, lê o resumo na Wikipedia e guarda com o link. Músicas, filmes e esporte ficam de fora. Só para quando você desligar.")
 
             // Placar
             T("Placar das previsões", Q.Accent, 12, bold = true, modifier = Modifier.padding(top = 6.dp))

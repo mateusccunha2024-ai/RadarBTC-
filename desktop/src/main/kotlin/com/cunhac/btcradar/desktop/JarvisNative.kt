@@ -38,14 +38,54 @@ object JarvisNative {
     val ttsLoaded get() = tts != null
     val asrLoaded get() = asr != null
 
-    /** Carrega o modelo de linguagem no processo da IA. Devolve a mensagem de erro, ou null se deu certo. */
+    /** Biblioteca que funcionou neste PC ("" = padrão AVX2, "avx", "sse"); guardada para não repetir a queda. */
+    private val variantFile get() = File(modelsDir, "ia-biblioteca.txt")
+    private fun savedVariant() = runCatching { variantFile.readText().trim() }.getOrDefault("").takeIf { it in JarvisLlmWorker.VARIANTS } ?: ""
+
+    /** Ainda há uma biblioteca mais compatível para tentar depois de uma queda por instrução do processador. */
+    fun hasCpuFallback(): Boolean {
+        val i = JarvisLlmWorker.VARIANTS.indexOf(savedVariant())
+        return JarvisLlmWorker.VARIANTS.drop(i + 1).any { JarvisLlmWorker.compatDir(it) != null }
+    }
+
+    /** Biblioteca em uso, para mostrar no painel ("padrão", "compatível AVX", "compatível SSE"). */
+    fun libraryLabel(): String = when (savedVariant()) { "avx" -> "compatível (AVX)"; "sse" -> "compatível (SSE)"; else -> "padrão (AVX2)" }
+
+    /**
+     * Carrega o modelo de linguagem no processo da IA. Devolve a mensagem de erro, ou null se deu certo.
+     * Se o processador não tiver as instruções da biblioteca padrão (AVX2), tenta sozinho as versões compatíveis
+     * que vêm no instalador e guarda a que funcionou.
+     */
     fun loadLlm(path: String): String? = synchronized(llmLock) {
         llmReady = false
-        if (!LlmProcess.alive) LlmProcess.start()?.let { e -> LlmProcess.crash = e; FileLog.info("jarvis llm: $e"); return e }
-        try {
-            val r = LlmProcess.call(300_000, "load", path, "4096", threads.toString())
-            if (r.firstOrNull() == "ok") { llmReady = true; null } else (r.getOrNull(1) ?: "erro ao carregar").also { FileLog.info("jarvis llm: $it") }
-        } catch (e: java.io.IOException) { e.message ?: "a IA fechou" }
+        val variants = JarvisLlmWorker.VARIANTS.filter { it.isEmpty() || JarvisLlmWorker.compatDir(it) != null }
+        val from = variants.indexOf(savedVariant()).coerceAtLeast(0)
+        var last: String? = null
+        for (i in from until variants.size) {
+            val v = variants[i]
+            if (!LlmProcess.alive || LlmProcess.variant != v) LlmProcess.start(v)?.let { e -> LlmProcess.crash = e; FileLog.info("jarvis llm: $e"); return e }
+            try {
+                val r = LlmProcess.call(600_000, "load", path, "4096", threads.toString())
+                if (r.firstOrNull() == "ok") {
+                    llmReady = true
+                    if (v != savedVariant()) runCatching { variantFile.writeText(v) }
+                    FileLog.info("jarvis llm: carregou com a biblioteca ${v.ifEmpty { "padrão" }}")
+                    return null
+                }
+                return (r.getOrNull(1) ?: "erro ao carregar").also { FileLog.info("jarvis llm: $it") }
+            } catch (e: java.io.IOException) {
+                last = e.message ?: "a IA fechou"
+                if (LlmProcess.lastIllegal && i < variants.size - 1) {
+                    FileLog.info("jarvis llm: biblioteca ${v.ifEmpty { "padrão" }} não roda neste processador; tentando ${variants[i + 1]}")
+                    LlmProcess.crash = null
+                    continue
+                }
+                // Nem a mais compatível rodou: guarda isso para não tentar de novo sozinho a cada abertura.
+                if (LlmProcess.lastIllegal) runCatching { variantFile.writeText(v) }
+                return last
+            }
+        }
+        last
     }
 
     fun unloadLlm() = synchronized(llmLock) { llmReady = false; runCatching { LlmProcess.stop() }; Unit }
@@ -150,6 +190,7 @@ object JarvisNative {
         val r = asr ?: return ""
         if (bytes.size < 16000) return "" // menos de meio segundo
         val f = FloatArray(bytes.size / 2) { i -> ((bytes[2 * i].toInt() and 0xFF) or (bytes[2 * i + 1].toInt() shl 8)).toShort() / 32768f }
+        if (!JarvisChat.hasSpeech(f, 16000)) return "" // silêncio ou só ruído: o Whisper inventaria uma frase
         val st = r.createStream()
         return try { st.acceptWaveform(f, 16000); r.decode(st); r.getResult(st).text.trim() } finally { st.release() }
     }
