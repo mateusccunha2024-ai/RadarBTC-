@@ -163,6 +163,31 @@ object TraderSkill {
         return ExitResult.Ok(Plan(symbol, m, date, entry, e.slot!!, e.timeMs, stop, target, targetR, rule, oh, ol, orMinutes))
     }
 
+    // ------------------------------------------------------------------ o que já aconteceu depois da entrada
+
+    enum class ProgressStatus { OPEN, STOPPED, TARGET }
+
+    /** Situação do trade de hoje até agora: ainda aberto, já bateu no stop ou já bateu no alvo (com hora e preço). */
+    data class Progress(val status: ProgressStatus, val timeMs: Long?, val price: Double?)
+
+    /**
+     * Percorre os candles completos depois do candle de entrada: o primeiro que toca o stop ou o alvo decide
+     * (stop e alvo no mesmo candle contam como stop, como no Time Machine). O preço atual abaixo do stop também conta.
+     */
+    fun progress(today: TradeSession?, p: Plan, nowMs: Long, last: Double? = null): Progress {
+        if (today != null) {
+            for (i in (p.entrySlot + 1) until today.slots.size) {
+                val b = today.slots[i] ?: continue
+                if (b.t + 300_000L > nowMs) break
+                if (b.l <= p.stop) return Progress(ProgressStatus.STOPPED, b.t + 300_000L, p.stop)
+                if (b.h >= p.target) return Progress(ProgressStatus.TARGET, b.t + 300_000L, p.target)
+            }
+        }
+        if (last != null && last <= p.stop) return Progress(ProgressStatus.STOPPED, null, last)
+        if (last != null && last >= p.target) return Progress(ProgressStatus.TARGET, null, last)
+        return Progress(ProgressStatus.OPEN, null, null)
+    }
+
     // ------------------------------------------------------------------ Time Machine (trader-timemachine)
 
     data class MonteCarlo(
@@ -330,6 +355,7 @@ object TraderSkill {
         val loss = qty * risk
         val rr = (p.target - ref) / risk
         val refusal = when {
+            freshPrice != null && freshPrice <= p.stop -> "O preço atual (${fmt(freshPrice)}) já está no stop (${fmt(p.stop)}) ou abaixo: o setup de hoje foi invalidado. Sem ordem."
             risk <= 0 -> "O preço já está no stop ou abaixo dele."
             p.target <= ref -> "O preço já passou do alvo: o movimento já aconteceu."
             p.symbol.uppercase() in r.blocked -> "${p.symbol} está na sua lista de bloqueados."
@@ -348,8 +374,12 @@ object TraderSkill {
     data class RiskVerdict(val pass: Boolean, val checks: List<Check>)
 
     /** PASS ou BLOCK antes de qualquer boleta. [riskToday]/[tradesToday] vêm do diário de paper trades do aparelho. */
-    fun risk(p: Plan, s: Sizing, r: Rules, riskToday: Double, tradesToday: Int, nowMs: Long): RiskVerdict {
+    fun risk(p: Plan, s: Sizing, r: Rules, riskToday: Double, tradesToday: Int, nowMs: Long,
+             last: Double? = null, progress: Progress? = null): RiskVerdict {
         val c = ArrayList<Check>()
+        if (last != null) c += Check("Preço atual acima do stop", last > p.stop, "${fmt(last)} × stop ${fmt(p.stop)}")
+        if (progress != null) c += Check("Stop e alvo ainda não atingidos hoje", progress.status == ProgressStatus.OPEN,
+            when (progress.status) { ProgressStatus.OPEN -> "em aberto"; ProgressStatus.STOPPED -> "stop atingido"; ProgressStatus.TARGET -> "alvo atingido" })
         c += Check("Stop definido", p.stop > 0 && p.stop < s.ref, "stop ${fmt(p.stop)}")
         c += Check("Perda no stop ≤ máximo por trade", s.maxLoss <= r.maxLossPerTrade + 0.005, "${fmt(s.maxLoss)} de ${fmt(r.maxLossPerTrade)}")
         c += Check("Retorno/risco ≥ mínimo", s.rewardRisk >= r.minRewardRisk - 1e-9, "${fmt(s.rewardRisk)} ≥ ${fmt(r.minRewardRisk)}")

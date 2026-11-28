@@ -1,5 +1,27 @@
 # Changelog
 
+## V8 — atualização 17 (2026-11-28) · Jarvis no PC sem AVX2, aprender sem parar e mapa do cérebro
+- **A IA roda em processador sem AVX2:** o teste no PC (Core i7 de 2ª/3ª geração) mostrou a biblioteca da IA morrendo por
+  instrução que o processador não tem. O instalador do Windows agora traz duas versões compatíveis (só AVX e só SSE),
+  compiladas no CI (workflow "IA compatível"). Se a padrão cair por instrução ilegal, o Jarvis tenta a próxima sozinho e
+  guarda a que funcionou (⚙ › Cérebro mostra a biblioteca em uso).
+- **Plano de trade honesto:** se depois da entrada o preço já bateu no stop (ou no alvo), o cartão mostra "setup encerrado",
+  o risco BLOQUEIA (novas checagens "Preço atual acima do stop" e "Stop e alvo ainda não atingidos hoje") e não há boleta.
+- **Conversa sem a IA:** responde cumprimentos ("oi, tudo bem?"), explica 23 conceitos de mercado com o valor ao vivo
+  ("o que é funding?") e coloca primeiro os dados do assunto perguntado.
+- **Microfone:** ignora silêncio e ruído (antes o Whisper inventava "Eu não sou de você." e enviava sozinho).
+- **Voz:** lê só as 2 primeiras frases; o resto fica na tela.
+- **Aprender sem parar:** um botão liga e o Jarvis aprende em rodadas de 20 minutos (manchetes + termos novos) até você
+  desligar; continua ligado depois de reabrir o app. A curiosidade agora ignora músicas, filmes e esporte e apaga os
+  conceitos desse tipo aprendidos antes.
+- **Mapa do cérebro:** botão "Mapa" no Jarvis. Cada habilidade é uma região (raciocínio, visão = mercado ao vivo, memória,
+  curiosidade, pesquisa, linguagem, instinto de trade, fala, audição, habilidades, autoavaliação, nuvem) com cor de estado;
+  tocar abre a explicação, os números e os botões.
+- **Painel:** o erro da IA aparece inteiro com "Tentar de novo" e "Usar a IA leve" sempre à vista; trocar de modelo apaga o
+  erro antigo; rótulos do gráfico do Time Machine não se sobrepõem; legenda não corta; scanner diz "bolsa fechada" no fim de
+  semana; GOOGL cabe na lista.
+- **Windows:** abrir o app de novo traz a janela aberta para a frente (sem o aviso "já está aberto").
+
 ## V8 — atualização 16 (2026-11-28) · A IA do Jarvis não derruba mais o app
 - **Causa encontrada (log do PC):** o app fechava ao falar com o Jarvis porque a IA local (llama.cpp) carregava o modelo dentro
   do próprio app. Um erro nativo ali (instrução que o processador não tem, modelo que a biblioteca não aguenta, falta de memória)

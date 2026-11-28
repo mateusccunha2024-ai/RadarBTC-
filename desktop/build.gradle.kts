@@ -89,6 +89,8 @@ compose.desktop {
             description = "Mapa de liquidez, liquidacoes e ETFs de Bitcoin"
             vendor = "Cunhac"
             includeAllModules = true
+            // Extras do app instalado: IA compatível para PC sem AVX2 (windows/jarvis-compat), baixada no CI.
+            appResourcesRootDir.set(project.layout.projectDirectory.dir("appResources"))
             windows {
                 menu = true
                 shortcut = true

@@ -102,9 +102,15 @@ object JarvisFacts {
         Topic.SUMMARY to listOf("resumo", "summary", "como esta", "como ta", "how is", "visao geral", "overview", "situacao", "panorama", "mercado hoje", "o que acha"),
     )
 
+    /** "Quanto está", "valor"… só contam como preço quando a pergunta não cita outro assunto ("quanto está o funding?"). */
+    private val GENERIC_PRICE = setOf("quanto esta", "quanto ta", "how much", "valor")
+
     fun topics(q: String): Set<Topic> {
         val f = " " + JarvisText.fold(q) + " "
-        return KW.filter { (_, ks) -> ks.any { it in f } }.keys
+        val found = KW.filter { (_, ks) -> ks.any { it in f } }.keys
+        val specific = found - setOf(Topic.PRICE, Topic.SUMMARY, Topic.HELP)
+        if (Topic.PRICE in found && specific.isNotEmpty() && KW[Topic.PRICE]!!.none { it !in GENERIC_PRICE && it in f }) return found - Topic.PRICE
+        return found
     }
 
     private val NAMES = mapOf(
@@ -130,7 +136,7 @@ object JarvisFacts {
         val s = ctx.hub.stateFlow.value
         val hub = ctx.hub
         val src = "Radar BTC (Binance, Bybit, OKX)"
-        if (Topic.PRICE in t || Topic.DERIV in t) {
+        if (Topic.PRICE in t) {
             s.price?.let { out += Fact("Preço do BTC agora: US$ ${px(it)}", src) }
             listOf(300_000L to "5 min", 3_600_000L to "1 h", 14_400_000L to "4 h").forEach { (w, l) ->
                 hub.priceChangePct(w)?.let { out += Fact("Variação do BTC em $l: ${pct(it)}", src) }
@@ -231,6 +237,8 @@ data class TradeCard(
     val plan: TraderSkill.Plan?, val hypothetical: Boolean, val refusal: String?, val mc: TraderSkill.MonteCarlo?,
     val history: TraderSkill.History?, val sizing: TraderSkill.Sizing?, val risk: TraderSkill.RiskVerdict?, val ticket: String?,
     val news: List<Pair<String, String>>, val marketNote: String, val sessions: Int, val dataSource: String, val builtMs: Long,
+    /** O que já aconteceu depois da entrada de hoje (stop ou alvo já atingidos encerram o setup). */
+    val progress: TraderSkill.Progress? = null,
 )
 
 data class ScanRow(val symbol: String, val last: Double?, val status: String, val detail: String, val setups: List<TraderSkill.Setup>)
@@ -271,16 +279,19 @@ object JarvisTrade {
         val exit = eUse?.let { TraderSkill.exitPlan(sym, m, todayDate, it, 15, rule, stopPct ?: 1.0, tr) }
         val plan = (exit as? TraderSkill.ExitResult.Ok)?.plan
         val refusal = (exit as? TraderSkill.ExitResult.Refused)?.reason
+        // Entrada real de hoje: o trade pode já ter acabado (bateu no stop ou no alvo). Aí não há entrada agora.
+        val progress = if (plan != null && !hyp) TraderSkill.progress(today, plan, now, last) else null
+        val done = progress != null && progress.status != TraderSkill.ProgressStatus.OPEN
         val pool = if (full.size >= 10) TraderSkill.pool(full, m) else null
-        val mc = if (plan != null && pool != null) TraderSkill.simulate(pool, m, plan.entry, plan.stop, plan.target, plan.entrySlot, m.lastSlot) else null
+        val mc = if (plan != null && pool != null && !done) TraderSkill.simulate(pool, m, plan.entry, plan.stop, plan.target, plan.entrySlot, m.lastSlot) else null
         val hist = if (full.isNotEmpty()) TraderSkill.history(full, m, 15, rule, stopPct ?: 1.0, tr, m.lastSlot) else null
         val sizing = plan?.let { TraderSkill.size(it, rules, if (hyp) null else last) }
         val (nToday, rToday) = PaperJournal.today(m)
-        val risk = if (plan != null && sizing != null) TraderSkill.risk(plan, sizing, rules, rToday, nToday, now) else null
-        val ticket = if (plan != null && sizing != null && sizing.refusal == null) TraderSkill.ticket(plan, sizing) else null
+        val risk = if (plan != null && sizing != null) TraderSkill.risk(plan, sizing, rules, rToday, nToday, now, if (hyp) null else last, progress) else null
+        val ticket = if (plan != null && sizing != null && sizing.refusal == null && risk?.pass == true) TraderSkill.ticket(plan, sizing) else null
         val news = runCatching { TraderData.headlines(sym, 5).map { it.title to it.source } }.getOrDefault(emptyList())
         TradeCard(sym, m, quote.name, last, e, plan, hyp, refusal, mc, hist, sizing, risk, ticket, news, note, full.size,
-            if (m == TradeMarket.BTC) "Binance (candles de 5 min, 30 dias)" else "Yahoo Finance (candles de 5 min, 60 dias)", now)
+            if (m == TradeMarket.BTC) "Binance (candles de 5 min, 30 dias)" else "Yahoo Finance (candles de 5 min, 60 dias)", now, progress)
             .also { runCatching { ScoreBook.record(it) } }
     }
 
@@ -392,12 +403,16 @@ object Jarvis {
             brain == BrainState.ERROR && loadedLlm == null && brainError != null && !crashedAny() -> BrainState.ERROR
             else -> BrainState.IDLE
         }
+        // Erro de outro modelo não fica na tela depois da troca (antes o erro do 7B continuava aparecendo com o 0,5B).
+        if (brain != BrainState.ERROR) brainError = null
         voiceReady = JarvisModels.installed(JarvisModels.VOICE) && !crashed("voice")
         micReady = JarvisModels.installed(JarvisSettings.micItem) && !crashed("mic-${JarvisSettings.micItem.id}")
         crashedList = listCrashed()
         JarvisCrash.check()
         // Modo seguro: o app fechou com o painel aberto da última vez. Nada roda sozinho ao abrir.
         if (JarvisCrash.safeMode) return@launch
+        // Uma vez: tira da memória conceitos aprendidos antes do filtro de relevância (músicas, filmes…).
+        if (!SettingsStore.b("jv.cur.purge17", false)) { runCatching { JarvisCuriosity.purgeIrrelevant() }; SettingsStore.put("jv.cur.purge17", true) }
         // Aprende sozinho: sincronização com o cérebro na nuvem e pesquisa do dia (Wi-Fi, 1 vez a cada 20 h).
         // Espera o painel terminar de abrir antes de usar a rede.
         delay(4_000)
@@ -414,6 +429,9 @@ object Jarvis {
     /** Se ficou a marca "carregando" de uma vez anterior, o app fechou no meio da carga: vira "falhou". */
     private fun crashed(key: String): Boolean {
         if (mark(key).exists()) { runCatching { bad(key).writeText(mark(key).readText()); mark(key).delete() } }
+        // Caiu por instrução do processador e agora há uma biblioteca compatível para tentar: libera sozinho.
+        if (key.startsWith("llm-") && bad(key).exists() && runCatching { JarvisNative.hasCpuFallback() }.getOrDefault(false) &&
+            crashReason(key)?.contains("processador") == true) runCatching { bad(key).delete() }
         return bad(key).exists()
     }
     /** Motivo guardado quando o processo da IA caiu (o app continuou aberto). */
@@ -513,7 +531,8 @@ object Jarvis {
         scope.launch {
             val reply = runCatching { answer(ctx, q) }.getOrElse { JarvisMsg(false, L("Não consegui buscar os dados agora") + ": " + (it.message ?: ""), engine = "erro") }
             messages += reply; busy = false
-            if (JarvisSettings.voiceOn && voiceReady) say(reply.text)
+            // A voz lê só o começo (2 frases); a lista completa fica na tela.
+            if (JarvisSettings.voiceOn && voiceReady) say(JarvisChat.forSpeech(reply.text))
             busy = false
         }
     }
@@ -533,8 +552,11 @@ object Jarvis {
             listening = false
             scope.launch {
                 val t = runCatching { JarvisNative.stopRecordingAndTranscribe() }.getOrDefault("")
-                if (t.isBlank()) notice = L("Não entendi o áudio. Tente de novo, mais perto do microfone.")
-                else ask(ctx, t)
+                when {
+                    t.isBlank() -> notice = L("Não ouvi ninguém falando. Toque no microfone, fale perto dele e toque de novo para enviar.")
+                    JarvisChat.suspicious(t) -> notice = L("Parecia só ruído") + " (\"$t\"). " + L("Não enviei. Tente de novo, mais perto do microfone.")
+                    else -> ask(ctx, t)
+                }
             }
             return
         }
@@ -569,6 +591,13 @@ object Jarvis {
     private val TARGET_RX = Regex("(?:alvo|target)\\s*(?:de|em|of|at)?\\s*(\\d+(?:[.,]\\d+)?)\\s*r\\b|(\\d+(?:[.,]\\d+)?)\\s*r\\b")
 
     private suspend fun answer(ctx: AppContext, q: String): JarvisMsg {
+        // Conversa e conceitos funcionam sem a IA: cumprimento responde cumprimento; "o que é X" explica X com o valor ao vivo.
+        JarvisChat.smallTalk(q)?.let { return JarvisMsg(false, it, engine = "conversa") }
+        JarvisChat.concept(q)?.let { c ->
+            val live = c.topic?.let { tp -> runCatching { JarvisFacts.collect(ctx, setOf(tp)) }.getOrDefault(emptyList()) }.orEmpty()
+            val (text, used) = JarvisChat.conceptAnswer(c, live)
+            return JarvisMsg(false, text, used, engine = "glossário do app")
+        }
         val r = route(q)
         if (r.kind == "help") return JarvisMsg(false, help(), engine = "app")
         // Scanner da lista de ações
@@ -576,9 +605,13 @@ object Jarvis {
             val rows = JarvisTrade.scan(JarvisSettings.symbols())
             val hits = rows.filter { it.status == "ROMPEU" }
             val near = rows.filter { it.status == "AGUARDANDO" }.take(3)
+            val now = System.currentTimeMillis()
+            val closedDay = rows.isNotEmpty() && rows.all { it.status == "FECHADO" || it.status == "ERRO" } && !TraderClock.tradingDay(TraderClock.ny(now).toLocalDate())
             val text = buildString {
                 append(L("Scanner de ${rows.size} ações da sua lista") + ". ")
-                if (hits.isEmpty()) append(L("Nenhuma rompeu a abertura de 15 min hoje") + ". ")
+                if (closedDay) append(L("Bolsa dos EUA fechada hoje (fim de semana ou feriado); o rompimento da abertura volta no próximo pregão") + ", " +
+                    java.text.SimpleDateFormat("dd/MM HH:mm", BR).format(java.util.Date(TraderClock.nextUsOpen(now))) + ". ")
+                else if (hits.isEmpty()) append(L("Nenhuma rompeu a abertura de 15 min hoje") + ". ")
                 else append(L("Romperam a abertura") + ": " + hits.joinToString(", ") { it.symbol } + ". ")
                 if (near.isNotEmpty()) append(L("Mais perto de romper") + ": " + near.joinToString(", ") { "${it.symbol} (${it.detail.substringBefore(" da")})" } + ". ")
                 val daily = rows.filter { it.setups.isNotEmpty() }.take(4)
@@ -625,16 +658,18 @@ object Jarvis {
             }
         }
         if (facts.isEmpty()) { JarvisSkills.noteUnknown(q); JarvisResearch.enqueue(q) }
-        val used = facts.take(56)
+        // Assunto perguntado primeiro; num "o que é…", o conceito aprendido (Wikipedia) vem antes de tudo.
+        val ordered = JarvisChat.focus(facts, topics).let { f -> if (JarvisChat.asksConcept(q)) f.sortedBy { if (it.text.startsWith("Conceito")) 0 else 1 } else f }
+        val used = ordered.take(56)
         if (ai && used.isNotEmpty()) {
             for (strict in listOf(false, true)) {
                 val text = runCatching { llmAnswer(q, used, strict) }.getOrNull() ?: break
                 if (text.isNotBlank() && Grounding.ungrounded(text, used.map { it.text }).isEmpty()) return FactsAnswer(text, used, "IA local", card)
             }
-            if (noteLlmCrash()) return FactsAnswer(ruleAnswer(used), used, "dados do app (a IA fechou; o app continuou aberto)", card)
-            return FactsAnswer(ruleAnswer(used), used, "dados do app (a IA citou um número fora dos dados)", card)
+            if (noteLlmCrash()) return FactsAnswer(ruleAnswer(used, topics), used, "dados do app (a IA fechou; o app continuou aberto)", card)
+            return FactsAnswer(ruleAnswer(used, topics), used, "dados do app (a IA citou um número fora dos dados)", card)
         }
-        return FactsAnswer(ruleAnswer(used), used, "dados do app", card)
+        return FactsAnswer(ruleAnswer(used, topics), used, "dados do app", card)
     }
 
     private fun plannerPrompt(q: String) = "<|im_start|>system\nYou plan which tools to call before answering a question in a trading app. Tools:\n" +
@@ -673,13 +708,13 @@ FACTS:
         return JarvisNative.complete(prompt, 260, if (strict) 0.1f else 0.3f, listOf("<|im_end|>", "<|im_start|>")).trim()
     }
 
-    private fun ruleAnswer(facts: List<Fact>): String {
+    private fun ruleAnswer(facts: List<Fact>, topics: Set<Topic> = emptySet()): String {
         if (facts.isEmpty()) return L("Ainda não tenho dados para isso. Espere os livros conectarem ou abra a aba correspondente.")
         val head = when (brain) {
             BrainState.READY, BrainState.LOADING, BrainState.IDLE -> ""
             else -> L("Com os dados do app") + ": "
         }
-        return head + facts.take(8).joinToString(". ") { L(it.text) } + "."
+        return head + JarvisChat.ruleAnswer(facts, topics)
     }
 
     fun setupLabel(s: TraderSkill.Setup) = L(when (s) {
@@ -696,11 +731,22 @@ FACTS:
         TraderSkill.Lean.STRONG_STOP -> "Forte para o stop"
     })
 
+    private fun hmLocal(ms: Long, m: TradeMarket) = java.time.Instant.ofEpochMilli(ms).atZone(m.zone).let { "%02d:%02d %s".format(it.hour, it.minute, if (m == TradeMarket.BTC) "UTC" else "NY") }
+
     /** Resumo falado do plano. */
     fun cardSummary(c: TradeCard): String = buildString {
         val sym = if (c.symbol == "BTC") "BTC" else c.symbol
         when (c.entry.status) {
-            TraderSkill.EntryStatus.TRIGGERED -> append("$sym " + L("rompeu a abertura de 15 minutos") + " ${L("em")} ${px(c.entry.price)}. ")
+            TraderSkill.EntryStatus.TRIGGERED -> {
+                append("$sym " + L("rompeu a abertura de 15 minutos") + " ${L("em")} ${px(c.entry.price)}. ")
+                when (c.progress?.status) {
+                    TraderSkill.ProgressStatus.STOPPED -> { append(L("Mas o trade de hoje já bateu no stop") + " (${px(c.plan?.stop)}" +
+                        (c.progress?.timeMs?.let { ", " + hmLocal(it, c.market) } ?: "") + "). " + L("O setup acabou: não há entrada agora.") + " "); return@buildString }
+                    TraderSkill.ProgressStatus.TARGET -> { append(L("E já chegou ao alvo") + " (${px(c.plan?.target)}" +
+                        (c.progress?.timeMs?.let { ", " + hmLocal(it, c.market) } ?: "") + "). " + L("O movimento já aconteceu: não há entrada agora.") + " "); return@buildString }
+                    else -> {}
+                }
+            }
             TraderSkill.EntryStatus.WAITING -> append("$sym " + L("ainda não rompeu a máxima da abertura") + " (${px(c.entry.orHigh)}); " + L("simulei a entrada no rompimento") + ". ")
             TraderSkill.EntryStatus.BUILDING_RANGE -> append("$sym: " + L("a abertura de 15 minutos ainda está se formando") + ". ")
             TraderSkill.EntryStatus.EXPIRED -> append("$sym: " + L("sem gatilho hoje dentro da janela de entradas") + ". ")

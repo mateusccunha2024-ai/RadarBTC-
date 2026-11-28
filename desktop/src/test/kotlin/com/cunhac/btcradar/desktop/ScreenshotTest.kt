@@ -55,7 +55,14 @@ class ScreenshotTest {
         shot("jarvis-04-scan", 0, jarvis = true, h = 1400)
         Jarvis.clear(); askWait("Resumo macro de hoje"); askWait("Onde estão as paredes?")
         shot("jarvis-05-macro-walls", 0, jarvis = true, h = 1400)
+        // Atualização 17: conversa sem IA (cumprimento e conceito) e o mapa do cérebro
+        Jarvis.clear(); askWait("oi, tudo bem?"); askWait("o que é funding e por que importa?"); askWait("Quanto está o funding?")
+        shot("jarvis-06-conversa", 0, jarvis = true, h = 1200)
         Jarvis.clear()
+        JarvisUi.initialView = JarvisView.MAP
+        shot("jarvis-07-mapa", 0, jarvis = true, h = 1500)
+        shot("phone-jarvis-07-mapa", 0, w = 618, h = 2600, density = 1.5f, jarvis = true)
+        JarvisUi.initialView = JarvisView.CHAT
         TABS.indices.forEach { i -> shot("dark-%02d".format(i), i) }
         shot("dark-menu", 0, settings = true)
         Look.useDark(false)

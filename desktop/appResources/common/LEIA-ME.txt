@@ -1,0 +1,2 @@
+Arquivos extras do app instalado (Compose appResources).
+windows/jarvis-compat/{avx,sse}/jllama.dll: IA local para processadores sem AVX2 (baixada no CI da release llama-compat-b4916-v2).

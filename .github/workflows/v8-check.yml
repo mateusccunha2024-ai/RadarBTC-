@@ -79,9 +79,13 @@ jobs:
           gh issue create --title "Verificação V8 #${{ github.run_number }}" --body-file report.md
 
   # Jarvis no Windows de verdade: o RadarBTC.exe abre a IA num processo separado, ela responde, cai e o app continua.
+  compat:
+    uses: ./.github/workflows/llama-compat.yml
+
   windows-ia:
+    needs: compat
     runs-on: windows-latest
-    timeout-minutes: 40
+    timeout-minutes: 70
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
@@ -89,6 +93,10 @@ jobs:
         with: { distribution: temurin, java-version: 17 }
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: "8.9" }
+      - name: IA compatível (PC sem AVX2)
+        shell: bash
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: bash .github/scripts/fetch-llama-compat.sh
       - name: Gerar o app (como no instalador)
         shell: bash
         run: gradle :desktop:createDistributable --no-daemon -q
@@ -105,6 +113,16 @@ jobs:
           Get-Content $out -ErrorAction SilentlyContinue
           Get-Content "$env:TEMP\radarbtc-ia-test\ia-processo.log" -Tail 15 -ErrorAction SilentlyContinue
           if (-not (Select-String -Path $out -Pattern "fim ok" -Quiet)) { exit 1 }
+          # Mesma IA com as bibliotecas compatíveis (PC sem AVX2): precisa carregar e responder também
+          foreach ($v in @("avx", "sse")) {
+            $o = "$env:RUNNER_TEMP\ia-test-$v.txt"
+            $q = Start-Process -FilePath $exe -ArgumentList @("--jarvis-llm-test", "$env:RUNNER_TEMP\qwen-0.5b.gguf", $o, $v) -PassThru
+            if (-not $q.WaitForExit(900000)) { $q.Kill(); Write-Output "TEMPO ESGOTADO ($v)" }
+            Write-Output "---- compatível: $v"
+            Get-Content $o -ErrorAction SilentlyContinue
+            Select-String -Path "$env:TEMP\radarbtc-ia-test\ia-processo.log" -Pattern "system_info" -ErrorAction SilentlyContinue
+            if (-not (Select-String -Path $o -Pattern "fim ok" -Quiet)) { exit 1 }
+          }
 
   # Jarvis num emulador Android: abrir o painel e usar a IA, a voz e o microfone de verdade.
   android-smoke:

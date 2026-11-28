@@ -24,7 +24,7 @@ object RadarCore {
         hub.history = db
         hub.logSink = { FileLog.write(it) }
         hub.start()
-        AppContext(hub, db, MapModel(scope)).also { it.alerts.start(); it.macro.start() }
+        AppContext(hub, db, MapModel(scope)).also { it.alerts.start(); it.macro.start(); runCatching { JarvisLearner.resumeIfOn() } }
     }
     fun ensureStarted() { ctx }
 }

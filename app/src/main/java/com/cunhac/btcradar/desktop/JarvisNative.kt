@@ -73,6 +73,10 @@ object JarvisNative {
     }
 
     /** Motivo, se o processo da IA caiu desde a última consulta (o Jarvis mostra e desliga o modelo). */
+    /** No celular a biblioteca da IA já é a do processador (sem versões alternativas). */
+    fun hasCpuFallback(): Boolean = false
+    fun libraryLabel(): String = "padrão"
+
     /** Confere se o processo da IA morreu parado; o motivo fica para [takeCrash]. */
     fun checkLlm() { if (llmReady) runCatching { LlmRemote.checkLost() }; if (!LlmRemote.connected) llmReady = false }
 
@@ -158,6 +162,7 @@ object JarvisNative {
         val a = asr ?: return ""
         if (bytes.size < 16000) return ""
         val f = FloatArray(bytes.size / 2) { i -> ((bytes[2 * i].toInt() and 0xFF) or (bytes[2 * i + 1].toInt() shl 8)).toShort() / 32768f }
+        if (!JarvisChat.hasSpeech(f, 16000)) return "" // silêncio ou só ruído: o Whisper inventaria uma frase
         val st = a.createStream()
         return try { st.acceptWaveform(f, 16000); a.decode(st); a.getResult(st).text.trim() } finally { st.release() }
     }
