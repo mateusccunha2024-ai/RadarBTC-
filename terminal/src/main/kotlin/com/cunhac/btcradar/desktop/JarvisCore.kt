@@ -84,7 +84,7 @@ object JarvisFacts {
         Topic.SCAN to listOf("scanner", "scan", "escane", "setups", "rompendo", "breaking out", "watchlist", "lista de acoes", "quais acoes"),
         Topic.TRADE to listOf("trade", "operacao", "operar", "entrada", "entrar", "plano", "setup", "time machine", "maquina do tempo", "simul",
             "odds", "chance", "probabil", "backtest", "rompimento", "breakout", "orb", "comprar", "compra ", "buy", "alvo", "target",
-            "posicao", "position", "quantas acoes", "shares", "how many", "risk check", "boleta", "ordem", "order", "day trade"),
+            "posicao", "position", "quantas acoes", "shares", "how many", "risk check", "boleta", "day trade"),
         Topic.PRICE to listOf("preco", "price", "cotacao", "quanto esta", "quanto ta", "how much", "valor", "precio", "prix", "kurs", "цена", "价格", "価格", "가격"),
         Topic.BOOK to listOf("livro", "book", "ofertas", "spread", "profundidade", "depth", "bid", "ask", "orderbook"),
         Topic.WALLS to listOf("parede", "wall", "muro", "iceberg", "absorc", "absorption", "suporte", "resistencia", "support", "resistance"),
@@ -96,7 +96,7 @@ object JarvisFacts {
             "fomc", "powell", "recess", "emprego", "payroll", "medo", "fear", "greed", "ganancia", "sofr", "liquidez", "stablecoin", "ouro", "gold", "s&p", "nasdaq", "vix"),
         Topic.NEWS to listOf("noticia", "news", "manchete", "headline", "aconteceu", "happened", "por que", "porque", "why", "noticias"),
         Topic.CALENDAR to listOf("calendario", "agenda", "evento", "event", "semana", "payroll", "cpi hoje"),
-        Topic.HOURS to listOf("bolsa abre", "mercado abre", "abre que horas", "esta aberta", "esta aberto", "is the market open", "market open", "horario", "fechad"),
+        Topic.HOURS to listOf("bolsa abre", "abre a bolsa", "abre o mercado", "mercado abre", "abre que horas", "esta aberta", "esta aberto", "is the market open", "market open", "horario", "fechad"),
         Topic.STATUS to listOf("status", "conexao", "conectad", "corretoras", "funcionando", "ao vivo", "online"),
         Topic.HELP to listOf("ajuda", "help", "o que voce faz", "what can you", "como usar", "comandos"),
         Topic.SUMMARY to listOf("resumo", "summary", "como esta", "como ta", "how is", "visao geral", "overview", "situacao", "panorama", "mercado hoje", "o que acha"),
@@ -164,7 +164,7 @@ object JarvisFacts {
             }
         }
         if (Topic.FLOW in t) {
-            s.flowAll.forEach { f ->
+            s.flowAll.filter { it.windowMs >= 60_000 }.forEach { f ->
                 val win = if (f.windowMs >= 60_000) "${f.windowMs / 60_000} min" else "${f.windowMs / 1000} s"
                 out += Fact("Fluxo agressor $win: delta ${String.format(BR, "%+,.1f", f.deltaBtc)} BTC (compra ${btc(f.buyBtc, 1)}, venda ${btc(f.sellBtc, 1)})", src)
             }
@@ -237,7 +237,7 @@ data class ScanRow(val symbol: String, val last: Double?, val status: String, va
 
 object JarvisTrade {
     /** Plano completo para um símbolo (BTC ou ação dos EUA). */
-    suspend fun run(ctx: AppContext, symbolIn: String): TradeCard = withContext(Dispatchers.Default) {
+    suspend fun run(ctx: AppContext, symbolIn: String, stopPct: Double? = null, targetR: Double? = null): TradeCard = withContext(Dispatchers.Default) {
         val sym = symbolIn.uppercase()
         val m = if (sym == "BTC") TradeMarket.BTC else TradeMarket.US_STOCK
         val now = System.currentTimeMillis()
@@ -266,12 +266,14 @@ object JarvisTrade {
             }
             else -> null
         }
-        val exit = eUse?.let { TraderSkill.exitPlan(sym, m, todayDate, it) }
+        val rule = if (stopPct != null && stopPct > 0) TraderSkill.StopRule.PCT else TraderSkill.StopRule.OR_MID
+        val tr = targetR?.takeIf { it in 0.5..10.0 } ?: 2.0
+        val exit = eUse?.let { TraderSkill.exitPlan(sym, m, todayDate, it, 15, rule, stopPct ?: 1.0, tr) }
         val plan = (exit as? TraderSkill.ExitResult.Ok)?.plan
         val refusal = (exit as? TraderSkill.ExitResult.Refused)?.reason
         val pool = if (full.size >= 10) TraderSkill.pool(full, m) else null
         val mc = if (plan != null && pool != null) TraderSkill.simulate(pool, m, plan.entry, plan.stop, plan.target, plan.entrySlot, m.lastSlot) else null
-        val hist = if (full.isNotEmpty()) TraderSkill.history(full, m, 15, TraderSkill.StopRule.OR_MID, 1.0, 2.0, m.lastSlot) else null
+        val hist = if (full.isNotEmpty()) TraderSkill.history(full, m, 15, rule, stopPct ?: 1.0, tr, m.lastSlot) else null
         val sizing = plan?.let { TraderSkill.size(it, rules, if (hyp) null else last) }
         val (nToday, rToday) = PaperJournal.today(m)
         val risk = if (plan != null && sizing != null) TraderSkill.risk(plan, sizing, rules, rToday, nToday, now) else null
@@ -279,6 +281,7 @@ object JarvisTrade {
         val news = runCatching { TraderData.headlines(sym, 5).map { it.title to it.source } }.getOrDefault(emptyList())
         TradeCard(sym, m, quote.name, last, e, plan, hyp, refusal, mc, hist, sizing, risk, ticket, news, note, full.size,
             if (m == TradeMarket.BTC) "Binance (candles de 5 min, 30 dias)" else "Yahoo Finance (candles de 5 min, 60 dias)", now)
+            .also { runCatching { ScoreBook.record(it) } }
     }
 
     /** Scanner da lista: rompimento da abertura de 15 min hoje + setups do diário. */
@@ -392,7 +395,11 @@ object Jarvis {
                 JarvisModels.file(mi, "$p-tokens.txt"), whisperLang())
             micReady = err == null; loadedMic = if (err == null) mk else null
         } else micReady = JarvisNative.asrLoaded
+        // Aprende sozinho: pesquisa do dia (Wi-Fi, 1 vez a cada 20 h) e sincronização com o cérebro na nuvem.
+        if (!synced) { synced = true; runCatching { CloudBrain.sync() } }
+        if (JarvisResearch.due()) runCatching { JarvisResearch.run() }
     }
+    private var synced = false
 
     private fun whisperLang() = when (I18n.lang.code) { "zh" -> "zh"; else -> I18n.lang.code }
 
@@ -440,12 +447,28 @@ object Jarvis {
         }
     }
 
-    private suspend fun answer(ctx: AppContext, q: String): JarvisMsg {
+    /** Para onde a pergunta vai: dados do app, plano de trade, scanner ou ajuda. */
+    data class Route(val kind: String, val topics: Set<Topic>, val symbol: String?)
+
+    fun route(q: String): Route {
         val topics = JarvisFacts.topics(q)
         val sym = JarvisFacts.symbol(q)
-        if (Topic.HELP in topics && topics.size == 1) return JarvisMsg(false, help(), engine = "app")
+        return when {
+            Topic.HELP in topics && topics.size == 1 -> Route("help", topics, sym)
+            Topic.SCAN in topics && !(sym != null && Topic.TRADE in topics) -> Route("scan", topics, sym)
+            Topic.TRADE in topics || (sym != null && sym != "BTC" && topics.isEmpty()) -> Route("trade", topics, sym ?: "BTC")
+            else -> Route("facts", topics, sym)
+        }
+    }
+
+    private val STOP_RX = Regex("stop\\s*(?:de|em|of|at)?\\s*(\\d+(?:[.,]\\d+)?)\\s*%")
+    private val TARGET_RX = Regex("(?:alvo|target)\\s*(?:de|em|of|at)?\\s*(\\d+(?:[.,]\\d+)?)\\s*r\\b|(\\d+(?:[.,]\\d+)?)\\s*r\\b")
+
+    private suspend fun answer(ctx: AppContext, q: String): JarvisMsg {
+        val r = route(q)
+        if (r.kind == "help") return JarvisMsg(false, help(), engine = "app")
         // Scanner da lista de ações
-        if (Topic.SCAN in topics && !(sym != null && Topic.TRADE in topics)) {
+        if (r.kind == "scan") {
             val rows = JarvisTrade.scan(JarvisSettings.symbols())
             val hits = rows.filter { it.status == "ROMPEU" }
             val near = rows.filter { it.status == "AGUARDANDO" }.take(3)
@@ -459,17 +482,59 @@ object Jarvis {
             }
             return JarvisMsg(false, text.trim(), scan = rows, engine = "app")
         }
-        // Plano de trade completo (o vídeo)
-        if (Topic.TRADE in topics || (sym != null && sym != "BTC" && topics.isEmpty())) {
-            val card = JarvisTrade.run(ctx, sym ?: "BTC")
+        // Plano de trade completo (o vídeo), com stop/alvo pedidos na pergunta ("stop de 1%", "alvo 3R")
+        if (r.kind == "trade") {
+            val f = JarvisText.fold(q)
+            val stop = STOP_RX.find(f)?.groupValues?.get(1)?.replace(',', '.')?.toDoubleOrNull()
+            val tgt = TARGET_RX.find(f)?.let { m -> (m.groupValues[1].ifBlank { m.groupValues[2] }).replace(',', '.').toDoubleOrNull() }
+            val card = JarvisTrade.run(ctx, r.symbol ?: "BTC", stop, tgt)
             return JarvisMsg(false, cardSummary(card), card = card, engine = "app")
         }
-        val facts = JarvisFacts.collect(ctx, topics)
+        val a = answerFacts(ctx, q, r.topics)
+        return JarvisMsg(false, a.text, a.facts, card = a.card, engine = a.engine)
+    }
+
+    data class FactsAnswer(val text: String, val facts: List<Fact>, val engine: String, val card: TradeCard? = null)
+
+    /**
+     * Pergunta sobre dados: fatos do app + memória + habilidades + placar; com a IA pronta, ela escolhe ferramentas,
+     * responde e a resposta é conferida número a número (se inventar, cai para a resposta com os dados).
+     */
+    suspend fun answerFacts(ctx: AppContext, q: String, topics: Set<Topic>): FactsAnswer {
+        val facts = ArrayList(JarvisFacts.collect(ctx, topics))
+        facts += JarvisMemory.asFacts(q)
+        facts += runCatching { JarvisSkills.run(q) }.getOrDefault(emptyList())
+        JarvisFacts.symbol(q)?.let { s -> ScoreBook.fact(s)?.let { facts += it } }
+        var card: TradeCard? = null
         if (brain == BrainState.READY) {
-            val text = runCatching { llmAnswer(q, facts) }.getOrNull()
-            if (!text.isNullOrBlank()) return JarvisMsg(false, text, facts, engine = "IA local")
+            val calls = runCatching { JarvisTools.parse(JarvisNative.complete(plannerPrompt(q), 60, 0.1f, listOf("<|im_end|>", "<|im_start|>"))) }.getOrDefault(emptyList())
+            for (c in calls) {
+                val (f, cd) = runCatching { JarvisTools.run(ctx, c, q) }.getOrDefault(emptyList<Fact>() to null)
+                facts += f.filter { n -> facts.none { it.text == n.text } }
+                if (cd != null) card = cd
+            }
         }
-        return JarvisMsg(false, ruleAnswer(facts), facts, engine = "dados do app")
+        if (facts.isEmpty()) { JarvisSkills.noteUnknown(q); JarvisResearch.enqueue(q) }
+        val used = facts.take(56)
+        if (brain == BrainState.READY && used.isNotEmpty()) {
+            for (strict in listOf(false, true)) {
+                val text = runCatching { llmAnswer(q, used, strict) }.getOrNull() ?: break
+                if (text.isNotBlank() && Grounding.ungrounded(text, used.map { it.text }).isEmpty()) return FactsAnswer(text, used, "IA local", card)
+            }
+            return FactsAnswer(ruleAnswer(used), used, "dados do app (a IA citou um número fora dos dados)", card)
+        }
+        return FactsAnswer(ruleAnswer(used), used, "dados do app", card)
+    }
+
+    private fun plannerPrompt(q: String) = "<|im_start|>system\nYou plan which tools to call before answering a question in a trading app. Tools:\n" +
+        JarvisTools.HELP + "\nReply ONLY with up to 3 lines, each exactly 'tool arguments', or the single word NONE.<|im_end|>\n" +
+        "<|im_start|>user\n" + q.take(400) + "<|im_end|>\n<|im_start|>assistant\n"
+
+    /** Resumo curto de manchetes (pesquisa diária). */
+    fun summarize(topic: String, headlines: List<String>): String {
+        val p = "<|im_start|>system\nSummarize these headlines about \"$topic\" in 1 or 2 short sentences in ${langName()}. Use only what the headlines say; do not add numbers that are not in them.<|im_end|>\n" +
+            "<|im_start|>user\n" + headlines.joinToString("\n") { "- $it" } + "<|im_end|>\n<|im_start|>assistant\n"
+        return JarvisNative.complete(p, 120, 0.2f, listOf("<|im_end|>", "<|im_start|>")).trim()
     }
 
     private fun langName() = when (I18n.lang.code) {
@@ -477,12 +542,13 @@ object Jarvis {
         "ru" -> "Russian"; "zh" -> "Simplified Chinese"; "ja" -> "Japanese"; "ko" -> "Korean"; else -> "Brazilian Portuguese"
     }
 
-    private fun llmAnswer(q: String, facts: List<Fact>): String {
+    private fun llmAnswer(q: String, facts: List<Fact>, strict: Boolean = false): String {
         val now = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.US).apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }.format(java.util.Date())
         val sys = """You are JARVIS, the voice assistant inside the "Radar BTC" app (a Bitcoin order-flow terminal that also covers US stocks).
 Always answer in ${langName()}. Speak like a calm, sharp butler-analyst: 2 to 5 short sentences, no markdown, no lists.
 Use ONLY the FACTS below. Never invent prices, numbers, probabilities, news, dates or sources. If the facts do not answer the question, say you don't have that data now and suggest the app tab that shows it.
 You never place orders and never promise profits; trading involves risk. Do not give financial advice; describe what the data shows.
+${if (strict) "IMPORTANT: copy every number exactly as written in the FACTS; do not compute, round or estimate new numbers." else ""}
 Current time (UTC): $now
 FACTS:
 """ + facts.joinToString("\n") { "- ${it.text} [${it.source}]" }.ifBlank { "- (no data loaded yet)" }
@@ -492,7 +558,7 @@ FACTS:
             hist.forEach { m -> append(if (m.user) "<|im_start|>user\n" else "<|im_start|>assistant\n").append(m.text.take(600)).append("<|im_end|>\n") }
             append("<|im_start|>user\n").append(q.take(800)).append("<|im_end|>\n<|im_start|>assistant\n")
         }
-        return JarvisNative.complete(prompt, 260, 0.3f, listOf("<|im_end|>", "<|im_start|>")).trim()
+        return JarvisNative.complete(prompt, 260, if (strict) 0.1f else 0.3f, listOf("<|im_end|>", "<|im_start|>")).trim()
     }
 
     private fun ruleAnswer(facts: List<Fact>): String {
@@ -535,6 +601,7 @@ FACTS:
             append(L("Time Machine, 10 mil replays") + ": " + L("alvo primeiro") + " ${num(mc.pTarget * 100, 1)}%, " + L("stop primeiro") + " ${num(mc.pStop * 100, 1)}%, " +
                 L("nenhum") + " ${num(mc.pNeither * 100, 1)}%. " + leanText(l) + ". ")
         }
+        ScoreBook.fact(c.symbol)?.let { append(L(it.text)).append(". ") }
         c.history?.let { h -> if (h.triggered > 0) append(L("No histórico") + " (${h.sessions} " + L("sessões") + "): ${h.triggered} " + L("gatilhos") + ", ${h.target} " + L("no alvo") + ", ${h.stop} " + L("no stop") + ". ") }
         c.sizing?.let { s -> if (s.refusal == null) append(L("Tamanho") + ": ${TraderSkill.fmtQty(s.qty, c.market)} " + L(if (c.market == TradeMarket.BTC) "BTC" else "ações") + ", " + L("perda máxima") + " US$ ${num(s.maxLoss)}. ") else append(L(s.refusal) + " ") }
         c.risk?.let { r -> append(if (r.pass) L("Risco: PASSA.") else L("Risco: BLOQUEADO") + " (" + r.checks.filter { !it.pass }.joinToString(", ") { L(it.name) } + ").") }

@@ -12,6 +12,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <!-- Microfone do assistente: só enquanto o usuário segura para falar; transcrito no aparelho. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- Pesquisa diária do assistente só no Wi-Fi -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".RadarApp"

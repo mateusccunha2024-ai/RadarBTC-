@@ -26,6 +26,9 @@ jobs:
 
       - name: Empacotar (.msi e portátil)
         shell: bash
+        env:
+          JARVIS_CLOUD_URL: ${{ secrets.JARVIS_CLOUD_URL }}
+          JARVIS_CLOUD_KEY: ${{ secrets.JARVIS_CLOUD_KEY }}
         run: |
           set -o pipefail
           gradle :desktop:packageMsi :desktop:createDistributable --no-daemon 2>&1 | tee build.log

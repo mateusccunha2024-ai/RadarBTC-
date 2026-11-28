@@ -145,6 +145,12 @@ object JarvisNative {
         return try { st.acceptWaveform(f, 16000); a.decode(st); a.getResult(st).text.trim() } finally { st.release() }
     }
 
+    /** Pesquisa diária só no Wi-Fi (rede sem cobrança por dados). */
+    fun unmetered(): Boolean = runCatching {
+        val cm = Platform.app.getSystemService(android.net.ConnectivityManager::class.java)
+        cm.activeNetwork != null && !cm.isActiveNetworkMetered
+    }.getOrDefault(false)
+
     // Pedido de permissão do microfone (a MainActivity repassa o resultado).
     var activity: WeakReference<Activity>? = null
     private var pending: ((Boolean) -> Unit)? = null

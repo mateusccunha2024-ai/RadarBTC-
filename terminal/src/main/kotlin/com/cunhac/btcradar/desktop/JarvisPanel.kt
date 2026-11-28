@@ -97,7 +97,7 @@ fun JarvisPanel(ctx: AppContext, onClose: () -> Unit, modifier: Modifier = Modif
             MiniButton("✕") { onClose() }
         }
         Box(Modifier.fillMaxWidth().height(1.dp).background(Q.Line))
-        if (settings) JarvisSettingsView(Modifier.weight(1f).fillMaxWidth())
+        if (settings) androidx.compose.runtime.CompositionLocalProvider(LocalJarvisCtx provides ctx) { JarvisSettingsView(Modifier.weight(1f).fillMaxWidth()) }
         else {
             val list = rememberLazyListState()
             val n = Jarvis.messages.size
@@ -105,7 +105,7 @@ fun JarvisPanel(ctx: AppContext, onClose: () -> Unit, modifier: Modifier = Modif
             LazyColumn(Modifier.weight(1f).fillMaxWidth().padding(horizontal = 8.dp), state = list, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 item { Spacer(Modifier.height(4.dp)) }
                 if (n == 0) item { Welcome(ctx) }
-                itemsIndexed(Jarvis.messages) { _, m -> Message(ctx, m) }
+                itemsIndexed(Jarvis.messages) { i, m -> Message(ctx, m, Jarvis.messages.getOrNull(i - 1)?.takeIf { it.user }?.text ?: "") }
                 if (Jarvis.busy) item { T("Buscando os dados e pensando…", Q.Muted, 12, modifier = Modifier.padding(4.dp)) }
                 item { Spacer(Modifier.height(4.dp)) }
             }
@@ -204,7 +204,7 @@ private fun ModelRow(i: JarvisModels.Item) {
 }
 
 @Composable
-private fun Message(ctx: AppContext, m: JarvisMsg) {
+private fun Message(ctx: AppContext, m: JarvisMsg, question: String = "") {
     if (m.user) {
         Row(Modifier.fillMaxWidth()) {
             Spacer(Modifier.weight(1f))
@@ -213,6 +213,7 @@ private fun Message(ctx: AppContext, m: JarvisMsg) {
         return
     }
     var showFacts by remember { mutableStateOf(false) }
+    var rated by remember { mutableStateOf<Boolean?>(null) }
     Column(Modifier.fillMaxWidth().border(1.dp, Q.Line).padding(8.dp)) {
         T(m.text, Q.Text, 13, wrap = true, tr = false)
         Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -220,6 +221,11 @@ private fun Message(ctx: AppContext, m: JarvisMsg) {
                 modifier = if (m.facts.isNotEmpty()) Modifier.clickable { showFacts = !showFacts } else Modifier)
             Spacer(Modifier.weight(1f))
             if (Jarvis.voiceReady) T("▶ " + L("ouvir"), Q.Accent, 10, tr = false, modifier = Modifier.clickable { Jarvis.say(m.text) }.padding(horizontal = 4.dp))
+            // Avaliação: 👍 vira exemplo de treino; 👎 vira pesquisa do dia seguinte.
+            if (rated == null && question.isNotBlank()) {
+                T("👍", Q.Muted, 12, tr = false, modifier = Modifier.clickable { rated = true; JarvisFeedback.record(question, m.text, m.engine, true, m.facts) }.padding(horizontal = 6.dp))
+                T("👎", Q.Muted, 12, tr = false, modifier = Modifier.clickable { rated = false; JarvisFeedback.record(question, m.text, m.engine, false, m.facts) }.padding(horizontal = 6.dp))
+            } else if (rated != null) T(if (rated == true) L("obrigado") else L("vou pesquisar isso"), Q.Muted, 10, tr = false, modifier = Modifier.padding(horizontal = 4.dp))
         }
         if (showFacts) Column(Modifier.padding(top = 4.dp)) {
             m.facts.forEach { f -> T("• " + L(f.text) + "  [" + f.source + "]", Q.Muted, 11, wrap = true, tr = false) }
@@ -458,16 +464,18 @@ private fun JarvisSettingsView(modifier: Modifier) {
     Column(modifier.verticalScroll(rememberScrollState()).padding(10.dp)) {
         Section("Cérebro (IA no aparelho)") {
             Column {
-                val opts = listOf("off", JarvisModels.LLM_LIGHT.id, JarvisModels.LLM_STD.id)
-                Chips(null, listOf("Desligada", "Leve 0,5B", "Padrão 1,5B"), opts.indexOf(JarvisSettings.llm).coerceAtLeast(0)) {
+                val opts = listOf("off", JarvisModels.LLM_LIGHT.id, JarvisModels.LLM_STD.id) + (if (Platform.isMobile) emptyList() else listOf(JarvisModels.LLM_PRO.id))
+                Chips(null, listOf("Desligada", "Leve 0,5B", "Padrão 1,5B") + (if (Platform.isMobile) emptyList() else listOf("Forte 7B")), opts.indexOf(JarvisSettings.llm).coerceAtLeast(0)) {
                     JarvisSettings.useLlm(opts[it]); Jarvis.prepare()
                 }
                 if (!JarvisNative.llmSupported) T("Este aparelho não roda a IA local (precisa de Android 9+ e 64 bits).", Q.Warn, 11, wrap = true)
                 Jarvis.brainError?.let { T(L("Erro") + ": $it", Q.Sell, 11, wrap = true, tr = false) }
-                ModelRow(JarvisModels.LLM_LIGHT); ModelRow(JarvisModels.LLM_STD)
+                ModelRow(JarvisModels.LLM_LIGHT); ModelRow(JarvisModels.LLM_STD); if (!Platform.isMobile) ModelRow(JarvisModels.LLM_PRO)
                 Footnote("A IA recebe só os dados que o app já mostra e é instruída a não inventar números. Sem a IA, o assistente responde com os próprios dados do app.")
             }
         }
+        Spacer(Modifier.height(8.dp))
+        IntelligenceSection()
         Spacer(Modifier.height(8.dp))
         Section("Voz própria") {
             Column {
@@ -524,3 +532,88 @@ private fun JarvisSettingsView(modifier: Modifier) {
             Q.Muted, 10, wrap = true, tr = false)
     }
 }
+
+// ------------------------------------------------------------------ inteligência que cresce sozinha
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun IntelligenceSection() {
+    val scope = rememberCoroutineScope()
+    val ctx = LocalJarvisCtx.current
+    Section("Inteligência (aprende sozinho)") {
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            // Prova
+            T("Prova", Q.Accent, 12, bold = true)
+            val last = JarvisEval.last
+            val hist = JarvisEval.history
+            if (last != null) {
+                KV("Nota (0–100)", "${last.score}")
+                KV("Roteamento certo", "${last.routing} / ${last.total}")
+                KV("Perguntas com dados", "${last.answered} / ${last.total}")
+                if (last.llmAnswers > 0) KV("Respostas da IA com números conferidos", "${last.grounded} / ${last.llmAnswers}")
+                KV("Tempo médio por resposta", String.format(BR, "%.1f s", last.avgMs / 1000.0))
+            } else if (hist.isNotEmpty()) KV("Última nota", "${hist.last()}")
+            if (hist.size >= 2) T(L("Evolução das notas") + ": " + hist.takeLast(10).joinToString(" → "), Q.Muted, 11, wrap = true, tr = false)
+            if (ctx != null) OutlineButton(if (JarvisEval.running) "Rodando a prova…" else "Rodar a prova", enabled = !JarvisEval.running) { scope.launch { JarvisEval.run(ctx) } }
+            Footnote("Perguntas fixas que medem se o Jarvis entende o pedido, acha os dados e não inventa números. Toda mudança tem de manter ou subir a nota.")
+
+            // Memória e pesquisa diária
+            T("Memória e pesquisa diária", Q.Accent, 12, bold = true, modifier = Modifier.padding(top = 6.dp))
+            KV("Conhecimentos guardados", "${JarvisMemory.size} (${JarvisMemory.confirmed} " + L("confirmados") + ")")
+            KV("Última pesquisa", if (JarvisResearch.lastMs == 0L) "—" else java.text.SimpleDateFormat("dd/MM HH:mm", BR).format(java.util.Date(JarvisResearch.lastMs)) + " · +" + JarvisResearch.lastAdded)
+            Toggle("Pesquisar na internet todo dia (só no Wi-Fi)", JarvisResearch.enabled) { JarvisResearch.useEnabled(it) }
+            OutlineButton(if (JarvisResearch.running) "Pesquisando…" else "Pesquisar agora", enabled = !JarvisResearch.running) { scope.launch { JarvisResearch.run(force = true) } }
+            Footnote("Busca manchetes recentes (Google News) sobre o BTC, sua lista, as perguntas que ele não soube e as habilidades ligadas. Guarda com fonte e data; algo só conta como confirmado com 2 fontes. Nada do que vem da internet vira instrução para o Jarvis.")
+
+            // Placar
+            T("Placar das previsões", Q.Accent, 12, bold = true, modifier = Modifier.padding(top = 6.dp))
+            ScoreBook.version
+            val st = ScoreBook.stats()
+            if (st.triggered == 0) T("Ainda sem planos conferidos. Cada plano de trade é conferido no dia seguinte.", Q.Muted, 11, wrap = true)
+            else {
+                KV("Planos conferidos", "${st.triggered}")
+                KV("Alvo · stop · nenhum", "${st.target} · ${st.stop} · ${st.close}")
+                st.predictedTarget?.let { KV("Alvo previsto × real", "${num(it * 100, 0)}% × ${num(st.target * 100.0 / st.triggered, 0)}%") }
+                st.brier?.let { KV("Calibração (Brier, menor é melhor)", num(it, 3)) }
+            }
+
+            // Habilidades
+            T("Habilidades", Q.Accent, 12, bold = true, modifier = Modifier.padding(top = 6.dp))
+            if (JarvisSkills.list.isEmpty()) T("Nenhuma ainda. Quando você perguntar 3 vezes sobre algo que ele não sabe, ele propõe uma habilidade nova para você aprovar.", Q.Muted, 11, wrap = true)
+            JarvisSkills.list.forEach { r ->
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        T(r.name, Q.Text, 12, bold = true, wrap = true, tr = false)
+                        T(L(if (r.origin == "nuvem") "do cérebro na nuvem" else "proposta pelo uso") + " · " + r.keywords.joinToString(", "), Q.Muted, 10, wrap = true, tr = false)
+                    }
+                    MiniButton(if (r.enabled) "Desligar" else "Aprovar", on = !r.enabled) { JarvisSkills.setEnabled(r.id, !r.enabled) }
+                    Spacer(Modifier.width(4.dp))
+                    MiniButton("✕", color = Q.Muted) { JarvisSkills.remove(r.id) }
+                }
+            }
+            Footnote("Habilidade é só uma receita de pesquisa (palavras e buscas), nunca um programa. Só funciona depois que você aprova.")
+
+            // Cérebro na nuvem
+            T("Cérebro na nuvem", Q.Accent, 12, bold = true, modifier = Modifier.padding(top = 6.dp))
+            KV("Situação", when (CloudBrain.state) {
+                CloudBrain.State.ON -> "conectado"; CloudBrain.State.CONNECTING -> "sincronizando…"
+                CloudBrain.State.ERROR -> "erro"; CloudBrain.State.OFF -> if (CloudBrain.configured) "pronto" else "não configurado"
+            })
+            CloudBrain.error?.let { T(it, Q.Sell, 10, wrap = true, tr = false) }
+            if (CloudBrain.lastSyncMs > 0) KV("Última sincronização", java.text.SimpleDateFormat("dd/MM HH:mm", BR).format(java.util.Date(CloudBrain.lastSyncMs)))
+            if (CloudBrain.configured) OutlineButton("Sincronizar agora") { scope.launch { CloudBrain.sync() } }
+            Footnote("Guarda a memória, o placar e as avaliações deste aparelho (cada aparelho só vê os próprios dados) e traz habilidades aprovadas. Usa só a chave pública do projeto; a chave secreta nunca sai do servidor.")
+
+            // Treino
+            T("Treino", Q.Accent, 12, bold = true, modifier = Modifier.padding(top = 6.dp))
+            KV("Respostas avaliadas", "👍 ${JarvisFeedback.good} · 👎 ${JarvisFeedback.bad}")
+            var exported by remember { mutableStateOf<String?>(null) }
+            OutlineButton("Exportar exemplos de treino") { exported = JarvisFeedback.exportTraining()?.path ?: L("Falhou") }
+            exported?.let { T(it, Q.Muted, 10, wrap = true, tr = false) }
+            Footnote("As respostas com 👍 viram exemplos para o ajuste fino da IA. As com 👎 viram pesquisa do dia seguinte.")
+        }
+    }
+}
+
+/** Contexto do app para a seção de inteligência (rodar a prova). */
+val LocalJarvisCtx = androidx.compose.runtime.staticCompositionLocalOf<AppContext?> { null }

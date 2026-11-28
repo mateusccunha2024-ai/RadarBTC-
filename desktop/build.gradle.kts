@@ -6,6 +6,13 @@ plugins {
     id("org.jetbrains.compose")
 }
 
+// Cérebro na nuvem do assistente: endereço e chave PÚBLICA (anon) vêm dos segredos do GitHub no build, nunca do código.
+val jarvisCloudRes = layout.buildDirectory.dir("generated/jarvis-cloud").get().asFile
+File(jarvisCloudRes, "jarvis-cloud.properties").apply {
+    parentFile.mkdirs()
+    writeText("url=" + (System.getenv("JARVIS_CLOUD_URL") ?: "") + "\nkey=" + (System.getenv("JARVIS_CLOUD_KEY") ?: "") + "\n")
+}
+
 // Reaproveita do app Android: dados das corretoras, modelo de liquidez, tema e componentes visuais
 val shared = "../app/src/main/java/com/cunhac/btcradar"
 kotlin {
@@ -17,6 +24,7 @@ kotlin {
         kotlin.srcDir("$shared/engine")
         kotlin.srcDir("../terminal/src/main/kotlin")
         resources.srcDir("../terminal/src/main/resources")   // traduções (i18n/*.tsv)
+        resources.srcDir(jarvisCloudRes)
     }
 }
 
