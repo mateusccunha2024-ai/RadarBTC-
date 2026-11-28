@@ -285,6 +285,14 @@ object LlmProcessSelfTest {
                 log("carregar: ${LlmProcess.call(300_000, "load", model, "4096", "2")} em ${(System.currentTimeMillis() - t0) / 1000} s")
                 val p = "<|im_start|>system\nAnswer with one short word.<|im_end|>\n<|im_start|>user\nSay hello.<|im_end|>\n<|im_start|>assistant\n"
                 log("responder: ${LlmProcess.call(300_000, "complete", p, "8", "0.1", "<|im_end|>", "<|im_start|>")}")
+                // Prova de que a biblioteca certa foi carregada: o llama lista as instruções com que foi compilado.
+                val lines = runCatching { File(LlmProcess.dir(), "ia-processo.log").readLines() }.getOrDefault(emptyList())
+                val info = lines.firstOrNull { it.contains("system_info") }.orEmpty()
+                log("cpu: ${info.substringAfter("CPU :", info).trim()}")
+                lines.firstOrNull { it.contains("biblioteca compatível") }?.let { log(it.trim()) }
+                if (variant.isNotEmpty() && (info.isBlank() || Regex("(AVX2|BMI2|FMA|F16C) = 1").containsMatchIn(info))) {
+                    log("fim com erro: a biblioteca '$variant' não é a compatível (instruções: $info)"); return
+                }
             }
             LlmProcess.crashForTest()
             val why = try { LlmProcess.call(30_000, "ping"); "NÃO CAIU" } catch (e: IOException) { e.message }

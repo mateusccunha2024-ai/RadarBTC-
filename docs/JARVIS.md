@@ -87,7 +87,7 @@ O ajuste fino semanal do modelo com os exemplos aprovados ainda é manual (preci
 
 ## Atualização 17
 - **Bibliotecas compatíveis (Windows):** `.github/workflows/llama-compat.yml` compila java-llama.cpp 4.2.0 (llama.cpp b4916)
-  sem AVX2/FMA/F16C em duas versões (`avx`, `sse`) e publica na release `llama-compat-b4916`; `fetch-llama-compat.sh` coloca em
+  sem AVX2/FMA/F16C/BMI2 em duas versões (`avx`, `sse`) e publica na release `llama-compat-b4916-v2`; `fetch-llama-compat.sh` coloca em
   `desktop/appResources/windows/jarvis-compat/{avx,sse}/jllama.dll` (Compose `appResourcesRootDir`). O processo da IA recebe a
   versão como 4º argumento e aponta `de.kherud.llama.lib.path` para a pasta. `JarvisNative.loadLlm` tenta padrão → avx → sse
   quando a queda é por instrução ilegal e guarda a que funcionou em `jarvis/ia-biblioteca.txt`.

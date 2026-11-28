@@ -13,7 +13,7 @@ permissions:
   contents: write
 
 env:
-  TAG: llama-compat-b4916
+  TAG: llama-compat-b4916-v2
   ZIP: llama-compat-windows-x64.zip
 
 jobs:
@@ -43,11 +43,14 @@ jobs:
         working-directory: jllama
         run: |
           set -e
-          base='-A x64 -DOS_NAME=Windows -DOS_ARCH=x86_64 -DGGML_NATIVE=OFF -DGGML_AVX2=OFF -DGGML_FMA=OFF -DGGML_F16C=OFF -DGGML_AVX512=OFF -DLLAMA_CURL=OFF'
+          base='-A x64 -DOS_NAME=Windows -DOS_ARCH=x86_64 -DGGML_NATIVE=OFF -DGGML_AVX2=OFF -DGGML_FMA=OFF -DGGML_F16C=OFF -DGGML_AVX512=OFF -DGGML_BMI2=OFF -DGGML_AVX_VNNI=OFF -DLLAMA_CURL=OFF'
           for v in avx sse; do
             if [ "$v" = avx ]; then extra="-DGGML_AVX=ON"; else extra="-DGGML_AVX=OFF"; fi
             rm -rf src/main/resources/de/kherud/llama/Windows
-            eval cmake -B "build-$v" $base $extra
+            eval cmake -B "build-$v" $base $extra 2>&1 | tee "cfg-$v.log"
+            # Garantia: nada de AVX2/BMI2/FMA/F16C (o i7 de 2ª/3ª geração não tem). Se aparecer, o build falha.
+            grep -i "Adding CPU backend variant" "cfg-$v.log"
+            if grep -i "Adding CPU backend variant" "cfg-$v.log" | grep -Eiq "AVX2|BMI2|FMA|F16C"; then echo "ERRO: instrução proibida na versão $v"; exit 1; fi
             cmake --build "build-$v" --config Release -j 4
             mkdir -p "../out/$v"
             cp src/main/resources/de/kherud/llama/Windows/x86_64/*.dll "../out/$v/"
