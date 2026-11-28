@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == JarvisNative.REQ_MIC) JarvisNative.onPermission(grantResults.firstOrNull() == android.content.pm.PackageManager.PERMISSION_GRANTED)
     }
